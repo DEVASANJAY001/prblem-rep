@@ -8,9 +8,10 @@ import {
   moderateComment,
 } from "@/lib/firebase/services/problemsService";
 import { subscribeCompanies } from "@/lib/firebase/services/companiesService";
+import { CompanyLogo } from "@/components/ui/CompanyLogo";
 import { useAuth } from "@/contexts/AuthContext";
-import { ProblemDoc, ProblemComment, CompanyDoc, ProblemStatus } from "@/types";
-import { REAL_INDUSTRIES } from "@/data/realProductionData";
+import { ProblemDoc, ProblemComment, CompanyDoc, ProblemStatus, EvidenceDocument } from "@/types";
+import { REAL_INDUSTRIES, REAL_COMPANIES } from "@/data/realProductionData";
 import {
   Save,
   Trash2,
@@ -35,6 +36,11 @@ import {
   Sliders,
   ShieldCheck,
   Sparkles,
+  Rocket,
+  Code,
+  Headphones,
+  Server,
+  Zap,
 } from "lucide-react";
 
 interface AdminProblemDetailEditorProps {
@@ -61,7 +67,16 @@ export const AdminProblemDetailEditor: React.FC<AdminProblemDetailEditorProps> =
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
 
   const [activeTab, setActiveTab] = useState<
-    "header_scores" | "description_market" | "evidence" | "discussion" | "research" | "competitors" | "suggested_mvp" | "companies_solvers" | "related"
+    | "header_scores"
+    | "description_market"
+    | "evidence"
+    | "discussion"
+    | "research"
+    | "competitors"
+    | "suggested_mvp"
+    | "companies_solvers"
+    | "startup_mode"
+    | "related"
   >("header_scores");
 
   // Registered Companies List
@@ -97,9 +112,7 @@ export const AdminProblemDetailEditor: React.FC<AdminProblemDetailEditorProps> =
   const [citizensAffected, setCitizensAffected] = useState("");
 
   // Evidence
-  const [evidenceDocuments, setEvidenceDocuments] = useState<
-    { title: string; size: string; pages: string; url: string; type: "pdf" | "link" }[]
-  >([]);
+  const [evidenceDocuments, setEvidenceDocuments] = useState<EvidenceDocument[]>([]);
   const [evidenceUrls, setEvidenceUrls] = useState<string[]>([]);
   const [dataPoints, setDataPoints] = useState<{ metric: string; label: string }[]>([]);
 
@@ -122,6 +135,54 @@ export const AdminProblemDetailEditor: React.FC<AdminProblemDetailEditorProps> =
   // Comments
   const [comments, setComments] = useState<ProblemComment[]>([]);
   const [newAdminComment, setNewAdminComment] = useState("");
+
+  // 9. Startup Mode Controller
+  const [startupModeEnabled, setStartupModeEnabled] = useState(true);
+  const [startupTargetSegments, setStartupTargetSegments] = useState<string[]>([
+    "Rural Clinic Admins",
+    "Local Specialists",
+    "EMS Providers",
+    "Independent Pharmacists",
+  ]);
+  const [newStartupSegment, setNewStartupSegment] = useState("");
+  const [isAddingStartupSegment, setIsAddingStartupSegment] = useState(false);
+  const [startupWillingnessToPay, setStartupWillingnessToPay] = useState("$150/mo per practitioner");
+  const [startupValueProp, setStartupValueProp] = useState("");
+  const [startupSolutionsGaps, setStartupSolutionsGaps] = useState<
+    Array<{ name: string; description: string; weaknessType: string; weakness: string }>
+  >([
+    {
+      name: "Epic Care Everywhere",
+      description: "Industry standard for large enterprise hospital networks.",
+      weaknessType: "Weakness",
+      weakness: "Prohibitively expensive for independent rural clinics.",
+    },
+    {
+      name: "Direct Secure Messaging",
+      description: "Secure encrypted email protocol for certified healthcare providers.",
+      weaknessType: "Gap",
+      weakness: "Clunky UI, relies on manual entry and non-standard attachments.",
+    },
+  ]);
+  const [startupDirections, setStartupDirections] = useState<
+    Array<{ type: string; title: string; description: string }>
+  >([
+    {
+      type: "software",
+      title: "Software Approach",
+      description: "Automated HL7 translation & cloud FHIR bridge.",
+    },
+    {
+      type: "service",
+      title: "Service-Based",
+      description: "Managed interoperability and compliance consulting.",
+    },
+    {
+      type: "hardware",
+      title: "Hardware Approach",
+      description: "Plug-and-play local edge caching appliance.",
+    },
+  ]);
 
   // Load problem details & subscribe live
   useEffect(() => {
@@ -180,11 +241,50 @@ export const AdminProblemDetailEditor: React.FC<AdminProblemDetailEditorProps> =
         setTechnicalRequirements(prob.suggestedMVP?.technicalRequirements || "");
 
         // Companies
-        setSelectedCompanyNames(prob.tags || []);
-        setCustomSolverTags(prob.tags || []);
+        if (prob.attachedCompanyNames !== undefined) {
+          setSelectedCompanyNames(prob.attachedCompanyNames);
+          setCustomSolverTags((prob.tags || []).filter((t) => !prob.attachedCompanyNames?.includes(t)));
+        } else {
+          const registeredMatches = (prob.tags || []).filter((t) =>
+            availableCompanies.some((c) => c.name.toLowerCase() === t.toLowerCase()) ||
+            REAL_COMPANIES.some((c) => c.name.toLowerCase() === t.toLowerCase())
+          );
+          setSelectedCompanyNames(registeredMatches);
+          setCustomSolverTags((prob.tags || []).filter((t) => !registeredMatches.includes(t)));
+        }
 
         // Comments
         setComments(prob.comments || []);
+
+        // Startup Mode Config
+        const isStartupActive =
+          prob.hasStartupMode !== false &&
+          prob.startupModeEnabled !== false &&
+          prob.startupModeConfig?.enabled !== false;
+        setStartupModeEnabled(isStartupActive);
+
+        if (prob.startupModeConfig) {
+          if (prob.startupModeConfig.targetSegments && prob.startupModeConfig.targetSegments.length > 0) {
+            setStartupTargetSegments(prob.startupModeConfig.targetSegments);
+          }
+          if (prob.startupModeConfig.avgWillingnessToPay) {
+            setStartupWillingnessToPay(prob.startupModeConfig.avgWillingnessToPay);
+          }
+          if (prob.startupModeConfig.valuePropositionDraft) {
+            setStartupValueProp(prob.startupModeConfig.valuePropositionDraft);
+          }
+          if (prob.startupModeConfig.existingSolutionsGaps && prob.startupModeConfig.existingSolutionsGaps.length > 0) {
+            setStartupSolutionsGaps(prob.startupModeConfig.existingSolutionsGaps.map(s => ({
+              name: s.name,
+              description: s.description,
+              weaknessType: s.weaknessType || "Weakness",
+              weakness: s.weakness || "",
+            })));
+          }
+          if (prob.startupModeConfig.directionsToExplore && prob.startupModeConfig.directionsToExplore.length > 0) {
+            setStartupDirections(prob.startupModeConfig.directionsToExplore);
+          }
+        }
 
         setLoading(false);
       } else {
@@ -247,11 +347,22 @@ export const AdminProblemDetailEditor: React.FC<AdminProblemDetailEditorProps> =
       },
       comments,
       commentsCount: comments.reduce((acc, c) => acc + 1 + (c.replies?.length || 0), 0),
+      attachedCompanyNames: selectedCompanyNames,
       tags: Array.from(new Set([...selectedCompanyNames, ...customSolverTags])),
       reviewNote: adminReviewNote,
       adminReviewNote: adminReviewNote,
       reviewedBy: userDoc?.name || user?.displayName || "Admin Moderator",
       reviewedAt: new Date().toISOString(),
+      hasStartupMode: startupModeEnabled,
+      startupModeEnabled: startupModeEnabled,
+      startupModeConfig: {
+        enabled: startupModeEnabled,
+        targetSegments: startupTargetSegments,
+        avgWillingnessToPay: startupWillingnessToPay,
+        valuePropositionDraft: startupValueProp,
+        existingSolutionsGaps: startupSolutionsGaps,
+        directionsToExplore: startupDirections,
+      },
     };
 
     // Calculate granular delta so we ONLY write fields that were modified
@@ -428,6 +539,7 @@ export const AdminProblemDetailEditor: React.FC<AdminProblemDetailEditorProps> =
           { id: "competitors", label: "6. Competitors", icon: TrendingUp },
           { id: "suggested_mvp", label: "7. Suggested MVP", icon: Sparkles },
           { id: "companies_solvers", label: "8. Companies Interested", icon: Building2 },
+          { id: "startup_mode", label: "9. Startup Mode Controller", icon: Rocket },
         ].map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -795,115 +907,274 @@ export const AdminProblemDetailEditor: React.FC<AdminProblemDetailEditorProps> =
         <div className="flex flex-col gap-6 animate-fade-in">
           {/* Documents Repeater */}
           <div className="bg-surface-container-lowest p-6 rounded-2xl border border-outline-variant/30 shadow-xs flex flex-col gap-4">
-            <div className="flex justify-between items-center">
-              <h3 className="text-sm font-bold text-on-surface uppercase tracking-wider">
-                Evidence Documents ({evidenceDocuments.length})
-              </h3>
+            <div className="flex justify-between items-center flex-wrap gap-2">
+              <div>
+                <h3 className="text-sm font-bold text-on-surface uppercase tracking-wider flex items-center gap-2">
+                  <FileText className="w-4 h-4 text-primary" />
+                  <span>Evidence & Supporting Documents ({evidenceDocuments.length}/5 max)</span>
+                </h3>
+                <p className="text-xs text-on-surface-variant mt-0.5">
+                  Attach official whitepapers, governmental standards, clinical reports, or PDF guidelines (max 5).
+                </p>
+              </div>
               <button
                 type="button"
-                onClick={() =>
-                  setEvidenceDocuments([
-                    ...evidenceDocuments,
-                    { title: "New Report", size: "1.2 MB", pages: "8 pages", url: "https://", type: "pdf" },
-                  ])
-                }
-                className="px-3 py-1.5 bg-primary/10 hover:bg-primary/20 text-primary rounded-xl text-xs font-bold flex items-center gap-1 cursor-pointer"
+                disabled={evidenceDocuments.length >= 5}
+                onClick={() => {
+                  if (evidenceDocuments.length < 5) {
+                    setEvidenceDocuments([
+                      ...evidenceDocuments,
+                      {
+                        title: "New Supporting Report",
+                        description: "Key findings, regulatory guidelines, or empirical data from this document.",
+                        size: "1.5 MB",
+                        pages: "10 pages",
+                        url: "https://",
+                        type: "pdf",
+                      },
+                    ]);
+                  }
+                }}
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all ${
+                  evidenceDocuments.length >= 5
+                    ? "bg-surface-container text-outline cursor-not-allowed opacity-60"
+                    : "bg-primary/10 hover:bg-primary/20 text-primary cursor-pointer"
+                }`}
               >
-                <Plus className="w-3.5 h-3.5" /> Add Document
+                <Plus className="w-3.5 h-3.5" />
+                <span>{evidenceDocuments.length >= 5 ? "Max 5 Reached" : "Add Document"}</span>
               </button>
             </div>
 
-            {evidenceDocuments.map((doc, idx) => (
-              <div key={idx} className="p-4 bg-surface-container-low rounded-xl flex flex-col gap-3 relative">
-                <button
-                  type="button"
-                  onClick={() => setEvidenceDocuments(evidenceDocuments.filter((_, i) => i !== idx))}
-                  className="absolute top-3 right-3 text-gray-400 hover:text-error cursor-pointer"
-                  title="Remove Document"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pr-6">
-                  <div>
-                    <label className="text-[10px] font-bold text-gray-500 uppercase">Document Title</label>
-                    <input
-                      type="text"
-                      value={doc.title}
-                      onChange={(e) => {
-                        const copy = [...evidenceDocuments];
-                        copy[idx].title = e.target.value;
-                        setEvidenceDocuments(copy);
-                      }}
-                      className="w-full bg-surface-container rounded-lg px-3 py-1.5 text-xs text-on-surface"
-                    />
+            {evidenceDocuments.length === 0 ? (
+              <div className="p-6 rounded-xl bg-surface-container-low border border-dashed border-outline-variant/40 text-center text-xs text-on-surface-variant">
+                No supporting documents attached yet. Click "+ Add Document" above (up to 5 documents).
+              </div>
+            ) : (
+              evidenceDocuments.slice(0, 5).map((doc, idx) => (
+                <div key={idx} className="p-4 bg-surface-container-low rounded-xl flex flex-col gap-3 relative border border-outline-variant/20 shadow-2xs">
+                  <div className="flex items-center justify-between border-b border-outline-variant/20 pb-2">
+                    <span className="text-xs font-bold text-primary flex items-center gap-1.5">
+                      <FileText className="w-3.5 h-3.5" />
+                      <span>Document #{idx + 1}</span>
+                    </span>
+                    <div className="flex items-center gap-2">
+                      {doc.url && doc.url !== "https://" && (
+                        <a
+                          href={doc.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="px-2.5 py-1 rounded-lg bg-surface-container hover:bg-primary hover:text-white text-on-surface-variant text-[11px] font-bold flex items-center gap-1 transition-colors"
+                          title="Open and test link"
+                        >
+                          <ExternalLink className="w-3 h-3" />
+                          <span>Test Link</span>
+                        </a>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => setEvidenceDocuments(evidenceDocuments.filter((_, i) => i !== idx))}
+                        className="p-1 text-gray-400 hover:text-error hover:bg-rose-500/10 rounded-lg transition-colors cursor-pointer"
+                        title="Remove Document"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
                   </div>
-                  <div>
-                    <label className="text-[10px] font-bold text-gray-500 uppercase">URL / Link</label>
-                    <input
-                      type="text"
-                      value={doc.url}
-                      onChange={(e) => {
-                        const copy = [...evidenceDocuments];
-                        copy[idx].url = e.target.value;
-                        setEvidenceDocuments(copy);
-                      }}
-                      className="w-full bg-surface-container rounded-lg px-3 py-1.5 text-xs text-on-surface"
-                    />
-                  </div>
-                  <div className="grid grid-cols-3 gap-2">
-                    <div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-12 gap-3">
+                    {/* Document Title */}
+                    <div className="sm:col-span-6">
+                      <label className="text-[10px] font-bold text-gray-500 uppercase">Document Title</label>
+                      <input
+                        type="text"
+                        value={doc.title}
+                        onChange={(e) => {
+                          const copy = [...evidenceDocuments];
+                          copy[idx].title = e.target.value;
+                          setEvidenceDocuments(copy);
+                        }}
+                        placeholder="e.g. Rural Health Info Hub Report 2023"
+                        className="w-full bg-surface-container rounded-lg px-3 py-2 text-xs font-semibold text-on-surface outline-none focus:ring-1 focus:ring-primary"
+                      />
+                    </div>
+
+                    {/* URL / Link */}
+                    <div className="sm:col-span-6">
+                      <label className="text-[10px] font-bold text-gray-500 uppercase">URL / Web Link</label>
+                      <input
+                        type="url"
+                        value={doc.url}
+                        onChange={(e) => {
+                          const copy = [...evidenceDocuments];
+                          copy[idx].url = e.target.value;
+                          setEvidenceDocuments(copy);
+                        }}
+                        placeholder="https://www.ruralhealthinfo.org"
+                        className="w-full bg-surface-container rounded-lg px-3 py-2 text-xs font-mono text-on-surface outline-none focus:ring-1 focus:ring-primary"
+                      />
+                    </div>
+
+                    {/* Description */}
+                    <div className="sm:col-span-12">
+                      <label className="text-[10px] font-bold text-gray-500 uppercase">Document Description / Context</label>
+                      <input
+                        type="text"
+                        value={doc.description || ""}
+                        onChange={(e) => {
+                          const copy = [...evidenceDocuments];
+                          copy[idx].description = e.target.value;
+                          setEvidenceDocuments(copy);
+                        }}
+                        placeholder="Brief summary explaining what empirical proof or standard this document provides..."
+                        className="w-full bg-surface-container rounded-lg px-3 py-2 text-xs text-on-surface outline-none focus:ring-1 focus:ring-primary"
+                      />
+                    </div>
+
+                    {/* Size, Pages/Source, Type */}
+                    <div className="sm:col-span-4">
                       <label className="text-[10px] font-bold text-gray-500 uppercase">Size</label>
                       <input
                         type="text"
-                        value={doc.size}
+                        value={doc.size || ""}
                         onChange={(e) => {
                           const copy = [...evidenceDocuments];
                           copy[idx].size = e.target.value;
                           setEvidenceDocuments(copy);
                         }}
-                        className="w-full bg-surface-container rounded-lg px-2 py-1.5 text-xs text-on-surface"
+                        placeholder="e.g. 2.4 MB"
+                        className="w-full bg-surface-container rounded-lg px-3 py-1.5 text-xs text-on-surface outline-none focus:ring-1 focus:ring-primary"
                       />
                     </div>
-                    <div>
-                      <label className="text-[10px] font-bold text-gray-500 uppercase">Pages/Source</label>
+
+                    <div className="sm:col-span-4">
+                      <label className="text-[10px] font-bold text-gray-500 uppercase">Pages / Source</label>
                       <input
                         type="text"
-                        value={doc.pages}
+                        value={doc.pages || ""}
                         onChange={(e) => {
                           const copy = [...evidenceDocuments];
                           copy[idx].pages = e.target.value;
                           setEvidenceDocuments(copy);
                         }}
-                        className="w-full bg-surface-container rounded-lg px-2 py-1.5 text-xs text-on-surface"
+                        placeholder="e.g. 12 pages or HealthIT.gov"
+                        className="w-full bg-surface-container rounded-lg px-3 py-1.5 text-xs text-on-surface outline-none focus:ring-1 focus:ring-primary"
                       />
                     </div>
-                    <div>
+
+                    <div className="sm:col-span-4">
                       <label className="text-[10px] font-bold text-gray-500 uppercase">Type</label>
                       <select
-                        value={doc.type}
+                        value={doc.type || "pdf"}
                         onChange={(e) => {
                           const copy = [...evidenceDocuments];
                           copy[idx].type = e.target.value as any;
                           setEvidenceDocuments(copy);
                         }}
-                        className="w-full bg-surface-container rounded-lg px-2 py-1.5 text-xs text-on-surface"
+                        className="w-full bg-surface-container rounded-lg px-3 py-1.5 text-xs text-on-surface outline-none focus:ring-1 focus:ring-primary font-medium"
                       >
-                        <option value="pdf">PDF</option>
-                        <option value="link">Link</option>
+                        <option value="pdf">PDF Document</option>
+                        <option value="link">Web Link / Portal</option>
                       </select>
                     </div>
                   </div>
                 </div>
+              ))
+            )}
+          </div>
+
+          {/* External Evidence URLs Section */}
+          <div className="bg-surface-container-lowest p-6 rounded-2xl border border-outline-variant/30 shadow-xs flex flex-col gap-4">
+            <div className="flex justify-between items-center flex-wrap gap-2">
+              <div>
+                <h3 className="text-sm font-bold text-on-surface uppercase tracking-wider flex items-center gap-2">
+                  <Globe className="w-4 h-4 text-primary" />
+                  <span>External Evidence URLs ({evidenceUrls.length}/5 max)</span>
+                </h3>
+                <p className="text-xs text-on-surface-variant mt-0.5">
+                  Direct hyperlinks to public regulatory rules, news investigations, benchmark articles, and verified data repositories (max 5).
+                </p>
               </div>
-            ))}
+              <button
+                type="button"
+                disabled={evidenceUrls.length >= 5}
+                onClick={() => {
+                  if (evidenceUrls.length < 5) {
+                    setEvidenceUrls([...evidenceUrls, "https://"]);
+                  }
+                }}
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all ${
+                  evidenceUrls.length >= 5
+                    ? "bg-surface-container text-outline cursor-not-allowed opacity-60"
+                    : "bg-primary/10 hover:bg-primary/20 text-primary cursor-pointer"
+                }`}
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>{evidenceUrls.length >= 5 ? "Max 5 Reached" : "Add URL"}</span>
+              </button>
+            </div>
+
+            {evidenceUrls.length === 0 ? (
+              <div className="p-6 rounded-xl bg-surface-container-low border border-dashed border-outline-variant/40 text-center text-xs text-on-surface-variant">
+                No external evidence URLs added yet. Click "+ Add URL" above to add citations (up to 5 URLs).
+              </div>
+            ) : (
+              <div className="flex flex-col gap-2.5">
+                {evidenceUrls.slice(0, 5).map((url, idx) => (
+                  <div
+                    key={idx}
+                    className="p-3 bg-surface-container-low rounded-xl flex items-center gap-2.5 border border-outline-variant/20"
+                  >
+                    <span className="text-[11px] font-bold text-primary w-7 text-center shrink-0 bg-surface-container py-1 rounded-md">
+                      #{idx + 1}
+                    </span>
+                    <input
+                      type="url"
+                      value={url}
+                      onChange={(e) => {
+                        const copy = [...evidenceUrls];
+                        copy[idx] = e.target.value;
+                        setEvidenceUrls(copy);
+                      }}
+                      placeholder="https://www.healthit.gov/topic/interoperability"
+                      className="flex-1 bg-surface-container text-xs font-mono text-on-surface px-3 py-2 rounded-lg outline-none focus:ring-1 focus:ring-primary"
+                    />
+                    {url && url !== "https://" && (
+                      <a
+                        href={url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="p-2 rounded-lg bg-surface-container hover:bg-primary hover:text-white text-on-surface-variant transition-colors cursor-pointer shrink-0"
+                        title="Open link in new tab"
+                      >
+                        <ExternalLink className="w-3.5 h-3.5" />
+                      </a>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => setEvidenceUrls(evidenceUrls.filter((_, i) => i !== idx))}
+                      className="p-2 text-gray-400 hover:text-error hover:bg-rose-500/10 rounded-lg transition-colors cursor-pointer shrink-0"
+                      title="Remove URL"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Key Data Points */}
           <div className="bg-surface-container-lowest p-6 rounded-2xl border border-outline-variant/30 shadow-xs flex flex-col gap-4">
             <div className="flex justify-between items-center">
-              <h3 className="text-sm font-bold text-on-surface uppercase tracking-wider">
-                Key Statistical Data Points ({dataPoints.length})
-              </h3>
+              <div>
+                <h3 className="text-sm font-bold text-on-surface uppercase tracking-wider">
+                  Key Statistical Data Points ({dataPoints.length})
+                </h3>
+                <p className="text-xs text-on-surface-variant mt-0.5">
+                  High-impact quantified metrics highlighting problem scale and severity.
+                </p>
+              </div>
               <button
                 type="button"
                 onClick={() => setDataPoints([...dataPoints, { metric: "75%", label: "New statistic label" }])}
@@ -915,7 +1186,7 @@ export const AdminProblemDetailEditor: React.FC<AdminProblemDetailEditorProps> =
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {dataPoints.map((dp, idx) => (
-                <div key={idx} className="p-3 bg-surface-container-low rounded-xl flex items-center gap-3 relative">
+                <div key={idx} className="p-3 bg-surface-container-low rounded-xl flex items-center gap-3 relative border border-outline-variant/20">
                   <input
                     type="text"
                     value={dp.metric}
@@ -924,7 +1195,7 @@ export const AdminProblemDetailEditor: React.FC<AdminProblemDetailEditorProps> =
                       copy[idx].metric = e.target.value;
                       setDataPoints(copy);
                     }}
-                    className="w-24 bg-surface-container font-black text-sm text-primary px-3 py-2 rounded-lg text-center"
+                    className="w-24 bg-surface-container font-black text-sm text-primary px-3 py-2 rounded-lg text-center outline-none focus:ring-1 focus:ring-primary"
                     placeholder="64%"
                   />
                   <input
@@ -935,13 +1206,13 @@ export const AdminProblemDetailEditor: React.FC<AdminProblemDetailEditorProps> =
                       copy[idx].label = e.target.value;
                       setDataPoints(copy);
                     }}
-                    className="flex-1 bg-surface-container text-xs text-on-surface px-3 py-2 rounded-lg"
+                    className="flex-1 bg-surface-container text-xs text-on-surface px-3 py-2 rounded-lg outline-none focus:ring-1 focus:ring-primary"
                     placeholder="Metric explanation..."
                   />
                   <button
                     type="button"
                     onClick={() => setDataPoints(dataPoints.filter((_, i) => i !== idx))}
-                    className="text-gray-400 hover:text-error cursor-pointer"
+                    className="p-1.5 text-gray-400 hover:text-error hover:bg-rose-500/10 rounded-lg transition-colors cursor-pointer"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -1340,13 +1611,7 @@ export const AdminProblemDetailEditor: React.FC<AdminProblemDetailEditorProps> =
                     }`}
                   >
                     <div className="flex items-center gap-2.5">
-                      <div className="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-xs font-bold overflow-hidden">
-                        {comp.logoUrl ? (
-                          <img src={comp.logoUrl} alt="" className="w-full h-full object-cover" />
-                        ) : (
-                          comp.name[0]
-                        )}
-                      </div>
+                      <CompanyLogo name={comp.name} logoUrl={comp.logoUrl} size="md" />
                       <div className="flex flex-col">
                         <span className="text-xs font-bold leading-tight">{comp.name}</span>
                         <span className="text-[10px] text-on-surface-variant">{comp.industry}</span>
@@ -1382,6 +1647,326 @@ export const AdminProblemDetailEditor: React.FC<AdminProblemDetailEditorProps> =
                       <X className="w-3 h-3" />
                     </button>
                   </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Tab 9: Startup Mode Controller ────────────────────────── */}
+      {activeTab === "startup_mode" && (
+        <div className="flex flex-col gap-6 animate-fade-in">
+          {/* Master Enable/Disable Control Card */}
+          <div
+            className={`p-6 rounded-2xl border transition-all ${
+              startupModeEnabled
+                ? "bg-surface-container-lowest border-primary/30 shadow-xs"
+                : "bg-surface-container-low border-outline-variant/40"
+            }`}
+          >
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex items-center gap-3.5">
+                <div
+                  className={`w-12 h-12 rounded-2xl flex items-center justify-center ${
+                    startupModeEnabled
+                      ? "bg-primary text-white shadow-sm"
+                      : "bg-surface-container text-on-surface-variant"
+                  }`}
+                >
+                  <Rocket className="w-6 h-6" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-sm font-bold text-on-surface uppercase tracking-wider">
+                      Startup Mode Interactive Canvas
+                    </h3>
+                    <span
+                      className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                        startupModeEnabled
+                          ? "bg-emerald-500/10 text-emerald-600 border border-emerald-500/20"
+                          : "bg-gray-500/10 text-gray-500 border border-gray-500/20"
+                      }`}
+                    >
+                      {startupModeEnabled ? "ACTIVE & PUBLISHED" : "DISABLED"}
+                    </span>
+                  </div>
+                  <p className="text-xs text-on-surface-variant mt-0.5">
+                    {startupModeEnabled
+                      ? "Public users and founders can access the venture-building workspace at /startup-mode/:id to draft hypotheses and evaluate unit economics."
+                      : "Startup Mode is currently disabled for public users. All data below is safely preserved and will be instantly restored upon re-enabling."}
+                  </p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setStartupModeEnabled(!startupModeEnabled)}
+                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2 ${
+                  startupModeEnabled
+                    ? "bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200"
+                    : "bg-primary hover:bg-primary-container text-white shadow-sm"
+                }`}
+              >
+                <Rocket className="w-3.5 h-3.5" />
+                <span>{startupModeEnabled ? "Disable Startup Mode" : "Enable Startup Mode"}</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Configuration Form (Available even if disabled so admin can prepare data before publishing) */}
+          <div className="bg-surface-container-lowest p-6 rounded-2xl border border-outline-variant/30 shadow-xs flex flex-col gap-6">
+            <div className="flex justify-between items-center pb-3 border-b border-outline-variant/20">
+              <div>
+                <h4 className="text-xs font-bold text-on-surface uppercase tracking-wider">
+                  Startup Workspace Configuration Data
+                </h4>
+                <p className="text-[11px] text-on-surface-variant mt-0.5">
+                  Configure ICP personas, value proposition blueprints, existing competitor gaps, and MVP direction modules.
+                </p>
+              </div>
+            </div>
+
+            {/* 1. Target Segments */}
+            <div className="flex flex-col gap-2.5">
+              <label className="text-xs font-bold text-on-surface uppercase tracking-wider">
+                Target Customer Segments ({startupTargetSegments.length})
+              </label>
+              <div className="flex flex-wrap gap-2 items-center">
+                {startupTargetSegments.map((seg, idx) => (
+                  <span
+                    key={idx}
+                    className="bg-primary/10 border border-primary/20 text-primary px-3 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1.5 shadow-2xs"
+                  >
+                    <span>{seg}</span>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setStartupTargetSegments(
+                          startupTargetSegments.filter((_, i) => i !== idx)
+                        )
+                      }
+                      className="text-primary hover:text-error cursor-pointer"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </span>
+                ))}
+
+                {isAddingStartupSegment ? (
+                  <div className="inline-flex items-center gap-1.5">
+                    <input
+                      type="text"
+                      value={newStartupSegment}
+                      onChange={(e) => setNewStartupSegment(e.target.value)}
+                      placeholder="Segment name..."
+                      className="px-3 py-1 bg-surface-container rounded-full text-xs text-on-surface outline-none border border-primary"
+                      autoFocus
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" && newStartupSegment.trim()) {
+                          e.preventDefault();
+                          setStartupTargetSegments([
+                            ...startupTargetSegments,
+                            newStartupSegment.trim(),
+                          ]);
+                          setNewStartupSegment("");
+                          setIsAddingStartupSegment(false);
+                        }
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (newStartupSegment.trim()) {
+                          setStartupTargetSegments([
+                            ...startupTargetSegments,
+                            newStartupSegment.trim(),
+                          ]);
+                          setNewStartupSegment("");
+                        }
+                        setIsAddingStartupSegment(false);
+                      }}
+                      className="px-2.5 py-1 bg-primary text-white rounded-full text-xs font-bold cursor-pointer"
+                    >
+                      Add
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setIsAddingStartupSegment(true)}
+                    className="px-3 py-1.5 rounded-full border border-dashed border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary text-xs font-semibold transition-colors cursor-pointer"
+                  >
+                    + Add Segment
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* 2. Willingness to Pay & Value Prop */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="flex flex-col gap-1.5 md:col-span-1">
+                <label className="text-xs font-bold text-on-surface">
+                  Average Willingness to Pay
+                </label>
+                <input
+                  type="text"
+                  value={startupWillingnessToPay}
+                  onChange={(e) => setStartupWillingnessToPay(e.target.value)}
+                  placeholder="e.g. $150/mo per practitioner"
+                  className="bg-surface-container rounded-xl px-3 py-2 text-xs font-semibold text-on-surface outline-none focus:ring-1 focus:ring-primary"
+                />
+              </div>
+              <div className="flex flex-col gap-1.5 md:col-span-2">
+                <label className="text-xs font-bold text-on-surface">
+                  Default Value Proposition Draft
+                </label>
+                <textarea
+                  rows={2}
+                  value={startupValueProp}
+                  onChange={(e) => setStartupValueProp(e.target.value)}
+                  placeholder="e.g. A lightweight PDF parser that categorizes incoming faxes and maps them to EHR FHIR schemas..."
+                  className="bg-surface-container rounded-xl p-3 text-xs text-on-surface outline-none focus:ring-1 focus:ring-primary font-normal"
+                />
+              </div>
+            </div>
+
+            {/* 3. Existing Solutions & Gaps */}
+            <div className="flex flex-col gap-3 pt-2">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-bold text-on-surface uppercase tracking-wider">
+                  Existing Solutions & Gaps ({startupSolutionsGaps.length})
+                </label>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setStartupSolutionsGaps([
+                      ...startupSolutionsGaps,
+                      {
+                        name: "New Incumbent Tool",
+                        description: "Description of how users currently attempt solving this...",
+                        weaknessType: "Weakness",
+                        weakness: "Key flaw, prohibitive pricing, or missing integration...",
+                      },
+                    ])
+                  }
+                  className="text-xs font-bold text-primary hover:underline flex items-center gap-1 cursor-pointer"
+                >
+                  <Plus className="w-3.5 h-3.5" /> Add Solution Gap
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {startupSolutionsGaps.map((sol, idx) => (
+                  <div
+                    key={idx}
+                    className="p-3.5 bg-surface-container rounded-xl border border-outline-variant/30 flex flex-col gap-2 relative"
+                  >
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setStartupSolutionsGaps(
+                          startupSolutionsGaps.filter((_, i) => i !== idx)
+                        )
+                      }
+                      className="absolute top-2.5 right-2.5 text-gray-400 hover:text-error cursor-pointer"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                    <input
+                      type="text"
+                      value={sol.name}
+                      onChange={(e) => {
+                        const copy = [...startupSolutionsGaps];
+                        copy[idx].name = e.target.value;
+                        setStartupSolutionsGaps(copy);
+                      }}
+                      placeholder="Solution Name (e.g. Epic Care Everywhere)"
+                      className="bg-surface-container-high rounded-lg px-2.5 py-1 text-xs font-bold text-on-surface outline-none"
+                    />
+                    <textarea
+                      rows={2}
+                      value={sol.description}
+                      onChange={(e) => {
+                        const copy = [...startupSolutionsGaps];
+                        copy[idx].description = e.target.value;
+                        setStartupSolutionsGaps(copy);
+                      }}
+                      placeholder="Brief description of current tool..."
+                      className="bg-surface-container-high rounded-lg p-2 text-xs text-on-surface-variant outline-none"
+                    />
+                    <div className="pt-2 border-t border-outline-variant/20 flex flex-col gap-1">
+                      <div className="flex items-center gap-2">
+                        <select
+                          value={sol.weaknessType}
+                          onChange={(e) => {
+                            const copy = [...startupSolutionsGaps];
+                            copy[idx].weaknessType = e.target.value;
+                            setStartupSolutionsGaps(copy);
+                          }}
+                          className="text-[10px] font-bold text-error bg-surface-container-highest px-2 py-0.5 rounded-md outline-none uppercase"
+                        >
+                          <option value="Weakness">Weakness</option>
+                          <option value="Gap">Gap</option>
+                        </select>
+                        <span className="text-[10px] text-on-surface-variant">
+                          Why does this fail?
+                        </span>
+                      </div>
+                      <input
+                        type="text"
+                        value={sol.weakness}
+                        onChange={(e) => {
+                          const copy = [...startupSolutionsGaps];
+                          copy[idx].weakness = e.target.value;
+                          setStartupSolutionsGaps(copy);
+                        }}
+                        placeholder="e.g. Prohibitively expensive for independent clinics..."
+                        className="bg-surface-container-high rounded-lg px-2.5 py-1 text-xs text-on-surface outline-none"
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* 4. Directions to Explore */}
+            <div className="flex flex-col gap-3 pt-2">
+              <label className="text-xs font-bold text-on-surface uppercase tracking-wider">
+                Possible Directions to Explore
+              </label>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                {startupDirections.map((dir, idx) => (
+                  <div
+                    key={idx}
+                    className="p-3.5 bg-surface-container rounded-xl border border-outline-variant/30 flex flex-col gap-1.5"
+                  >
+                    <span className="text-[10px] font-bold uppercase text-primary tracking-wider">
+                      {dir.type} Approach
+                    </span>
+                    <input
+                      type="text"
+                      value={dir.title}
+                      onChange={(e) => {
+                        const copy = [...startupDirections];
+                        copy[idx].title = e.target.value;
+                        setStartupDirections(copy);
+                      }}
+                      placeholder="Title (e.g. Software Approach)"
+                      className="bg-surface-container-high rounded-lg px-2 py-1 text-xs font-bold text-on-surface outline-none"
+                    />
+                    <textarea
+                      rows={3}
+                      value={dir.description}
+                      onChange={(e) => {
+                        const copy = [...startupDirections];
+                        copy[idx].description = e.target.value;
+                        setStartupDirections(copy);
+                      }}
+                      placeholder="Description..."
+                      className="bg-surface-container-high rounded-lg p-2 text-xs text-on-surface-variant outline-none"
+                    />
+                  </div>
                 ))}
               </div>
             </div>

@@ -16,7 +16,7 @@ import {
   arrayRemove,
 } from "firebase/firestore";
 import { db } from "../config";
-import { ProblemDoc, AIScores, ProblemComment, CommentReply, ProblemValidations } from "@/types";
+import { ProblemDoc, AIScores, ProblemComment, CommentReply, ProblemValidations, EvidenceDocument, UserStartupNotes } from "@/types";
 import { scoreProblemSubmission } from "@/lib/aiScoring";
 import {
   getProblems as getLocalProblems,
@@ -85,7 +85,7 @@ export async function createProblem(
       wastedCost?: string;
       citizensAffected?: string;
     };
-    evidenceDocuments?: { title: string; size: string; pages: string; url: string; type: "pdf" | "link" }[];
+    evidenceDocuments?: EvidenceDocument[];
     evidenceUrls?: string[];
     evidenceLinks?: string[];
     dataPoints?: { metric: string; label: string }[];
@@ -98,6 +98,16 @@ export async function createProblem(
     suggestedMVP?: {
       coreFeatures?: string[];
       technicalRequirements?: string;
+    };
+    hasStartupMode?: boolean;
+    startupModeEnabled?: boolean;
+    startupModeConfig?: {
+      enabled?: boolean;
+      targetSegments?: string[];
+      avgWillingnessToPay?: string;
+      valuePropositionDraft?: string;
+      existingSolutionsGaps?: Array<{ name: string; description: string; weaknessType?: string; weakness?: string }>;
+      directionsToExplore?: Array<{ type: string; title: string; description: string }>;
     };
   }
 ): Promise<{ success: boolean; problemId: string; aiScores: AIScores }> {
@@ -166,6 +176,9 @@ export async function createProblem(
       coreFeatures: [],
       technicalRequirements: "",
     },
+    hasStartupMode: problemData.hasStartupMode ?? true,
+    startupModeEnabled: problemData.startupModeEnabled ?? problemData.hasStartupMode ?? true,
+    startupModeConfig: problemData.startupModeConfig,
     commentsCount: 0,
     bookmarksCount: 0,
     createdAt: now,
@@ -559,6 +572,42 @@ export async function toggleCommentLike(
   return result;
 }
 
+export async function toggleCommentCompanyStatus(
+  problemId: string,
+  commentId: string,
+  isInterestedCompany?: boolean,
+  companyName?: string
+): Promise<boolean> {
+  const local = getLocalProblemById(problemId);
+  let updatedComments: ProblemComment[] = [];
+  let newStatus = false;
+
+  if (local && local.comments) {
+    const comment = local.comments.find((c) => c.id === commentId);
+    if (comment) {
+      newStatus = isInterestedCompany !== undefined ? isInterestedCompany : !comment.isInterestedCompany;
+      comment.isInterestedCompany = newStatus;
+      if (companyName) comment.companyName = companyName;
+      updatedComments = local.comments;
+      saveLocalProblem(local);
+    }
+  }
+
+  try {
+    if (db && typeof doc === "function" && updatedComments.length > 0) {
+      const problemRef = doc(db, PROBLEMS_COLLECTION, problemId);
+      await updateDoc(problemRef, {
+        comments: updatedComments,
+        updatedAt: new Date().toISOString(),
+      });
+    }
+  } catch (err) {
+    console.warn("Firestore toggleCommentCompanyStatus error:", err);
+  }
+
+  return newStatus;
+}
+
 export async function recordProblemView(problemId: string): Promise<number> {
   const localCount = incrementLocalProblemViews(problemId);
   try {
@@ -771,3 +820,76 @@ export async function seedAllDefaultProblemsToFirestore(): Promise<void> {
     console.warn("Firestore problem seeding completed with local mirror:", err);
   }
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 19. User Startup Workspace Notes (Per-User Firestore & Local Storage Sync)
+// ─────────────────────────────────────────────────────────────────────────────
+export async function getUserStartupNotes(
+  problemId: string,
+  userId: string
+): Promise<UserStartupNotes | null> {
+  const localKey = `startup_notes_${userId}_${problemId}`;
+  const legacyKey = `startup_notes_${problemId}`;
+
+  // 1. Try local storage first for instant load
+  try {
+    const local = localStorage.getItem(localKey) || localStorage.getItem(legacyKey);
+    if (local) {
+      const parsed = JSON.parse(local);
+      if (parsed) return parsed;
+    }
+  } catch (e) {
+    console.warn("Error reading local startup notes:", e);
+  }
+
+  // 2. Try Firestore if user is authenticated
+  if (db && userId && userId !== "guest" && !userId.startsWith("anon_")) {
+    try {
+      const noteDocRef = doc(db, "users", userId, "startupNotes", problemId);
+      const snap = await getDoc(noteDocRef);
+      if (snap.exists()) {
+        const data = snap.data() as UserStartupNotes;
+        // Sync to local cache
+        try {
+          localStorage.setItem(localKey, JSON.stringify(data));
+        } catch {}
+        return data;
+      }
+    } catch (err) {
+      console.warn("Error loading startup notes from Firestore:", err);
+    }
+  }
+
+  return null;
+}
+
+export async function saveUserStartupNotes(
+  notes: UserStartupNotes
+): Promise<{ success: boolean }> {
+  const localKey = `startup_notes_${notes.userId}_${notes.problemId}`;
+  const legacyKey = `startup_notes_${notes.problemId}`;
+
+  // 1. Save to local storage for instant sync across tabs
+  try {
+    localStorage.setItem(localKey, JSON.stringify(notes));
+    localStorage.setItem(legacyKey, JSON.stringify(notes));
+  } catch (e) {
+    console.warn("Error caching startup notes locally:", e);
+  }
+
+  // 2. Save to Firestore if authenticated
+  if (db && notes.userId && notes.userId !== "guest" && !notes.userId.startsWith("anon_")) {
+    try {
+      const noteDocRef = doc(db, "users", notes.userId, "startupNotes", notes.problemId);
+      await setDoc(noteDocRef, {
+        ...notes,
+        updatedAtServer: serverTimestamp(),
+      }, { merge: true });
+    } catch (err) {
+      console.warn("Error saving startup notes to Firestore:", err);
+    }
+  }
+
+  return { success: true };
+}
+

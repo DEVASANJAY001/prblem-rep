@@ -26,7 +26,6 @@ import { cn } from "@/lib/utils";
 const navLinks = [
   { href: "/explore", label: "Explore", icon: Search },
   { href: "/industries", label: "Industries", icon: LayoutGrid },
-  { href: "/competitions", label: "Competitions", icon: Trophy },
   { href: "/community", label: "Community", icon: Users },
   { href: "/research", label: "Research", icon: BookOpen },
 ];

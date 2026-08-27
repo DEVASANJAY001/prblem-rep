@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { getProblemById } from "@/lib/firebase/services/problemsService";
-import { ProblemDoc } from "@/types";
+import { useAuth } from "@/contexts/AuthContext";
+import { getProblemById, getUserStartupNotes, saveUserStartupNotes } from "@/lib/firebase/services/problemsService";
+import { ProblemDoc, UserStartupNotes } from "@/types";
 import { LoadingContainer } from "@/components/common/LoadingContainer";
 import { UserAvatar } from "@/components/ui/UserAvatar";
 import {
@@ -18,11 +19,16 @@ import {
   Copy,
   Save,
   Users,
+  Rocket,
+  Clock,
+  Sparkles,
 } from "lucide-react";
 
 export const StartupMode: React.FC = () => {
   const { problemId } = useParams<{ problemId: string }>();
   const navigate = useNavigate();
+  const { user, userDoc } = useAuth();
+  const userId = userDoc?.uid || user?.uid || "guest";
 
   const [problem, setProblem] = useState<ProblemDoc | null>(null);
   const [loading, setLoading] = useState(true);
@@ -44,6 +50,8 @@ export const StartupMode: React.FC = () => {
   });
 
   const [savedNotes, setSavedNotes] = useState(false);
+  const [savingNotes, setSavingNotes] = useState(false);
+  const [lastSavedTime, setLastSavedTime] = useState<string | null>(null);
 
   useEffect(() => {
     if (!problemId) {
@@ -51,27 +59,26 @@ export const StartupMode: React.FC = () => {
       return;
     }
     let isMounted = true;
-    getProblemById(problemId).then((p) => {
+    getProblemById(problemId).then(async (p) => {
       if (isMounted) {
         setProblem(p);
         setLoading(false);
-        // Load any previously saved notes
-        const saved = localStorage.getItem(`startup_notes_${problemId}`);
-        if (saved) {
-          try {
-            const parsed = JSON.parse(saved);
-            if (parsed.valueProposition) setValueProposition(parsed.valueProposition);
-            if (parsed.selectedSegments) setSelectedSegments(parsed.selectedSegments);
-            if (parsed.selectedDirection) setSelectedDirection(parsed.selectedDirection);
-            if (parsed.validationChecklist) setValidationChecklist(parsed.validationChecklist);
-          } catch (e) {}
+
+        // Load previously saved notes for this user
+        const saved = await getUserStartupNotes(problemId, userId);
+        if (saved && isMounted) {
+          if (saved.valueProposition !== undefined) setValueProposition(saved.valueProposition);
+          if (saved.selectedSegments && saved.selectedSegments.length > 0) setSelectedSegments(saved.selectedSegments);
+          if (saved.selectedDirection) setSelectedDirection(saved.selectedDirection);
+          if (saved.validationChecklist) setValidationChecklist(saved.validationChecklist);
+          if (saved.savedAt) setLastSavedTime(saved.savedAt);
         }
       }
     });
     return () => {
       isMounted = false;
     };
-  }, [problemId]);
+  }, [problemId, userId]);
 
   const toggleSegment = (seg: string) => {
     setSelectedSegments((prev) =>
@@ -87,18 +94,24 @@ export const StartupMode: React.FC = () => {
     }
   };
 
-  const handleSaveNotes = () => {
+  const handleSaveNotes = async () => {
     if (!problemId) return;
-    const data = {
+    setSavingNotes(true);
+    const now = new Date().toISOString();
+    const notesPayload: UserStartupNotes = {
+      problemId,
+      userId,
       valueProposition,
       selectedSegments,
       selectedDirection,
       validationChecklist,
-      updatedAt: new Date().toISOString(),
+      savedAt: now,
     };
-    localStorage.setItem(`startup_notes_${problemId}`, JSON.stringify(data));
+    await saveUserStartupNotes(notesPayload);
+    setSavingNotes(false);
     setSavedNotes(true);
-    setTimeout(() => setSavedNotes(false), 2500);
+    setLastSavedTime(now);
+    setTimeout(() => setSavedNotes(false), 3000);
   };
 
   if (loading) {
@@ -127,6 +140,104 @@ export const StartupMode: React.FC = () => {
       </div>
     );
   }
+
+  const isStartupModeActive =
+    problem.hasStartupMode !== false &&
+    problem.startupModeEnabled !== false &&
+    problem.startupModeConfig?.enabled !== false;
+
+  if (!isStartupModeActive) {
+    return (
+      <div className="mx-auto max-w-2xl px-4 py-20 text-center font-['Poppins',sans-serif]">
+        <div className="w-16 h-16 rounded-full bg-surface-container text-on-surface-variant flex items-center justify-center mx-auto mb-4">
+          <Rocket className="w-8 h-8 opacity-40 text-on-surface-variant" />
+        </div>
+        <h2 className="text-xl md:text-2xl font-bold text-on-surface">Startup Mode Not Activated</h2>
+        <p className="mt-2 text-xs md:text-sm text-on-surface-variant max-w-md mx-auto leading-relaxed">
+          This problem statement does not currently have an active startup modeling canvas enabled.
+        </p>
+        <div className="mt-6 flex items-center justify-center gap-3">
+          <Link
+            to={`/problem/${problem.id}`}
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary text-white text-xs font-bold shadow-xs hover:bg-primary-container transition-all"
+          >
+            <ArrowLeft className="h-4 w-4" /> Back to Problem Statement
+          </Link>
+          <Link
+            to="/explore"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-surface-container text-on-surface text-xs font-bold hover:bg-surface-container-high transition-all"
+          >
+            Explore Other Problems
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  const availableSegments =
+    problem.startupModeConfig?.targetSegments && problem.startupModeConfig.targetSegments.length > 0
+      ? problem.startupModeConfig.targetSegments
+      : ["Rural Clinic Admins", "Local Specialists", "EMS Providers", "Independent Pharmacists"];
+
+  const avgWtp =
+    problem.startupModeConfig?.avgWillingnessToPay ||
+    problem.willingnessToPay ||
+    "$150/mo per practitioner";
+
+  const valPropPlaceholder =
+    problem.startupModeConfig?.valuePropositionDraft ||
+    "Draft your initial value proposition here... e.g. 'A lightweight PDF parser that categorizes incoming faxes and maps them to EHR FHIR schemas for rural clinic administrators.'";
+
+  const solutionsGaps =
+    problem.startupModeConfig?.existingSolutionsGaps &&
+    problem.startupModeConfig.existingSolutionsGaps.length > 0
+      ? problem.startupModeConfig.existingSolutionsGaps
+      : problem.competitorData && problem.competitorData.length > 0
+        ? problem.competitorData.map((c) => ({
+            name: c.solution,
+            description: c.pros,
+            weaknessType: "Weakness",
+            weakness: c.cons,
+          }))
+        : [
+            {
+              name: "Epic Care Everywhere",
+              description: "Industry standard for large enterprise hospital networks.",
+              weaknessType: "Weakness",
+              weakness: "Prohibitively expensive for independent rural clinics.",
+            },
+            {
+              name: "Direct Secure Messaging",
+              description: "Secure encrypted email protocol for certified healthcare providers.",
+              weaknessType: "Gap",
+              weakness: "Clunky UI, relies on manual entry and non-standard attachments.",
+            },
+          ];
+
+  const directions =
+    problem.startupModeConfig?.directionsToExplore &&
+    problem.startupModeConfig.directionsToExplore.length > 0
+      ? problem.startupModeConfig.directionsToExplore
+      : [
+          {
+            type: "software",
+            title: "Software Approach",
+            description: "Automated HL7 translation & cloud FHIR bridge.",
+          },
+          {
+            type: "service",
+            title: "Service-Based",
+            description: "Managed interoperability and compliance consulting.",
+          },
+          {
+            type: "hardware",
+            title: "Hardware Approach",
+            description: "Plug-and-play local edge caching appliance.",
+          },
+        ];
+
+  const tamValue = problem.marketData?.tam || problem.estimatedValue || "$1.5B";
+  const penetrationValue = problem.marketData?.currentPenetration || 35;
 
   const painScore = problem.painScore
     ? problem.painScore <= 10
@@ -246,10 +357,13 @@ export const StartupMode: React.FC = () => {
                   <div className="flex-1 w-full">
                     <div className="flex justify-between items-end mb-2">
                       <span className="text-xs font-semibold text-on-surface">Market Penetration</span>
-                      <span className="text-xs font-bold text-primary">35%</span>
+                      <span className="text-xs font-bold text-primary">{penetrationValue}%</span>
                     </div>
                     <div className="w-full bg-surface-container h-2.5 rounded-full overflow-hidden">
-                      <div className="bg-primary h-full rounded-full w-[35%] transition-all duration-1000" />
+                      <div
+                        className="bg-primary h-full rounded-full transition-all duration-1000"
+                        style={{ width: `${penetrationValue}%` }}
+                      />
                     </div>
                   </div>
                 </div>
@@ -261,25 +375,23 @@ export const StartupMode: React.FC = () => {
                   Which of these segments would you focus on first?
                 </h2>
                 <div className="flex flex-wrap gap-2.5 items-center">
-                  {["Rural Clinic Admins", "Local Specialists", "EMS Providers", "Independent Pharmacists"].map(
-                    (seg) => {
-                      const active = selectedSegments.includes(seg);
-                      return (
-                        <button
-                          key={seg}
-                          onClick={() => toggleSegment(seg)}
-                          className={`px-4 py-2 rounded-full border text-xs md:text-sm font-semibold transition-all cursor-pointer ${
-                            active
-                              ? "bg-primary text-white border-primary shadow-xs"
-                              : "border-outline-variant/50 bg-surface text-on-surface hover:bg-surface-container"
-                          }`}
-                        >
-                          {seg}
-                          {active && <Check className="inline-block w-3.5 h-3.5 ml-1.5 stroke-[3]" />}
-                        </button>
-                      );
-                    }
-                  )}
+                  {availableSegments.map((seg) => {
+                    const active = selectedSegments.includes(seg);
+                    return (
+                      <button
+                        key={seg}
+                        onClick={() => toggleSegment(seg)}
+                        className={`px-4 py-2 rounded-full border text-xs md:text-sm font-semibold transition-all cursor-pointer ${
+                          active
+                            ? "bg-primary text-white border-primary shadow-xs"
+                            : "border-outline-variant/50 bg-surface text-on-surface hover:bg-surface-container"
+                        }`}
+                      >
+                        {seg}
+                        {active && <Check className="inline-block w-3.5 h-3.5 ml-1.5 stroke-[3]" />}
+                      </button>
+                    );
+                  })}
 
                   {isAddingSegment ? (
                     <div className="inline-flex items-center gap-2">
@@ -320,7 +432,7 @@ export const StartupMode: React.FC = () => {
                       <Lightbulb className="w-4 h-4" /> Insight
                     </span>
                     <p className="text-on-surface-variant font-normal">
-                      Average willingness-to-pay identified: <strong className="text-on-surface font-semibold">$150/mo</strong> per practitioner.
+                      Average willingness-to-pay identified: <strong className="text-on-surface font-semibold">{avgWtp}</strong>.
                     </p>
                   </div>
                 </div>
@@ -329,7 +441,7 @@ export const StartupMode: React.FC = () => {
                   value={valueProposition}
                   onChange={(e) => setValueProposition(e.target.value)}
                   className="w-full min-h-[140px] p-4 rounded-xl border border-outline-variant/40 bg-surface text-on-surface text-xs md:text-sm focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none resize-y transition-all font-normal"
-                  placeholder="Draft your initial value proposition here... e.g. 'A lightweight PDF parser that categorizes incoming faxes and maps them to EHR FHIR schemas for rural clinic administrators.'"
+                  placeholder={valPropPlaceholder}
                 />
               </section>
 
@@ -339,37 +451,25 @@ export const StartupMode: React.FC = () => {
                   Existing Solutions & Gaps
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="border border-outline-variant/40 rounded-xl p-4 bg-surface flex flex-col gap-3">
-                    <div className="flex items-center gap-2">
-                      <Building className="w-4 h-4 text-on-surface-variant" />
-                      <h3 className="text-xs md:text-sm font-bold text-on-surface">Epic Care Everywhere</h3>
-                    </div>
-                    <p className="text-xs text-on-surface-variant font-normal">
-                      Industry standard for large enterprise hospital networks.
-                    </p>
-                    <div className="mt-auto pt-3 border-t border-outline-variant/30">
-                      <span className="text-[10px] font-bold text-error uppercase tracking-wider">Weakness</span>
-                      <p className="text-xs text-on-surface mt-0.5 font-normal">
-                        Prohibitively expensive for independent rural clinics.
+                  {solutionsGaps.map((gap, idx) => (
+                    <div key={idx} className="border border-outline-variant/40 rounded-xl p-4 bg-surface flex flex-col gap-3">
+                      <div className="flex items-center gap-2">
+                        <Building className="w-4 h-4 text-on-surface-variant" />
+                        <h3 className="text-xs md:text-sm font-bold text-on-surface">{gap.name}</h3>
+                      </div>
+                      <p className="text-xs text-on-surface-variant font-normal">
+                        {gap.description}
                       </p>
+                      <div className="mt-auto pt-3 border-t border-outline-variant/30">
+                        <span className="text-[10px] font-bold text-error uppercase tracking-wider">
+                          {gap.weaknessType || "Weakness / Gap"}
+                        </span>
+                        <p className="text-xs text-on-surface mt-0.5 font-normal">
+                          {gap.weakness}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-
-                  <div className="border border-outline-variant/40 rounded-xl p-4 bg-surface flex flex-col gap-3">
-                    <div className="flex items-center gap-2">
-                      <Mail className="w-4 h-4 text-on-surface-variant" />
-                      <h3 className="text-xs md:text-sm font-bold text-on-surface">Direct Secure Messaging</h3>
-                    </div>
-                    <p className="text-xs text-on-surface-variant font-normal">
-                      Secure encrypted email protocol for certified healthcare providers.
-                    </p>
-                    <div className="mt-auto pt-3 border-t border-outline-variant/30">
-                      <span className="text-[10px] font-bold text-error uppercase tracking-wider">Gap</span>
-                      <p className="text-xs text-on-surface mt-0.5 font-normal">
-                        Clunky UI, relies on manual entry and non-standard attachments.
-                      </p>
-                    </div>
-                  </div>
+                  ))}
                 </div>
               </section>
 
@@ -379,53 +479,33 @@ export const StartupMode: React.FC = () => {
                   Possible Directions to Explore
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  {/* Software Approach */}
-                  <div
-                    onClick={() => setSelectedDirection("software")}
-                    className={`border rounded-xl p-4 cursor-pointer transition-all relative overflow-hidden bg-surface ${
-                      selectedDirection === "software"
-                        ? "border-primary ring-2 ring-primary/20 shadow-xs"
-                        : "border-outline-variant/40 hover:border-primary/50"
-                    }`}
-                  >
-                    <Code className="w-5 h-5 text-primary mb-2" />
-                    <h3 className="text-xs md:text-sm font-bold text-on-surface">Software Approach</h3>
-                    <p className="text-xs text-on-surface-variant mt-1 font-normal">
-                      Automated HL7 translation & cloud FHIR bridge.
-                    </p>
-                  </div>
+                  {directions.map((dir, idx) => {
+                    const isSelected = selectedDirection === dir.type || (idx === 0 && !selectedDirection);
+                    const DirIcon =
+                      dir.type === "software"
+                        ? Code
+                        : dir.type === "service"
+                        ? Headphones
+                        : Server;
 
-                  {/* Service-Based */}
-                  <div
-                    onClick={() => setSelectedDirection("service")}
-                    className={`border rounded-xl p-4 cursor-pointer transition-all relative overflow-hidden bg-surface ${
-                      selectedDirection === "service"
-                        ? "border-primary ring-2 ring-primary/20 shadow-xs"
-                        : "border-outline-variant/40 hover:border-primary/50"
-                    }`}
-                  >
-                    <Headphones className="w-5 h-5 text-primary mb-2" />
-                    <h3 className="text-xs md:text-sm font-bold text-on-surface">Service-Based</h3>
-                    <p className="text-xs text-on-surface-variant mt-1 font-normal">
-                      Managed interoperability and compliance consulting.
-                    </p>
-                  </div>
-
-                  {/* Hardware Approach */}
-                  <div
-                    onClick={() => setSelectedDirection("hardware")}
-                    className={`border rounded-xl p-4 cursor-pointer transition-all relative overflow-hidden bg-surface ${
-                      selectedDirection === "hardware"
-                        ? "border-primary ring-2 ring-primary/20 shadow-xs"
-                        : "border-outline-variant/40 hover:border-primary/50"
-                    }`}
-                  >
-                    <Server className="w-5 h-5 text-primary mb-2" />
-                    <h3 className="text-xs md:text-sm font-bold text-on-surface">Hardware Approach</h3>
-                    <p className="text-xs text-on-surface-variant mt-1 font-normal">
-                      Plug-and-play local edge caching appliance.
-                    </p>
-                  </div>
+                    return (
+                      <div
+                        key={idx}
+                        onClick={() => setSelectedDirection(dir.type)}
+                        className={`border rounded-xl p-4 cursor-pointer transition-all relative overflow-hidden bg-surface ${
+                          isSelected
+                            ? "border-primary ring-2 ring-primary/20 shadow-xs"
+                            : "border-outline-variant/40 hover:border-primary/50"
+                        }`}
+                      >
+                        <DirIcon className="w-5 h-5 text-primary mb-2" />
+                        <h3 className="text-xs md:text-sm font-bold text-on-surface">{dir.title}</h3>
+                        <p className="text-xs text-on-surface-variant mt-1 font-normal leading-relaxed">
+                          {dir.description}
+                        </p>
+                      </div>
+                    );
+                  })}
                 </div>
               </section>
             </div>
@@ -440,11 +520,11 @@ export const StartupMode: React.FC = () => {
                 <div className="flex flex-col gap-3.5">
                   <div className="flex justify-between items-center pb-3 border-b border-outline-variant/30">
                     <span className="text-xs text-on-surface-variant font-medium">Total Addressable Market</span>
-                    <span className="text-base font-bold text-on-surface">$1.5B</span>
+                    <span className="text-base font-bold text-on-surface">{tamValue}</span>
                   </div>
                   <div className="flex justify-between items-center pb-3 border-b border-outline-variant/30">
                     <span className="text-xs text-on-surface-variant font-medium">Penetration</span>
-                    <span className="text-base font-bold text-on-surface">35%</span>
+                    <span className="text-base font-bold text-on-surface">{penetrationValue}%</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-xs text-on-surface-variant font-medium">Demand Signal</span>
@@ -544,19 +624,30 @@ export const StartupMode: React.FC = () => {
         </div>
 
         {/* ── Sticky Bottom Action Bar ──────────────────────────────────── */}
-        <div className="sticky bottom-0 w-full bg-surface/95 backdrop-blur-md border-t border-outline-variant/30 py-4 z-40 mt-8">
+        <div className="sticky bottom-0 w-full bg-surface/95 backdrop-blur-md border-t border-outline-variant/30 py-4 z-40 mt-8 shadow-md">
           <div className="max-w-[1280px] mx-auto px-4 md:px-12 flex flex-col sm:flex-row justify-between items-center gap-4">
             <div className="flex items-center gap-4 order-2 sm:order-1">
               <Link
                 to={`/problem/${problem.id}`}
-                className="bg-surface border border-outline-variant/40 text-on-surface text-xs font-bold px-5 py-2.5 rounded-xl hover:bg-surface-container transition-colors cursor-pointer"
+                className="bg-surface border border-outline-variant/40 text-on-surface text-xs font-bold px-5 py-2.5 rounded-xl hover:bg-surface-container transition-colors cursor-pointer flex items-center gap-1.5"
               >
-                Back to Problem
+                <ArrowLeft className="w-3.5 h-3.5" />
+                <span>Back to Problem</span>
               </Link>
+
+              {lastSavedTime && (
+                <div className="hidden md:flex items-center gap-1.5 text-[11px] text-on-surface-variant/80 font-medium">
+                  <Clock className="w-3.5 h-3.5 text-primary" />
+                  <span>
+                    Saved {new Date(lastSavedTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </span>
+                </div>
+              )}
             </div>
 
             <div className="flex items-center gap-3 order-1 sm:order-2 w-full sm:w-auto justify-between sm:justify-end">
               <button
+                type="button"
                 onClick={() => navigate("/community")}
                 className="flex items-center gap-2.5 border border-outline-variant/40 bg-surface px-4 py-2 rounded-xl hover:bg-surface-container transition-colors cursor-pointer"
               >
@@ -571,11 +662,29 @@ export const StartupMode: React.FC = () => {
               </button>
 
               <button
+                type="button"
                 onClick={handleSaveNotes}
-                className="bg-primary hover:bg-primary-container text-white text-xs font-bold px-6 py-2.5 rounded-xl transition-all shadow-sm cursor-pointer flex items-center gap-1.5"
+                disabled={savingNotes}
+                className={`text-xs font-bold px-6 py-2.5 rounded-xl transition-all shadow-sm cursor-pointer flex items-center gap-2 ${
+                  savedNotes
+                    ? "bg-emerald-600 text-white"
+                    : "bg-primary hover:bg-primary-container text-white"
+                }`}
               >
-                {savedNotes ? <Check className="w-4 h-4 stroke-[3]" /> : <Save className="w-4 h-4" />}
-                <span>{savedNotes ? "Notes Saved!" : "Save My Notes"}</span>
+                {savingNotes ? (
+                  <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                ) : savedNotes ? (
+                  <Check className="w-4 h-4 stroke-[3]" />
+                ) : (
+                  <Save className="w-4 h-4" />
+                )}
+                <span>
+                  {savingNotes
+                    ? "Saving..."
+                    : savedNotes
+                    ? "Notes Saved!"
+                    : "Save Notes"}
+                </span>
               </button>
             </div>
           </div>

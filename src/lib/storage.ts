@@ -10,6 +10,10 @@ import {
   AuditLogDoc,
   ProblemStatus,
   PageContent,
+  ProblemComment,
+  CommentReply,
+  ProblemValidations,
+  BadgeDoc,
 } from "@/types";
 import { doc, setDoc, deleteDoc } from "firebase/firestore";
 import { db } from "./firebase/config";
@@ -21,11 +25,12 @@ import {
   REAL_RESEARCH,
   REAL_FORMS,
   REAL_USERS,
+  REAL_BADGES,
 } from "@/data/realProductionData";
 import { INITIAL_SITE_CONTENT } from "@/data/initialContent";
 import { scoreProblemSubmission } from "./aiScoring";
 
-const STORAGE_KEYS = {
+export const STORAGE_KEYS = {
   PROBLEMS: "prblms_problems_v2",
   INDUSTRIES: "prblms_industries_v2",
   FORMS: "prblms_forms_v2",
@@ -37,10 +42,11 @@ const STORAGE_KEYS = {
   USERS: "prblms_users_v2",
   SITE_CONTENT: "prblms_site_content_v2",
   COMPANIES: "prblms_companies_v2",
+  BADGES: "prblms_badges_v2",
 };
 
 // Safe LocalStorage helpers
-function load<T>(key: string, fallback: T): T {
+export function load<T>(key: string, fallback: T): T {
   try {
     const raw = localStorage.getItem(key);
     if (!raw) return fallback;
@@ -50,7 +56,7 @@ function load<T>(key: string, fallback: T): T {
   }
 }
 
-function save<T>(key: string, data: T): void {
+export function save<T>(key: string, data: T): void {
   try {
     localStorage.setItem(key, JSON.stringify(data));
   } catch (err) {
@@ -74,6 +80,9 @@ export function initializeStorage() {
   }
   if (!localStorage.getItem(STORAGE_KEYS.SITE_CONTENT)) {
     save(STORAGE_KEYS.SITE_CONTENT, INITIAL_SITE_CONTENT);
+  }
+  if (!localStorage.getItem(STORAGE_KEYS.COMPANIES)) {
+    save(STORAGE_KEYS.COMPANIES, REAL_COMPANIES);
   }
   if (!localStorage.getItem(STORAGE_KEYS.AUDIT_LOGS)) {
     const initialLogs: AuditLogDoc[] = [
@@ -163,7 +172,27 @@ export function getProblemById(id: string): ProblemDoc | null {
   initializeStorage();
   const list = load<ProblemDoc[]>(STORAGE_KEYS.PROBLEMS, REAL_PROBLEMS);
   const found = list.find((p) => p.id === id);
-  if (found) return found;
+  if (found) {
+    const seed = REAL_PROBLEMS.find((p) => p.id === id);
+    if (seed) {
+      if (!found.evidenceDocuments || found.evidenceDocuments.length < (seed.evidenceDocuments?.length || 0) || !found.evidenceDocuments[0]?.description) {
+        found.evidenceDocuments = seed.evidenceDocuments;
+      }
+      if (!found.evidenceUrls || found.evidenceUrls.length < (seed.evidenceUrls?.length || 0)) {
+        found.evidenceUrls = seed.evidenceUrls;
+      }
+      if (!found.attachedCompanyNames && seed.attachedCompanyNames) {
+        found.attachedCompanyNames = seed.attachedCompanyNames;
+      }
+      // Purge any old seed mock comments so discussion stays real
+      if (found.comments && found.comments.some((c) => c.id === "com-1" || c.author === "Dr. Marcus Vance")) {
+        found.comments = found.comments.filter((c) => c.id !== "com-1" && c.id !== "com-2" && c.id !== "com-3" && c.id !== "com-4" && c.author !== "Dr. Marcus Vance");
+        found.commentsCount = found.comments.length;
+        save(STORAGE_KEYS.PROBLEMS, list);
+      }
+    }
+    return found;
+  }
   return REAL_PROBLEMS.find((p) => p.id === id) || null;
 }
 
@@ -1058,4 +1087,63 @@ export function deleteProblemFromStorage(problemId: string): boolean {
   const nextList = list.filter((p) => p.id !== problemId);
   save(STORAGE_KEYS.PROBLEMS, nextList);
   return true;
+}
+
+// ─────────────────────────────────────────────────────────────
+// Badges Storage Management
+// ─────────────────────────────────────────────────────────────
+export function getBadgesFromStorage(): BadgeDoc[] {
+  initializeStorage();
+  return load<BadgeDoc[]>(STORAGE_KEYS.BADGES, REAL_BADGES);
+}
+
+export function saveBadgeToStorage(badge: BadgeDoc): BadgeDoc {
+  initializeStorage();
+  const list = load<BadgeDoc[]>(STORAGE_KEYS.BADGES, REAL_BADGES);
+  const index = list.findIndex((b) => b.id === badge.id || b.slug === badge.slug);
+  if (index >= 0) {
+    list[index] = { ...list[index], ...badge, updatedAt: new Date().toISOString() };
+  } else {
+    list.unshift(badge);
+  }
+  save(STORAGE_KEYS.BADGES, list);
+  return badge;
+}
+
+export function deleteBadgeFromStorage(badgeId: string): boolean {
+  initializeStorage();
+  const list = load<BadgeDoc[]>(STORAGE_KEYS.BADGES, REAL_BADGES);
+  const nextList = list.filter((b) => b.id !== badgeId);
+  save(STORAGE_KEYS.BADGES, nextList);
+  return true;
+}
+
+export function grantBadgeToUserInStorage(uid: string, badgeName: string): UserDoc | null {
+  initializeStorage();
+  const users = load<UserDoc[]>(STORAGE_KEYS.USERS, REAL_USERS);
+  const index = users.findIndex((u) => u.uid === uid);
+  if (index >= 0) {
+    const currentBadges = users[index].badges || [];
+    if (!currentBadges.includes(badgeName)) {
+      users[index].badges = [...currentBadges, badgeName];
+      users[index].updatedAt = new Date().toISOString();
+      save(STORAGE_KEYS.USERS, users);
+    }
+    return users[index];
+  }
+  return null;
+}
+
+export function revokeBadgeFromUserInStorage(uid: string, badgeName: string): UserDoc | null {
+  initializeStorage();
+  const users = load<UserDoc[]>(STORAGE_KEYS.USERS, REAL_USERS);
+  const index = users.findIndex((u) => u.uid === uid);
+  if (index >= 0) {
+    const currentBadges = users[index].badges || [];
+    users[index].badges = currentBadges.filter((b) => b !== badgeName);
+    users[index].updatedAt = new Date().toISOString();
+    save(STORAGE_KEYS.USERS, users);
+    return users[index];
+  }
+  return null;
 }

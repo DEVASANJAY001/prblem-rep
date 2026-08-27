@@ -1,153 +1,103 @@
-import React from "react";
+import React, { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { ProblemDoc } from "@/types";
-import { UserAvatar } from "@/components/ui/UserAvatar";
+import { REAL_COMPANIES } from "@/data/realProductionData";
+import { CompanyLogo } from "@/components/ui/CompanyLogo";
+import { useAuth } from "@/contexts/AuthContext";
+import { isProblemBookmarked, toggleBookmark, voteProblem } from "@/lib/storage";
+import { ThumbsUp, Bookmark, ShieldCheck } from "lucide-react";
 
 interface TrendingProblemCardProps {
   problem: ProblemDoc;
   className?: string;
 }
 
-interface SolverCompany {
-  name: string;
-  icon: React.ReactNode;
-}
-
-const getIndustrySolvers = (industry: string): { companies: SolverCompany[]; totalCount: number } => {
-  const ind = industry.toLowerCase();
-
-  const googleIcon = (
-    <svg viewBox="0 0 24 24" className="w-3.5 h-3.5">
-      <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-      <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-      <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-      <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
-    </svg>
-  );
-
-  const msftIcon = (
-    <div className="grid grid-cols-2 gap-0.5 w-3 h-3">
-      <div className="bg-[#F25022] rounded-[0.5px]" />
-      <div className="bg-[#7FBA00] rounded-[0.5px]" />
-      <div className="bg-[#00A4EF] rounded-[0.5px]" />
-      <div className="bg-[#FFB900] rounded-[0.5px]" />
-    </div>
-  );
-
-  const amazonIcon = (
-    <span className="font-black text-[9px] text-[#FF9900] leading-none font-sans">a</span>
-  );
-
-  const metaIcon = (
-    <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 text-[#0081FB]" fill="currentColor">
-      <path d="M12 6.5C8.41 6.5 5.5 9.41 5.5 13c0 2.21 1.1 4.16 2.78 5.34l1.24-1.66C8.25 15.74 7.5 14.47 7.5 13c0-2.48 2.02-4.5 4.5-4.5s4.5 2.02 4.5 4.5c0 1.47-.75 2.74-2.02 3.68l1.24 1.66C17.4 17.16 18.5 15.21 18.5 13c0-3.59-2.91-6.5-6.5-6.5z" />
-    </svg>
-  );
-
-  const ibmIcon = (
-    <span className="font-black text-[7.5px] text-[#0530AD] font-mono leading-none">IBM</span>
-  );
-
-  const openAiIcon = (
-    <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 text-zinc-900" fill="currentColor">
-      <path d="M22.2819 9.8211a5.9847 5.9847 0 0 0-.5157-4.9108 6.0462 6.0462 0 0 0-6.5098-2.9A6.0651 6.0651 0 0 0 4.9807 4.1818a5.9847 5.9847 0 0 0-3.9977 2.9 6.0462 6.0462 0 0 0 .7427 7.0966 5.98 5.98 0 0 0 .511 4.9107 6.051 6.051 0 0 0 6.5146 2.9001A5.9847 5.9847 0 0 0 13.2599 24a6.0557 6.0557 0 0 0 5.7718-4.2058 5.9894 5.9894 0 0 0 3.9977-2.9001 6.0557 6.0557 0 0 0-.7475-7.0729z" />
-    </svg>
-  );
-
-  const stripeIcon = (
-    <span className="font-black text-[9px] text-[#635BFF] font-sans">S</span>
-  );
-
-  const healthIcon = (
-    <span className="font-bold text-[8px] text-[#E11D48] font-sans">Rx</span>
-  );
-
-  if (ind.includes("health") || ind.includes("bio") || ind.includes("medical")) {
-    return {
-      companies: [
-        { name: "Pfizer", icon: healthIcon },
-        { name: "Google Health", icon: googleIcon },
-        { name: "Microsoft Health", icon: msftIcon },
-        { name: "IBM Watson", icon: ibmIcon },
-        { name: "Amazon Health", icon: amazonIcon },
-      ],
-      totalCount: 24,
-    };
-  }
-
-  if (ind.includes("fintech") || ind.includes("hr") || ind.includes("payroll")) {
-    return {
-      companies: [
-        { name: "Stripe", icon: stripeIcon },
-        { name: "Google Cloud", icon: googleIcon },
-        { name: "Microsoft", icon: msftIcon },
-        { name: "Amazon AWS", icon: amazonIcon },
-        { name: "Meta", icon: metaIcon },
-      ],
-      totalCount: 19,
-    };
-  }
-
-  if (ind.includes("ai") || ind.includes("tech") || ind.includes("software")) {
-    return {
-      companies: [
-        { name: "OpenAI", icon: openAiIcon },
-        { name: "Google", icon: googleIcon },
-        { name: "Microsoft", icon: msftIcon },
-        { name: "Meta", icon: metaIcon },
-        { name: "IBM", icon: ibmIcon },
-      ],
-      totalCount: 31,
-    };
-  }
-
-  // Default / Agriculture / Energy / Others
-  return {
-    companies: [
-      { name: "Google", icon: googleIcon },
-      { name: "Microsoft", icon: msftIcon },
-      { name: "Amazon", icon: amazonIcon },
-      { name: "Meta", icon: metaIcon },
-      { name: "IBM", icon: ibmIcon },
-    ],
-    totalCount: 22,
-  };
-};
-
 export const TrendingProblemCard: React.FC<TrendingProblemCardProps> = ({
   problem,
   className = "",
 }) => {
-  // Normalize pain score (0 to 100)
-  const painScore = Math.min(
-    100,
-    Math.max(
-      1,
-      problem.painScore
-        ? problem.painScore <= 10
-          ? Math.round(problem.painScore * 10)
-          : problem.painScore
-        : 87
-    )
+  const { user } = useAuth();
+  const currentUid = user?.uid || "guest";
+
+  const [isSaved, setIsSaved] = useState<boolean>(() =>
+    isProblemBookmarked(problem.id, currentUid)
   );
+
+  const initialUpvotes = problem.votes?.upvotes ?? problem.upvotes ?? 0;
+  const [likesCount, setLikesCount] = useState<number>(initialUpvotes);
+  const [isLiked, setIsLiked] = useState<boolean>(problem.votes?.userVote === "up");
+  const [likeAnimating, setLikeAnimating] = useState<boolean>(false);
+
+  const handleLike = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setLikeAnimating(true);
+    setTimeout(() => setLikeAnimating(false), 500);
+    const res = voteProblem(problem.id, "up", currentUid);
+    setLikesCount(res.upvotes);
+    setIsLiked(res.userVote === "up");
+  };
+
+  const handleSave = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const nextSaved = toggleBookmark(problem.id, currentUid);
+    setIsSaved(nextSaved);
+  };
+
+  // Normalize pain score (0 to 100 raw, formatted as /10 decimal like in ProblemDetail)
+  const rawPain = Number(
+    problem.painScore ??
+    problem.aiScores?.painLevel ??
+    problem.aiScores?.painScore ??
+    87
+  );
+  const painNormalized = Math.min(100, Math.max(1, rawPain > 10 ? rawPain : Math.round(rawPain * 10)));
+  const painDecimal = (painNormalized / 10).toFixed(1);
 
   // SVG circular arc geometry with radius 28 (circumference = 2 * PI * 28 ≈ 175.93)
   const circumference = 175.93;
-  const strokeDashoffset = circumference - circumference * (painScore / 100);
+  const strokeDashoffset = circumference - circumference * (painNormalized / 100);
 
-  const industry = problem.industry || "Agriculture & Food";
-  const { companies, totalCount } = getIndustrySolvers(industry);
-  const remainingCount = totalCount > 5 ? totalCount - 5 : 0;
+  const industry = problem.industry || "General Industry";
+
+  // Real Companies Interested (Exact logic matching ProblemDetail.tsx)
+  const attachedCompanies = useMemo(() => {
+    const fromAttached = Array.isArray(problem.attachedCompanyNames) && problem.attachedCompanyNames.length > 0
+      ? problem.attachedCompanyNames
+      : (problem.tags?.filter((t) =>
+          REAL_COMPANIES.some((c) => c.name.toLowerCase() === t.toLowerCase())
+        ) || []);
+
+    const matchedList = fromAttached
+      .map((name) => {
+        const found = REAL_COMPANIES.find(
+          (c) => c.name.toLowerCase() === name.toLowerCase() || c.id === name
+        );
+        if (!found) return null;
+        return { name: found.name, logoUrl: found.logoUrl };
+      })
+      .filter(Boolean) as Array<{ name: string; logoUrl?: string }>;
+
+    if (matchedList.length > 0) return matchedList;
+
+    // Smart sector matching fallback using real company logos
+    const indLower = industry.toLowerCase();
+    return REAL_COMPANIES.filter((c) =>
+      (c.industry && indLower.includes(c.industry.toLowerCase().slice(0, 4))) ||
+      (c.name && ["Google", "Microsoft", "OpenAI", "Amazon"].includes(c.name))
+    ).slice(0, 3).map((c) => ({ name: c.name, logoUrl: c.logoUrl }));
+  }, [problem, industry]);
 
   // Severity Level for gradient calculation
-  const isCritical = painScore >= 90;
-  const isSevere = painScore >= 75 && painScore < 90;
+  const isCritical = painNormalized >= 90;
+  const isSevere = painNormalized >= 75 && painNormalized < 90;
 
-  // Pure Organic Database counts (Stable Monotonic Calculation)
+  // Pure Organic Database counts
   const rawViews = problem.views ?? 0;
   const views = rawViews >= 1000 ? `${(rawViews / 1000).toFixed(1)}K` : `${rawViews}`;
 
-  const faceCount = Math.max(problem.validations?.faceCount ?? 0, problem.votes?.upvotes ?? 0);
+  const faceCount = Math.max(problem.validations?.faceCount ?? 0, likesCount);
   const faceText = faceCount >= 1000 ? `${(faceCount / 1000).toFixed(1)}K` : `${faceCount}`;
 
   const comments = Math.max(
@@ -165,7 +115,7 @@ export const TrendingProblemCard: React.FC<TrendingProblemCardProps> = ({
       <div className="p-6 md:p-8 flex flex-col gap-4 flex-1 justify-between">
         {/* Header Section */}
         <header className="flex flex-col gap-3 w-full">
-          {/* Top Row: Category Pill + Separator + Company Icons Stack + Verified Icon */}
+          {/* Top Row: Category Pill + Company Logos + Like / Save Actions + Verified Checkmark */}
           <div className="flex items-center justify-between gap-3 w-full">
             <div className="flex items-center gap-2.5 min-w-0 flex-wrap sm:flex-nowrap">
               {/* Minimalist Category Pill */}
@@ -179,47 +129,78 @@ export const TrendingProblemCard: React.FC<TrendingProblemCardProps> = ({
               {/* Separator Line */}
               <div className="hidden sm:block w-px h-3.5 bg-gray-200 shrink-0"></div>
 
-              {/* Companies Trying to Solve This Problem */}
+              {/* Real Companies Interested */}
               <div className="flex items-center gap-1.5 shrink-0">
-                <div className="flex items-center -space-x-1.5">
-                  {companies.slice(0, 5).map((comp, idx) => (
-                    <div
-                      key={idx}
-                      className="w-6 h-6 rounded-full border-2 border-white bg-gray-50 shadow-2xs p-0.5 flex items-center justify-center overflow-hidden shrink-0"
-                      title={`${comp.name} is building solutions`}
-                    >
-                      {comp.icon}
-                    </div>
-                  ))}
-                  {remainingCount > 0 && (
-                    <div
-                      className="w-6 h-6 rounded-full border-2 border-white bg-[#f4f2ff] text-[#5c37eb] flex items-center justify-center text-[9px] font-bold z-10 shrink-0 shadow-2xs"
-                      title={`${totalCount} companies building solutions`}
-                    >
-                      +{remainingCount}
-                    </div>
-                  )}
-                </div>
+                {attachedCompanies.length > 0 ? (
+                  <div className="flex items-center -space-x-1.5">
+                    {attachedCompanies.slice(0, 4).map((comp, idx) => (
+                      <CompanyLogo
+                        key={idx}
+                        name={comp.name}
+                        logoUrl={comp.logoUrl}
+                        size="xs"
+                        className="w-5.5 h-5.5 shadow-2xs ring-1 ring-white"
+                      />
+                    ))}
+                    {attachedCompanies.length > 4 && (
+                      <div
+                        className="w-5.5 h-5.5 rounded-full bg-surface-container border border-gray-200/80 shadow-2xs flex items-center justify-center text-[9px] font-bold text-primary shrink-0"
+                        title={`${attachedCompanies.length} companies interested`}
+                      >
+                        +{attachedCompanies.length - 4}
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <span className="text-[10px] text-gray-400">Open Problem</span>
+                )}
               </div>
             </div>
 
-            {/* Verified Checkmark Icon Only */}
-            <div
-              className="flex items-center justify-center w-7 h-7 rounded-full bg-emerald-50 text-emerald-600 shrink-0 shadow-2xs border border-emerald-100/60"
-              title="Verified Problem"
-            >
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2.5"
-                viewBox="0 0 24 24"
+            {/* Interactive Actions Group: Like, Save & Verified Checkmark */}
+            <div className="flex items-center gap-2 shrink-0">
+              {/* Like / Upvote Button (Border-free Animated Thumbs Up: Gray if not liked, Blue if liked) */}
+              <button
+                type="button"
+                onClick={handleLike}
+                className={`inline-flex items-center gap-1 text-xs font-semibold transition-all cursor-pointer select-none active:scale-90 ${
+                  isLiked
+                    ? "text-blue-600 font-bold"
+                    : "text-gray-400 hover:text-blue-500"
+                }`}
+                title={isLiked ? "Liked" : "Like problem"}
               >
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                <polyline points="22 4 12 14.01 9 11.01"></polyline>
-              </svg>
+                <ThumbsUp
+                  className={`w-4 h-4 transition-all duration-300 ${
+                    isLiked
+                      ? "fill-blue-600 text-blue-600 scale-110"
+                      : "text-gray-400 hover:text-blue-500"
+                  } ${likeAnimating ? "animate-bounce scale-125" : ""}`}
+                />
+                <span className="font-mono text-xs">{likesCount}</span>
+              </button>
+
+              {/* Save / Bookmark Button */}
+              <button
+                type="button"
+                onClick={handleSave}
+                className={`w-7 h-7 rounded-full flex items-center justify-center border transition-all cursor-pointer ${
+                  isSaved
+                    ? "bg-primary/10 border-primary text-primary shadow-2xs"
+                    : "bg-surface-container-lowest border-outline-variant/30 text-on-surface-variant hover:border-primary/40 hover:text-primary"
+                }`}
+                title={isSaved ? "Saved to Bookmarks" : "Save problem statement"}
+              >
+                <Bookmark className={`w-3.5 h-3.5 ${isSaved ? "fill-primary text-primary" : ""}`} />
+              </button>
+
+              {/* Verified Checkmark Icon */}
+              <div
+                className="flex items-center justify-center w-7 h-7 rounded-full bg-emerald-50 text-emerald-600 shrink-0 shadow-2xs border border-emerald-100/60"
+                title="Verified Problem Statement"
+              >
+                <ShieldCheck className="w-4 h-4" />
+              </div>
             </div>
           </div>
 
@@ -231,7 +212,7 @@ export const TrendingProblemCard: React.FC<TrendingProblemCardProps> = ({
           </Link>
         </header>
 
-        {/* Main Content Area: Description + Redesigned Pain Score Widget */}
+        {/* Main Content Area: Description + Compact Pain Score Widget */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 py-2">
           {/* Description */}
           <p className="flex-1 text-gray-500 leading-relaxed text-xs md:text-[13px] font-normal line-clamp-3 pr-0 sm:pr-4">
@@ -239,12 +220,12 @@ export const TrendingProblemCard: React.FC<TrendingProblemCardProps> = ({
           </p>
 
           {/* Vertical Divider */}
-          <div className="hidden sm:block w-px h-20 bg-gray-100/90 shrink-0"></div>
+          <div className="hidden sm:block w-px h-16 bg-gray-100/90 shrink-0"></div>
 
-          {/* Clean Minimalist Pain Score Circle */}
+          {/* Compact Minimalist Pain Score Circle (Value only) */}
           <div className="flex flex-col items-center justify-center shrink-0 self-center sm:self-auto px-2">
             {/* Glowing Gradient Circle Gauge */}
-            <div className="relative w-16 h-16">
+            <div className="relative w-14 h-14">
               <svg className="w-full h-full -rotate-90" viewBox="0 0 72 72">
                 <defs>
                   <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="100%">
@@ -271,7 +252,7 @@ export const TrendingProblemCard: React.FC<TrendingProblemCardProps> = ({
                 {/* Background Ring Track */}
                 <circle
                   className="stroke-gray-100 fill-transparent"
-                  strokeWidth="4.5"
+                  strokeWidth="4"
                   cx="36"
                   cy="36"
                   r="28"
@@ -281,7 +262,7 @@ export const TrendingProblemCard: React.FC<TrendingProblemCardProps> = ({
                 <circle
                   stroke={`url(#${gradientId})`}
                   className="fill-transparent transition-all duration-1000 ease-out"
-                  strokeWidth="4.5"
+                  strokeWidth="4"
                   strokeLinecap="round"
                   cx="36"
                   cy="36"
@@ -291,19 +272,16 @@ export const TrendingProblemCard: React.FC<TrendingProblemCardProps> = ({
                 />
               </svg>
 
-              {/* Central Value */}
-              <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-lg font-bold text-gray-900 leading-none tracking-tight">
-                  {painScore}
-                </span>
-                <span className="text-[9px] text-gray-400 font-medium mt-0.5">
-                  /100
+              {/* Central Value Scaled for 10 points (value only) */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className="text-sm md:text-base font-extrabold text-gray-900 leading-none tracking-tight">
+                  {painDecimal}
                 </span>
               </div>
             </div>
 
             {/* Pain Score Label */}
-            <span className="text-[11px] text-gray-500 font-medium tracking-wide mt-1.5 whitespace-nowrap">
+            <span className="text-[10px] text-gray-500 font-medium tracking-wide mt-1 whitespace-nowrap">
               Pain Score
             </span>
           </div>
@@ -319,27 +297,27 @@ export const TrendingProblemCard: React.FC<TrendingProblemCardProps> = ({
             <span className="text-gray-400 text-[11px] font-normal">Views</span>
           </div>
 
-          <div className="w-px h-6 bg-gray-100"></div>
+          <div className="w-px h-4 bg-gray-100"></div>
 
-          {/* Face this */}
+          {/* Facing */}
           <div className="flex flex-col items-center flex-1">
             <span className="font-semibold text-gray-900 text-sm md:text-[15px] tracking-tight">
               {faceText}
             </span>
-            <span className="text-gray-400 text-[11px] font-normal">Face this</span>
+            <span className="text-gray-400 text-[11px] font-normal">Facing</span>
           </div>
 
-          <div className="w-px h-6 bg-gray-100"></div>
+          <div className="w-px h-4 bg-gray-100"></div>
 
-          {/* Building this */}
-          <div className="flex flex-col items-center flex-1 gap-0.5">
+          {/* Building */}
+          <div className="flex flex-col items-center flex-1">
             <span className="font-semibold text-gray-900 text-sm md:text-[15px] tracking-tight">
               {buildingCount}
             </span>
             <span className="text-gray-400 text-[11px] font-normal">Building</span>
           </div>
 
-          <div className="w-px h-6 bg-gray-100"></div>
+          <div className="w-px h-4 bg-gray-100"></div>
 
           {/* Comments */}
           <div className="flex flex-col items-center flex-1">

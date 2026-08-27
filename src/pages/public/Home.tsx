@@ -19,6 +19,16 @@ export const Home: React.FC = () => {
   const [loadingProblems, setLoadingProblems] = useState(true);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
+  const [homeSearchQuery, setHomeSearchQuery] = useState("");
+
+  const handleHomeSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (homeSearchQuery.trim()) {
+      navigate(`/explore?q=${encodeURIComponent(homeSearchQuery.trim())}`);
+    } else {
+      navigate("/explore");
+    }
+  };
 
   const checkScroll = () => {
     if (trendingScrollRef.current) {
@@ -104,9 +114,8 @@ export const Home: React.FC = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const gl =
-      canvas.getContext("webgl", { alpha: true, antialias: true }) ||
-      canvas.getContext("experimental-webgl", { alpha: true });
+    const gl = (canvas.getContext("webgl", { alpha: true, antialias: true }) ||
+      canvas.getContext("experimental-webgl", { alpha: true })) as WebGLRenderingContext | null;
     if (!gl) return;
 
     let animationFrameId: number;
@@ -315,10 +324,7 @@ export const Home: React.FC = () => {
               )}
 
               <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  navigate("/explore");
-                }}
+                onSubmit={handleHomeSearch}
                 className="w-full max-w-2xl relative shadow-2xl shadow-primary/10 rounded-2xl bg-surface-container-lowest/90 backdrop-blur-xl border border-outline-variant/30 hover:border-primary/50 focus-within:border-primary/80 focus-within:shadow-primary/20 transition-all duration-300 group"
               >
                 <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-purple-500/20 blur-lg -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-3xl" />
@@ -326,13 +332,15 @@ export const Home: React.FC = () => {
                   search
                 </span>
                 <input
+                  value={homeSearchQuery}
+                  onChange={(e) => setHomeSearchQuery(e.target.value)}
                   className="w-full pl-14 pr-36 py-4 md:py-4.5 bg-transparent focus:outline-none focus:ring-0 rounded-2xl font-body-lg text-body-lg text-on-surface placeholder-on-surface-variant/70 border-none"
                   placeholder={searchPlaceholder}
                   type="text"
                 />
                 <button
                   type="submit"
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 bg-on-surface text-surface px-6 py-2.5 rounded-xl font-label-md text-label-md hover:bg-primary active:scale-[0.98] transition-colors shadow-sm hover:shadow-md hover:shadow-primary/20"
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 bg-on-surface text-surface px-6 py-2.5 rounded-xl font-label-md text-label-md hover:bg-primary active:scale-[0.98] transition-colors shadow-sm hover:shadow-md hover:shadow-primary/20 cursor-pointer"
                 >
                   {searchBtnLabel}
                 </button>
@@ -857,107 +865,6 @@ export const Home: React.FC = () => {
             <div className="absolute bottom-1/4 right-10 w-3 h-3 rounded-full bg-primary-container blur-[2px] animate-bounce"></div>
           </section>
 
-          {/* Section 6: Featured Competitions */}
-          <section className="w-full py-24 bg-surface">
-            <div className="max-w-[1280px] mx-auto px-4 md:px-8">
-              <div className="flex flex-col md:flex-row items-start md:items-end justify-between mb-12 gap-6">
-                <div className="flex flex-col gap-3">
-                  <h2 className="font-headline-lg text-3xl md:text-4xl text-on-surface tracking-tight font-bold">
-                    Featured Competitions
-                  </h2>
-                  <p className="font-body-md text-lg text-on-surface-variant">
-                    Organizations actively funding solutions to these problems.
-                  </p>
-                </div>
-                <Link
-                  to="/competitions"
-                  className="font-label-md text-sm font-semibold text-primary hover:text-primary-container transition-colors flex items-center gap-1 group bg-primary/5 px-4 py-2 rounded-full hover:bg-primary/10"
-                >
-                  Explore bounties{" "}
-                  <span className="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">
-                    arrow_forward
-                  </span>
-                </Link>
-              </div>
-
-              <div className="flex flex-col gap-6">
-                <div className="group bg-surface-container-lowest rounded-2xl p-6 md:p-8 shadow-sm hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-1 transition-all duration-300 border border-outline-variant/20 hover:border-primary/30 flex flex-col md:flex-row items-start md:items-center gap-8 relative overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  <div
-                    className="w-20 h-20 rounded-2xl bg-surface-variant flex-shrink-0 bg-cover bg-center shadow-inner border border-outline-variant/10 relative z-10"
-                    data-alt="A minimalist tech company logo featuring a geometric shape in blue tones, corporate modern style"
-                    style={{
-                      backgroundImage: `url('https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=160&auto=format&fit=crop&q=80')`,
-                    }}
-                  />
-                  <div className="flex-grow flex flex-col gap-2 min-w-0 relative z-10">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="font-label-sm text-sm font-semibold text-on-surface-variant">
-                        TechCorp Global
-                      </span>
-                      <span className="material-symbols-outlined text-primary text-[16px]">
-                        verified
-                      </span>
-                    </div>
-                    <h3 className="font-headline-sm text-2xl font-bold text-on-surface truncate group-hover:text-primary transition-colors">
-                      Develop an efficient edge AI model for anomaly detection
-                    </h3>
-                    <p className="font-body-md text-base text-on-surface-variant truncate">
-                      Seeking a lightweight model under 5MB that maintains 95% accuracy on standard IoT
-                      sensor datasets.
-                    </p>
-                  </div>
-                  <div className="flex flex-row md:flex-col items-center md:items-end justify-between md:justify-center gap-4 md:gap-2 flex-shrink-0 w-full md:w-auto mt-4 md:mt-0 pt-6 md:pt-0 border-t md:border-none border-outline-variant/20 relative z-10">
-                    <span className="font-headline-lg text-3xl text-primary font-bold tracking-tight">
-                      $50,000
-                    </span>
-                    <span className="font-label-sm text-xs font-semibold text-on-surface-variant flex items-center gap-1.5 uppercase tracking-wider group-hover:text-primary/80 transition-colors">
-                      <span className="material-symbols-outlined text-[16px]">schedule</span> 14 days
-                      left
-                    </span>
-                  </div>
-                </div>
-
-                <div className="group bg-surface-container-lowest rounded-2xl p-6 md:p-8 shadow-sm hover:shadow-xl hover:shadow-secondary/10 hover:-translate-y-1 transition-all duration-300 border border-outline-variant/20 hover:border-secondary/30 flex flex-col md:flex-row items-start md:items-center gap-8 relative overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-r from-secondary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  <div
-                    className="w-20 h-20 rounded-2xl bg-surface-variant flex-shrink-0 bg-cover bg-center shadow-inner border border-outline-variant/10 relative z-10"
-                    data-alt="A minimalist green and earth-toned logo for an environmental agency, corporate modern style"
-                    style={{
-                      backgroundImage: `url('https://images.unsplash.com/photo-1497435334941-8c899ee9e8e9?w=160&auto=format&fit=crop&q=80')`,
-                    }}
-                  />
-                  <div className="flex-grow flex flex-col gap-2 min-w-0 relative z-10">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="font-label-sm text-sm font-semibold text-on-surface-variant">
-                        Global Enviro Trust
-                      </span>
-                      <span className="material-symbols-outlined text-primary text-[16px]">
-                        verified
-                      </span>
-                    </div>
-                    <h3 className="font-headline-sm text-2xl font-bold text-on-surface truncate group-hover:text-secondary transition-colors">
-                      Scalable method for micro-plastic filtration in municipal water
-                    </h3>
-                    <p className="font-body-md text-base text-on-surface-variant truncate">
-                      Looking for novel mechanical or biological filtration systems adaptable to
-                      existing water treatment facilities.
-                    </p>
-                  </div>
-                  <div className="flex flex-row md:flex-col items-center md:items-end justify-between md:justify-center gap-4 md:gap-2 flex-shrink-0 w-full md:w-auto mt-4 md:mt-0 pt-6 md:pt-0 border-t md:border-none border-outline-variant/20 relative z-10">
-                    <span className="font-headline-lg text-3xl text-primary font-bold tracking-tight group-hover:text-secondary transition-colors">
-                      $120,000
-                    </span>
-                    <span className="font-label-sm text-xs font-semibold text-on-surface-variant flex items-center gap-1.5 uppercase tracking-wider group-hover:text-secondary/80 transition-colors">
-                      <span className="material-symbols-outlined text-[16px]">schedule</span> 32 days
-                      left
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-
           {/* Section 7: Dark High-Impact CTA */}
           <section className="w-full py-32 bg-on-surface text-surface relative overflow-hidden">
             <div className="absolute inset-0 bg-primary/10 pointer-events-none" />
@@ -1023,8 +930,8 @@ export const Home: React.FC = () => {
               <Link to="/explore" className="text-body-md text-on-surface-variant hover:text-primary transition-colors">
                 Solutions
               </Link>
-              <Link to="/competitions" className="text-body-md text-on-surface-variant hover:text-primary transition-colors">
-                Pricing
+              <Link to="/industries" className="text-body-md text-on-surface-variant hover:text-primary transition-colors">
+                Industries
               </Link>
             </nav>
           </div>

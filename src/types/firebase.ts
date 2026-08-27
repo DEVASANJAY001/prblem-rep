@@ -26,6 +26,37 @@ export interface UserDoc {
   updatedAt: Timestamp;
 }
 
+export type BadgeTier = "bronze" | "silver" | "gold" | "platinum" | "diamond" | "legendary";
+export type BadgeCategory = "submission" | "research" | "venture" | "community" | "special";
+export type BadgeTaskType =
+  | "problems_submitted"
+  | "solutions_built"
+  | "votes_received"
+  | "evidence_attached"
+  | "tam_modeled"
+  | "comments_posted"
+  | "critical_problems"
+  | "bounties_joined"
+  | "manual_award";
+
+export interface BadgeDoc {
+  id: string;
+  name: string;
+  slug: string;
+  description: string;
+  iconName: string;
+  category: BadgeCategory;
+  tier: BadgeTier;
+  taskType: BadgeTaskType;
+  taskThreshold: number;
+  taskDescription: string;
+  isActive: boolean;
+  color?: string;
+  awardedCount?: number;
+  createdAt: Timestamp | string;
+  updatedAt?: Timestamp | string;
+}
+
 // ─────────────────────────────────────────────────────────────
 // problems/{id}
 // ─────────────────────────────────────────────────────────────
@@ -52,6 +83,15 @@ export interface AIScores {
   overall: number;
 }
 
+export interface EvidenceDocument {
+  title: string;
+  description?: string;
+  size?: string;
+  pages?: string;
+  url: string;
+  type?: "pdf" | "link" | "doc" | string;
+}
+
 export interface ProblemDoc {
   id: string;
   title: string;
@@ -64,6 +104,7 @@ export interface ProblemDoc {
   severity: ProblemSeverity;
   currentSolution: string;
   evidenceUrls: string[];
+  evidenceDocuments?: EvidenceDocument[];
   audienceSize: string;
   willingnessToPay: string;
   estimatedValue: string;

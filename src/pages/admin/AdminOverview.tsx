@@ -9,7 +9,7 @@ import {
   Building2,
   MessageSquare,
   FileText,
-  Trophy,
+  Award,
   Check,
   X,
   ArrowUp,
@@ -122,17 +122,17 @@ export const AdminOverview: React.FC = () => {
           </div>
         </div>
 
-        {/* Competitions */}
-        <div className="bg-surface-container-lowest rounded-xl p-6 shadow-sm border border-outline-variant/30 flex flex-col justify-between">
+        {/* Active Badges */}
+        <Link to="/admin/badges" className="bg-surface-container-lowest rounded-xl p-6 shadow-sm border border-outline-variant/30 flex flex-col justify-between hover:border-primary/40 transition-colors">
           <div className="flex justify-between items-start mb-4">
-            <span className="text-on-surface-variant font-label-md uppercase tracking-widest">Competitions</span>
-            <Trophy className="h-5 w-5 text-outline" />
+            <span className="text-on-surface-variant font-label-md uppercase tracking-widest">Active Badges</span>
+            <Award className="h-5 w-5 text-primary" />
           </div>
           <div className="flex items-baseline gap-2">
-            <span className="font-headline-lg text-headline-lg text-on-surface">12</span>
-            <span className="font-label-sm text-secondary font-semibold">Active</span>
+            <span className="font-headline-lg text-headline-lg text-on-surface">14</span>
+            <span className="font-label-sm text-primary font-semibold">Credentials</span>
           </div>
-        </div>
+        </Link>
       </div>
 
       {/* Recent Submissions Card Section */}

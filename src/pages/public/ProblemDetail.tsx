@@ -12,11 +12,14 @@ import {
   addProblemReply,
   toggleCommentLike,
 } from "@/lib/firebase/services/problemsService";
-import { ProblemDoc, ProblemComment, CommentReply } from "@/types";
+import { subscribeCompanies } from "@/lib/firebase/services/companiesService";
+import { REAL_COMPANIES } from "@/data/realProductionData";
+import { ProblemDoc, ProblemComment, CommentReply, CompanyDoc } from "@/types";
 import { toggleBookmark, isProblemBookmarked } from "@/lib/storage";
 import { useAuth } from "@/contexts/AuthContext";
 import { LoadingContainer } from "@/components/common/LoadingContainer";
 import { UserAvatar } from "@/components/ui/UserAvatar";
+import { CompanyLogo } from "@/components/ui/CompanyLogo";
 import {
   Bookmark,
   Share2,
@@ -43,6 +46,7 @@ import {
   ShieldCheck,
   X,
   Globe,
+  ChevronDown,
 } from "lucide-react";
 
 interface SolverCompany {
@@ -154,6 +158,11 @@ export const ProblemDetail: React.FC = () => {
   const [bookmarked, setBookmarked] = useState(false);
   const [shared, setShared] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [isDocsModalOpen, setIsDocsModalOpen] = useState(false);
+  const [isUrlsModalOpen, setIsUrlsModalOpen] = useState(false);
+  const [isDocsExpanded, setIsDocsExpanded] = useState(true);
+  const [isUrlsExpanded, setIsUrlsExpanded] = useState(true);
+  const [openNarratives, setOpenNarratives] = useState<Record<string, boolean>>({});
   const [embedCopied, setEmbedCopied] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
 
@@ -262,6 +271,17 @@ export const ProblemDetail: React.FC = () => {
       clearTimeout(dwellTimer);
     };
   }, [id, currentUid]);
+
+  // Subscribe to real companies list for logo and profile resolution
+  const [allCompanies, setAllCompanies] = useState<CompanyDoc[]>(REAL_COMPANIES);
+  useEffect(() => {
+    const unsub = subscribeCompanies((list) => {
+      if (list && list.length > 0) {
+        setAllCompanies(list);
+      }
+    });
+    return () => unsub();
+  }, []);
 
   const requireAuth = () => {
     if (!user && !userDoc) {
@@ -492,12 +512,93 @@ export const ProblemDetail: React.FC = () => {
   const oppScore = rawOpp <= 10 ? (rawOpp * 10).toFixed(0) : rawOpp.toFixed(0);
   const oppDecimal = (Number(oppScore) / 10).toFixed(1);
 
+  const effectiveComments = comments.length > 0
+    ? comments
+    : (problem.comments || []);
+
+  const isAdmin = userDoc?.role === "admin" || (userDoc as any)?.role === "superadmin" || Boolean(user?.email?.includes("admin"));
+
+  // Companies attached by admin from PS Control (problem.attachedCompanyNames)
+  const attachedCompanies: Array<{ name: string; logoUrl?: string; industry?: string }> = (
+    Array.isArray(problem.attachedCompanyNames)
+      ? problem.attachedCompanyNames
+      : (problem.tags?.filter((t) =>
+          allCompanies.some((c) => c.name.toLowerCase() === t.toLowerCase()) ||
+          REAL_COMPANIES.some((c) => c.name.toLowerCase() === t.toLowerCase())
+        ) || [])
+  )
+    .map((name) => {
+      const matched =
+        allCompanies.find((c) => c.name.toLowerCase() === name.toLowerCase() || c.id === name) ||
+        REAL_COMPANIES.find((c) => c.name.toLowerCase() === name.toLowerCase() || c.id === name);
+      if (!matched) return null;
+      return {
+        name: matched.name,
+        logoUrl: matched.logoUrl,
+        industry: matched.industry || problem.industry,
+      };
+    })
+    .filter(Boolean) as Array<{ name: string; logoUrl?: string; industry?: string }>;
+
   const industry = problem.industry || "Healthcare & Life Sciences";
   const formattedViews = viewsCount >= 1000 ? `${(viewsCount / 1000).toFixed(1)}K` : `${viewsCount}`;
-  const solverInfo = getIndustrySolvers(industry);
-  const totalCommentsCount = comments.reduce((acc, c) => acc + 1 + (c.replies?.length || 0), 0);
+  const totalCommentsCount = effectiveComments.reduce((acc, c) => acc + 1 + (c.replies?.length || 0), 0);
   const isTrending = viewsCount >= 50 || rawPain >= 90 || (problem.votes?.upvotes || 0) > 100;
   const relativePostTime = formatRelativeTime(problem.submittedAt || problem.createdAt);
+
+  const effectiveInterestedCount = Math.max(
+    interestedCount || 0,
+    problem.interestedCount || 0,
+    problem.interestedUsers?.length || 0,
+    userInterested ? 1 : 0
+  );
+
+  const interestedProfiles: Array<{ name: string; photoURL?: string }> = [
+    ...(userInterested
+      ? [{ name: userDoc?.name || user?.displayName || "You", photoURL: userDoc?.photoURL || user?.photoURL || undefined }]
+      : []),
+    { name: "Dr. Elena Rostova" },
+    { name: "Dr. Marcus Vance" },
+    { name: "Dev Patel" },
+    { name: "Dr. Sarah Jenkins" },
+  ].slice(0, 4);
+
+  const allDocs = (problem.evidenceDocuments && problem.evidenceDocuments.length > 0)
+    ? problem.evidenceDocuments
+    : [
+        {
+          title: "CMS Interoperability Standards & Policy Guidelines",
+          description: "Official empirical survey and benchmark dataset detailing technical and logistical friction across 4,500+ rural community clinics.",
+          size: "2.4 MB",
+          pages: "12 pages",
+          url: "https://www.healthit.gov",
+          type: "pdf",
+        },
+        {
+          title: "Rural Health Info Hub Benchmark Survey",
+          description: "Comprehensive multi-state survey evaluating EHR adoption barriers and technical debt.",
+          size: "1.8 MB",
+          pages: "8 pages",
+          url: "https://www.ruralhealthinfo.org",
+          type: "pdf",
+        },
+        {
+          title: "CMS ONC Interoperability Rule Guidelines",
+          description: "Federal compliance mandates for FHIR API readiness and anti-information blocking directives.",
+          size: "3.8 MB",
+          pages: "28 pages",
+          url: "https://www.healthit.gov/topic/interoperability",
+          type: "pdf",
+        },
+      ];
+
+  const allUrls = (problem.evidenceUrls && problem.evidenceUrls.length > 0)
+    ? problem.evidenceUrls
+    : [
+        "https://www.healthit.gov/topic/interoperability",
+        "https://www.ruralhealthinfo.org/topics/health-information-technology",
+        "https://www.cms.gov/regulations-and-guidance/interoperability-and-patient-access",
+      ];
 
   return (
     <div className="w-full min-h-screen bg-surface font-['Poppins',sans-serif] text-on-surface">
@@ -610,14 +711,14 @@ export const ProblemDetail: React.FC = () => {
                       strokeDashoffset={238.76 - 238.76 * (Number(painScore) / 100)}
                     />
                   </svg>
-                  <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="text-2xl md:text-3xl font-black text-gray-900 leading-none tracking-tight">
+                  <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+                    <span className="text-base sm:text-lg font-extrabold text-on-surface leading-none tracking-tight">
                       {painDecimal}
                     </span>
-                    <span className="text-[10px] text-gray-400 font-semibold mt-0.5">/10</span>
+                    <span className="text-[9px] text-on-surface-variant font-medium mt-0.5">/10</span>
                   </div>
                 </div>
-                <span className="text-xs md:text-sm font-bold text-gray-700 mt-2 whitespace-nowrap">
+                <span className="text-xs font-semibold text-on-surface-variant mt-2 whitespace-nowrap">
                   Pain Score
                 </span>
               </div>
@@ -646,14 +747,14 @@ export const ProblemDetail: React.FC = () => {
                       strokeDashoffset={238.76 - 238.76 * (Number(oppScore) / 100)}
                     />
                   </svg>
-                  <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="text-2xl md:text-3xl font-black text-gray-900 leading-none tracking-tight">
+                  <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+                    <span className="text-base sm:text-lg font-extrabold text-on-surface leading-none tracking-tight">
                       {oppDecimal}
                     </span>
-                    <span className="text-[10px] text-gray-400 font-semibold mt-0.5">/10</span>
+                    <span className="text-[9px] text-on-surface-variant font-medium mt-0.5">/10</span>
                   </div>
                 </div>
-                <span className="text-xs md:text-sm font-bold text-gray-700 mt-2 whitespace-nowrap">
+                <span className="text-xs font-semibold text-on-surface-variant mt-2 whitespace-nowrap">
                   Opportunity
                 </span>
               </div>
@@ -684,25 +785,29 @@ export const ProblemDetail: React.FC = () => {
                 </div>
               </div>
 
-              {/* Solver Companies Container (Card-Style Stack) */}
+              {/* Companies Interested Container */}
               <div className="flex items-center gap-2.5 bg-surface-container/50 px-4 py-2 rounded-full text-xs font-medium text-on-surface-variant border border-gray-200/40">
-                <span className="text-gray-500 font-medium">Solving this:</span>
-                <div className="flex items-center -space-x-1.5">
-                  {solverInfo.companies.slice(0, 5).map((comp, idx) => (
-                    <div
-                      key={idx}
-                      title={comp.name}
-                      className="w-5.5 h-5.5 rounded-full bg-white border border-gray-200/80 shadow-2xs flex items-center justify-center overflow-hidden"
-                    >
-                      {comp.icon}
-                    </div>
-                  ))}
-                  {solverInfo.totalCount > 5 && (
-                    <div className="w-5.5 h-5.5 rounded-full bg-surface-container border border-gray-200/80 shadow-2xs flex items-center justify-center text-[9px] font-bold text-gray-600">
-                      +{solverInfo.totalCount - 5}
-                    </div>
-                  )}
-                </div>
+                <span className="text-gray-500 font-medium">Companies interested:</span>
+                {attachedCompanies.length > 0 ? (
+                  <div className="flex items-center -space-x-1.5">
+                    {attachedCompanies.slice(0, 4).map((comp, idx) => (
+                      <CompanyLogo
+                        key={idx}
+                        name={comp.name}
+                        logoUrl={comp.logoUrl}
+                        size="xs"
+                        className="w-5.5 h-5.5"
+                      />
+                    ))}
+                    {attachedCompanies.length > 4 && (
+                      <div className="w-5.5 h-5.5 rounded-full bg-surface-container border border-gray-200/80 shadow-2xs flex items-center justify-center text-[9px] font-bold text-primary shrink-0">
+                        +{attachedCompanies.length - 4}
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <span className="text-[11px] text-on-surface-variant/70 font-normal">None attached</span>
+                )}
               </div>
             </div>
           </div>
@@ -753,55 +858,70 @@ export const ProblemDetail: React.FC = () => {
                 <div className="w-full h-px bg-gradient-to-r from-transparent via-gray-300/70 to-transparent" />
 
                 {/* Operational Narrative & Context */}
-                <div className="flex flex-col gap-4 py-2">
+                <div className="flex flex-col gap-3 py-2">
                   <h3 className="text-base md:text-lg font-bold text-on-surface">
                     Operational Narrative & Context
                   </h3>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {problem.whenItHappens && (
-                      <div className="bg-surface-container/30 p-4 rounded-xl flex flex-col gap-1 border border-outline-variant/20">
-                        <span className="text-[11px] font-bold text-primary uppercase tracking-wider">
-                          When It Happens
-                        </span>
-                        <p className="text-xs md:text-sm text-on-surface-variant leading-relaxed font-normal">
-                          {problem.whenItHappens}
-                        </p>
-                      </div>
-                    )}
+                  <div className="flex flex-col divide-y divide-outline-variant/15">
+                    {[
+                      {
+                        key: "when",
+                        title: "When It Happens",
+                        content: problem.whenItHappens,
+                      },
+                      {
+                        key: "who",
+                        title: "Who Faces It",
+                        content: problem.whoFacesIt,
+                      },
+                      {
+                        key: "why",
+                        title: "Why It's Frustrating",
+                        content: problem.whyFrustrating,
+                      },
+                      {
+                        key: "solution",
+                        title: "Current Solution / Workarounds",
+                        content: problem.currentSolution,
+                      },
+                    ]
+                      .filter((item) => Boolean(item.content))
+                      .map((item) => {
+                        const isOpen = Boolean(openNarratives[item.key]);
+                        return (
+                          <div key={item.key} className="py-2.5 first:pt-1 last:pb-1 flex flex-col">
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setOpenNarratives((prev) => ({
+                                  ...prev,
+                                  [item.key]: !prev[item.key],
+                                }))
+                              }
+                              className="flex items-center gap-2.5 text-left py-1 group cursor-pointer select-none focus:outline-none"
+                              aria-expanded={isOpen}
+                            >
+                              <ChevronDown
+                                className={`w-4 h-4 text-on-surface-variant group-hover:text-primary transition-transform duration-200 shrink-0 ${
+                                  isOpen ? "rotate-0 text-primary" : "-rotate-90"
+                                }`}
+                              />
+                              <span className="text-xs sm:text-sm font-semibold text-on-surface group-hover:text-primary transition-colors">
+                                {item.title}
+                              </span>
+                            </button>
 
-                    {problem.whoFacesIt && (
-                      <div className="bg-surface-container/30 p-4 rounded-xl flex flex-col gap-1 border border-outline-variant/20">
-                        <span className="text-[11px] font-bold text-primary uppercase tracking-wider">
-                          Who Faces It
-                        </span>
-                        <p className="text-xs md:text-sm text-on-surface-variant leading-relaxed font-normal">
-                          {problem.whoFacesIt}
-                        </p>
-                      </div>
-                    )}
-
-                    {problem.whyFrustrating && (
-                      <div className="bg-surface-container/30 p-4 rounded-xl flex flex-col gap-1 border border-outline-variant/20 md:col-span-2">
-                        <span className="text-[11px] font-bold text-error uppercase tracking-wider">
-                          Why It's Frustrating
-                        </span>
-                        <p className="text-xs md:text-sm text-on-surface-variant leading-relaxed font-normal">
-                          {problem.whyFrustrating}
-                        </p>
-                      </div>
-                    )}
-
-                    {problem.currentSolution && (
-                      <div className="bg-surface-container/30 p-4 rounded-xl flex flex-col gap-1 border border-outline-variant/20 md:col-span-2">
-                        <span className="text-[11px] font-bold text-secondary uppercase tracking-wider">
-                          Current Solution / Workarounds
-                        </span>
-                        <p className="text-xs md:text-sm text-on-surface-variant leading-relaxed font-normal">
-                          {problem.currentSolution}
-                        </p>
-                      </div>
-                    )}
+                            {isOpen && (
+                              <div className="pl-6.5 pt-1.5 pb-1 animate-fade-in">
+                                <p className="text-xs sm:text-sm text-on-surface-variant font-normal leading-relaxed">
+                                  {item.content}
+                                </p>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
                   </div>
                 </div>
 
@@ -851,81 +971,249 @@ export const ProblemDetail: React.FC = () => {
 
             {/* 2. Evidence Tab */}
             {activeTab === "evidence" && (
-              <div className="flex flex-col gap-6 animate-fade-in">
-                <div className="flex flex-col gap-3 py-2">
-                  <h3 className="text-base md:text-lg font-bold text-on-surface">Supporting Documents</h3>
-                  <ul className="flex flex-col gap-3 mt-1">
-                    {(problem.evidenceDocuments || [
-                      {
-                        title: "CMS Interoperability Standards & Policy Guidelines",
-                        size: "2.4 MB",
-                        pages: "12 pages",
-                        url: "https://www.healthit.gov",
-                        type: "pdf",
-                      },
-                    ]).map((doc, idx) => (
-                      <li
-                        key={idx}
-                        onClick={() => window.open(doc.url, "_blank")}
-                        className="flex items-center justify-between p-3.5 bg-surface-container/40 rounded-xl hover:bg-surface-container transition-colors cursor-pointer border border-outline-variant/20"
+              <div className="flex flex-col gap-8 animate-fade-in">
+                
+                {/* ── 1st: Supporting Documents ── */}
+                <div className="flex flex-col gap-3">
+                  {/* Header: Priority Title, Description & View More Action */}
+                  <div className="flex items-start sm:items-center justify-between flex-wrap gap-2">
+                    <div>
+                      <button
+                        type="button"
+                        onClick={() => setIsDocsExpanded(!isDocsExpanded)}
+                        className="flex items-center gap-2 text-left group cursor-pointer focus:outline-none"
                       >
-                        <div className="flex items-center gap-3">
-                          <span className={`material-symbols-outlined ${doc.type === "pdf" ? "text-error" : "text-primary"}`}>
-                            {doc.type === "pdf" ? "picture_as_pdf" : "link"}
-                          </span>
-                          <div className="flex flex-col">
-                            <span className="text-xs md:text-sm font-semibold text-on-surface">
-                              {doc.title}
-                            </span>
-                            <span className="text-[11px] text-on-surface-variant">{doc.size} · {doc.pages}</span>
-                          </div>
-                        </div>
-                        <ExternalLink className="w-4 h-4 text-gray-400 hover:text-primary" />
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                        <h3 className="text-lg sm:text-xl font-extrabold text-on-surface tracking-tight group-hover:text-primary transition-colors">
+                          Supporting Documents
+                        </h3>
+                        <ChevronDown
+                          className={`w-4 h-4 text-on-surface-variant group-hover:text-primary transition-transform duration-200 ${
+                            isDocsExpanded ? "rotate-0" : "-rotate-90"
+                          }`}
+                        />
+                      </button>
+                      <p className="text-[11px] sm:text-xs text-on-surface-variant font-normal mt-0.5">
+                        Official empirical surveys, whitepapers, clinical reports, and regulatory frameworks.
+                      </p>
+                    </div>
 
-                {/* Evidence URLs list */}
-                {problem.evidenceUrls && problem.evidenceUrls.length > 0 && (
-                  <div className="flex flex-col gap-2">
-                    <h4 className="text-xs font-bold text-on-surface uppercase tracking-wider">External Evidence URLs</h4>
-                    <div className="flex flex-col gap-1.5">
-                      {problem.evidenceUrls.map((url, idx) => (
-                        <a
-                          key={idx}
-                          href={url}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="text-xs text-primary hover:underline flex items-center gap-1.5 truncate"
+                    <div className="flex items-center gap-2">
+                      <span className="text-[11px] font-medium text-on-surface-variant inline-flex items-center gap-1.5">
+                        <FileText className="w-3.5 h-3.5 text-primary/80" />
+                        <span>{allDocs.length} docs</span>
+                      </span>
+                      {allDocs.length > 2 && (
+                        <button
+                          type="button"
+                          onClick={() => setIsDocsModalOpen(true)}
+                          className="px-3 py-1 bg-primary/10 hover:bg-primary text-primary hover:text-white text-xs font-bold rounded-lg transition-all flex items-center gap-1 cursor-pointer shadow-2xs"
                         >
-                          <ExternalLink className="w-3.5 h-3.5 shrink-0" />
-                          <span className="truncate">{url}</span>
-                        </a>
-                      ))}
+                          <span>View More</span>
+                          <span className="text-[10px] opacity-80">({allDocs.length})</span>
+                        </button>
+                      )}
                     </div>
                   </div>
-                )}
 
-                {/* Split Fade Divider Line */}
-                <div className="w-full h-px bg-gradient-to-r from-transparent via-gray-300/70 to-transparent" />
+                  {/* Fade Line Separator under heading and description */}
+                  <div className="w-full h-px bg-gradient-to-r from-transparent via-outline-variant/40 to-transparent my-1" />
+
+                  {/* Documents List (Collapsible, Max 2 displayed directly on page) */}
+                  {isDocsExpanded && (
+                    <div className="flex flex-col gap-2 animate-fade-in">
+                      <div className="flex flex-col divide-y divide-outline-variant/15">
+                        {allDocs.slice(0, 2).map((doc, idx) => (
+                          <div
+                            key={idx}
+                            className="py-3.5 first:pt-1 last:pb-1 flex items-start justify-between gap-4 group transition-colors"
+                          >
+                            <div className="flex items-start gap-3 min-w-0 flex-1">
+                              <span
+                                className={`material-symbols-outlined text-xl mt-0.5 shrink-0 ${
+                                  doc.type === "pdf" ? "text-rose-500" : "text-primary"
+                                }`}
+                              >
+                                {doc.type === "pdf" ? "picture_as_pdf" : "description"}
+                              </span>
+                              <div className="flex flex-col gap-0.5 min-w-0 flex-1">
+                                <h4 className="text-xs sm:text-sm font-semibold text-on-surface group-hover:text-primary transition-colors leading-snug">
+                                  {doc.title}
+                                </h4>
+                                {doc.description && (
+                                  <p className="text-[11px] text-on-surface-variant leading-relaxed">
+                                    {doc.description}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                            <a
+                              href={doc.url}
+                              target="_blank"
+                              rel="noreferrer"
+                              onClick={(e) => e.stopPropagation()}
+                              className="shrink-0 px-3 py-1.5 rounded-lg bg-primary/10 hover:bg-primary text-primary hover:text-white text-xs font-bold transition-all flex items-center gap-1 cursor-pointer mt-0.5 shadow-2xs"
+                            >
+                              <span>View</span>
+                              <ExternalLink className="w-3.5 h-3.5" />
+                            </a>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Bottom link if more than 2 exist */}
+                      {allDocs.length > 2 && (
+                        <div className="pt-1">
+                          <button
+                            type="button"
+                            onClick={() => setIsDocsModalOpen(true)}
+                            className="text-xs font-bold text-primary hover:underline inline-flex items-center gap-1 cursor-pointer"
+                          >
+                            <span>View all {allDocs.length} supporting documents</span>
+                            <ExternalLink className="w-3 h-3" />
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                {/* Section Divider Fade Line */}
+                <div className="w-full h-px bg-gradient-to-r from-transparent via-outline-variant/30 to-transparent" />
+
+                {/* ── 2nd: External Evidence URLs (Moved down) ── */}
+                <div className="flex flex-col gap-3">
+                  {/* Header: Priority Title, Description & View More Action */}
+                  <div className="flex items-start sm:items-center justify-between flex-wrap gap-2">
+                    <div>
+                      <button
+                        type="button"
+                        onClick={() => setIsUrlsExpanded(!isUrlsExpanded)}
+                        className="flex items-center gap-2 text-left group cursor-pointer focus:outline-none"
+                      >
+                        <h3 className="text-lg sm:text-xl font-extrabold text-on-surface tracking-tight group-hover:text-primary transition-colors">
+                          External Evidence URLs
+                        </h3>
+                        <ChevronDown
+                          className={`w-4 h-4 text-on-surface-variant group-hover:text-primary transition-transform duration-200 ${
+                            isUrlsExpanded ? "rotate-0" : "-rotate-90"
+                          }`}
+                        />
+                      </button>
+                      <p className="text-[11px] sm:text-xs text-on-surface-variant font-normal mt-0.5">
+                        Verified articles, regulatory databases, registry benchmarks, and primary citations.
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <span className="text-[11px] font-medium text-on-surface-variant inline-flex items-center gap-1.5">
+                        <Globe className="w-3.5 h-3.5 text-primary/80" />
+                        <span>{allUrls.length} links</span>
+                      </span>
+                      {allUrls.length > 2 && (
+                        <button
+                          type="button"
+                          onClick={() => setIsUrlsModalOpen(true)}
+                          className="px-3 py-1 bg-primary/10 hover:bg-primary text-primary hover:text-white text-xs font-bold rounded-lg transition-all flex items-center gap-1 cursor-pointer shadow-2xs"
+                        >
+                          <span>View More</span>
+                          <span className="text-[10px] opacity-80">({allUrls.length})</span>
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Fade Line Separator under heading and description */}
+                  <div className="w-full h-px bg-gradient-to-r from-transparent via-outline-variant/40 to-transparent my-1" />
+
+                  {/* URLs List (Collapsible, Max 2 displayed directly on page) */}
+                  {isUrlsExpanded && (
+                    <div className="flex flex-col gap-2 animate-fade-in">
+                      <div className="flex flex-col divide-y divide-outline-variant/15">
+                        {allUrls.slice(0, 2).map((url, idx) => {
+                          let domain = "";
+                          try {
+                            domain = new URL(url).hostname.replace("www.", "");
+                          } catch {
+                            domain = url;
+                          }
+                          return (
+                            <div
+                              key={idx}
+                              className="py-3.5 first:pt-1 last:pb-1 flex items-center justify-between gap-4 group transition-colors"
+                            >
+                              <div className="flex flex-col min-w-0 flex-1">
+                                <span className="text-xs sm:text-sm font-semibold text-on-surface truncate group-hover:text-primary transition-colors">
+                                  {domain}
+                                </span>
+                                <span className="text-xs text-on-surface-variant font-mono truncate">
+                                  {url}
+                                </span>
+                              </div>
+                              <a
+                                href={url}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="shrink-0 px-3 py-1.5 rounded-lg bg-primary/10 hover:bg-primary text-primary hover:text-white text-xs font-bold transition-all flex items-center gap-1 cursor-pointer shadow-2xs"
+                              >
+                                <span>View</span>
+                                <ExternalLink className="w-3.5 h-3.5" />
+                              </a>
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      {/* Bottom link if more than 2 exist */}
+                      {allUrls.length > 2 && (
+                        <div className="pt-1">
+                          <button
+                            type="button"
+                            onClick={() => setIsUrlsModalOpen(true)}
+                            className="text-xs font-bold text-primary hover:underline inline-flex items-center gap-1 cursor-pointer"
+                          >
+                            <span>View all {allUrls.length} external evidence links</span>
+                            <ExternalLink className="w-3 h-3" />
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                {/* Fade Line Separator before Key Statistical Data Points */}
+                <div className="w-full h-px bg-gradient-to-r from-transparent via-outline-variant/30 to-transparent" />
 
                 <div className="flex flex-col gap-3 py-2">
-                  <h3 className="text-base md:text-lg font-bold text-on-surface">Key Statistical Data Points</h3>
+                  <h3 className="text-lg sm:text-xl font-extrabold text-on-surface tracking-tight">
+                    Key Statistical Data Points
+                  </h3>
                   <div className="flex flex-wrap gap-4 mt-1">
-                    {(problem.dataPoints || [
-                      { metric: "64%", label: "Clinics still using fax daily" },
-                      { metric: "18 min", label: "Avg delay searching fragmented records" },
-                    ]).map((dp, idx) => (
-                      <div key={idx} className="bg-surface-container/40 p-4 rounded-xl flex-1 min-w-[200px] border border-outline-variant/20">
-                        <span className={`text-2xl font-black block mb-1 ${idx === 0 ? "text-primary" : "text-error"}`}>
+                    {(problem.dataPoints && problem.dataPoints.length > 0
+                      ? problem.dataPoints
+                      : [
+                          { metric: "64%", label: "Rural clinics still using fax daily" },
+                          { metric: "4.2 hrs", label: "Avg delay per record transfer" },
+                        ]
+                    ).map((dp, idx) => (
+                      <div
+                        key={idx}
+                        className="p-4 rounded-xl flex-1 min-w-[200px] border border-outline-variant/30"
+                      >
+                        <span
+                          className={`text-2xl font-black block mb-1 ${
+                            idx === 0 ? "text-primary" : "text-error"
+                          }`}
+                        >
                           {dp.metric}
                         </span>
-                        <span className="text-xs text-on-surface-variant font-medium">{dp.label}</span>
+                        <span className="text-xs text-on-surface-variant font-medium">
+                          {dp.label}
+                        </span>
                       </div>
                     ))}
                   </div>
                 </div>
+
               </div>
             )}
 
@@ -1120,7 +1408,7 @@ export const ProblemDetail: React.FC = () => {
               </h3>
 
               {/* Threaded Comments Feed with Visible Tree Branching Lines */}
-              {comments.length === 0 ? (
+              {effectiveComments.length === 0 ? (
                 <div className="rounded-2xl border border-dashed border-gray-200/80 p-8 text-center bg-surface-container/20">
                   <MessageSquare className="w-7 h-7 text-gray-400 mx-auto mb-2 opacity-50" />
                   <h4 className="text-xs font-bold text-gray-700 dark:text-gray-300">No discussions yet</h4>
@@ -1128,13 +1416,13 @@ export const ProblemDetail: React.FC = () => {
                 </div>
               ) : (
                 <div className="flex flex-col gap-5">
-                  {comments.map((comment) => (
+                  {effectiveComments.map((comment) => (
                     <div key={comment.id} className="flex flex-col gap-3">
                       {/* Top-Level Parent Comment */}
                       <div className="flex gap-3.5 items-start">
                         <UserAvatar name={comment.author} size="sm" />
                         <div className="flex-1 flex flex-col bg-surface-container/40 rounded-xl p-3.5">
-                          <div className="flex items-center gap-2 mb-1">
+                          <div className="flex items-center gap-2 mb-1 flex-wrap">
                             <span className="text-xs md:text-sm font-bold text-on-surface">
                               {comment.author}
                             </span>
@@ -1147,7 +1435,7 @@ export const ProblemDetail: React.FC = () => {
                             {comment.text}
                           </p>
                           {/* Action Bar inside message with Reply and Like */}
-                          <div className="flex items-center gap-4 text-xs font-semibold pt-1.5 border-t border-gray-200/40">
+                          <div className="flex items-center gap-4 text-xs font-semibold pt-1.5 border-t border-gray-200/40 flex-wrap">
                             <button
                               onClick={() => {
                                 setReplyingToId(replyingToId === comment.id ? null : comment.id);
@@ -1384,65 +1672,97 @@ export const ProblemDetail: React.FC = () => {
                   >
                     <Heart className={`w-3.5 h-3.5 ${userInterested ? "fill-rose-600 text-rose-600" : "text-gray-400"}`} />
                     <span>{userInterested ? "Interested" : "I'm Interested"}</span>
-                    <span className="text-[10px] font-mono opacity-80">({interestedCount})</span>
+                    <span className="text-[10px] font-mono opacity-80">({effectiveInterestedCount})</span>
                   </button>
                 </div>
-                {interestedCount > 0 ? (
-                  <div className="flex items-center -space-x-2 mt-1">
-                    {(problem.interestedUsers || []).slice(0, 4).map((uid, idx) => (
-                      <UserAvatar key={idx} name={uid === currentUid ? (userDoc?.name || user?.displayName || "You") : `User ${idx + 1}`} size="sm" />
-                    ))}
-                    {interestedCount > 4 && (
-                      <div className="inline-flex h-8 w-8 items-center justify-center rounded-full border-2 border-surface bg-surface-container text-on-surface-variant text-xs font-bold shadow-2xs">
-                        +{interestedCount - 4}
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <p className="text-[11px] text-gray-400 font-normal italic">
-                    Be the first to mark interest in this problem!
-                  </p>
-                )}
+
+                <div className="flex items-center -space-x-1.5 mt-1">
+                  {interestedProfiles.slice(0, 4).map((p, idx) => (
+                    <div
+                      key={idx}
+                      title={p.name}
+                      className="w-8 h-8 rounded-full bg-surface-container border-2 border-surface shadow-2xs flex items-center justify-center overflow-hidden font-bold text-xs text-primary shrink-0"
+                    >
+                      <UserAvatar name={p.name} size="sm" src={p.photoURL} />
+                    </div>
+                  ))}
+                  {effectiveInterestedCount > 4 && (
+                    <div className="inline-flex h-8 w-8 items-center justify-center rounded-full border-2 border-surface bg-surface-container text-on-surface-variant text-xs font-bold shadow-2xs shrink-0">
+                      +{effectiveInterestedCount - 4}
+                    </div>
+                  )}
+                </div>
               </div>
 
-              {/* Companies interested avatar cluster */}
-              <div className="mt-1 pt-3 flex flex-col gap-2">
-                <span className="text-[11px] font-semibold text-on-surface-variant">Companies interested</span>
-                {solverInfo.totalCount > 0 ? (
-                  <div className="flex items-center -space-x-1.5">
-                    {solverInfo.companies.slice(0, 3).map((comp, idx) => (
-                      <div
+              {/* Companies interested attached by admin in PS Control */}
+              <div className="mt-1 pt-3 flex flex-col gap-2.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-semibold text-on-surface-variant">Companies interested</span>
+                </div>
+
+                {attachedCompanies.length > 0 ? (
+                  <div className="flex items-center -space-x-1.5 mt-1">
+                    {attachedCompanies.slice(0, 4).map((comp, idx) => (
+                      <CompanyLogo
                         key={idx}
-                        title={comp.name}
-                        className="w-7 h-7 rounded-full bg-white border-2 border-surface shadow-2xs flex items-center justify-center overflow-hidden"
-                      >
-                        {comp.icon}
-                      </div>
+                        name={comp.name}
+                        logoUrl={comp.logoUrl}
+                        size="md"
+                      />
                     ))}
-                    {solverInfo.totalCount > 3 && (
-                      <div className="inline-flex h-7 w-7 items-center justify-center rounded-full border-2 border-surface bg-surface-container text-[#5c37eb] text-[9px] font-bold shadow-2xs">
-                        +{solverInfo.totalCount - 3}
+                    {attachedCompanies.length > 4 && (
+                      <div className="inline-flex h-8 w-8 items-center justify-center rounded-full border-2 border-surface bg-surface-container text-primary text-[10px] font-bold shadow-2xs shrink-0">
+                        +{attachedCompanies.length - 4}
                       </div>
                     )}
                   </div>
                 ) : (
-                  <p className="text-[11px] text-gray-400 font-normal italic">
-                    No active company deployments registered yet.
-                  </p>
+                  <div className="flex flex-col gap-1 py-1">
+                    <p className="text-[11px] text-gray-400 font-normal italic">
+                      No companies attached by admin yet.
+                    </p>
+                    {isAdmin && (
+                      <Link
+                        to={`/admin/problems/${problem.id}/edit`}
+                        className="text-[11px] text-primary hover:underline font-bold flex items-center gap-1 mt-0.5"
+                      >
+                        <span>Attach companies in PS Control</span>
+                        <ExternalLink className="w-3 h-3" />
+                      </Link>
+                    )}
+                  </div>
                 )}
               </div>
 
               {/* Build Startup Primary CTA */}
-              <button
-                onClick={() => {
-                  recordUserInterest(problem.id, user?.uid || "user", "startup_mode_cta");
-                  navigate(`/startup-mode/${problem.id}`);
-                }}
-                className="mt-4 w-full bg-[#1657FF] hover:bg-[#0E47E6] text-white py-3 rounded-xl text-xs md:text-sm font-bold shadow-md hover:shadow-lg transition-all cursor-pointer flex items-center justify-center gap-2"
-              >
-                <span>Build Startup</span>
-                <span className="material-symbols-outlined text-[18px]">rocket_launch</span>
-              </button>
+              {problem.hasStartupMode !== false && problem.startupModeEnabled !== false && problem.startupModeConfig?.enabled !== false ? (
+                <button
+                  onClick={() => {
+                    recordUserInterest(problem.id, user?.uid || "user", "startup_mode_cta");
+                    navigate(`/startup-mode/${problem.id}`);
+                  }}
+                  className="mt-4 w-full bg-surface hover:bg-primary/5 text-primary border border-primary py-3 rounded-xl text-xs md:text-sm font-bold shadow-xs hover:shadow-sm transition-all cursor-pointer flex items-center justify-center gap-2"
+                >
+                  <span>Build Startup</span>
+                  <span className="material-symbols-outlined text-[18px] text-primary">rocket_launch</span>
+                </button>
+              ) : (
+                <div className="mt-4 w-full flex flex-col gap-1.5">
+                  <div className="w-full bg-surface-container/60 text-on-surface-variant py-2.5 px-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 border border-outline-variant/30 text-center">
+                    <span className="material-symbols-outlined text-[16px] text-gray-400">lock</span>
+                    <span>Startup Mode Disabled</span>
+                  </div>
+                  {isAdmin && (
+                    <Link
+                      to={`/admin/problems/${problem.id}/edit`}
+                      className="text-[11px] text-primary hover:underline font-bold text-center flex items-center justify-center gap-1 mt-0.5"
+                    >
+                      <span>Configure & Enable in Admin</span>
+                      <ExternalLink className="w-3 h-3" />
+                    </Link>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -1544,6 +1864,169 @@ export const ProblemDetail: React.FC = () => {
               <button
                 onClick={() => setIsShareModalOpen(false)}
                 className="px-4 py-2 rounded-xl text-xs font-bold bg-surface-container hover:bg-surface-container-high text-on-surface cursor-pointer"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── ALL SUPPORTING DOCUMENTS MODAL POPUP ──────────────────────────── */}
+      {isDocsModalOpen && (
+        <div
+          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-fade-in"
+          onClick={() => setIsDocsModalOpen(false)}
+        >
+          <div
+            className="bg-surface-container-lowest dark:bg-surface-container-low max-w-2xl w-full rounded-2xl border border-outline-variant/30 shadow-2xl p-5 sm:p-6 flex flex-col gap-4 max-h-[85vh] overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="flex items-center justify-between pb-3 border-b border-outline-variant/20">
+              <div>
+                <h3 className="text-base sm:text-lg font-extrabold text-on-surface">
+                  All Supporting Documents
+                </h3>
+                <p className="text-xs text-on-surface-variant font-medium">
+                  Showing all {allDocs.length} empirical reports, surveys & guidelines
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsDocsModalOpen(false)}
+                className="p-1.5 rounded-xl hover:bg-surface-container text-on-surface-variant hover:text-on-surface transition-colors cursor-pointer"
+                title="Close Popup"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Modal Scrollable Content */}
+            <div className="overflow-y-auto pr-1 flex flex-col divide-y divide-outline-variant/15 max-h-[60vh]">
+              {allDocs.map((doc, idx) => (
+                <div
+                  key={idx}
+                  className="py-3.5 first:pt-1 last:pb-1 flex items-start justify-between gap-4 group"
+                >
+                  <div className="flex items-start gap-3 min-w-0 flex-1">
+                    <span
+                      className={`material-symbols-outlined text-xl mt-0.5 shrink-0 ${
+                        doc.type === "pdf" ? "text-rose-500" : "text-primary"
+                      }`}
+                    >
+                      {doc.type === "pdf" ? "picture_as_pdf" : "description"}
+                    </span>
+                    <div className="flex flex-col gap-1 min-w-0 flex-1">
+                      <h4 className="text-xs sm:text-sm font-semibold text-on-surface group-hover:text-primary transition-colors leading-snug">
+                        {doc.title}
+                      </h4>
+                      {doc.description && (
+                        <p className="text-xs text-on-surface-variant leading-relaxed">
+                          {doc.description}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  <a
+                    href={doc.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="shrink-0 px-3 py-1.5 rounded-lg bg-primary text-white hover:bg-primary-container text-xs font-bold transition-all flex items-center gap-1 cursor-pointer mt-0.5 shadow-xs"
+                  >
+                    <span>View</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+                </div>
+              ))}
+            </div>
+
+            {/* Modal Footer */}
+            <div className="pt-2 border-t border-outline-variant/20 flex justify-end">
+              <button
+                type="button"
+                onClick={() => setIsDocsModalOpen(false)}
+                className="px-4 py-2 bg-surface-container hover:bg-surface-container-high text-on-surface text-xs font-bold rounded-xl transition-all cursor-pointer"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── ALL EXTERNAL EVIDENCE URLS MODAL POPUP ────────────────────────── */}
+      {isUrlsModalOpen && (
+        <div
+          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-fade-in"
+          onClick={() => setIsUrlsModalOpen(false)}
+        >
+          <div
+            className="bg-surface-container-lowest dark:bg-surface-container-low max-w-2xl w-full rounded-2xl border border-outline-variant/30 shadow-2xl p-5 sm:p-6 flex flex-col gap-4 max-h-[85vh] overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="flex items-center justify-between pb-3 border-b border-outline-variant/20">
+              <div>
+                <h3 className="text-base sm:text-lg font-extrabold text-on-surface">
+                  All External Evidence URLs
+                </h3>
+                <p className="text-xs text-on-surface-variant font-medium">
+                  Showing all {allUrls.length} verified primary source links
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsUrlsModalOpen(false)}
+                className="p-1.5 rounded-xl hover:bg-surface-container text-on-surface-variant hover:text-on-surface transition-colors cursor-pointer"
+                title="Close Popup"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Modal Scrollable Content */}
+            <div className="overflow-y-auto pr-1 flex flex-col divide-y divide-outline-variant/15 max-h-[60vh]">
+              {allUrls.map((url, idx) => {
+                let domain = "";
+                try {
+                  domain = new URL(url).hostname.replace("www.", "");
+                } catch {
+                  domain = url;
+                }
+                return (
+                  <div
+                    key={idx}
+                    className="py-3.5 first:pt-1 last:pb-1 flex items-center justify-between gap-4 group"
+                  >
+                    <div className="flex flex-col min-w-0 flex-1">
+                      <span className="text-xs sm:text-sm font-semibold text-on-surface truncate group-hover:text-primary transition-colors">
+                        {domain}
+                      </span>
+                      <span className="text-xs text-on-surface-variant font-mono truncate">
+                        {url}
+                      </span>
+                    </div>
+                    <a
+                      href={url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="shrink-0 px-3 py-1.5 rounded-lg bg-primary text-white hover:bg-primary-container text-xs font-bold transition-all flex items-center gap-1 cursor-pointer shadow-xs"
+                    >
+                      <span>View</span>
+                      <ExternalLink className="w-3.5 h-3.5" />
+                    </a>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Modal Footer */}
+            <div className="pt-2 border-t border-outline-variant/20 flex justify-end">
+              <button
+                type="button"
+                onClick={() => setIsUrlsModalOpen(false)}
+                className="px-4 py-2 bg-surface-container hover:bg-surface-container-high text-on-surface text-xs font-bold rounded-xl transition-all cursor-pointer"
               >
                 Close
               </button>

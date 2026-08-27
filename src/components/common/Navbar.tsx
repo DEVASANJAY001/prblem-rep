@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { Menu, X, Shield, Sparkles, User as UserIcon } from "lucide-react";
+import { Menu, X, Shield, Sparkles, User as UserIcon, Bookmark } from "lucide-react";
 import { UserAvatar } from "@/components/ui/UserAvatar";
 
 export const Navbar: React.FC = () => {
@@ -13,7 +13,6 @@ export const Navbar: React.FC = () => {
   const navItems = [
     { label: "Explore", path: "/explore" },
     { label: "Industries", path: "/industries" },
-    { label: "Competitions", path: "/competitions" },
     { label: "Community", path: "/community" },
   ];
 
@@ -146,6 +145,13 @@ export const Navbar: React.FC = () => {
                     >
                       <UserIcon className="h-4 w-4 text-primary" />
                       <span>User Dashboard & Profile</span>
+                    </Link>
+                    <Link
+                      to="/saved"
+                      className="flex items-center gap-2 rounded-xl px-3 py-2 text-on-surface hover:bg-surface-container-low font-medium transition-colors"
+                    >
+                      <Bookmark className="h-4 w-4 text-primary" />
+                      <span>Saved Problems</span>
                     </Link>
                     {(userDoc?.role === "admin" || userDoc?.role === "moderator") && (
                       <Link

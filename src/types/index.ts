@@ -23,6 +23,37 @@ export interface UserDoc {
   updatedAt: string;
 }
 
+export type BadgeTier = "bronze" | "silver" | "gold" | "platinum" | "diamond" | "legendary";
+export type BadgeCategory = "submission" | "research" | "venture" | "community" | "special";
+export type BadgeTaskType =
+  | "problems_submitted"
+  | "solutions_built"
+  | "votes_received"
+  | "evidence_attached"
+  | "tam_modeled"
+  | "comments_posted"
+  | "critical_problems"
+  | "bounties_joined"
+  | "manual_award";
+
+export interface BadgeDoc {
+  id: string;
+  name: string;
+  slug: string;
+  description: string;
+  iconName: string;
+  category: BadgeCategory;
+  tier: BadgeTier;
+  taskType: BadgeTaskType;
+  taskThreshold: number;
+  taskDescription: string;
+  isActive: boolean;
+  color?: string;
+  awardedCount?: number;
+  createdAt: string;
+  updatedAt?: string;
+}
+
 // ─────────────────────────────────────────────────────────────
 // Problem Types
 // ─────────────────────────────────────────────────────────────
@@ -60,6 +91,9 @@ export interface CommentReply {
   date: string;
   likes: number;
   likedBy?: string[];
+  liked?: boolean;
+  authorUid?: string;
+  uid?: string;
 }
 
 export interface ProblemComment {
@@ -70,7 +104,20 @@ export interface ProblemComment {
   date: string;
   likes: number;
   likedBy?: string[];
+  liked?: boolean;
+  authorUid?: string;
+  authorName?: string;
+  authorPhotoURL?: string | null;
+  content?: string;
+  problemId?: string;
+  upvotes?: number;
+  pinned?: boolean;
+  hidden?: boolean;
+  createdAt?: string;
   replies?: CommentReply[];
+  isInterestedCompany?: boolean;
+  companyName?: string;
+  companyLogoUrl?: string;
 }
 
 export interface ProblemValidations {
@@ -79,6 +126,37 @@ export interface ProblemValidations {
   payCount: number;
   buildCount: number;
   userValidations?: Record<string, ("face" | "great" | "pay" | "build")[]>;
+}
+
+export interface EvidenceDocument {
+  title: string;
+  description?: string;
+  size?: string;
+  pages?: string;
+  url: string;
+  type?: "pdf" | "link" | "doc" | string;
+}
+
+export interface StartupSolutionGap {
+  name: string;
+  description: string;
+  weaknessType?: "Weakness" | "Gap" | string;
+  weakness?: string;
+}
+
+export interface StartupDirection {
+  type: "software" | "service" | "hardware" | "hybrid" | string;
+  title: string;
+  description: string;
+}
+
+export interface StartupModeConfig {
+  enabled: boolean;
+  targetSegments?: string[];
+  avgWillingnessToPay?: string;
+  valuePropositionDraft?: string;
+  existingSolutionsGaps?: StartupSolutionGap[];
+  directionsToExplore?: StartupDirection[];
 }
 
 export interface ProblemDoc {
@@ -109,9 +187,13 @@ export interface ProblemDoc {
   };
   verified: boolean;
   submittedBy: string;
+  submittedByUid?: string;
   submitterName?: string;
   reviewedBy: string | null;
+  reviewedByUid?: string;
   reviewNote: string | null;
+  adminReviewNote?: string;
+  createdAt?: string;
   submittedAt: string;
   reviewedAt: string | null;
   publishedAt: string | null;
@@ -123,13 +205,18 @@ export interface ProblemDoc {
   interestedCount?: number;
   interestedUsers?: string[];
   validations?: ProblemValidations;
-  evidenceDocuments?: Array<{ title: string; size: string; pages: string; url: string; type: "pdf" | "link" }>;
+  evidenceDocuments?: EvidenceDocument[];
   dataPoints?: Array<{ metric: string; label: string }>;
   researchData?: { keyFindings: string[]; methodology: string; academicReferences: string[] };
   competitorData?: Array<{ solution: string; pros: string; cons: string }>;
   suggestedMVP?: { coreFeatures: string[]; technicalRequirements: string };
   marketData?: { tam: string; currentPenetration: number; wastedCost: string; citizensAffected: string };
   comments?: ProblemComment[];
+  hasStartupMode?: boolean;
+  startupModeEnabled?: boolean;
+  startupModeConfig?: StartupModeConfig;
+  attachedCompanyNames?: string[];
+  attachedCompanyIds?: string[];
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -187,6 +274,7 @@ export interface FormResponseDoc {
 // Ecosystem Types
 // ─────────────────────────────────────────────────────────────
 export interface IndustryDoc {
+  id?: string;
   slug: string;
   name: string;
   icon: string;
@@ -340,4 +428,22 @@ export interface PageContent {
   updatedBy: string;
   updatedAt: string;
 }
+
+// ─────────────────────────────────────────────────────────────
+// User Startup Workspace Notes
+// ─────────────────────────────────────────────────────────────
+export interface UserStartupNotes {
+  problemId: string;
+  userId: string;
+  valueProposition: string;
+  selectedSegments: string[];
+  selectedDirection: string;
+  validationChecklist: {
+    talkedToUsers: boolean;
+    paysWorkaround: boolean;
+    frequencyVerified: boolean;
+  };
+  savedAt: string;
+}
+
 

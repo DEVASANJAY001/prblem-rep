@@ -17,8 +17,8 @@ export const Footer: React.FC = () => {
             <Link to="/explore" className="text-body-md text-on-surface-variant hover:text-primary transition-colors">
               Solutions
             </Link>
-            <Link to="/competitions" className="text-body-md text-on-surface-variant hover:text-primary transition-colors">
-              Pricing
+            <Link to="/industries" className="text-body-md text-on-surface-variant hover:text-primary transition-colors">
+              Industries
             </Link>
           </nav>
         </div>

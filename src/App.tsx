@@ -13,7 +13,6 @@ import { ProblemDetail } from "@/pages/public/ProblemDetail";
 import { StartupMode } from "@/pages/public/StartupMode";
 import { Industries } from "@/pages/public/Industries";
 import { IndustryDetail } from "@/pages/public/IndustryDetail";
-import { Competitions } from "@/pages/public/Competitions";
 import { Companies } from "@/pages/public/Companies";
 import { Research } from "@/pages/public/Research";
 import { Community } from "@/pages/public/Community";
@@ -22,6 +21,7 @@ import { Login } from "@/pages/public/Login";
 import { Register } from "@/pages/public/Register";
 import { SubmitProblem } from "@/pages/public/SubmitProblem";
 import { Dashboard } from "@/pages/public/Dashboard";
+import { SavedProblems } from "@/pages/public/SavedProblems";
 import { PublicFormRunner } from "@/pages/public/PublicFormRunner";
 
 // Admin Pages
@@ -35,6 +35,7 @@ import { AdminForms } from "@/pages/admin/AdminForms";
 import { AdminFormBuilder } from "@/pages/admin/AdminFormBuilder";
 import { AdminFormResponses } from "@/pages/admin/AdminFormResponses";
 import { AdminUsers } from "@/pages/admin/AdminUsers";
+import { AdminBadges } from "@/pages/admin/AdminBadges";
 import { AdminAnalytics } from "@/pages/admin/AdminAnalytics";
 import { AdminSettings } from "@/pages/admin/AdminSettings";
 import { AdminIndustries } from "@/pages/admin/AdminIndustries";
@@ -54,7 +55,6 @@ export default function App() {
             <Route path="/startup-mode/:problemId" element={<ProtectedRoute><PublicLayout><StartupMode /></PublicLayout></ProtectedRoute>} />
             <Route path="/industries" element={<PublicLayout><Industries /></PublicLayout>} />
             <Route path="/industries/:slug" element={<PublicLayout><IndustryDetail /></PublicLayout>} />
-            <Route path="/competitions" element={<PublicLayout><Competitions /></PublicLayout>} />
             <Route path="/companies" element={<PublicLayout><Companies /></PublicLayout>} />
             <Route path="/research" element={<PublicLayout><Research /></PublicLayout>} />
             <Route path="/community" element={<PublicLayout><Community /></PublicLayout>} />
@@ -64,6 +64,8 @@ export default function App() {
             <Route path="/register" element={<PublicLayout><Register /></PublicLayout>} />
             <Route path="/submit" element={<ProtectedRoute><PublicLayout><SubmitProblem /></PublicLayout></ProtectedRoute>} />
             <Route path="/dashboard" element={<ProtectedRoute><PublicLayout><Dashboard /></PublicLayout></ProtectedRoute>} />
+            <Route path="/saved" element={<PublicLayout><SavedProblems /></PublicLayout>} />
+            <Route path="/bookmarks" element={<PublicLayout><SavedProblems /></PublicLayout>} />
 
             {/* Dynamic Public Form Runner */}
             <Route path="/f/:formSlug" element={<PublicLayout><PublicFormRunner /></PublicLayout>} />
@@ -84,7 +86,7 @@ export default function App() {
             <Route path="/admin/forms/:id/edit" element={<AdminLayout><AdminFormBuilder /></AdminLayout>} />
             <Route path="/admin/forms/:id/responses" element={<AdminLayout><AdminFormResponses /></AdminLayout>} />
             <Route path="/admin/users" element={<AdminLayout><AdminUsers /></AdminLayout>} />
-            <Route path="/admin/competitions" element={<AdminLayout><Competitions /></AdminLayout>} />
+            <Route path="/admin/badges" element={<AdminLayout><AdminBadges /></AdminLayout>} />
             <Route path="/admin/companies" element={<AdminLayout><AdminCompanies /></AdminLayout>} />
             <Route path="/admin/research" element={<AdminLayout><Research /></AdminLayout>} />
             <Route path="/admin/analytics" element={<AdminLayout><AdminAnalytics /></AdminLayout>} />
