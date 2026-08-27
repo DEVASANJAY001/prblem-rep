@@ -41,12 +41,14 @@ import { AdminSettings } from "@/pages/admin/AdminSettings";
 import { AdminIndustries } from "@/pages/admin/AdminIndustries";
 import { AdminAppController } from "@/pages/admin/AdminAppController";
 import { AdminCompanies } from "@/pages/admin/AdminCompanies";
+import { ScrollRestoration } from "@/components/common/ScrollRestoration";
 
 export default function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
         <BrowserRouter>
+          <ScrollRestoration />
           <Routes>
             {/* ── Public Route Group ──────────────────────────────── */}
             <Route path="/" element={<Home />} />
