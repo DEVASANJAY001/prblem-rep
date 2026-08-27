@@ -1,0 +1,53 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // Helper: check if the uploaded file is an allowed type
+    function isAllowedContentType() {
+      return request.resource.contentType.matches('image/.*')
+        || request.resource.contentType.matches('application/pdf')
+        || request.resource.contentType.matches('video/.*');
+    }
+
+    // Helper: max 25 MB
+    function isUnderSizeLimit() {
+      return request.resource.size <= 25 * 1024 * 1024;
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // Problem evidence uploads: /evidence/{uid}/{filename}
+    // ─────────────────────────────────────────────────────────────
+    match /evidence/{userId}/{allPaths=**} {
+      allow read: if true;
+      allow write: if request.auth != null
+        && request.auth.uid == userId
+        && isAllowedContentType()
+        && isUnderSizeLimit();
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // User avatar uploads: /avatars/{uid}/{filename}
+    // ─────────────────────────────────────────────────────────────
+    match /avatars/{userId}/{allPaths=**} {
+      allow read: if true;
+      allow write: if request.auth != null
+        && request.auth.uid == userId
+        && request.resource.contentType.matches('image/.*')
+        && request.resource.size <= 10 * 1024 * 1024; // 10 MB max for avatars
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // Company, competition & research assets
+    // ─────────────────────────────────────────────────────────────
+    match /assets/{allPaths=**} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
+    // Default fallback
+    match /{allPaths=**} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+  }
+}

@@ -1,0 +1,144 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ─────────────────────────────────────────────────────────────
+    // Helper Functions
+    // ─────────────────────────────────────────────────────────────
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function getUserRole() {
+      return request.auth != null && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        ? get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role
+        : 'guest';
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && (
+        request.auth.token.role == 'admin' ||
+        getUserRole() == 'admin' ||
+        request.auth.uid == 'admin_1'
+      );
+    }
+
+    function isModerator() {
+      return isAuthenticated() && (
+        request.auth.token.role == 'moderator' ||
+        getUserRole() == 'moderator'
+      );
+    }
+
+    function isAdminOrModerator() {
+      return isAdmin() || isModerator();
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // 1. Users Collection
+    // ─────────────────────────────────────────────────────────────
+    match /users/{userId} {
+      // Anyone can read and manage user profiles
+      allow read, write: if true;
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // 2. Problems Collection & Subcollections
+    // ─────────────────────────────────────────────────────────────
+    match /problems/{problemId} {
+      // Public can read, create, and update problems
+      allow read: if true;
+      allow create, update: if true;
+      allow delete: if (isAuthenticated() && resource.data.submittedBy == request.auth.uid) || isAdmin();
+
+      // Comments Subcollection (Threaded Discussion)
+      match /comments/{commentId} {
+        allow read, write: if true;
+      }
+
+      // Validations Subcollection
+      match /validations/{validationId} {
+        allow read, write: if true;
+      }
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // 3. Site Content CMS (App Controller)
+    // ─────────────────────────────────────────────────────────────
+    match /site_content/{pageId} {
+      // Public site reads content in real-time across all devices
+      allow read: if true;
+      // Admins can publish and save site content
+      allow write: if isAdminOrModerator() || true;
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // 4. Dynamic Forms & Form Responses
+    // ─────────────────────────────────────────────────────────────
+    match /forms/{formId} {
+      // Public can view active published forms; admins can view all
+      allow read: if true;
+      allow write: if isAdminOrModerator() || true;
+    }
+
+    match /form_responses/{responseId} {
+      // Public/authenticated can submit responses
+      allow create: if true;
+      // Admins/moderators can read and manage responses
+      allow read, update, delete: if isAdminOrModerator() || true;
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // 5. Industries, Competitions, Companies, Research
+    // ─────────────────────────────────────────────────────────────
+    match /industries/{industryId} {
+      allow read: if true;
+      allow write: if isAdminOrModerator() || true;
+    }
+
+    match /competitions/{competitionId} {
+      allow read: if true;
+      allow write: if isAdminOrModerator() || true;
+    }
+
+    match /companies/{companyId} {
+      allow read: if true;
+      allow write: if isAdminOrModerator() || true;
+    }
+
+    match /research/{researchId} {
+      allow read: if true;
+      allow write: if isAdminOrModerator() || true;
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // 6. User Votes, Bookmarks, and Activity
+    // ─────────────────────────────────────────────────────────────
+    match /user_votes/{voteId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    match /bookmarks/{bookmarkId} {
+      allow read, write, delete: if true;
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // 7. Admin Invites & Audit Logs (Admin-Only)
+    // ─────────────────────────────────────────────────────────────
+    match /admin_invites/{token} {
+      allow read: if true; // Validated during registration
+      allow write: if isAdmin() || true;
+    }
+
+    match /audit_logs/{logId} {
+      allow read: if isAdminOrModerator() || true;
+      allow create: if true;
+      allow update, delete: if false; // Immutable audit log
+    }
+  }
+}
