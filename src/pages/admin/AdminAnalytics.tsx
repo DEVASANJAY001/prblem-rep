@@ -44,12 +44,13 @@ export const AdminAnalytics: React.FC = () => {
         <h3 className="text-sm font-bold text-zinc-900 uppercase tracking-wider">Sector Concentration</h3>
         <div className="space-y-4">
           {industries.map((ind) => {
-            const pct = Math.min(100, Math.round((ind.problemCount / 350) * 100));
+            const count = ind.problemCount || ind.problemsCount || 0;
+            const pct = Math.min(100, Math.round((count / 350) * 100));
             return (
               <div key={ind.slug} className="space-y-1.5">
                 <div className="flex justify-between text-xs">
                   <span className="text-zinc-800 font-bold">{ind.name}</span>
-                  <span className="font-mono text-zinc-500 font-semibold">{ind.problemCount} problems ({pct}%)</span>
+                  <span className="font-mono text-zinc-500 font-semibold">{count} problems ({pct}%)</span>
                 </div>
                 <div className="h-2.5 w-full rounded-full bg-zinc-100 overflow-hidden">
                   <div className="h-full bg-[#1657FF] rounded-full transition-all" style={{ width: `${pct}%` }} />

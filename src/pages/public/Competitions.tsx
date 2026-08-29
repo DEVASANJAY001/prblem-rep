@@ -185,7 +185,7 @@ export const Competitions: React.FC = () => {
 
                 {/* Tags */}
                 <div className="flex flex-wrap gap-1 pt-1">
-                  {comp.tags.map((t) => (
+                  {comp.tags.map((t: string) => (
                     <span key={t} className="rounded bg-zinc-100 px-2 py-0.5 text-[10px] font-medium text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400">
                       {t}
                     </span>

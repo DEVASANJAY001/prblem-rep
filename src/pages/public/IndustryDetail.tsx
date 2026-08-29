@@ -3,500 +3,770 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import { getIndustryBySlug } from "@/lib/storage";
 import { subscribeProblems } from "@/lib/firebase/services/problemsService";
 import { ProblemDoc } from "@/types";
-import { useAuth } from "@/contexts/AuthContext";
+import { REAL_INDUSTRIES } from "@/data/realProductionData";
+import { TrendingProblemCard } from "@/components/ui/TrendingProblemCard";
+import { ProblemCardSkeleton } from "@/components/common/LoadingContainer";
 import {
-  Heart,
   Search,
-  SlidersHorizontal,
   ChevronDown,
-  MessageSquare,
-  Bookmark,
-  Share2,
-  CheckCircle2,
-  TrendingUp,
-  Activity,
   ArrowRight,
-  Sparkles,
-  Shield,
-  Layers,
-  Crown,
-  Building2,
-  Zap,
-  Leaf,
-  Bot,
-  GraduationCap,
-  Car,
-  ShoppingCart,
-  ShieldCheck,
-  Scale,
-  Landmark,
-  Hammer,
-  Coffee,
-  Globe,
-  ArrowUpRight,
-  Flame,
-  Trophy,
+  RotateCcw,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
-
-// Dynamic Icon Mapper
-const ICON_MAP: Record<string, any> = {
-  Activity,
-  Heart,
-  Leaf,
-  Bot,
-  Zap,
-  GraduationCap,
-  Building2,
-  Car,
-  ShoppingCart,
-  ShieldCheck,
-  Scale,
-  Landmark,
-  Hammer,
-  Coffee,
-  Globe,
-  Layers,
-  Sparkles,
-};
 
 export const IndustryDetail: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
-  const { user } = useAuth();
 
-  const industrySlug = slug || "healthcare";
+  const industrySlug = slug || "healthcare-biotech";
   const industryData = getIndustryBySlug(industrySlug);
 
   const [problemsList, setProblemsList] = useState<ProblemDoc[]>([]);
+  const [allApprovedProblems, setAllApprovedProblems] = useState<ProblemDoc[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Dynamic Formulation based on slug
-  const industry = industryData || {
-    name: industrySlug.charAt(0).toUpperCase() + industrySlug.slice(1).replace("-", " "),
-    slug: industrySlug,
-    icon: "Activity",
-    description: `Explore real-world problems in ${industrySlug.replace("-", " ")} faced by operational teams, customers, and practitioners.`,
-    problemCount: problemsList.length || 128,
-    weeklyTrend: "↑ 24% this week",
-    opportunityCount: 23,
-    trendingCount: 12,
-    avgPainScore: 91,
-    marketSize: "$4.2B",
-    color: "#1657FF",
-    subcategories: [],
+  // Dynamic industry metadata fallback
+  const industry = useMemo(() => {
+    if (industryData) return industryData;
+    const fromReal = REAL_INDUSTRIES.find(
+      (i) => i.slug.toLowerCase() === industrySlug.toLowerCase()
+    );
+    if (fromReal) return fromReal;
+
+    const formattedName = industrySlug
+      .split("-")
+      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+      .join(" & ");
+
+    return {
+      id: `ind-${industrySlug}`,
+      name: formattedName,
+      slug: industrySlug,
+      description: "Clinical systems, medical devices, biotechnology, digital health, and pharmaceuticals.",
+      problemsCount: 0,
+      totalBounties: "₹18.6 Cr",
+    };
+  }, [industryData, industrySlug]);
+
+  const [searchInCat, setSearchInCat] = useState("");
+  const [sortBy, setSortBy] = useState("Highest Pain");
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 20;
+
+  const getCanonicalIndustry = (industryStr: string): string => {
+    const s = industryStr.toLowerCase().trim();
+    if (/\b(health|biotech|medical|clinical|life science|pharma)\b/i.test(s)) {
+      return "healthcare-biotech";
+    }
+    if (/\b(ai|machine learning|artificial intelligence|deep learning|nlp|computer vision)\b/i.test(s)) {
+      return "ai-machine-learning";
+    }
+    if (/\b(fintech|defi|finance|banking|payments|crypto)\b/i.test(s)) {
+      return "fintech-defi";
+    }
+    if (/\b(cyber|security|identity|zero-trust|infosec)\b/i.test(s)) {
+      return "cybersecurity-identity";
+    }
+    if (/\b(clean|cleantech|energy|climate|solar|hydrogen|battery|carbon)\b/i.test(s)) {
+      return "cleantech-energy";
+    }
+    if (/\b(logistics|supply chain|freight|transportation|shipping|warehouse)\b/i.test(s)) {
+      return "logistics-supply-chain";
+    }
+    if (/\b(space|aerospace|satellite|avionics|orbital)\b/i.test(s)) {
+      return "spacetech-aerospace";
+    }
+    if (/\b(agri|agritech|agriculture|farming|crop|soil)\b/i.test(s)) {
+      return "agritech-food";
+    }
+    if (/\b(defense|defence|military|warfare|national security)\b/i.test(s)) {
+      return "defense-national-security";
+    }
+    return s.replace(/[^a-z0-9]+/g, "-");
   };
 
-  const IconComponent = ICON_MAP[industry.icon] || Building2;
+  const isIndustryMatch = (probIndustry: string, indSlug: string, indName: string) => {
+    if (!probIndustry) return false;
+    const pInd = probIndustry.toLowerCase().trim();
+    const slugClean = indSlug.toLowerCase().trim();
+    const nameClean = indName.toLowerCase().trim();
 
-  const [activeSubcategory, setActiveSubcategory] = useState("All Problems");
-  const [searchInCat, setSearchInCat] = useState("");
-  const [sortBy, setSortBy] = useState("Pain Score");
-  const [followed, setFollowed] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
+    // 1. Direct match
+    if (pInd === slugClean || pInd === nameClean) return true;
+
+    // 2. Canonical taxonomy domain match
+    const canonicalProblem = getCanonicalIndustry(pInd);
+    const canonicalPage = getCanonicalIndustry(slugClean || nameClean);
+    if (canonicalProblem && canonicalPage && canonicalProblem === canonicalPage) {
+      return true;
+    }
+
+    return false;
+  };
 
   useEffect(() => {
     const unsubscribe = subscribeProblems({ status: "approved" }, (all) => {
-      const match = all.filter(
-        (p) =>
-          p.industry.toLowerCase().includes(industrySlug.toLowerCase()) ||
-          industrySlug.toLowerCase().includes(p.industry.toLowerCase()) ||
-          p.industry.toLowerCase().includes(industry.name.toLowerCase())
+      setAllApprovedProblems(all);
+      const match = all.filter((p) =>
+        isIndustryMatch(p.industry, industrySlug, industry.name)
       );
-      setProblemsList(match.length > 0 ? match : all);
+      setProblemsList(match);
       setLoading(false);
     });
     return () => unsubscribe();
   }, [industrySlug, industry.name]);
 
-  // Subcategories
-  const subcategories = [
-    { name: "All Problems", count: problemsList.length },
-    { name: "Core Operations", count: Math.max(1, Math.floor(problemsList.length * 0.4)) },
-    { name: "Automation & AI", count: Math.max(1, Math.floor(problemsList.length * 0.3)) },
-    { name: "Compliance & Security", count: Math.max(1, Math.floor(problemsList.length * 0.2)) },
-  ];
+  // Compute live problem counts mapped by canonical industry slug
+  const problemCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    allApprovedProblems.forEach((p) => {
+      const canonical = getCanonicalIndustry(p.industry || "");
+      counts[canonical] = (counts[canonical] || 0) + 1;
+    });
+    return counts;
+  }, [allApprovedProblems]);
+
+  // Live Mathematical Calculations based on real problem statements in this industry
+  const kpis = useMemo(() => {
+    const totalCount = problemsList.length;
+
+    // Opportunities calculation: count problems with opportunity score >= 80
+    const opportunitiesCount = problemsList.filter(
+      (p) => (p.opportunityScore ?? p.aiScores?.businessPotential ?? 75) >= 80
+    ).length;
+
+    // Trending problems count: high views (>= 30) or pain score (>= 90) or upvotes (>= 5) or trending flag
+    const trendingCount = problemsList.filter(
+      (p) =>
+        (p.views ?? 0) >= 30 ||
+        (p.painScore ?? p.aiScores?.painLevel ?? 0) >= 90 ||
+        (typeof p.votes === "object" ? p.votes?.upvotes || 0 : Number(p.votes || 0)) >= 5 ||
+        (p as any).isTrending
+    ).length;
+
+    // Mathematical Average of Pain Scores
+    const avgPain =
+      totalCount > 0
+        ? Math.round(
+            problemsList.reduce(
+              (acc, p) => acc + Number(p.painScore ?? p.aiScores?.painLevel ?? 85),
+              0
+            ) / totalCount
+          )
+        : ((industry as any).avgPainScore ?? 91);
+
+    // Severity description based on avgPain
+    let severityLabel = "Moderate Severity";
+    if (avgPain >= 90) severityLabel = "Very High Severity";
+    else if (avgPain >= 75) severityLabel = "High Severity";
+    else if (avgPain >= 50) severityLabel = "Medium Severity";
+
+    return {
+      problemsCount: totalCount,
+      problemsTrend: "↑ 24% in 7d",
+      opportunitiesCount: opportunitiesCount,
+      opportunitiesTrend: "↑ 18% in 7d",
+      trendingCount: trendingCount,
+      trendingTrend: "↑ 32% in 7d",
+      avgPainScore: avgPain,
+      severityLabel: severityLabel,
+    };
+  }, [problemsList, industry]);
+
+  // Dynamic Category Insights calculations
+  const dynamicInsights = useMemo(() => {
+    if (problemsList.length === 0) {
+      return {
+        mostDiscussed: { title: "Long waiting times in OPD", count: "256 discussions" },
+        topOpportunity: { title: "AI-based early disease detection", score: "Score 94" },
+        risingFast: { title: "Mental health in rural areas", trend: "↑ 46% in 7d" },
+      };
+    }
+
+    const mostDiscussed = [...problemsList].sort(
+      (a, b) => (b.commentsCount || 0) - (a.commentsCount || 0)
+    )[0];
+    const topOpportunity = [...problemsList].sort(
+      (a, b) => (b.opportunityScore || 0) - (a.opportunityScore || 0)
+    )[0];
+    const risingFast = [...problemsList].sort(
+      (a, b) => (b.painScore || 0) - (a.painScore || 0)
+    )[0];
+
+    return {
+      mostDiscussed: {
+        title: mostDiscussed?.title || "Clinical workflow bottlenecks",
+        count: `${mostDiscussed?.commentsCount || mostDiscussed?.views || 12} discussions`,
+      },
+      topOpportunity: {
+        title: topOpportunity?.title || "Automated data reconciliation",
+        score: `Score ${topOpportunity?.opportunityScore || 92}`,
+      },
+      risingFast: {
+        title: risingFast?.title || "Rural practitioner tools",
+        trend: `Pain ${risingFast?.painScore || 90}`,
+      },
+    };
+  }, [problemsList]);
+
+  // Dynamic Pain Score Distribution
+  const dynamicPainDist = useMemo(() => {
+    const total = problemsList.length;
+    if (total === 0) {
+      return [
+        { label: "90–100 (Very High)", count: 0, pct: 0, color: "bg-rose-500" },
+        { label: "75–89 (High)", count: 0, pct: 0, color: "bg-amber-500" },
+        { label: "50–74 (Medium)", count: 0, pct: 0, color: "bg-blue-500" },
+        { label: "25–49 (Low)", count: 0, pct: 0, color: "bg-gray-300" },
+      ];
+    }
+
+    const c90 = problemsList.filter((p) => (p.painScore ?? 85) >= 90).length;
+    const c75 = problemsList.filter(
+      (p) => (p.painScore ?? 85) >= 75 && (p.painScore ?? 85) < 90
+    ).length;
+    const c50 = problemsList.filter(
+      (p) => (p.painScore ?? 85) >= 50 && (p.painScore ?? 85) < 75
+    ).length;
+    const c25 = problemsList.filter((p) => (p.painScore ?? 85) < 50).length;
+
+    return [
+      {
+        label: "90–100 (Very High)",
+        count: c90,
+        pct: Math.round((c90 / total) * 100),
+        color: "bg-rose-500",
+      },
+      {
+        label: "75–89 (High)",
+        count: c75,
+        pct: Math.round((c75 / total) * 100),
+        color: "bg-amber-500",
+      },
+      {
+        label: "50–74 (Medium)",
+        count: c50,
+        pct: Math.round((c50 / total) * 100),
+        color: "bg-blue-500",
+      },
+      {
+        label: "25–49 (Low)",
+        count: c25,
+        pct: Math.round((c25 / total) * 100),
+        color: "bg-gray-300",
+      },
+    ];
+  }, [problemsList]);
 
   const filteredProblems = useMemo(() => {
-    return problemsList.filter((p) => {
-      if (searchInCat.trim() && !p.title.toLowerCase().includes(searchInCat.toLowerCase()) && !p.description.toLowerCase().includes(searchInCat.toLowerCase())) {
+    const filtered = problemsList.filter((p) => {
+      if (
+        searchInCat.trim() &&
+        !p.title.toLowerCase().includes(searchInCat.toLowerCase()) &&
+        !p.description.toLowerCase().includes(searchInCat.toLowerCase()) &&
+        !p.tags?.some((t) => t.toLowerCase().includes(searchInCat.toLowerCase()))
+      ) {
         return false;
       }
       return true;
-    }).sort((a, b) => {
-      if (sortBy === "Pain Score") return (b.painScore || 0) - (a.painScore || 0);
-      if (sortBy === "Opportunity") return (b.opportunityScore || 0) - (a.opportunityScore || 0);
-      if (sortBy === "Most Discussed") return (b.commentsCount || 0) - (a.commentsCount || 0);
+    });
+
+    return filtered.sort((a, b) => {
+      if (sortBy === "Highest Pain") {
+        return (b.painScore || 0) - (a.painScore || 0);
+      }
+      if (sortBy === "Trending") {
+        const scoreA = (a.votes?.upvotes || 0) * 2 + (a.views || 0);
+        const scoreB = (b.votes?.upvotes || 0) * 2 + (b.views || 0);
+        return scoreB - scoreA;
+      }
+      if (sortBy === "Newest") {
+        const timeA = a.publishedAt ? new Date(a.publishedAt).getTime() : 0;
+        const timeB = b.publishedAt ? new Date(b.publishedAt).getTime() : 0;
+        return timeB - timeA;
+      }
+      if (sortBy === "Opportunity") {
+        return (b.opportunityScore || 0) - (a.opportunityScore || 0);
+      }
+      if (sortBy === "Most Discussed") {
+        return (b.commentsCount || 0) - (a.commentsCount || 0);
+      }
       return (b.votes?.upvotes || 0) - (a.votes?.upvotes || 0);
     });
-  }, [problemsList, searchInCat, activeSubcategory, sortBy]);
+  }, [problemsList, searchInCat, sortBy]);
+
+  // Suggested problem statements when current industry has 0 matches
+  const suggestedProblems = useMemo(() => {
+    return allApprovedProblems
+      .filter((p) => !problemsList.some((m) => m.id === p.id))
+      .slice(0, 2);
+  }, [allApprovedProblems, problemsList]);
+
+  // Other industry verticals list
+  const otherIndustries = useMemo(() => {
+    return REAL_INDUSTRIES.filter(
+      (ind) => ind.slug.toLowerCase() !== industrySlug.toLowerCase()
+    );
+  }, [industrySlug]);
+
+  const totalPages = Math.ceil(filteredProblems.length / ITEMS_PER_PAGE) || 1;
+  const paginatedProblems = useMemo(() => {
+    const start = (currentPage - 1) * ITEMS_PER_PAGE;
+    return filteredProblems.slice(start, start + ITEMS_PER_PAGE);
+  }, [filteredProblems, currentPage]);
+
+  const isSearching = searchInCat.trim().length > 0;
 
   return (
-    <div className="bg-[#F8FAFC] dark:bg-[#090D16] min-h-screen py-8 transition-colors">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-8">
-        
-        {/* ── 1. Industry Header Bar ──────────────────────────────────── */}
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-zinc-200/80 pb-6 dark:border-zinc-800">
-          <div className="flex items-center gap-4">
-            <div
-              className="flex h-14 w-14 items-center justify-center rounded-2xl text-white shadow-md"
-              style={{ backgroundColor: industry.color || "#1657FF" }}
-            >
-              <IconComponent className="h-7 w-7" />
-            </div>
+    <div className="flex flex-col w-full min-h-screen font-['Poppins',sans-serif] text-on-surface bg-surface">
+      {/* ── Top Header Bar (Explore-style Header Design without Icon and without Verified Index) ── */}
+      <div className="w-full bg-gradient-to-b from-surface via-surface-container-lowest to-surface pt-12 pb-8 border-b border-outline-variant/20 relative overflow-hidden">
+        <div className="absolute -top-32 -left-32 w-96 h-96 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-rose-500/10 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="max-w-7xl mx-auto px-4 md:px-8 relative z-10 space-y-6">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-2xl sm:text-3xl font-black text-zinc-950 dark:text-white tracking-tight">
-                  {industry.name}
-                </h1>
-                <span className="rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-bold text-emerald-600 border border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-400">
-                  Verified Index
-                </span>
-              </div>
-              <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1 max-w-2xl leading-relaxed">
-                {industry.description}
+              <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-on-surface">
+                {industry.name}
+              </h1>
+              <p className="text-on-surface-variant text-sm md:text-base mt-2 max-w-2xl font-normal leading-relaxed">
+                {industry.description ||
+                  "Clinical systems, medical devices, biotechnology, digital health, and pharmaceuticals."}
               </p>
             </div>
-          </div>
 
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => setFollowed(!followed)}
-              className={`rounded-xl px-4 py-2 text-xs font-bold transition-all shadow-xs ${
-                followed
-                  ? "bg-zinc-200 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-200"
-                  : "bg-white border border-zinc-200 text-zinc-800 hover:bg-zinc-50 dark:bg-zinc-900 dark:border-zinc-800 dark:text-zinc-200"
-              }`}
-            >
-              {followed ? "Following Index ✓" : "+ Follow Industry"}
-            </button>
-            <Link
-              to="/submit"
-              className="rounded-xl bg-[#1657FF] px-4 py-2 text-xs font-bold text-white shadow-sm hover:bg-[#0E47E6] transition-all hover:scale-[1.02]"
-            >
-              Submit Problem
-            </Link>
-          </div>
-        </div>
-
-        {/* ── 2. Top Summary KPI Formulations Bar (5 Key Metrics) ────── */}
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
-          {/* Tile 1: Problems */}
-          <div className="rounded-2xl border border-zinc-200/80 bg-white p-5 shadow-xs dark:border-zinc-800 dark:bg-zinc-900">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">Problems</span>
-            <p className="mt-1 text-2xl sm:text-3xl font-black text-zinc-950 dark:text-white tabular-nums">
-              {(industry.problemCount || 12840).toLocaleString()}
-            </p>
-            <span className="mt-1.5 inline-flex items-center text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
-              {industry.weeklyTrend || "↑ 24% this week"}
-            </span>
-          </div>
-
-          {/* Tile 2: Opportunities */}
-          <div className="rounded-2xl border border-zinc-200/80 bg-white p-5 shadow-xs dark:border-zinc-800 dark:bg-zinc-900">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">Opportunities</span>
-            <p className="mt-1 text-2xl sm:text-3xl font-black text-zinc-950 dark:text-white tabular-nums">
-              {(industry.opportunityCount || 2341).toLocaleString()}
-            </p>
-            <span className="mt-1.5 inline-flex items-center text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
-              ↑ 18% this week
-            </span>
-          </div>
-
-          {/* Tile 3: Trending Problems */}
-          <div className="rounded-2xl border border-zinc-200/80 bg-white p-5 shadow-xs dark:border-zinc-800 dark:bg-zinc-900">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">Trending Problems</span>
-            <p className="mt-1 text-2xl sm:text-3xl font-black text-zinc-950 dark:text-white tabular-nums">
-              {industry.trendingCount || 92}
-            </p>
-            <span className="mt-1.5 inline-flex items-center text-[11px] font-bold text-amber-500">
-              ↑ 32% this week
-            </span>
-          </div>
-
-          {/* Tile 4: Avg. Pain Score */}
-          <div className="rounded-2xl border border-zinc-200/80 bg-white p-5 shadow-xs dark:border-zinc-800 dark:bg-zinc-900">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">Avg. Pain Score</span>
-            <p className="mt-1 text-2xl sm:text-3xl font-black text-rose-600 tabular-nums">
-              {industry.avgPainScore || 91}
-            </p>
-            <span className="mt-1.5 inline-flex items-center text-[11px] font-bold text-zinc-500">
-              Very High Severity
-            </span>
-          </div>
-
-          {/* Tile 5: Est. Market Size */}
-          <div className="rounded-2xl border border-zinc-200/80 bg-white p-5 shadow-xs dark:border-zinc-800 dark:bg-zinc-900">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">Est. Market Size</span>
-            <p className="mt-1 text-2xl sm:text-3xl font-black text-[#1657FF] tabular-nums">
-              {industry.marketSize || "₹18.6 Cr"}
-            </p>
-            <span className="mt-1.5 inline-flex items-center text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
-              High Potential
-            </span>
-          </div>
-        </div>
-
-        {/* ── 3. Main 3-Column Ecosystem Layout ──────────────────────── */}
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
-          
-          {/* ── Left Column: Subcategories & Upgrade Card (3 Cols) ──── */}
-          <div className="lg:col-span-3 space-y-6">
-            <div className="rounded-2xl border border-zinc-200/80 bg-white p-4 shadow-xs dark:border-zinc-800 dark:bg-zinc-900 space-y-1">
-              <span className="px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-zinc-400 block">
-                Subcategories
-              </span>
-              <div className="space-y-0.5">
-                {subcategories.map((sub) => {
-                  const isActive = activeSubcategory === sub.name;
-                  return (
-                    <button
-                      key={sub.name}
-                      onClick={() => setActiveSubcategory(sub.name)}
-                      className={`flex w-full items-center justify-between rounded-xl px-3 py-2 text-xs font-semibold transition-all ${
-                        isActive
-                          ? "bg-[#EEF4FF] text-[#1657FF] font-bold dark:bg-blue-950/50 dark:text-blue-400"
-                          : "text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
-                      }`}
-                    >
-                      <span className="truncate">{sub.name}</span>
-                      <span className="font-mono text-[11px] text-zinc-400 ml-2">
-                        {typeof sub.count === "number" ? sub.count.toLocaleString() : sub.count}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Unlock More Power Pro Card */}
-            <div className="rounded-2xl border border-blue-100 bg-gradient-to-br from-blue-50 to-indigo-50/50 p-5 space-y-3 dark:border-blue-950 dark:from-blue-950/40 dark:to-indigo-950/20">
-              <div className="flex items-center gap-2 text-[#1657FF]">
-                <Crown className="h-5 w-5" />
-                <span className="text-xs font-bold uppercase tracking-wider">Unlock More Power</span>
-              </div>
-              <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed font-medium">
-                Get advanced insights, AI reports, customer TAM diagnostics, and downloadable datasets.
-              </p>
+            <div className="flex items-center gap-3 shrink-0">
               <Link
-                to="/community"
-                className="inline-flex w-full items-center justify-center gap-1.5 rounded-xl bg-[#1657FF] py-2.5 text-xs font-bold text-white shadow hover:bg-[#0E47E6] transition-colors"
+                to="/submit"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#1657FF] text-white text-xs font-bold hover:bg-[#0E47E6] shadow-sm transition-all shrink-0"
               >
-                <span>Upgrade to Pro</span>
-                <ArrowUpRight className="h-3.5 w-3.5" />
+                <span>Submit Verified Problem</span>
+                <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
           </div>
 
-          {/* ── Center Column: Search, Sort & Problem Rows (6 Cols) ─── */}
-          <div className="lg:col-span-6 space-y-4">
-            {/* Search & Sort Controls Bar */}
-            <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-              <div className="relative flex-1">
-                <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
-                <input
-                  type="text"
-                  value={searchInCat}
-                  onChange={(e) => setSearchInCat(e.target.value)}
-                  placeholder={`Search in ${industry.name} problems...`}
-                  className="w-full rounded-2xl border border-zinc-200/80 bg-white pl-10 pr-4 py-2.5 text-xs text-zinc-900 placeholder:text-zinc-400 focus:border-[#1657FF] focus:outline-none dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100 shadow-xs"
-                />
+          {/* ── Top Summary KPI Metrics (Dynamic Real-Time Mathematical Calculations, 4 Cards) ── */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 pt-4 border-t border-outline-variant/15">
+            {/* Metric 1: Problems */}
+            <div className="space-y-1">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">
+                Problems
+              </span>
+              <p className="text-2xl sm:text-3xl font-black text-on-surface tabular-nums">
+                {kpis.problemsCount.toLocaleString()}
+              </p>
+              <span className="inline-flex items-center text-[11px] font-bold text-emerald-600">
+                {kpis.problemsTrend}
+              </span>
+            </div>
+
+            {/* Metric 2: Opportunities */}
+            <div className="space-y-1">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">
+                Opportunities
+              </span>
+              <p className="text-2xl sm:text-3xl font-black text-on-surface tabular-nums">
+                {kpis.opportunitiesCount.toLocaleString()}
+              </p>
+              <span className="inline-flex items-center text-[11px] font-bold text-emerald-600">
+                {kpis.opportunitiesTrend}
+              </span>
+            </div>
+
+            {/* Metric 3: Trending Problems */}
+            <div className="space-y-1">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">
+                Trending Problems
+              </span>
+              <p className="text-2xl sm:text-3xl font-black text-on-surface tabular-nums">
+                {kpis.trendingCount.toLocaleString()}
+              </p>
+              <span className="inline-flex items-center text-[11px] font-bold text-amber-500">
+                {kpis.trendingTrend}
+              </span>
+            </div>
+
+            {/* Metric 4: Avg. Pain Score */}
+            <div className="space-y-1">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">
+                Avg. Pain Score
+              </span>
+              <p className="text-2xl sm:text-3xl font-black text-rose-600 tabular-nums">
+                {kpis.avgPainScore}
+              </p>
+              <span className="inline-flex items-center text-[11px] font-bold text-on-surface-variant">
+                {kpis.severityLabel}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Main Ecosystem Layout ─────────────────────────────────────────── */}
+      <main className="max-w-7xl w-full mx-auto px-4 md:px-8 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          {/* ── Left / Main Column: Search, Sort & Problem Cards (8 Cols) ───── */}
+          <div className="lg:col-span-8 space-y-6">
+            {/* Filter Toolbar */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-outline-variant/20 pb-4">
+              <div className="flex items-center gap-3">
+                {isSearching && (
+                  <button
+                    onClick={() => {
+                      setSearchInCat("");
+                      setCurrentPage(1);
+                    }}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-rose-600 bg-rose-50 hover:bg-rose-100 transition-all cursor-pointer shadow-2xs"
+                  >
+                    <RotateCcw className="w-3 h-3" />
+                    <span>Clear Search</span>
+                  </button>
+                )}
               </div>
 
-              <div className="flex items-center gap-2 shrink-0">
-                <span className="text-xs font-bold text-zinc-500">Sort by:</span>
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className="rounded-xl border border-zinc-200/80 bg-white px-3 py-2 text-xs font-bold text-zinc-800 focus:border-[#1657FF] focus:outline-none dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-200 shadow-xs"
-                >
-                  <option value="Pain Score">Pain Score</option>
-                  <option value="Opportunity">Opportunity Score</option>
-                  <option value="Most Discussed">Most Discussed</option>
-                  <option value="Votes">Most Upvoted</option>
-                </select>
+              <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
+                {/* Search Input */}
+                <div className="relative flex-1 sm:w-64">
+                  <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-on-surface-variant h-3.5 w-3.5" />
+                  <input
+                    type="text"
+                    value={searchInCat}
+                    onChange={(e) => {
+                      setSearchInCat(e.target.value);
+                      setCurrentPage(1);
+                    }}
+                    placeholder={`Search ${industry.name}...`}
+                    className="w-full bg-surface-container-lowest border border-outline-variant/40 hover:border-primary/40 rounded-xl py-2 pl-9 pr-3 text-xs text-on-surface focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs transition-all placeholder:text-on-surface-variant/60"
+                  />
+                </div>
+
+                {/* Redesigned Sort Dropdown matching Explore */}
+                <div className="flex items-center gap-2 shrink-0">
+                  <span className="text-xs font-medium text-on-surface-variant">Sort:</span>
+                  <div className="relative inline-block">
+                    <select
+                      value={sortBy}
+                      onChange={(e) => setSortBy(e.target.value)}
+                      className="appearance-none bg-surface-container-lowest border border-outline-variant/40 hover:border-primary/40 rounded-xl py-1.5 pl-3 pr-8 text-xs font-semibold text-on-surface focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer shadow-2xs transition-colors"
+                    >
+                      <option value="Highest Pain">Highest Pain Score</option>
+                      <option value="Trending">Trending</option>
+                      <option value="Newest">Newly Verified</option>
+                      <option value="Opportunity">Opportunity Score</option>
+                      <option value="Most Discussed">Most Discussed</option>
+                    </select>
+                    <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none h-3.5 w-3.5" />
+                  </div>
+                </div>
               </div>
             </div>
 
-            {/* Problem Cards List */}
-            <div className="space-y-3">
-              {filteredProblems.map((p) => (
-                <div
-                  key={p.id}
-                  onClick={() => navigate(`/problem/${p.id}`)}
-                  className="card-hover-lift group cursor-pointer rounded-2xl border border-zinc-200/80 bg-white p-5 shadow-xs dark:border-zinc-800 dark:bg-zinc-900 space-y-3 transition-all"
-                >
-                  <div>
-                    <h3 className="text-sm font-bold text-zinc-900 dark:text-white group-hover:text-[#1657FF] transition-colors">
-                      {p.title}
-                    </h3>
-                    <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400 line-clamp-2 leading-relaxed">
-                      {p.description}
-                    </p>
+            {/* Problem Statements List: Flat layout on page background with subtle separators */}
+            {loading ? (
+              <div className="space-y-6 w-full">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <div key={i} className="w-full pb-6 border-b border-outline-variant/20">
+                    <ProblemCardSkeleton />
+                  </div>
+                ))}
+              </div>
+            ) : filteredProblems.length === 0 ? (
+              <div className="space-y-8 w-full animate-fade-in">
+                {/* 1. Unboxed Clean Info Message (No icon, No box container) */}
+                <div className="py-2 space-y-3">
+                  <h3 className="text-lg md:text-xl font-bold text-on-surface tracking-tight">
+                    No problem statements found
+                  </h3>
+                  <p className="text-xs md:text-sm text-on-surface-variant font-normal leading-relaxed">
+                    Try adjusting your search terms or clearing active filters.
+                  </p>
+                  {isSearching && (
+                    <button
+                      onClick={() => setSearchInCat("")}
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary text-white text-xs font-semibold hover:bg-primary-hover transition-all cursor-pointer shadow-2xs mt-1"
+                    >
+                      <RotateCcw className="w-3.5 h-3.5" />
+                      <span>Clear Search</span>
+                    </button>
+                  )}
+                </div>
+
+                {/* Separator */}
+                <div className="w-full h-px bg-outline-variant/20" />
+
+                {/* 2. Suggested Statements Section */}
+                {suggestedProblems.length > 0 && (
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h4 className="text-xs font-bold uppercase tracking-wider text-on-surface">
+                        Suggested Statements
+                      </h4>
+                      <span className="text-xs text-on-surface-variant font-normal">
+                        Trending across other sectors
+                      </span>
+                    </div>
+
+                    <div className="flex flex-col divide-y divide-outline-variant/20 w-full">
+                      {suggestedProblems.map((prob) => (
+                        <div key={prob.id} className="py-5 first:pt-0 last:pb-2">
+                          <TrendingProblemCard
+                            problem={prob}
+                            variant="flat"
+                            className="w-full"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Separator */}
+                <div className="w-full h-px bg-outline-variant/20" />
+
+                {/* 3. Visit Other Industries Section with Dynamic Accurate Counts */}
+                <div className="space-y-4 pt-1">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="text-xs font-bold uppercase tracking-wider text-on-surface">
+                        Visit Other Industries
+                      </h4>
+                      <p className="text-xs text-on-surface-variant mt-0.5 font-normal">
+                        Explore verified operational problems across other active domain verticals.
+                      </p>
+                    </div>
+                    <Link
+                      to="/industries"
+                      className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline shrink-0"
+                    >
+                      <span>All Industries</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </Link>
                   </div>
 
-                  <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
-                    <div className="flex flex-wrap items-center gap-1.5">
-                      {(p.tags || [p.industry]).map((t, idx) => (
-                        <span
-                          key={idx}
-                          className="rounded-md bg-zinc-100 px-2 py-0.5 text-[10px] font-semibold text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                    {otherIndustries.slice(0, 6).map((ind) => {
+                      const count = problemCounts[ind.slug] ?? 0;
+                      return (
+                        <Link
+                          key={ind.slug}
+                          to={`/industries/${ind.slug}`}
+                          className="flex items-center justify-between p-4 rounded-2xl border border-outline-variant/30 hover:border-primary/40 hover:bg-surface-container-low transition-all group cursor-pointer"
                         >
-                          {t}
-                        </span>
+                          <div className="min-w-0 pr-3">
+                            <h5 className="text-xs font-bold text-on-surface group-hover:text-primary transition-colors truncate">
+                              {ind.name}
+                            </h5>
+                            <span className="text-[11px] text-on-surface-variant font-normal">
+                              {count} problem{count === 1 ? "" : "s"}
+                            </span>
+                          </div>
+                          <ArrowRight className="w-4 h-4 text-on-surface-variant group-hover:text-primary group-hover:translate-x-0.5 transition-all shrink-0" />
+                        </Link>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-8 w-full animate-fade-in">
+                {/* Problem Statements List (Up to 20 per page) */}
+                <div className="flex flex-col divide-y divide-outline-variant/20 w-full">
+                  {paginatedProblems.map((prob) => (
+                    <div key={prob.id} className="py-5 first:pt-0 last:pb-2">
+                      <TrendingProblemCard
+                        problem={prob}
+                        variant="flat"
+                        className="w-full"
+                      />
+                    </div>
+                  ))}
+                </div>
+
+                {/* Pagination Controls (< 1, 2 >) */}
+                {totalPages > 1 && (
+                  <div className="flex items-center justify-center gap-2 py-4 border-t border-outline-variant/20">
+                    <button
+                      onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                      disabled={currentPage === 1}
+                      className="inline-flex items-center justify-center w-8 h-8 rounded-xl border border-outline-variant/40 bg-surface-container-lowest text-on-surface hover:border-primary/40 hover:text-primary disabled:opacity-30 disabled:pointer-events-none transition-all cursor-pointer shadow-2xs"
+                      aria-label="Previous Page"
+                    >
+                      <ChevronLeft className="w-4 h-4" />
+                    </button>
+
+                    <div className="flex items-center gap-1.5">
+                      {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                        <button
+                          key={page}
+                          onClick={() => setCurrentPage(page)}
+                          className={`w-8 h-8 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                            currentPage === page
+                              ? "bg-primary text-white shadow-2xs"
+                              : "bg-surface-container-lowest border border-outline-variant/40 text-on-surface-variant hover:border-primary/40 hover:text-on-surface"
+                          }`}
+                        >
+                          {page}
+                        </button>
                       ))}
                     </div>
 
-                    <div className="flex items-center gap-3 text-xs font-mono font-bold">
-                      <span className="text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md dark:bg-rose-950/40">
-                        Pain {p.painScore}
-                      </span>
-                      <span className="text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md dark:bg-emerald-950/40">
-                        Opp {p.opportunityScore}
-                      </span>
-                      <span className="flex items-center gap-1 text-zinc-500 font-sans font-medium text-[11px]">
-                        <MessageSquare className="h-3 w-3" />
-                        <span>{p.commentsCount || p.comments?.length || 0}</span>
-                      </span>
+                    <button
+                      onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                      disabled={currentPage === totalPages}
+                      className="inline-flex items-center justify-center w-8 h-8 rounded-xl border border-outline-variant/40 bg-surface-container-lowest text-on-surface hover:border-primary/40 hover:text-primary disabled:opacity-30 disabled:pointer-events-none transition-all cursor-pointer shadow-2xs"
+                      aria-label="Next Page"
+                    >
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
+                  </div>
+                )}
+
+                {/* End of Verified Statements Indicator */}
+                <div className="flex items-center gap-3 text-on-surface-variant/50 text-[11px] font-medium justify-center pt-2">
+                  <div className="h-px bg-outline-variant/20 flex-1" />
+                  <span>End of verified statements for {industry.name}</span>
+                  <div className="h-px bg-outline-variant/20 flex-1" />
+                </div>
+
+                {/* Visit Other Industries Section */}
+                <div className="space-y-4 pt-2">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="text-xs font-bold uppercase tracking-wider text-on-surface">
+                        Visit Other Industries
+                      </h4>
+                      <p className="text-xs text-on-surface-variant mt-0.5 font-normal">
+                        Explore verified operational problems across other active domain verticals.
+                      </p>
                     </div>
+                    <Link
+                      to="/industries"
+                      className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline shrink-0"
+                    >
+                      <span>All Industries</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </Link>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                    {otherIndustries.slice(0, 6).map((ind) => {
+                      const count = problemCounts[ind.slug] ?? 0;
+                      return (
+                        <Link
+                          key={ind.slug}
+                          to={`/industries/${ind.slug}`}
+                          className="flex items-center justify-between p-4 rounded-2xl border border-outline-variant/30 hover:border-primary/40 hover:bg-surface-container-low transition-all group cursor-pointer"
+                        >
+                          <div className="min-w-0 pr-3">
+                            <h5 className="text-xs font-bold text-on-surface group-hover:text-primary transition-colors truncate">
+                              {ind.name}
+                            </h5>
+                            <span className="text-[11px] text-on-surface-variant font-normal">
+                              {count} problem{count === 1 ? "" : "s"}
+                            </span>
+                          </div>
+                          <ArrowRight className="w-4 h-4 text-on-surface-variant group-hover:text-primary group-hover:translate-x-0.5 transition-all shrink-0" />
+                        </Link>
+                      );
+                    })}
                   </div>
                 </div>
-              ))}
-            </div>
-
-            {/* Pagination (< Previous 1 2 3 ... 214 Next >) */}
-            <div className="flex items-center justify-between border-t border-zinc-200/80 pt-4 text-xs font-semibold text-zinc-500 dark:border-zinc-800">
-              <button
-                onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                disabled={currentPage === 1}
-                className="rounded-xl border border-zinc-200 bg-white px-3 py-1.5 hover:bg-zinc-50 disabled:opacity-40 dark:border-zinc-800 dark:bg-zinc-900 shadow-xs"
-              >
-                &lt; Previous
-              </button>
-
-              <div className="flex items-center gap-1">
-                {[1, 2, 3].map((page) => (
-                  <button
-                    key={page}
-                    onClick={() => setCurrentPage(page)}
-                    className={`h-7 w-7 rounded-lg text-xs font-bold transition-colors ${
-                      currentPage === page
-                        ? "bg-[#1657FF] text-white"
-                        : "bg-white border border-zinc-200 text-zinc-700 hover:bg-zinc-50 dark:bg-zinc-900 dark:border-zinc-800 dark:text-zinc-300"
-                    }`}
-                  >
-                    {page}
-                  </button>
-                ))}
-                <span className="px-1 text-zinc-400">...</span>
-                <button
-                  onClick={() => setCurrentPage(214)}
-                  className="h-7 px-2 rounded-lg bg-white border border-zinc-200 text-zinc-700 hover:bg-zinc-50 dark:bg-zinc-900 dark:border-zinc-800 dark:text-zinc-300"
-                >
-                  214
-                </button>
               </div>
-
-              <button
-                onClick={() => setCurrentPage(currentPage + 1)}
-                className="rounded-xl border border-zinc-200 bg-white px-3 py-1.5 hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900 shadow-xs"
-              >
-                Next &gt;
-              </button>
-            </div>
+            )}
           </div>
 
-          {/* ── Right Column: Category Insights & Distributions (3 Cols) ─ */}
-          <div className="lg:col-span-3 space-y-6">
-            
+          {/* ── Right Column: Sticky Minimal Human-Made Sidebar (4 Cols) ───── */}
+          <div className="lg:col-span-4 lg:sticky lg:top-24 self-start space-y-6">
             {/* Widget 1: Category Insights */}
-            <div className="rounded-2xl border border-zinc-200/80 bg-white p-5 shadow-xs dark:border-zinc-800 dark:bg-zinc-900 space-y-4">
-              <div className="flex items-center justify-between border-b border-zinc-100 pb-3 dark:border-zinc-800">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-white">
+            <div className="bg-white rounded-2xl border border-gray-200/70 p-5 space-y-4">
+              <div className="flex items-center justify-between pb-3 border-b border-gray-100">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-gray-900">
                   Category Insights
                 </h3>
-                <span className="text-[11px] font-semibold text-zinc-400">This Week ▾</span>
+                <span className="text-xs text-gray-400 font-normal">This Week</span>
               </div>
 
-              <div className="space-y-3.5 text-xs">
-                <div>
-                  <span className="text-[10px] uppercase font-bold text-zinc-400">Most Discussed</span>
-                  <p className="font-bold text-zinc-900 dark:text-zinc-100 mt-0.5">Long waiting times in OPD</p>
-                  <span className="text-[11px] text-zinc-500">256 discussions</span>
+              <div className="space-y-4">
+                {/* Most Discussed */}
+                <div className="space-y-1">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-medium text-gray-500">Most Discussed</span>
+                    <span className="text-gray-400 font-normal">
+                      {dynamicInsights.mostDiscussed.count}
+                    </span>
+                  </div>
+                  <p className="text-xs sm:text-sm font-semibold text-gray-900 leading-snug">
+                    {dynamicInsights.mostDiscussed.title}
+                  </p>
                 </div>
 
-                <div className="border-t border-zinc-100 pt-2.5 dark:border-zinc-800">
-                  <span className="text-[10px] uppercase font-bold text-zinc-400">Top Opportunity</span>
-                  <p className="font-bold text-zinc-900 dark:text-zinc-100 mt-0.5">AI-based early disease detection</p>
-                  <span className="text-[11px] font-mono font-bold text-[#1657FF]">Opportunity Score 94</span>
+                {/* Top Opportunity */}
+                <div className="pt-3 border-t border-gray-100 space-y-1">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-medium text-gray-500">Top Opportunity</span>
+                    <span className="font-mono text-blue-600 font-bold text-xs">
+                      {dynamicInsights.topOpportunity.score}
+                    </span>
+                  </div>
+                  <p className="text-xs sm:text-sm font-semibold text-gray-900 leading-snug">
+                    {dynamicInsights.topOpportunity.title}
+                  </p>
                 </div>
 
-                <div className="border-t border-zinc-100 pt-2.5 dark:border-zinc-800">
-                  <span className="text-[10px] uppercase font-bold text-zinc-400">Rising Fast</span>
-                  <p className="font-bold text-zinc-900 dark:text-zinc-100 mt-0.5">Mental health in rural areas</p>
-                  <span className="text-[11px] font-bold text-emerald-600">↑ 46% this week</span>
+                {/* Rising Fast */}
+                <div className="pt-3 border-t border-gray-100 space-y-1">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-medium text-gray-500">Rising Fast</span>
+                    <span className="text-emerald-600 font-semibold text-xs">
+                      {dynamicInsights.risingFast.trend}
+                    </span>
+                  </div>
+                  <p className="text-xs sm:text-sm font-semibold text-gray-900 leading-snug">
+                    {dynamicInsights.risingFast.title}
+                  </p>
                 </div>
               </div>
             </div>
 
-            {/* Widget 2: Pain Score Distribution */}
-            <div className="rounded-2xl border border-zinc-200/80 bg-white p-5 shadow-xs dark:border-zinc-800 dark:bg-zinc-900 space-y-4">
-              <div className="flex items-center justify-between border-b border-zinc-100 pb-3 dark:border-zinc-800">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-white">
+            {/* Widget 2: Pain Score Distribution (Dynamic Percentages & Counts) */}
+            <div className="bg-white rounded-2xl border border-gray-200/70 p-5 space-y-4">
+              <div className="flex items-center justify-between pb-3 border-b border-gray-100">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-gray-900">
                   Pain Score Distribution
                 </h3>
-                <span className="text-[11px] font-semibold text-zinc-400">All Time ▾</span>
+                <span className="text-xs text-gray-400 font-normal">All Time</span>
               </div>
 
-              <div className="space-y-2.5 text-xs">
-                <div className="space-y-1">
-                  <div className="flex justify-between font-semibold">
-                    <span className="text-rose-600 font-bold">90-100 (Very High)</span>
-                    <span className="font-mono text-zinc-600 dark:text-zinc-400">5,124 (40%)</span>
+              <div className="space-y-3 text-xs">
+                {dynamicPainDist.map((item) => (
+                  <div key={item.label} className="space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <span className="font-medium text-gray-700">{item.label}</span>
+                      <span className="font-mono text-gray-500">
+                        {item.count.toLocaleString()} ({item.pct}%)
+                      </span>
+                    </div>
+                    <div className="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
+                      <div
+                        className={`h-full ${item.color} rounded-full transition-all duration-500`}
+                        style={{ width: `${item.pct}%` }}
+                      />
+                    </div>
                   </div>
-                  <div className="h-2 w-full rounded-full bg-zinc-100 dark:bg-zinc-800 overflow-hidden">
-                    <div className="h-full bg-rose-500 rounded-full" style={{ width: "40%" }} />
-                  </div>
-                </div>
-
-                <div className="space-y-1">
-                  <div className="flex justify-between font-semibold">
-                    <span className="text-amber-600 font-bold">75-89 (High)</span>
-                    <span className="font-mono text-zinc-600 dark:text-zinc-400">4,832 (38%)</span>
-                  </div>
-                  <div className="h-2 w-full rounded-full bg-zinc-100 dark:bg-zinc-800 overflow-hidden">
-                    <div className="h-full bg-amber-500 rounded-full" style={{ width: "38%" }} />
-                  </div>
-                </div>
-
-                <div className="space-y-1">
-                  <div className="flex justify-between font-semibold">
-                    <span className="text-blue-600 font-bold">50-74 (Medium)</span>
-                    <span className="font-mono text-zinc-600 dark:text-zinc-400">2,341 (18%)</span>
-                  </div>
-                  <div className="h-2 w-full rounded-full bg-zinc-100 dark:bg-zinc-800 overflow-hidden">
-                    <div className="h-full bg-blue-500 rounded-full" style={{ width: "18%" }} />
-                  </div>
-                </div>
-
-                <div className="space-y-1">
-                  <div className="flex justify-between font-semibold">
-                    <span className="text-zinc-500">25-49 (Low)</span>
-                    <span className="font-mono text-zinc-600 dark:text-zinc-400">421 (4%)</span>
-                  </div>
-                  <div className="h-2 w-full rounded-full bg-zinc-100 dark:bg-zinc-800 overflow-hidden">
-                    <div className="h-full bg-zinc-400 rounded-full" style={{ width: "4%" }} />
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
 
             {/* Widget 3: Top Locations */}
-            <div className="rounded-2xl border border-zinc-200/80 bg-white p-5 shadow-xs dark:border-zinc-800 dark:bg-zinc-900 space-y-4">
-              <div className="flex items-center justify-between border-b border-zinc-100 pb-3 dark:border-zinc-800">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-white">
+            <div className="bg-white rounded-2xl border border-gray-200/70 p-5 space-y-4">
+              <div className="flex items-center justify-between pb-3 border-b border-gray-100">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-gray-900">
                   Top Locations
                 </h3>
-                <span className="text-[11px] font-semibold text-zinc-400">All Time ▾</span>
+                <span className="text-xs text-gray-400 font-normal">All Time</span>
               </div>
 
               <div className="space-y-2.5 text-xs">
@@ -507,20 +777,18 @@ export const IndustryDetail: React.FC = () => {
                   { name: "UK", count: "845", pct: "6%" },
                   { name: "Brazil", count: "620", pct: "4%" },
                 ].map((loc) => (
-                  <div key={loc.name} className="flex items-center justify-between font-medium">
-                    <span className="text-zinc-800 dark:text-zinc-200">{loc.name}</span>
-                    <span className="font-mono text-zinc-500 dark:text-zinc-400">
+                  <div key={loc.name} className="flex items-center justify-between py-0.5">
+                    <span className="text-gray-700 font-medium">{loc.name}</span>
+                    <span className="font-mono text-gray-400">
                       {loc.count} ({loc.pct})
                     </span>
                   </div>
                 ))}
               </div>
             </div>
-
           </div>
-
         </div>
-      </div>
+      </main>
     </div>
   );
 };

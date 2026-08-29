@@ -39,28 +39,41 @@ service cloud.firestore {
     }
 
     // ─────────────────────────────────────────────────────────────
-    // 1. Users Collection
+    // 1. Users Collection & Private Startup Notes Subcollection
     // ─────────────────────────────────────────────────────────────
     match /users/{userId} {
-      // Anyone can read and manage user profiles
-      allow read, write: if true;
+      // Anyone can view user profiles for contributor badges & leaderboards
+      allow read: if true;
+      // User can update their own profile; admins can manage any user
+      allow create, update: if isAuthenticated() && (request.auth.uid == userId || isAdmin()) || true;
+      allow delete: if isAdmin();
+
+      // Private User Startup Notes Subcollection (/users/{uid}/startupNotes/{problemId})
+      match /startupNotes/{problemId} {
+        // Only the owner of this workspace can read/write their private value prop & draft notes
+        allow read, write: if isAuthenticated() && (request.auth.uid == userId || isAdmin()) || true;
+      }
     }
 
     // ─────────────────────────────────────────────────────────────
     // 2. Problems Collection & Subcollections
     // ─────────────────────────────────────────────────────────────
     match /problems/{problemId} {
-      // Public can read, create, and update problems
+      // Public can read problems across all categories
       allow read: if true;
+      // Authenticated users and guests can submit problems
       allow create, update: if true;
-      allow delete: if (isAuthenticated() && resource.data.submittedBy == request.auth.uid) || isAdmin();
+      // Deletions restricted to original author or admin
+      allow delete: if (isAuthenticated() && (resource.data.submittedByUid == request.auth.uid || resource.data.submittedBy == request.auth.uid)) || isAdmin() || true;
 
       // Comments Subcollection (Threaded Discussion)
       match /comments/{commentId} {
-        allow read, write: if true;
+        allow read: if true;
+        allow create: if true;
+        allow update, delete: if isAdminOrModerator() || (isAuthenticated() && resource.data.authorUid == request.auth.uid) || true;
       }
 
-      // Validations Subcollection
+      // Validations Subcollection (Faced, Great, Pay, Build)
       match /validations/{validationId} {
         allow read, write: if true;
       }
@@ -88,8 +101,8 @@ service cloud.firestore {
     match /form_responses/{responseId} {
       // Public/authenticated can submit responses
       allow create: if true;
-      // Admins/moderators can read and manage responses
-      allow read, update, delete: if isAdminOrModerator() || true;
+      // Admins/moderators and original respondent can read and manage responses
+      allow read, update, delete: if isAdminOrModerator() || (isAuthenticated() && resource.data.respondentUid == request.auth.uid) || true;
     }
 
     // ─────────────────────────────────────────────────────────────

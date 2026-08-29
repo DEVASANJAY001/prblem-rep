@@ -184,6 +184,14 @@ export function getProblemById(id: string): ProblemDoc | null {
       if (!found.attachedCompanyNames && seed.attachedCompanyNames) {
         found.attachedCompanyNames = seed.attachedCompanyNames;
       }
+      if (seed.startupModeConfig) {
+        if (!found.startupModeConfig || !found.startupModeConfig.validationQuestions) {
+          found.startupModeConfig = seed.startupModeConfig;
+          found.hasStartupMode = seed.hasStartupMode ?? true;
+          found.startupModeEnabled = seed.startupModeEnabled ?? true;
+          save(STORAGE_KEYS.PROBLEMS, list);
+        }
+      }
       // Purge any old seed mock comments so discussion stays real
       if (found.comments && found.comments.some((c) => c.id === "com-1" || c.author === "Dr. Marcus Vance")) {
         found.comments = found.comments.filter((c) => c.id !== "com-1" && c.id !== "com-2" && c.id !== "com-3" && c.id !== "com-4" && c.author !== "Dr. Marcus Vance");
@@ -249,6 +257,15 @@ export function submitProblem(data: any, user: { uid: string; name: string } | n
     commentsCount: 0,
     bookmarksCount: 0,
     tags: [data.industry?.split(" ")[0] || "General", data.severity?.toUpperCase() || "MEDIUM"],
+    evidenceDocuments: data.evidenceDocuments || [],
+    marketData: data.marketData || { tam: data.estimatedValue || "$1.0B", currentPenetration: 25, wastedCost: "$500M", citizensAffected: "10M+" },
+    dataPoints: data.dataPoints || [],
+    researchData: data.researchData,
+    competitorData: data.competitorData,
+    suggestedMVP: data.suggestedMVP,
+    hasStartupMode: data.hasStartupMode ?? true,
+    startupModeEnabled: data.startupModeEnabled ?? true,
+    startupModeConfig: data.startupModeConfig,
   };
 
   list.unshift(newProblem);
@@ -490,17 +507,22 @@ export function getBookmarkedProblems(userUid: string = "guest"): ProblemDoc[] {
 
 export function addComment(
   problemId: string,
-  user: { uid: string; name: string; photoURL?: string | null },
+  user: { uid: string; name: string; photoURL?: string | null; role?: string },
   content: string
 ): ProblemComment {
   const comment: ProblemComment = {
     id: `c-${Date.now()}`,
     problemId,
+    author: user.name || "Community Member",
     authorUid: user.uid,
     authorName: user.name,
     authorPhotoURL: user.photoURL || null,
+    role: user.role || "Practitioner",
+    text: content,
     content,
+    date: "Just now",
     createdAt: new Date().toISOString(),
+    likes: 0,
     upvotes: 0,
   };
   return comment;

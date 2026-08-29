@@ -184,11 +184,13 @@ export const Explore: React.FC = () => {
         return (b.painScore || 0) - (a.painScore || 0);
       }
       if (sortBy === "Newest") {
-        return (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0);
+        const timeA = a.publishedAt ? new Date(a.publishedAt).getTime() : 0;
+        const timeB = b.publishedAt ? new Date(b.publishedAt).getTime() : 0;
+        return timeB - timeA;
       }
       // Default: Trending / Upvotes / Views
-      const scoreA = (a.upvotes || 0) * 2 + (a.views || 0);
-      const scoreB = (b.upvotes || 0) * 2 + (b.views || 0);
+      const scoreA = (a.votes?.upvotes || 0) * 2 + (a.views || 0);
+      const scoreB = (b.votes?.upvotes || 0) * 2 + (b.views || 0);
       return scoreB - scoreA;
     });
   }, [allProblems, search, selectedIndustries, selectedSeverity, verifiedOnly, sortBy]);
@@ -196,9 +198,9 @@ export const Explore: React.FC = () => {
   // Trending Problems Calculation (Highest traction / High pain / Most views)
   const trendingProblems = useMemo(() => {
     const trending = allProblems.filter((p) => {
-      const rawPain = Number(p.painScore ?? p.aiScores?.painLevel ?? p.aiScores?.painScore ?? 87);
+      const rawPain = Number(p.painScore ?? p.aiScores?.painLevel ?? 87);
       const views = p.views ?? 0;
-      const votes = p.upvotes || p.votes?.upvotes || p.votes || 0;
+      const votes = typeof p.votes === "object" ? p.votes?.upvotes || 0 : Number(p.votes || 0);
       return views >= 30 || rawPain >= 88 || votes >= 10 || (p as any).isTrending;
     });
 

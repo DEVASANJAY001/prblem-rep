@@ -113,6 +113,7 @@ export const SubmitProblem: React.FC = () => {
 
   // ── Tab 6: Startup Mode & Venture Blueprint ───────────────────────────────
   const [hasStartupMode, setHasStartupMode] = useState(false);
+  const [startupThesis, setStartupThesis] = useState("");
   const [startupTargetSegments, setStartupTargetSegments] = useState<string[]>([]);
   const [newSegment, setNewSegment] = useState("");
   const [startupWillingnessToPay, setStartupWillingnessToPay] = useState("");
@@ -126,13 +127,38 @@ export const SubmitProblem: React.FC = () => {
   const [newGapType, setNewGapType] = useState<"Weakness" | "Gap">("Weakness");
 
   const [startupDirections, setStartupDirections] = useState<
-    Array<{ type: string; title: string; description: string }>
+    Array<{
+      type: "software" | "service" | "hardware" | "hybrid" | string;
+      title: string;
+      description: string;
+      pros?: string;
+      cons?: string;
+      techStack?: string[];
+    }>
   >([]);
-  const [newDirType, setNewDirType] = useState("Direction 1");
+  const [newDirType, setNewDirType] = useState<string>("software");
   const [newDirTitle, setNewDirTitle] = useState("");
   const [newDirDesc, setNewDirDesc] = useState("");
+  const [newDirPros, setNewDirPros] = useState("");
+  const [newDirCons, setNewDirCons] = useState("");
+  const [newDirTechStack, setNewDirTechStack] = useState("");
 
+  const [startupValidationQuestions, setStartupValidationQuestions] = useState<string[]>([]);
+  const [newValidationQuestion, setNewValidationQuestion] = useState("");
+  const [discoveryInterviewPrompt, setDiscoveryInterviewPrompt] = useState("");
 
+  const [startupComplianceStandards, setStartupComplianceStandards] = useState<string[]>([
+    "HIPAA BAA Compliant",
+    "SOC2 Type II Ready",
+    "FHIR / HL7 Validated",
+    "Carequality HIE Ready",
+  ]);
+  const [customStandard, setCustomStandard] = useState("");
+
+  const [suggestedAngles, setSuggestedAngles] = useState<string[]>([]);
+  const [newSuggestedAngle, setNewSuggestedAngle] = useState("");
+  const [keyRisks, setKeyRisks] = useState<string[]>([]);
+  const [newKeyRisk, setNewKeyRisk] = useState("");
 
   // Load Example Template
   const loadExampleTemplate = () => {
@@ -203,39 +229,84 @@ export const SubmitProblem: React.FC = () => {
     setTechnicalRequirements("SOC2 Type II compliance, HIPAA BAA readiness, robust integration with national HIE networks (Carequality, CommonWell), under 200ms parse latency.");
 
     setHasStartupMode(true);
+    setStartupThesis("This problem represents an acute systemic inefficiency across **46 million** citizens with an annual wasted cost of **$1.5B**. With over **64%** of rural community clinics still forced to rely on manual fax transfers daily, there is an immediate willingness to pay (**$150/mo per practitioner**) for an automated software bridge or local edge caching wedge.");
     setStartupTargetSegments([
       "Rural Clinic Admins",
-      "Local Specialists",
-      "EMS Providers",
+      "Independent Specialists",
+      "Home Care Nurses",
       "Independent Pharmacists",
+      "EMS & Urgent Care Providers",
     ]);
     setStartupWillingnessToPay("$150/mo per practitioner");
-    setStartupValueProp("A lightweight PDF parser and FHIR bridge that categorizes incoming faxes and maps them to EHR endpoints without costly vendor lock-in.");
+    setStartupValueProp("Universal EHR translation bridge with offline caching that categorizes incoming faxes and maps them to EHR FHIR schemas for rural clinic administrators.");
     setStartupSolutionsGaps([
       {
         name: "Epic Care Everywhere",
-        description: "Comprehensive EHR network for large health systems.",
+        description: "Industry gold-standard for large enterprise hospital networks.",
         weaknessType: "Weakness",
-        weakness: "Prohibitive $50k+ implementation cost for small regional clinics.",
+        weakness: "Prohibitively expensive ($50k+/yr) for independent rural community clinics.",
       },
       {
         name: "Direct Secure Messaging",
-        description: "Encrypted email for clinical data.",
+        description: "Encrypted email protocol for certified healthcare providers.",
         weaknessType: "Gap",
-        weakness: "Unstructured PDFs still require manual clinical data transcription.",
+        weakness: "Clunky UI, relies on manual entry and unstructured PDF attachments.",
+      },
+      {
+        name: "Legacy Thermal Fax (Status Quo)",
+        description: "Universal adoption across 99% of rural healthcare facilities.",
+        weaknessType: "Gap",
+        weakness: "Severe security vulnerabilities, manual transcription errors, zero audit log.",
       },
     ]);
     setStartupDirections([
       {
-        type: "Direction 1: AI Automation",
-        title: "Automated Fax-to-FHIR Pipeline",
-        description: "Build an AI vision pipeline that ingests fax PDFs, parses clinical tables, and writes directly into local EHR schemas.",
+        type: "software",
+        title: "Universal API Bridge (Software / SaaS)",
+        description: "Lightweight cloud micro-service that translates inbound legacy fax OCR into standardized FHIR JSON schemas.",
+        pros: "90%+ gross margins, instant multi-tenant scalability, frictionless self-serve onboarding.",
+        cons: "Requires robust HIPAA BAA compliance and high OCR accuracy for handwritten charts.",
+        techStack: ["Next.js", "Python / FastAPI", "AWS Textract OCR", "FHIR REST API", "PostgreSQL"],
       },
       {
-        type: "Direction 2: Offline First",
-        title: "Edge-Device Sync Appliance",
-        description: "Hardware micro-appliance deployed on-premise in rural clinics with satellite internet caching.",
+        type: "service",
+        title: "Managed Interoperability Network (Hybrid SaaS)",
+        description: "White-glove data ingestion and concierge chart verification service for community hospital associations.",
+        pros: "Very high ACV ($24k - $60k/yr), zero clinical resistance, strong stickiness.",
+        cons: "Lower initial margins due to human-in-the-loop verification, slower deployment cycle.",
+        techStack: ["HIPAA-Compliant Portal", "Dedicated Ops Team", "SOC2 Workflow Automation"],
       },
+      {
+        type: "hardware",
+        title: "Local Edge Caching Appliance (Hardware + SaaS)",
+        description: "Plug-and-play local edge gateway that caches regional health records on-premise for offline resilience.",
+        pros: "100% operational during rural broadband blackouts, ultra-low latency.",
+        cons: "Hardware logistics, firmware maintenance, on-site installation overhead.",
+        techStack: ["Raspberry Pi / NUC", "Docker Embedded", "SQLite / DuckDB Sync", "WireGuard VPN"],
+      },
+    ]);
+    setStartupValidationQuestions([
+      "Talked to 10+ target practitioners or clinic administrators?",
+      "Verified they currently pay budget for manual workarounds?",
+      "Frequency verified (>3 occurrences per day)?",
+      "Secured 2-3 design partner LOIs or pilot agreements?",
+      "Mapped 2-week MVP scope and compliance prerequisites?",
+    ]);
+    setDiscoveryInterviewPrompt("When was the last time an incoming patient record failed to transfer, and how much clinical staff time was spent chasing that single file?");
+    setStartupComplianceStandards([
+      "HIPAA BAA Compliant",
+      "SOC2 Type II Ready",
+      "FHIR / HL7 Validated",
+      "Carequality HIE Ready",
+    ]);
+    setSuggestedAngles([
+      "Universal EHR translation bridge with offline caching for rural clinics.",
+      "Secure cloud fax OCR to FHIR standard converter for independent practices.",
+      "Zero-maintenance patient handoff portal with automated compliance logs.",
+    ]);
+    setKeyRisks([
+      "HIPAA BAA compliance hurdles across state health exchanges",
+      "Legacy EHR vendor API paywalls and rate limits",
     ]);
   };
 
@@ -293,17 +364,27 @@ export const SubmitProblem: React.FC = () => {
         suggestedMVP: {
           coreFeatures: mvpFeatures,
           technicalRequirements: technicalRequirements.trim(),
+          complianceStandards: startupComplianceStandards,
         },
         hasStartupMode,
         startupModeEnabled: hasStartupMode,
         startupModeConfig: {
           enabled: hasStartupMode,
+          thesis: startupThesis.trim(),
           targetSegments: startupTargetSegments,
           avgWillingnessToPay: startupWillingnessToPay.trim(),
           valuePropositionDraft: startupValueProp.trim(),
           existingSolutionsGaps: startupSolutionsGaps,
-          directionsToExplore: startupDirections,
+          directionsToExplore: startupDirections.slice(0, 3),
+          validationQuestions: startupValidationQuestions,
+          discoveryInterviewPrompt: discoveryInterviewPrompt.trim(),
+          complianceStandards: startupComplianceStandards,
         },
+        aiScores: {
+          suggestedAngles: suggestedAngles.filter(Boolean),
+          keyRisks: keyRisks.filter(Boolean),
+          aiConfidence: 96,
+        } as any,
       });
 
       if (res.success && res.problemId) {
@@ -1422,6 +1503,21 @@ export const SubmitProblem: React.FC = () => {
 
                 {hasStartupMode ? (
                   <div className="flex flex-col gap-6">
+                    {/* Core Venture Thesis */}
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-xs font-bold text-on-surface flex items-center justify-between">
+                        <span>Core Venture Thesis</span>
+                        <span className="text-[10px] text-outline font-normal">Use **bold** to emphasize key metrics & insights</span>
+                      </label>
+                      <textarea
+                        rows={3}
+                        value={startupThesis}
+                        onChange={(e) => setStartupThesis(e.target.value)}
+                        placeholder="This problem represents an acute systemic inefficiency across **46 million** citizens with an annual wasted cost of **$1.5B**..."
+                        className="w-full bg-surface-container/40 rounded-xl p-3.5 text-xs text-on-surface outline-none border border-outline-variant/30 leading-relaxed font-normal"
+                      />
+                    </div>
+
                     {/* Target Customer Segments */}
                     <div className="flex flex-col gap-2.5">
                       <label className="text-xs font-bold text-on-surface">
@@ -1604,22 +1700,29 @@ export const SubmitProblem: React.FC = () => {
                       </div>
                     </div>
 
-                    {/* Directions to Explore */}
+                    {/* Directions to Explore (Max 3) */}
                     <div className="flex flex-col gap-3 pt-2 border-t border-gray-200/60">
-                      <label className="text-xs font-bold text-on-surface">Possible Directions to Explore</label>
+                      <div className="flex items-center justify-between">
+                        <label className="text-xs font-bold text-on-surface">
+                          Architectural Directions to Explore
+                        </label>
+                        <span className="text-[11px] font-bold text-primary bg-primary/10 px-2.5 py-0.5 rounded-full">
+                          {startupDirections.length}/3 Approaches
+                        </span>
+                      </div>
                       {startupDirections.length === 0 ? (
                         <div className="p-3.5 rounded-xl border border-dashed border-gray-200 text-center text-xs text-on-surface-variant/70 italic bg-surface-container/10">
-                          No exploration directions added yet. Add venture angles below.
+                          No architectural directions added yet. Add up to 3 exploration angles below.
                         </div>
                       ) : (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                           {startupDirections.map((dir, idx) => (
                             <div
                               key={idx}
-                              className="p-3.5 rounded-2xl bg-surface border border-outline-variant/30 shadow-2xs flex flex-col gap-1.5"
+                              className="p-3.5 rounded-2xl bg-surface border border-outline-variant/30 shadow-2xs flex flex-col gap-2"
                             >
                               <div className="flex items-center justify-between">
-                                <span className="text-[10px] font-bold uppercase tracking-wider text-primary bg-primary/10 px-2 py-0.5 rounded-md">
+                                <span className="text-[10px] font-bold uppercase tracking-wider text-primary bg-primary/10 px-2.5 py-0.5 rounded-md">
                                   {dir.type}
                                 </span>
                                 <button
@@ -1634,55 +1737,329 @@ export const SubmitProblem: React.FC = () => {
                               <span className="text-[11px] text-on-surface-variant leading-relaxed">
                                 {dir.description}
                               </span>
+                              {dir.pros && (
+                                <div className="text-[10px] text-emerald-700 font-medium">
+                                  <strong>Pros:</strong> {dir.pros}
+                                </div>
+                              )}
+                              {dir.cons && (
+                                <div className="text-[10px] text-error font-medium">
+                                  <strong>Cons:</strong> {dir.cons}
+                                </div>
+                              )}
+                              {dir.techStack && dir.techStack.length > 0 && (
+                                <div className="flex flex-wrap gap-1 mt-1">
+                                  {dir.techStack.map((tech, tIdx) => (
+                                    <span key={tIdx} className="text-[9px] font-mono bg-surface-container px-2 py-0.5 rounded text-on-surface">
+                                      {tech}
+                                    </span>
+                                  ))}
+                                </div>
+                              )}
                             </div>
                           ))}
                         </div>
                       )}
 
-                      <div className="p-3.5 rounded-2xl bg-surface-container/20 border border-dashed border-gray-300 flex flex-col gap-2">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      {startupDirections.length < 3 ? (
+                        <div className="p-3.5 rounded-2xl bg-surface-container/20 border border-dashed border-gray-300 flex flex-col gap-2.5">
+                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                            <select
+                              value={newDirType}
+                              onChange={(e) => setNewDirType(e.target.value)}
+                              className="w-full bg-surface-container/40 rounded-xl px-3 py-2 text-xs font-bold text-on-surface outline-none border border-outline-variant/30"
+                            >
+                              <option value="software">Software / SaaS</option>
+                              <option value="service">Managed Service / Hybrid</option>
+                              <option value="hardware">Hardware / Edge Appliance</option>
+                              <option value="hybrid">Hybrid Solution</option>
+                            </select>
+                            <input
+                              type="text"
+                              value={newDirTitle}
+                              onChange={(e) => setNewDirTitle(e.target.value)}
+                              placeholder="Direction Title (e.g. Universal API Bridge)"
+                              className="w-full bg-surface-container/40 rounded-xl px-3 py-2 text-xs font-semibold text-on-surface outline-none border border-outline-variant/30 sm:col-span-2"
+                            />
+                          </div>
                           <input
                             type="text"
-                            value={newDirType}
-                            onChange={(e) => setNewDirType(e.target.value)}
-                            placeholder="Tag (e.g. Direction 3: Hardware)"
-                            className="w-full bg-surface-container/40 rounded-xl px-3 py-2 text-xs font-bold text-on-surface outline-none border border-outline-variant/30"
+                            value={newDirDesc}
+                            onChange={(e) => setNewDirDesc(e.target.value)}
+                            placeholder="Brief technical angle or venture rationale..."
+                            className="w-full bg-surface-container/40 rounded-xl px-3 py-2 text-xs text-on-surface outline-none border border-outline-variant/30"
                           />
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <input
+                              type="text"
+                              value={newDirPros}
+                              onChange={(e) => setNewDirPros(e.target.value)}
+                              placeholder="Pros (e.g. High margins, rapid scaling)"
+                              className="w-full bg-surface-container/40 rounded-xl px-3 py-2 text-xs text-on-surface outline-none border border-outline-variant/30"
+                            />
+                            <input
+                              type="text"
+                              value={newDirCons}
+                              onChange={(e) => setNewDirCons(e.target.value)}
+                              placeholder="Cons (e.g. Requires BAA compliance)"
+                              className="w-full bg-surface-container/40 rounded-xl px-3 py-2 text-xs text-on-surface outline-none border border-outline-variant/30"
+                            />
+                          </div>
                           <input
                             type="text"
-                            value={newDirTitle}
-                            onChange={(e) => setNewDirTitle(e.target.value)}
-                            placeholder="Direction Title"
-                            className="w-full bg-surface-container/40 rounded-xl px-3 py-2 text-xs font-semibold text-on-surface outline-none border border-outline-variant/30"
+                            value={newDirTechStack}
+                            onChange={(e) => setNewDirTechStack(e.target.value)}
+                            placeholder="Tech Stack (comma-separated, e.g. Next.js, Python, FHIR, PostgreSQL)"
+                            className="w-full bg-surface-container/40 rounded-xl px-3 py-2 text-xs text-on-surface outline-none border border-outline-variant/30"
                           />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (newDirTitle.trim()) {
+                                const stackArr = newDirTechStack
+                                  ? newDirTechStack.split(",").map((s) => s.trim()).filter(Boolean)
+                                  : [];
+                                setStartupDirections([
+                                  ...startupDirections,
+                                  {
+                                    type: newDirType,
+                                    title: newDirTitle.trim(),
+                                    description: newDirDesc.trim() || "Venture exploration angle.",
+                                    pros: newDirPros.trim(),
+                                    cons: newDirCons.trim(),
+                                    techStack: stackArr,
+                                  },
+                                ]);
+                                setNewDirTitle("");
+                                setNewDirDesc("");
+                                setNewDirPros("");
+                                setNewDirCons("");
+                                setNewDirTechStack("");
+                              }
+                            }}
+                            className="self-end bg-primary text-white px-4 py-1.5 rounded-xl text-xs font-bold hover:bg-primary-container cursor-pointer flex items-center gap-1 shadow-2xs"
+                          >
+                            <Plus className="w-3.5 h-3.5" />
+                            <span>Add Architectural Direction</span>
+                          </button>
                         </div>
+                      ) : (
+                        <p className="text-xs text-on-surface-variant italic">
+                          Maximum of 3 architectural approaches reached.
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Compliance & Security Standards */}
+                    <div className="flex flex-col gap-2.5 pt-2 border-t border-gray-200/60">
+                      <label className="text-xs font-bold text-on-surface">
+                        Compliance & Security Standards
+                      </label>
+                      <p className="text-[11px] text-on-surface-variant">
+                        Click chips to quickly toggle enterprise security requirements.
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {[
+                          "HIPAA BAA Compliant",
+                          "SOC2 Type II Ready",
+                          "FHIR / HL7 Validated",
+                          "Carequality HIE Ready",
+                          "GDPR & Privacy Shield",
+                          "ISO 27001 Certified",
+                          "PCI-DSS Level 1",
+                          "FedRAMP Moderate",
+                          "Zero Trust Encryption (AES-256)",
+                        ].map((preset) => {
+                          const isSelected = startupComplianceStandards.includes(preset);
+                          return (
+                            <button
+                              key={preset}
+                              type="button"
+                              onClick={() => {
+                                if (isSelected) {
+                                  setStartupComplianceStandards(startupComplianceStandards.filter((s) => s !== preset));
+                                } else {
+                                  setStartupComplianceStandards([...startupComplianceStandards, preset]);
+                                }
+                              }}
+                              className={`px-3.5 py-1.5 rounded-full text-xs font-semibold border transition-all cursor-pointer flex items-center gap-1.5 ${
+                                isSelected
+                                  ? "bg-primary text-white border-primary shadow-xs font-bold"
+                                  : "bg-surface-container/40 text-on-surface-variant border-outline-variant/30 hover:bg-surface-container"
+                              }`}
+                            >
+                              <span>{preset}</span>
+                              {isSelected && <Check className="w-3.5 h-3.5 stroke-[3]" />}
+                            </button>
+                          );
+                        })}
+                      </div>
+
+                      <div className="flex gap-2 mt-1">
                         <input
                           type="text"
-                          value={newDirDesc}
-                          onChange={(e) => setNewDirDesc(e.target.value)}
-                          placeholder="Brief technical angle or venture rationale..."
-                          className="w-full bg-surface-container/40 rounded-xl px-3 py-2 text-xs text-on-surface outline-none border border-outline-variant/30"
+                          value={customStandard}
+                          onChange={(e) => setCustomStandard(e.target.value)}
+                          placeholder="Add custom compliance standard..."
+                          className="flex-1 bg-surface-container/40 rounded-xl px-3 py-2 text-xs text-on-surface outline-none border border-outline-variant/30"
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter" && customStandard.trim()) {
+                              e.preventDefault();
+                              if (!startupComplianceStandards.includes(customStandard.trim())) {
+                                setStartupComplianceStandards([...startupComplianceStandards, customStandard.trim()]);
+                              }
+                              setCustomStandard("");
+                            }
+                          }}
                         />
                         <button
                           type="button"
                           onClick={() => {
-                            if (newDirTitle.trim()) {
-                              setStartupDirections([
-                                ...startupDirections,
-                                {
-                                  type: newDirType.trim() || "Direction",
-                                  title: newDirTitle.trim(),
-                                  description: newDirDesc.trim() || "Venture exploration angle.",
-                                },
-                              ]);
-                              setNewDirTitle("");
-                              setNewDirDesc("");
+                            if (customStandard.trim()) {
+                              if (!startupComplianceStandards.includes(customStandard.trim())) {
+                                setStartupComplianceStandards([...startupComplianceStandards, customStandard.trim()]);
+                              }
+                              setCustomStandard("");
                             }
                           }}
-                          className="self-end bg-primary text-white px-4 py-1.5 rounded-xl text-xs font-bold hover:bg-primary-container cursor-pointer flex items-center gap-1 shadow-2xs"
+                          className="bg-surface-container text-on-surface hover:bg-surface-container-high px-4 py-2 rounded-xl text-xs font-bold border border-outline-variant/30 cursor-pointer"
                         >
-                          <Plus className="w-3.5 h-3.5" />
-                          <span>Add Venture Direction</span>
+                          + Add Standard
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Validation Checklist & Discovery Prompt */}
+                    <div className="flex flex-col gap-3 pt-2 border-t border-gray-200/60">
+                      <label className="text-xs font-bold text-on-surface">Founder Validation Stage-Gate Questions</label>
+                      {startupValidationQuestions.length === 0 ? (
+                        <div className="p-3.5 rounded-xl border border-dashed border-gray-200 text-center text-xs text-on-surface-variant/70 italic bg-surface-container/10">
+                          No validation milestones added. Add discovery questions below.
+                        </div>
+                      ) : (
+                        <div className="flex flex-col gap-2">
+                          {startupValidationQuestions.map((q, idx) => (
+                            <div key={idx} className="flex items-center justify-between p-3 rounded-xl bg-surface border border-outline-variant/30 text-xs font-medium text-on-surface">
+                              <span>{idx + 1}. {q}</span>
+                              <button
+                                type="button"
+                                onClick={() => setStartupValidationQuestions(startupValidationQuestions.filter((_, i) => i !== idx))}
+                                className="text-gray-400 hover:text-error"
+                              >
+                                <X className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          value={newValidationQuestion}
+                          onChange={(e) => setNewValidationQuestion(e.target.value)}
+                          placeholder="e.g. Talked to 10+ target practitioners or clinic administrators?"
+                          className="flex-1 bg-surface-container/40 rounded-xl px-3 py-2 text-xs text-on-surface outline-none border border-outline-variant/30"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (newValidationQuestion.trim()) {
+                              setStartupValidationQuestions([...startupValidationQuestions, newValidationQuestion.trim()]);
+                              setNewValidationQuestion("");
+                            }
+                          }}
+                          className="bg-surface-container text-on-surface hover:bg-surface-container-high px-4 py-2 rounded-xl text-xs font-bold border border-outline-variant/30 cursor-pointer"
+                        >
+                          + Add Question
+                        </button>
+                      </div>
+
+                      <div className="flex flex-col gap-1.5 mt-2">
+                        <label className="text-xs font-bold text-on-surface">Customer Discovery Interview Script Prompt</label>
+                        <textarea
+                          rows={2}
+                          value={discoveryInterviewPrompt}
+                          onChange={(e) => setDiscoveryInterviewPrompt(e.target.value)}
+                          placeholder="e.g. When was the last time an incoming patient record failed to transfer, and how much clinical staff time was spent chasing that single file?"
+                          className="w-full bg-surface-container/40 rounded-xl p-3.5 text-xs text-on-surface outline-none border border-outline-variant/30 leading-relaxed font-normal"
+                        />
+                      </div>
+                    </div>
+
+                    {/* AI Co-Founder & GTM Strategy */}
+                    <div className="flex flex-col gap-3 pt-2 border-t border-gray-200/60">
+                      <label className="text-xs font-bold text-on-surface">Recommended Strategic Angles & GTM</label>
+                      <div className="flex flex-col gap-2">
+                        {suggestedAngles.map((angle, idx) => (
+                          <div key={idx} className="flex items-center justify-between p-2.5 rounded-xl bg-surface border border-outline-variant/30 text-xs text-on-surface">
+                            <span>{idx + 1}. {angle}</span>
+                            <button
+                              type="button"
+                              onClick={() => setSuggestedAngles(suggestedAngles.filter((_, i) => i !== idx))}
+                              className="text-gray-400 hover:text-error"
+                            >
+                              <X className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          value={newSuggestedAngle}
+                          onChange={(e) => setNewSuggestedAngle(e.target.value)}
+                          placeholder="e.g. Universal EHR translation bridge with offline caching..."
+                          className="flex-1 bg-surface-container/40 rounded-xl px-3 py-2 text-xs text-on-surface outline-none border border-outline-variant/30"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (newSuggestedAngle.trim()) {
+                              setSuggestedAngles([...suggestedAngles, newSuggestedAngle.trim()]);
+                              setNewSuggestedAngle("");
+                            }
+                          }}
+                          className="bg-surface-container text-on-surface hover:bg-surface-container-high px-4 py-2 rounded-xl text-xs font-bold border border-outline-variant/30 cursor-pointer"
+                        >
+                          + Add Angle
+                        </button>
+                      </div>
+
+                      <label className="text-xs font-bold text-on-surface mt-2">Key Regulatory & Technical Risks</label>
+                      <div className="flex flex-col gap-2">
+                        {keyRisks.map((risk, idx) => (
+                          <div key={idx} className="flex items-center justify-between p-2.5 rounded-xl bg-error-container/20 border border-error/20 text-xs text-on-surface">
+                            <span className="font-semibold text-error">{idx + 1}. {risk}</span>
+                            <button
+                              type="button"
+                              onClick={() => setKeyRisks(keyRisks.filter((_, i) => i !== idx))}
+                              className="text-gray-400 hover:text-error"
+                            >
+                              <X className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          value={newKeyRisk}
+                          onChange={(e) => setNewKeyRisk(e.target.value)}
+                          placeholder="e.g. HIPAA BAA compliance hurdles..."
+                          className="flex-1 bg-surface-container/40 rounded-xl px-3 py-2 text-xs text-on-surface outline-none border border-outline-variant/30"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (newKeyRisk.trim()) {
+                              setKeyRisks([...keyRisks, newKeyRisk.trim()]);
+                              setNewKeyRisk("");
+                            }
+                          }}
+                          className="bg-surface-container text-on-surface hover:bg-surface-container-high px-4 py-2 rounded-xl text-xs font-bold border border-outline-variant/30 cursor-pointer"
+                        >
+                          + Add Risk
                         </button>
                       </div>
                     </div>

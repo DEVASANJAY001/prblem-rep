@@ -114,7 +114,7 @@ export function subscribeForms(callback: (forms: FormSchema[]) => void): () => v
         if (!snap.empty) {
           const list: FormSchema[] = [];
           snap.forEach((d) => list.push(d.data() as FormSchema));
-          list.forEach((f) => saveLocalForm(f));
+          list.forEach((f) => saveLocalForm(f, { uid: "admin", name: "Admin" }));
           if (formsStream) {
             formsStream.latestData = list;
             formsStream.listeners.forEach((cb) => cb(list));
@@ -150,7 +150,12 @@ export async function submitFormResponse(
   answers: Record<string, any>,
   respondentInfo: { respondentUid?: string; respondentEmail?: string; respondentName?: string } = {}
 ): Promise<{ success: boolean; responseId: string }> {
-  const localDoc = submitLocalFormResponse(formId, answers, respondentInfo);
+  const localDoc = submitLocalFormResponse(
+    formId,
+    answers,
+    respondentInfo.respondentUid || null,
+    respondentInfo.respondentEmail || null
+  );
 
   try {
     if (db && typeof doc === "function") {

@@ -110,12 +110,14 @@ export const SavedProblems: React.FC = () => {
         return (b.painScore || 0) - (a.painScore || 0);
       }
       if (sortBy === "Trending") {
-        const scoreA = (a.upvotes || 0) * 2 + (a.views || 0);
-        const scoreB = (b.upvotes || 0) * 2 + (b.views || 0);
+        const scoreA = (a.votes?.upvotes || 0) * 2 + (a.views || 0);
+        const scoreB = (b.votes?.upvotes || 0) * 2 + (b.views || 0);
         return scoreB - scoreA;
       }
       // Default: Newest
-      return (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0);
+      const timeA = a.publishedAt ? new Date(a.publishedAt).getTime() : 0;
+      const timeB = b.publishedAt ? new Date(b.publishedAt).getTime() : 0;
+      return timeB - timeA;
     });
   }, [savedProblems, search, selectedIndustries, selectedSeverity, verifiedOnly, sortBy]);
 

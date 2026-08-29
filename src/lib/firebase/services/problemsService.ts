@@ -16,7 +16,7 @@ import {
   arrayRemove,
 } from "firebase/firestore";
 import { db } from "../config";
-import { ProblemDoc, AIScores, ProblemComment, CommentReply, ProblemValidations, EvidenceDocument, UserStartupNotes } from "@/types";
+import { ProblemDoc, ProblemStatus, AIScores, ProblemComment, CommentReply, ProblemValidations, EvidenceDocument, UserStartupNotes, StartupModeConfig } from "@/types";
 import { scoreProblemSubmission } from "@/lib/aiScoring";
 import {
   getProblems as getLocalProblems,
@@ -98,17 +98,12 @@ export async function createProblem(
     suggestedMVP?: {
       coreFeatures?: string[];
       technicalRequirements?: string;
+      complianceStandards?: string[];
     };
     hasStartupMode?: boolean;
     startupModeEnabled?: boolean;
-    startupModeConfig?: {
-      enabled?: boolean;
-      targetSegments?: string[];
-      avgWillingnessToPay?: string;
-      valuePropositionDraft?: string;
-      existingSolutionsGaps?: Array<{ name: string; description: string; weaknessType?: string; weakness?: string }>;
-      directionsToExplore?: Array<{ type: string; title: string; description: string }>;
-    };
+    startupModeConfig?: StartupModeConfig;
+    aiScores?: AIScores;
   }
 ): Promise<{ success: boolean; problemId: string; aiScores: AIScores }> {
   const scored = scoreProblemSubmission({
@@ -125,7 +120,18 @@ export async function createProblem(
     willingnessToPay: problemData.willingnessToPay || "$50-200/mo",
   });
 
-  const aiScores = scored.aiScores;
+  const aiScores = {
+    ...scored.aiScores,
+    ...(problemData.aiScores || {}),
+    suggestedAngles:
+      problemData.aiScores?.suggestedAngles && problemData.aiScores.suggestedAngles.length > 0
+        ? problemData.aiScores.suggestedAngles
+        : scored.aiScores.suggestedAngles,
+    keyRisks:
+      problemData.aiScores?.keyRisks && problemData.aiScores.keyRisks.length > 0
+        ? problemData.aiScores.keyRisks
+        : scored.aiScores.keyRisks,
+  };
   const now = new Date().toISOString();
   const id = `prob-${Date.now()}`;
 
@@ -156,25 +162,25 @@ export async function createProblem(
     audienceSize: problemData.audienceSize || "",
     willingnessToPay: problemData.willingnessToPay || "",
     estimatedValue: problemData.estimatedValue || problemData.marketData?.tam || "$1.0B",
-    marketData: problemData.marketData || {
-      tam: "$1.0B",
-      currentPenetration: 25,
-      wastedCost: "$250M",
-      citizensAffected: "5M+",
+    marketData: {
+      tam: problemData.marketData?.tam || "$1.0B",
+      currentPenetration: problemData.marketData?.currentPenetration ?? 25,
+      wastedCost: problemData.marketData?.wastedCost || "$250M",
+      citizensAffected: problemData.marketData?.citizensAffected || "5M+",
     },
     evidenceDocuments: problemData.evidenceDocuments || [],
     evidenceUrls: problemData.evidenceUrls || problemData.evidenceLinks || [],
-    evidenceLinks: problemData.evidenceLinks || problemData.evidenceUrls || [],
     dataPoints: problemData.dataPoints || [],
-    researchData: problemData.researchData || {
-      keyFindings: [],
-      methodology: "",
-      academicReferences: [],
+    researchData: {
+      keyFindings: problemData.researchData?.keyFindings || [],
+      methodology: problemData.researchData?.methodology || "",
+      academicReferences: problemData.researchData?.academicReferences || [],
     },
     competitorData: problemData.competitorData || [],
-    suggestedMVP: problemData.suggestedMVP || {
-      coreFeatures: [],
-      technicalRequirements: "",
+    suggestedMVP: {
+      coreFeatures: problemData.suggestedMVP?.coreFeatures || [],
+      technicalRequirements: problemData.suggestedMVP?.technicalRequirements || "",
+      complianceStandards: problemData.suggestedMVP?.complianceStandards,
     },
     hasStartupMode: problemData.hasStartupMode ?? true,
     startupModeEnabled: problemData.startupModeEnabled ?? problemData.hasStartupMode ?? true,
@@ -206,8 +212,10 @@ export async function createProblem(
   return { success: true, problemId: id, aiScores };
 }
 
+import { swrCache } from "@/lib/swrCache";
+
 // ─────────────────────────────────────────────────────────────────────────────
-// 2. Optimized Read with Local-First & In-Memory Cache
+// 2. Optimized Read with Local-First & In-Memory SWR Cache (0 Duplicates)
 // ─────────────────────────────────────────────────────────────────────────────
 export async function getProblemById(id: string): Promise<ProblemDoc | null> {
   const cachedStream = docStreams.get(id);
@@ -215,24 +223,60 @@ export async function getProblemById(id: string): Promise<ProblemDoc | null> {
     return cachedStream.latestData;
   }
 
-  const local = getLocalProblemById(id);
-  if (local) return local;
+  return swrCache.fetch<ProblemDoc | null>(
+    `problem_${id}`,
+    async () => {
+      const local = getLocalProblemById(id);
+      if (local) return local;
 
+      try {
+        if (db && typeof doc === "function") {
+          const ref = doc(db, PROBLEMS_COLLECTION, id);
+          const snap = await getDoc(ref);
+          if (snap.exists()) {
+            const live = snap.data() as ProblemDoc;
+            saveLocalProblem(live);
+            return live;
+          }
+        }
+      } catch (error) {
+        console.warn("Firestore getProblemById fallback:", error);
+      }
+      return null;
+    },
+    20_000 // 20s in-memory SWR TTL
+  );
+}
+
+/**
+ * Granular Module Update (Writes ONLY the specified module to Firestore)
+ */
+export async function updateProblemModule<K extends keyof ProblemDoc>(
+  problemId: string,
+  moduleKey: K,
+  moduleData: ProblemDoc[K]
+): Promise<boolean> {
+  // 1. Optimistically update local storage
+  updateFullProblemInStorage(problemId, { [moduleKey]: moduleData });
+
+  // 2. Invalidate SWR cache for this problem
+  swrCache.invalidate(`problem_${problemId}`);
+
+  // 3. Direct field-level atomic write to Firestore (0 duplicate field writes)
   try {
     if (db && typeof doc === "function") {
-      const ref = doc(db, PROBLEMS_COLLECTION, id);
-      const snap = await getDoc(ref);
-      if (snap.exists()) {
-        const live = snap.data() as ProblemDoc;
-        saveLocalProblem(live);
-        return live;
-      }
+      const problemRef = doc(db, PROBLEMS_COLLECTION, problemId);
+      await updateDoc(problemRef, {
+        [moduleKey]: moduleData,
+        updatedAt: new Date().toISOString(),
+        updatedAtServer: serverTimestamp(),
+      });
+      return true;
     }
   } catch (error) {
-    console.warn("Firestore getProblemById fallback:", error);
+    console.warn(`Firestore updateProblemModule(${moduleKey}) error:`, error);
   }
-
-  return null;
+  return true;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -370,7 +414,7 @@ export function subscribeProblems(
 // ─────────────────────────────────────────────────────────────────────────────
 export async function updateProblemStatus(
   problemId: string,
-  newStatus: "approved" | "rejected" | "needs_info" | "pending",
+  newStatus: ProblemStatus,
   adminUser: { uid: string; name: string },
   reviewNote?: string
 ): Promise<boolean> {
@@ -646,12 +690,27 @@ export async function toggleCommunityValidation(
   return result;
 }
 
+const sessionInterestDedupe = new Set<string>();
+
 export async function recordUserInterest(
   problemId: string,
   userUid: string = "guest",
   action: string = "view"
 ): Promise<number> {
   const count = recordLocalInterest(problemId, userUid);
+
+  // Filter out passive micro-events from triggering cloud writes
+  if (action.startsWith("tab_") || action === "dwell_time" || action === "view") {
+    return count;
+  }
+
+  // Deduplicate per user + problem + action in the current session
+  const dedupeKey = `${problemId}_${userUid}_${action}`;
+  if (sessionInterestDedupe.has(dedupeKey)) {
+    return count;
+  }
+  sessionInterestDedupe.add(dedupeKey);
+
   try {
     if (db && typeof doc === "function") {
       const problemRef = doc(db, PROBLEMS_COLLECTION, problemId);
@@ -873,6 +932,9 @@ export async function saveUserStartupNotes(
   try {
     localStorage.setItem(localKey, JSON.stringify(notes));
     localStorage.setItem(legacyKey, JSON.stringify(notes));
+    window.dispatchEvent(
+      new CustomEvent("startup_notes_updated", { detail: notes })
+    );
   } catch (e) {
     console.warn("Error caching startup notes locally:", e);
   }

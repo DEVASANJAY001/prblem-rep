@@ -10,11 +10,13 @@ import { ThumbsUp, Bookmark, ShieldCheck } from "lucide-react";
 interface TrendingProblemCardProps {
   problem: ProblemDoc;
   className?: string;
+  variant?: "card" | "flat";
 }
 
 export const TrendingProblemCard: React.FC<TrendingProblemCardProps> = ({
   problem,
   className = "",
+  variant = "card",
 }) => {
   const { user } = useAuth();
   const currentUid = user?.uid || "guest";
@@ -23,7 +25,7 @@ export const TrendingProblemCard: React.FC<TrendingProblemCardProps> = ({
     isProblemBookmarked(problem.id, currentUid)
   );
 
-  const initialUpvotes = problem.votes?.upvotes ?? problem.upvotes ?? 0;
+  const initialUpvotes = problem.votes?.upvotes ?? (typeof problem.votes === "number" ? problem.votes : 0);
   const [likesCount, setLikesCount] = useState<number>(initialUpvotes);
   const [isLiked, setIsLiked] = useState<boolean>(problem.votes?.userVote === "up");
   const [likeAnimating, setLikeAnimating] = useState<boolean>(false);
@@ -49,7 +51,6 @@ export const TrendingProblemCard: React.FC<TrendingProblemCardProps> = ({
   const rawPain = Number(
     problem.painScore ??
     problem.aiScores?.painLevel ??
-    problem.aiScores?.painScore ??
     87
   );
   const painNormalized = Math.min(100, Math.max(1, rawPain > 10 ? rawPain : Math.round(rawPain * 10)));
@@ -104,15 +105,19 @@ export const TrendingProblemCard: React.FC<TrendingProblemCardProps> = ({
     problem.commentsCount ?? 0,
     (problem.comments?.length ?? 0) + (problem.comments ?? []).reduce((acc, c) => acc + (c.replies?.length ?? 0), 0)
   );
-  const buildingCount = Math.max(problem.validations?.buildCount ?? 0, problem.teamMembers?.length ?? 0);
+  const buildingCount = problem.validations?.buildCount ?? 0;
 
   const gradientId = `pain-glow-${problem.id.replace(/[^a-zA-Z0-9]/g, "")}`;
 
   return (
     <article
-      className={`bg-white rounded-3xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05),0_2px_8px_-2px_rgba(0,0,0,0.03)] hover:shadow-[0_14px_36px_-6px_rgba(0,0,0,0.1)] transition-all duration-300 overflow-hidden relative flex flex-col justify-between font-['Poppins',sans-serif] border border-gray-100/90 group ${className}`}
+      className={
+        variant === "flat"
+          ? `bg-transparent rounded-none shadow-none hover:shadow-none transition-all relative flex flex-col justify-between font-['Poppins',sans-serif] border-none group ${className}`
+          : `bg-white rounded-3xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05),0_2px_8px_-2px_rgba(0,0,0,0.03)] hover:shadow-[0_14px_36px_-6px_rgba(0,0,0,0.1)] transition-all duration-300 overflow-hidden relative flex flex-col justify-between font-['Poppins',sans-serif] border border-gray-100/90 group ${className}`
+      }
     >
-      <div className="p-6 md:p-8 flex flex-col gap-4 flex-1 justify-between">
+      <div className={variant === "flat" ? "py-4 px-0 flex flex-col gap-4 flex-1 justify-between" : "p-6 md:p-8 flex flex-col gap-4 flex-1 justify-between"}>
         {/* Header Section */}
         <header className="flex flex-col gap-3 w-full">
           {/* Top Row: Category Pill + Company Logos + Like / Save Actions + Verified Checkmark */}

@@ -84,12 +84,13 @@ export async function seedAllToFirebase(
     log("3/8 Pushing Industry Verticals (industries)...");
     for (const ind of REAL_INDUSTRIES) {
       try {
-        const indRef = doc(db, "industries", ind.id);
+        const indId = ind.id || ind.slug;
+        const indRef = doc(db, "industries", indId);
         await setDoc(indRef, ind, { merge: true });
         count++;
         log(`  ✓ Synced industry: ${ind.name}`);
       } catch (err) {
-        log(`  ✗ Error syncing industry ${ind.id}: ${String(err)}`);
+        log(`  ✗ Error syncing industry ${ind.id || ind.slug}: ${String(err)}`);
       }
     }
 

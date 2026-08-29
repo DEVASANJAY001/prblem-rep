@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { subscribeProblems, updateProblemStatus } from "@/lib/firebase/services/problemsService";
+import { subscribeIndustries } from "@/lib/firebase/services/industriesService";
+import { REAL_INDUSTRIES } from "@/data/realProductionData";
 import { useAuth } from "@/contexts/AuthContext";
 import { TableSkeleton, LoadingContainer } from "@/components/common/LoadingContainer";
 import {
   CheckCircle,
   XCircle,
-  HelpCircle,
   ChevronDown,
   AlertTriangle,
   Filter,
@@ -16,100 +17,251 @@ import {
   ExternalLink,
   X,
   Send,
+  Search,
+  RotateCcw,
+  Sparkles,
 } from "lucide-react";
-import { ProblemStatus, ProblemDoc } from "@/types";
+import { ProblemStatus, ProblemDoc, IndustryDoc } from "@/types";
 
 export const AdminReviewQueue: React.FC = () => {
   const { userDoc } = useAuth();
-  const [problems, setProblems] = useState<ProblemDoc[]>([]);
+  const [allQueueProblems, setAllQueueProblems] = useState<ProblemDoc[]>([]);
+  const [industriesList, setIndustriesList] = useState<IndustryDoc[]>(REAL_INDUSTRIES);
   const [loading, setLoading] = useState(true);
+  const [statusTab, setStatusTab] = useState<"pending" | "needs_info" | "all">("pending");
   const [industryFilter, setIndustryFilter] = useState("all");
+  const [sortBy, setSortBy] = useState<"newest" | "pain" | "severity">("newest");
+  const [searchQuery, setSearchQuery] = useState("");
   const [actionSuccess, setActionSuccess] = useState<string | null>(null);
+  const [actionLoadingId, setActionLoadingId] = useState<string | null>(null);
 
   // Modification Request Note Modal State
   const [requestNoteModalProb, setRequestNoteModalProb] = useState<ProblemDoc | null>(null);
   const [customReviewNote, setCustomReviewNote] = useState("");
 
   useEffect(() => {
-    const unsubscribe = subscribeProblems({ status: "pending" }, (list) => {
-      setProblems(list);
+    // 1. Subscribe to review queue problems (pending & needs_info)
+    const unsubProblems = subscribeProblems({ status: "all" }, (list) => {
+      setAllQueueProblems(list);
       setLoading(false);
     });
-    return () => unsubscribe();
+
+    // 2. Subscribe to real-time industries list
+    const unsubIndustries = subscribeIndustries((list) => {
+      setIndustriesList(list);
+    });
+
+    return () => {
+      unsubProblems();
+      unsubIndustries();
+    };
   }, []);
 
-  const handleDecision = async (problemId: string, decision: ProblemStatus, note?: string) => {
-    await updateProblemStatus(
-      problemId,
-      decision,
-      userDoc ? { uid: userDoc.uid, name: userDoc.name } : { uid: "admin_1", name: "Admin" },
-      note || `Reviewed in Admin Review Queue: ${decision}`
-    );
+  const pendingList = useMemo(
+    () => allQueueProblems.filter((p) => p.status === "pending"),
+    [allQueueProblems]
+  );
+  const needsInfoList = useMemo(
+    () => allQueueProblems.filter((p) => p.status === "needs_info"),
+    [allQueueProblems]
+  );
 
-    setProblems((prev) => prev.filter((p) => p.id !== problemId));
-    setActionSuccess(`Decision applied: Problem ${decision === "approved" ? "Approved & Published Live" : decision.toUpperCase()}`);
-    setTimeout(() => setActionSuccess(null), 3500);
+  const handleDecision = async (problemId: string, decision: ProblemStatus, note?: string) => {
+    setActionLoadingId(problemId);
+    try {
+      await updateProblemStatus(
+        problemId,
+        decision,
+        userDoc ? { uid: userDoc.uid, name: userDoc.name } : { uid: "admin_moderator", name: "Lead Moderator" },
+        note || `Reviewed in Admin Review Queue: ${decision}`
+      );
+
+      setActionSuccess(
+        decision === "approved"
+          ? "Problem approved and published live to ecosystem!"
+          : decision === "needs_info"
+          ? "Modification request sent to submitter."
+          : "Problem rejected and archived."
+      );
+      setTimeout(() => setActionSuccess(null), 3500);
+    } catch (err) {
+      console.error("Decision update failed:", err);
+    } finally {
+      setActionLoadingId(null);
+    }
   };
 
   const handleSendModificationRequest = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!requestNoteModalProb) return;
-    await handleDecision(requestNoteModalProb.id, "needs_info", customReviewNote || "Please clarify market impact data and evidence links.");
+    await handleDecision(
+      requestNoteModalProb.id,
+      "needs_info",
+      customReviewNote || "Please clarify market impact data and evidence links."
+    );
     setRequestNoteModalProb(null);
     setCustomReviewNote("");
   };
 
-  const filtered = problems.filter((p) => {
-    if (industryFilter !== "all" && p.industry !== industryFilter) return false;
-    return true;
-  });
+  const filtered = useMemo(() => {
+    let list = allQueueProblems;
+    if (statusTab === "pending") {
+      list = list.filter((p) => p.status === "pending");
+    } else if (statusTab === "needs_info") {
+      list = list.filter((p) => p.status === "needs_info");
+    } else {
+      list = list.filter((p) => p.status === "pending" || p.status === "needs_info");
+    }
+
+    if (industryFilter !== "all") {
+      list = list.filter((p) => {
+        const ind = (p.industry || "").toLowerCase();
+        const target = industryFilter.toLowerCase();
+        return ind.includes(target) || target.includes(ind);
+      });
+    }
+
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      list = list.filter(
+        (p) =>
+          p.title.toLowerCase().includes(q) ||
+          p.description.toLowerCase().includes(q) ||
+          (p.submittedBy && p.submittedBy.toLowerCase().includes(q))
+      );
+    }
+
+    return list.sort((a, b) => {
+      if (sortBy === "pain") {
+        return (b.painScore || 0) - (a.painScore || 0);
+      }
+      if (sortBy === "severity") {
+        const severityRank = { critical: 4, major: 3, medium: 2, minor: 1 };
+        return (severityRank[b.severity as keyof typeof severityRank] || 0) - (severityRank[a.severity as keyof typeof severityRank] || 0);
+      }
+      const timeA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const timeB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      return timeB - timeA;
+    });
+  }, [allQueueProblems, statusTab, industryFilter, searchQuery, sortBy]);
 
   return (
-    <div className="flex flex-col w-full font-body-md text-on-surface pb-12 gap-8 max-w-5xl mx-auto">
-      {/* Top Bar matching Stitch */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+    <div className="flex flex-col w-full font-['Poppins',sans-serif] text-on-surface pb-12 gap-6 max-w-5xl mx-auto">
+      {/* ── Top Bar with Status Tabs & Live Counts ─────────────────────────── */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-outline-variant/20 pb-4">
         <div className="flex items-center gap-4">
-          <h1 className="text-headline-lg font-headline-lg text-on-surface">Review Queue</h1>
-          <span className="bg-primary-container text-on-primary-container px-3 py-1 rounded-full text-label-md font-label-md tracking-wide">
-            {problems.length} Pending
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-on-surface">
+              Review Queue
+            </h1>
+            <p className="text-xs text-on-surface-variant font-normal mt-0.5">
+              Live moderation workflow for scout and enterprise problem submissions.
+            </p>
+          </div>
+          <span className="bg-amber-50 text-amber-700 border border-amber-200/60 px-3 py-1 rounded-full text-xs font-bold shrink-0">
+            {pendingList.length} Pending
           </span>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="relative">
-            <select
-              value={industryFilter}
-              onChange={(e) => setIndustryFilter(e.target.value)}
-              className="appearance-none bg-surface-container text-on-surface text-body-md font-body-md pl-4 pr-10 py-2 rounded-lg cursor-pointer hover:bg-surface-container-high transition-colors outline-none border border-outline-variant/40"
-            >
-              <option value="all">All Industries</option>
-              <option value="Healthcare & Life Sciences">Healthcare</option>
-              <option value="Fintech & Commerce">Fintech</option>
-              <option value="Artificial Intelligence">AI & ML</option>
-              <option value="Energy & Climate">Energy & Climate</option>
-            </select>
-            <ChevronDown className="h-4 w-4 absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
-          </div>
-
-          <button className="flex items-center gap-2 bg-surface-container hover:bg-surface-container-high text-on-surface px-4 py-2 rounded-lg transition-colors text-body-md border border-outline-variant/40">
-            <Filter className="h-4 w-4" />
-            <span>Filters</span>
+        {/* Tab Filters: Pending, Needs Info, All Queue */}
+        <div className="flex items-center gap-1.5 p-1 rounded-xl bg-surface-container-lowest border border-outline-variant/30 text-xs font-semibold">
+          <button
+            onClick={() => setStatusTab("pending")}
+            className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+              statusTab === "pending"
+                ? "bg-primary text-white shadow-2xs"
+                : "text-on-surface-variant hover:text-on-surface"
+            }`}
+          >
+            <span>Pending ({pendingList.length})</span>
           </button>
-          <button className="flex items-center gap-2 bg-surface-container hover:bg-surface-container-high text-on-surface px-4 py-2 rounded-lg transition-colors text-body-md border border-outline-variant/40">
-            <ArrowUpDown className="h-4 w-4" />
-            <span>Newest First</span>
+          <button
+            onClick={() => setStatusTab("needs_info")}
+            className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+              statusTab === "needs_info"
+                ? "bg-primary text-white shadow-2xs"
+                : "text-on-surface-variant hover:text-on-surface"
+            }`}
+          >
+            <span>Needs Info ({needsInfoList.length})</span>
+          </button>
+          <button
+            onClick={() => setStatusTab("all")}
+            className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+              statusTab === "all"
+                ? "bg-primary text-white shadow-2xs"
+                : "text-on-surface-variant hover:text-on-surface"
+            }`}
+          >
+            <span>All Active ({pendingList.length + needsInfoList.length})</span>
           </button>
         </div>
       </div>
 
+      {/* ── Search & Filter Controls Toolbar ───────────────────────────────── */}
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+        {/* Search Query */}
+        <div className="relative flex-1 sm:max-w-xs">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-on-surface-variant h-3.5 w-3.5" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search queue submissions..."
+            className="w-full bg-surface-container-lowest border border-outline-variant/30 rounded-xl py-2 pl-9 pr-3 text-xs text-on-surface placeholder:text-on-surface-variant/60 focus:outline-none focus:ring-1 focus:ring-primary transition-all shadow-2xs"
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery("")}
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface p-0.5 rounded-full"
+            >
+              <X className="w-3 h-3" />
+            </button>
+          )}
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2.5">
+          {/* Industry Filter Dropdown */}
+          <div className="relative inline-block">
+            <select
+              value={industryFilter}
+              onChange={(e) => setIndustryFilter(e.target.value)}
+              className="appearance-none bg-surface-container-lowest text-on-surface text-xs font-semibold pl-3 pr-8 py-2 rounded-xl border border-outline-variant/30 hover:border-primary/40 focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer transition-colors shadow-2xs"
+            >
+              <option value="all">All Industries</option>
+              {industriesList.map((ind) => (
+                <option key={ind.slug} value={ind.name}>
+                  {ind.name}
+                </option>
+              ))}
+            </select>
+            <ChevronDown className="h-3.5 w-3.5 absolute right-2.5 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
+          </div>
+
+          {/* Sort By Dropdown */}
+          <div className="relative inline-block">
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as any)}
+              className="appearance-none bg-surface-container-lowest text-on-surface text-xs font-semibold pl-3 pr-8 py-2 rounded-xl border border-outline-variant/30 hover:border-primary/40 focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer transition-colors shadow-2xs"
+            >
+              <option value="newest">Newest First</option>
+              <option value="pain">Highest Pain Score</option>
+              <option value="severity">Highest Severity</option>
+            </select>
+            <ChevronDown className="h-3.5 w-3.5 absolute right-2.5 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
+          </div>
+        </div>
+      </div>
+
       {actionSuccess && (
-        <div className="rounded-xl bg-secondary/10 border border-secondary/20 p-3 text-label-md font-label-md text-secondary flex items-center gap-2 shadow-sm">
-          <Check className="h-4 w-4" />
+        <div className="rounded-xl bg-emerald-50 border border-emerald-200/80 p-3.5 text-xs font-bold text-emerald-800 flex items-center gap-2 shadow-2xs animate-fade-in">
+          <Check className="h-4 w-4 text-emerald-600" />
           <span>{actionSuccess}</span>
         </div>
       )}
 
-      {/* Review Queue Cards */}
+      {/* ── Review Queue Problem Cards ─────────────────────────────────────── */}
       {loading ? (
         <div className="space-y-4">
           <LoadingContainer
@@ -120,163 +272,214 @@ export const AdminReviewQueue: React.FC = () => {
           <TableSkeleton rows={3} />
         </div>
       ) : filtered.length === 0 ? (
-        <div className="bg-surface-container-lowest rounded-xl border border-outline-variant p-16 text-center text-on-surface-variant shadow-sm">
-          <CheckCircle className="h-12 w-12 text-secondary mx-auto mb-3" />
-          <h3 className="text-headline-sm font-headline-sm text-on-surface mb-1">Queue is clear!</h3>
-          <p className="text-body-md text-on-surface-variant">
-            All submitted problems have been reviewed by a moderator.
+        <div className="bg-surface-container-lowest rounded-3xl border border-outline-variant/30 p-16 text-center text-on-surface-variant shadow-2xs space-y-2">
+          <CheckCircle className="h-12 w-12 text-emerald-600 mx-auto mb-2" />
+          <h3 className="text-lg font-bold text-on-surface">Queue is clear!</h3>
+          <p className="text-xs text-on-surface-variant max-w-sm mx-auto">
+            {searchQuery || industryFilter !== "all"
+              ? "No problem submissions matched the active filters."
+              : "All submitted problem statements have been reviewed and moderated."}
           </p>
+          {(searchQuery || industryFilter !== "all") && (
+            <button
+              onClick={() => {
+                setSearchQuery("");
+                setIndustryFilter("all");
+              }}
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-surface-container text-on-surface text-xs font-bold hover:bg-surface-container-high transition-colors mt-2"
+            >
+              <RotateCcw className="w-3 h-3" />
+              <span>Reset Filters</span>
+            </button>
+          )}
         </div>
       ) : (
-        <div className="flex flex-col gap-6 w-full">
+        <div className="flex flex-col gap-6 w-full animate-fade-in">
           {filtered.map((problem) => {
             const ai = problem.aiScores;
             const isCritical = problem.severity === "critical" || problem.severity === "major";
+            const isActing = actionLoadingId === problem.id;
+            const isNeedsInfo = problem.status === "needs_info";
+
+            const clarity = Math.min(10, Math.max(5, Math.round(((ai?.clarity ?? 88) / 10) * 10) / 10));
+            const marketPotential = Math.min(10, Math.max(5, Math.round(((ai?.marketSize ?? ai?.businessPotential ?? 80) / 10) * 10) / 10));
+            const originality = Math.min(10, Math.max(5, Math.round(((ai?.originality ?? 82) / 10) * 10) / 10));
+            const feasibility = Math.min(10, Math.max(5, Math.round(((ai?.technicalFeasibility ?? 75) / 10) * 10) / 10));
+            const monetization = Math.min(10, Math.max(5, Math.round(((ai?.businessPotential ?? 84) / 10) * 10) / 10));
 
             return (
               <div
                 key={problem.id}
-                className="bg-surface-container-lowest rounded-xl shadow-sm flex flex-col overflow-hidden relative border border-outline-variant/30"
+                className="bg-surface-container-lowest rounded-3xl shadow-2xs flex flex-col overflow-hidden relative border border-outline-variant/30 hover:border-primary/40 transition-all"
               >
                 {/* Left severity indicator stripe */}
                 <div
                   className={`absolute top-0 left-0 w-1.5 h-full ${
-                    isCritical ? "bg-error" : "bg-primary"
+                    isCritical ? "bg-rose-500" : isNeedsInfo ? "bg-amber-500" : "bg-primary"
                   }`}
                 />
 
-                <div className="p-6 pl-8 flex flex-col gap-6">
+                <div className="p-6 pl-8 flex flex-col gap-5">
                   {/* Header & Submitter info */}
-                  <div className="flex items-start justify-between">
-                    <div className="flex gap-4">
-                      <div className="w-12 h-12 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-bold text-base shadow-sm">
-                        {problem.submittedBy?.[0]?.toUpperCase() || "U"}
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex gap-3.5 min-w-0">
+                      <div className="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-bold text-sm shadow-2xs shrink-0">
+                        {problem.submittedBy?.[0]?.toUpperCase() || "S"}
                       </div>
-                      <div className="flex flex-col">
-                        <div className="flex items-center gap-3">
-                          <span className="text-body-md font-body-md text-on-surface-variant">
-                            Submitted by <strong className="text-on-surface">{problem.submittedBy || "Anonymous Scout"}</strong>
+                      <div className="flex flex-col min-w-0">
+                        <div className="flex flex-wrap items-center gap-2 text-xs text-on-surface-variant">
+                          <span>
+                            Submitted by{" "}
+                            <strong className="text-on-surface font-semibold">
+                              {problem.submittedBy || problem.submitterName || "Anonymous Scout"}
+                            </strong>
                           </span>
-                          <span className="text-on-surface-variant text-[12px]">•</span>
-                          <span className="text-body-md font-body-md text-on-surface-variant">
+                          <span>·</span>
+                          <span>
                             {problem.createdAt
                               ? typeof problem.createdAt === "string"
                                 ? new Date(problem.createdAt).toLocaleDateString()
-                                : problem.createdAt?.toDate
-                                ? problem.createdAt.toDate().toLocaleDateString()
+                                : (problem.createdAt as any)?.toDate
+                                ? (problem.createdAt as any).toDate().toLocaleDateString()
                                 : "Recently"
                               : "Recently"}
                           </span>
                         </div>
-                        <h2 className="text-headline-md font-headline-md text-on-surface mt-1">
+                        <h2 className="text-base sm:text-lg font-bold text-on-surface mt-1 leading-snug">
                           {problem.title}
                         </h2>
-                        <div className="flex items-center gap-2 mt-2">
-                          <span className="bg-surface-container text-on-surface-variant px-2.5 py-0.5 rounded text-label-sm font-label-sm">
+                        <div className="flex flex-wrap items-center gap-2 mt-2">
+                          <span className="bg-surface-container text-on-surface-variant px-2.5 py-0.5 rounded-full text-[11px] font-semibold">
                             {problem.industry || "General"}
                           </span>
                           <span
-                            className={`px-2.5 py-0.5 rounded text-label-sm font-label-sm font-bold uppercase tracking-wider ${
+                            className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
                               isCritical
-                                ? "bg-error-container text-on-error-container"
-                                : "bg-primary-fixed text-on-primary-fixed"
+                                ? "bg-rose-50 text-rose-700 border border-rose-200/60"
+                                : "bg-primary/10 text-primary border border-primary/20"
                             }`}
                           >
                             {problem.severity || "medium"} Severity
                           </span>
+                          {isNeedsInfo && (
+                            <span className="bg-amber-50 text-amber-700 border border-amber-200/60 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider">
+                              Needs Info Requested
+                            </span>
+                          )}
                         </div>
                       </div>
                     </div>
+
+                    {/* Quick Link to Preview problem */}
+                    <Link
+                      to={`/problem/${problem.id}`}
+                      target="_blank"
+                      className="p-2 rounded-xl text-on-surface-variant hover:text-primary hover:bg-surface-container transition-colors shrink-0"
+                      title="Preview Problem in New Tab"
+                    >
+                      <ExternalLink className="w-4 h-4" />
+                    </Link>
                   </div>
 
                   {/* Problem Description */}
-                  <div className="text-body-md text-on-surface whitespace-pre-line bg-surface-container-low/60 p-4 rounded-lg border border-outline-variant/20">
+                  <div className="text-xs sm:text-sm text-on-surface whitespace-pre-line bg-surface-container-low/50 p-4 rounded-2xl border border-outline-variant/20 leading-relaxed font-normal">
                     {problem.description}
                   </div>
 
                   {/* AI Analysis Metrics Box */}
-                  <div className="bg-surface-container-low rounded-lg p-5 relative border border-outline-variant/30">
-                    <div className="absolute top-5 right-5 flex flex-col items-center justify-center w-16 h-16 rounded-full bg-surface-container-lowest shadow-sm border border-outline-variant/30">
-                      <span className="text-headline-sm font-headline-sm text-primary">
-                        {(problem.painScore ? problem.painScore / 10 : 8.8).toFixed(1)}
-                      </span>
-                      <span className="text-[10px] text-on-surface-variant font-medium">AI Score</span>
+                  <div className="bg-surface-container-low rounded-2xl p-5 relative border border-outline-variant/30">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+                      <div className="flex items-center gap-2">
+                        <Sparkles className="w-4 h-4 text-primary" />
+                        <h3 className="text-xs font-bold uppercase tracking-wider text-on-surface">
+                          Automated AI Telemetry & Confidence
+                        </h3>
+                      </div>
+                      <div className="inline-flex items-center gap-1.5 bg-surface-container-lowest px-3 py-1 rounded-xl shadow-2xs border border-outline-variant/30">
+                        <span className="text-xs text-on-surface-variant font-medium">Pain Score:</span>
+                        <span className="text-sm font-black text-primary font-mono">
+                          {problem.painScore || 88}
+                        </span>
+                      </div>
                     </div>
 
-                    <h3 className="text-body-lg font-body-lg font-semibold text-on-surface mb-4">
-                      AI Analysis Metrics
-                    </h3>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 pr-24">
-                      <div className="flex flex-col gap-1">
-                        <div className="flex justify-between text-label-md font-label-md">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                      {/* Metric 1: Clarity */}
+                      <div className="space-y-1">
+                        <div className="flex justify-between text-[11px] font-medium">
                           <span className="text-on-surface-variant">Problem Clarity</span>
-                          <span className="text-on-surface">9.2 / 10</span>
+                          <span className="text-on-surface font-bold">{clarity} / 10</span>
                         </div>
                         <div className="h-1.5 w-full bg-surface-container-highest rounded-full overflow-hidden">
-                          <div className="h-full bg-primary rounded-full w-[92%]" />
+                          <div className="h-full bg-primary rounded-full" style={{ width: `${clarity * 10}%` }} />
                         </div>
                       </div>
 
-                      <div className="flex flex-col gap-1">
-                        <div className="flex justify-between text-label-md font-label-md">
-                          <span className="text-on-surface-variant">Market Size Potential</span>
-                          <span className="text-on-surface">7.5 / 10</span>
+                      {/* Metric 2: Market Potential */}
+                      <div className="space-y-1">
+                        <div className="flex justify-between text-[11px] font-medium">
+                          <span className="text-on-surface-variant">Market Potential</span>
+                          <span className="text-on-surface font-bold">{marketPotential} / 10</span>
                         </div>
                         <div className="h-1.5 w-full bg-surface-container-highest rounded-full overflow-hidden">
-                          <div className="h-full bg-primary rounded-full w-[75%]" />
+                          <div className="h-full bg-primary rounded-full" style={{ width: `${marketPotential * 10}%` }} />
                         </div>
                       </div>
 
-                      <div className="flex flex-col gap-1">
-                        <div className="flex justify-between text-label-md font-label-md">
+                      {/* Metric 3: Originality */}
+                      <div className="space-y-1">
+                        <div className="flex justify-between text-[11px] font-medium">
                           <span className="text-on-surface-variant">Originality</span>
-                          <span className="text-on-surface">8.1 / 10</span>
+                          <span className="text-on-surface font-bold">{originality} / 10</span>
                         </div>
                         <div className="h-1.5 w-full bg-surface-container-highest rounded-full overflow-hidden">
-                          <div className="h-full bg-primary rounded-full w-[81%]" />
+                          <div className="h-full bg-primary rounded-full" style={{ width: `${originality * 10}%` }} />
                         </div>
                       </div>
 
-                      <div className="flex flex-col gap-1">
-                        <div className="flex justify-between text-label-md font-label-md">
+                      {/* Metric 4: Technical Feasibility */}
+                      <div className="space-y-1">
+                        <div className="flex justify-between text-[11px] font-medium">
                           <span className="text-on-surface-variant">Technical Feasibility</span>
-                          <span className="text-on-surface">6.8 / 10</span>
+                          <span className="text-on-surface font-bold">{feasibility} / 10</span>
                         </div>
                         <div className="h-1.5 w-full bg-surface-container-highest rounded-full overflow-hidden">
-                          <div className="h-full bg-primary rounded-full w-[68%]" />
+                          <div className="h-full bg-primary rounded-full" style={{ width: `${feasibility * 10}%` }} />
                         </div>
                       </div>
 
-                      <div className="flex flex-col gap-1">
-                        <div className="flex justify-between text-label-md font-label-md">
+                      {/* Metric 5: Monetization */}
+                      <div className="space-y-1">
+                        <div className="flex justify-between text-[11px] font-medium">
                           <span className="text-on-surface-variant">Monetization Path</span>
-                          <span className="text-on-surface">8.5 / 10</span>
+                          <span className="text-on-surface font-bold">{monetization} / 10</span>
                         </div>
                         <div className="h-1.5 w-full bg-surface-container-highest rounded-full overflow-hidden">
-                          <div className="h-full bg-primary rounded-full w-[85%]" />
+                          <div className="h-full bg-primary rounded-full" style={{ width: `${monetization * 10}%` }} />
                         </div>
                       </div>
 
-                      <div className="flex flex-col gap-1">
-                        <div className="flex justify-between text-label-md font-label-md">
+                      {/* Metric 6: Regulatory Risk */}
+                      <div className="space-y-1">
+                        <div className="flex justify-between text-[11px] font-medium">
                           <span className="text-on-surface-variant">Regulatory Risk</span>
-                          <span className="text-error font-semibold">Moderate</span>
+                          <span className="text-amber-700 font-bold">Low–Moderate</span>
                         </div>
                         <div className="h-1.5 w-full bg-surface-container-highest rounded-full overflow-hidden">
-                          <div className="h-full bg-error rounded-full w-[50%]" />
+                          <div className="h-full bg-amber-500 rounded-full w-[45%]" />
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                {/* Footer Actions */}
-                <div className="bg-surface-container px-6 py-4 flex flex-wrap items-center justify-between gap-3 border-t border-outline-variant/30">
-                  <div className="flex items-center gap-3">
+                {/* Footer Actions Toolbar */}
+                <div className="bg-surface-container px-6 py-4 flex flex-wrap items-center justify-between gap-3 border-t border-outline-variant/20">
+                  <div className="flex items-center gap-2.5">
                     <button
                       onClick={() => setRequestNoteModalProb(problem)}
-                      className="px-3.5 py-1.5 rounded-lg bg-amber-500/10 text-amber-800 hover:bg-amber-500/20 text-xs font-bold transition-colors flex items-center gap-1.5 cursor-pointer border border-amber-500/30"
+                      disabled={isActing}
+                      className="px-3.5 py-1.5 rounded-xl bg-amber-50 text-amber-800 hover:bg-amber-100 text-xs font-bold transition-colors flex items-center gap-1.5 cursor-pointer border border-amber-200/60 shadow-2xs"
                     >
                       <AlertTriangle className="w-3.5 h-3.5 text-amber-600" />
                       <span>Request Modifications</span>
@@ -284,23 +487,25 @@ export const AdminReviewQueue: React.FC = () => {
 
                     <Link
                       to={`/admin/problems/${problem.id}/edit`}
-                      className="px-3.5 py-1.5 rounded-lg bg-surface-container-lowest hover:bg-surface-container-high text-xs font-bold text-on-surface transition-colors flex items-center gap-1.5 shadow-2xs border border-outline-variant/30"
+                      className="px-3.5 py-1.5 rounded-xl bg-surface-container-lowest hover:bg-surface-container-high text-xs font-bold text-on-surface transition-colors flex items-center gap-1.5 shadow-2xs border border-outline-variant/30"
                     >
                       <Sliders className="w-3.5 h-3.5 text-primary" />
                       <span>Control Studio</span>
                     </Link>
                   </div>
 
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2.5">
                     <button
                       onClick={() => handleDecision(problem.id, "rejected")}
-                      className="px-4 py-2 rounded-xl text-xs font-bold text-error bg-surface-container-lowest hover:bg-error-container/40 transition-colors shadow-xs border border-outline-variant/30 cursor-pointer"
+                      disabled={isActing}
+                      className="px-4 py-2 rounded-xl text-xs font-bold text-rose-600 bg-surface-container-lowest hover:bg-rose-50 transition-colors shadow-2xs border border-outline-variant/30 cursor-pointer disabled:opacity-50"
                     >
-                      Reject / Hide
+                      Reject / Archive
                     </button>
                     <button
                       onClick={() => handleDecision(problem.id, "approved")}
-                      className="px-5 py-2 rounded-xl text-xs font-bold text-white bg-primary hover:bg-primary-container transition-colors shadow-sm flex items-center gap-2 cursor-pointer"
+                      disabled={isActing}
+                      className="px-5 py-2 rounded-xl text-xs font-bold text-white bg-primary hover:bg-primary-hover transition-colors shadow-sm flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
                     >
                       <CheckCircle className="h-4 w-4" />
                       <span>Approve & Publish Live</span>
@@ -313,18 +518,18 @@ export const AdminReviewQueue: React.FC = () => {
         </div>
       )}
 
-      {/* Admin Modification Request Note Modal */}
+      {/* ── Admin Modification Request Note Modal ─────────────────────────── */}
       {requestNoteModalProb && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fade-in font-['Poppins',sans-serif]">
-          <div className="bg-surface-container-lowest rounded-2xl w-full max-w-lg shadow-2xl border border-outline-variant/30 overflow-hidden flex flex-col">
-            <div className="flex items-center justify-between p-5 border-b border-outline-variant/30 bg-surface-container-low">
+          <div className="bg-surface-container-lowest rounded-3xl w-full max-w-lg shadow-2xl border border-outline-variant/30 overflow-hidden flex flex-col">
+            <div className="flex items-center justify-between p-5 border-b border-outline-variant/20 bg-surface-container-low">
               <div className="flex items-center gap-2">
                 <AlertTriangle className="w-5 h-5 text-amber-600" />
                 <h3 className="text-sm font-bold text-on-surface">Request Modifications from Submitter</h3>
               </div>
               <button
                 onClick={() => setRequestNoteModalProb(null)}
-                className="p-1 rounded-full text-gray-400 hover:text-on-surface cursor-pointer"
+                className="p-1 rounded-full text-on-surface-variant hover:text-on-surface cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -333,8 +538,8 @@ export const AdminReviewQueue: React.FC = () => {
             <form onSubmit={handleSendModificationRequest} className="p-6 flex flex-col gap-4">
               <div className="flex flex-col gap-1">
                 <span className="text-xs font-bold text-on-surface">{requestNoteModalProb.title}</span>
-                <span className="text-[11px] text-gray-500">
-                  Submitted by {requestNoteModalProb.submittedBy || "Scout"}
+                <span className="text-[11px] text-on-surface-variant">
+                  Submitted by {requestNoteModalProb.submittedBy || requestNoteModalProb.submitterName || "Scout"}
                 </span>
               </div>
 
@@ -347,12 +552,12 @@ export const AdminReviewQueue: React.FC = () => {
                   required
                   value={customReviewNote}
                   onChange={(e) => setCustomReviewNote(e.target.value)}
-                  placeholder="e.g. Please specify the exact TAM in billions and attach at least one primary source link in the evidence section."
-                  className="w-full bg-surface-container-low rounded-xl p-3 text-xs text-on-surface outline-none focus:ring-2 focus:ring-primary"
+                  placeholder="e.g. Please specify the quantified annual financial impact in USD and attach at least one primary reference link in the evidence section."
+                  className="w-full bg-surface-container-low rounded-2xl p-3.5 text-xs text-on-surface outline-none focus:ring-1 focus:ring-primary border border-outline-variant/30"
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-outline-variant/30">
+              <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-outline-variant/20">
                 <button
                   type="button"
                   onClick={() => setRequestNoteModalProb(null)}

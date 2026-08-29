@@ -138,6 +138,7 @@ export const AdminProblemDetailEditor: React.FC<AdminProblemDetailEditorProps> =
 
   // 9. Startup Mode Controller
   const [startupModeEnabled, setStartupModeEnabled] = useState(true);
+  const [startupThesis, setStartupThesis] = useState("");
   const [startupTargetSegments, setStartupTargetSegments] = useState<string[]>([
     "Rural Clinic Admins",
     "Local Specialists",
@@ -165,24 +166,70 @@ export const AdminProblemDetailEditor: React.FC<AdminProblemDetailEditorProps> =
     },
   ]);
   const [startupDirections, setStartupDirections] = useState<
-    Array<{ type: string; title: string; description: string }>
+    Array<{
+      type: "software" | "service" | "hardware" | "hybrid" | string;
+      title: string;
+      description: string;
+      pros?: string;
+      cons?: string;
+      techStack?: string[];
+    }>
   >([
     {
       type: "software",
       title: "Software Approach",
       description: "Automated HL7 translation & cloud FHIR bridge.",
+      pros: "90%+ gross margins, instant multi-tenant scalability.",
+      cons: "Requires robust HIPAA BAA compliance.",
+      techStack: ["Next.js", "Python / FastAPI", "FHIR REST API"],
     },
     {
       type: "service",
       title: "Service-Based",
       description: "Managed interoperability and compliance consulting.",
+      pros: "Very high ACV ($24k - $60k/yr), zero clinical resistance.",
+      cons: "Lower initial margins, slower onboarding cycle.",
+      techStack: ["HIPAA-Compliant Portal", "Dedicated Ops Team"],
     },
     {
       type: "hardware",
       title: "Hardware Approach",
       description: "Plug-and-play local edge caching appliance.",
+      pros: "100% operational during rural broadband blackouts.",
+      cons: "Hardware logistics, firmware maintenance overhead.",
+      techStack: ["Raspberry Pi / NUC", "Docker Embedded", "SQLite / DuckDB Sync"],
     },
   ]);
+  const [startupValidationQuestions, setStartupValidationQuestions] = useState<string[]>([
+    "Talked to 10+ target practitioners or clinic administrators?",
+    "Verified they currently pay budget for manual workarounds?",
+    "Frequency verified (>3 occurrences per day)?",
+    "Secured 2-3 design partner LOIs or pilot agreements?",
+    "Mapped 2-week MVP scope and compliance prerequisites?",
+  ]);
+  const [newStartupValidationQuestion, setNewStartupValidationQuestion] = useState("");
+  const [discoveryInterviewPrompt, setDiscoveryInterviewPrompt] = useState(
+    "When was the last time an incoming patient record failed to transfer, and how much clinical staff time was spent chasing that single file?"
+  );
+  const [startupComplianceStandards, setStartupComplianceStandards] = useState<string[]>([
+    "HIPAA BAA Compliant",
+    "SOC2 Type II Ready",
+    "FHIR / HL7 Validated",
+    "Carequality HIE Ready",
+  ]);
+  const [customStartupStandard, setCustomStartupStandard] = useState("");
+
+  const [aiConfidence, setAiConfidence] = useState<number>(96);
+  const [aiSuggestedAngles, setAiSuggestedAngles] = useState<string[]>([
+    "Universal EHR translation bridge with offline caching for rural clinics.",
+    "Secure cloud fax OCR to FHIR standard converter for independent practices.",
+  ]);
+  const [newSuggestedAngle, setNewSuggestedAngle] = useState("");
+  const [aiKeyRisks, setAiKeyRisks] = useState<string[]>([
+    "HIPAA BAA compliance hurdles",
+    "Legacy EHR vendor API paywalls",
+  ]);
+  const [newKeyRisk, setNewKeyRisk] = useState("");
 
   // Load problem details & subscribe live
   useEffect(() => {
@@ -264,6 +311,9 @@ export const AdminProblemDetailEditor: React.FC<AdminProblemDetailEditorProps> =
         setStartupModeEnabled(isStartupActive);
 
         if (prob.startupModeConfig) {
+          if (prob.startupModeConfig.thesis) {
+            setStartupThesis(prob.startupModeConfig.thesis);
+          }
           if (prob.startupModeConfig.targetSegments && prob.startupModeConfig.targetSegments.length > 0) {
             setStartupTargetSegments(prob.startupModeConfig.targetSegments);
           }
@@ -283,6 +333,26 @@ export const AdminProblemDetailEditor: React.FC<AdminProblemDetailEditorProps> =
           }
           if (prob.startupModeConfig.directionsToExplore && prob.startupModeConfig.directionsToExplore.length > 0) {
             setStartupDirections(prob.startupModeConfig.directionsToExplore);
+          }
+          if (prob.startupModeConfig.validationQuestions && prob.startupModeConfig.validationQuestions.length > 0) {
+            setStartupValidationQuestions(prob.startupModeConfig.validationQuestions);
+          }
+          if (prob.startupModeConfig.discoveryInterviewPrompt) {
+            setDiscoveryInterviewPrompt(prob.startupModeConfig.discoveryInterviewPrompt);
+          }
+          if (prob.startupModeConfig.complianceStandards && prob.startupModeConfig.complianceStandards.length > 0) {
+            setStartupComplianceStandards(prob.startupModeConfig.complianceStandards);
+          }
+        }
+
+        // AI Scores & Strategy
+        if (prob.aiScores) {
+          if (prob.aiScores.aiConfidence !== undefined) setAiConfidence(prob.aiScores.aiConfidence);
+          if (prob.aiScores.suggestedAngles && prob.aiScores.suggestedAngles.length > 0) {
+            setAiSuggestedAngles(prob.aiScores.suggestedAngles);
+          }
+          if (prob.aiScores.keyRisks && prob.aiScores.keyRisks.length > 0) {
+            setAiKeyRisks(prob.aiScores.keyRisks);
           }
         }
 
@@ -316,6 +386,27 @@ export const AdminProblemDetailEditor: React.FC<AdminProblemDetailEditorProps> =
       severity,
       painScore: Number(painScore),
       opportunityScore: Number(opportunityScore),
+      aiScores: {
+        ...(problem.aiScores || {
+          clarity: 90,
+          originality: 85,
+          marketSize: 88,
+          painLevel: 90,
+          urgency: 85,
+          existingCompetition: 80,
+          technicalFeasibility: 85,
+          socialImpact: 90,
+          businessPotential: 88,
+          aiConfidence: 96,
+          overall: 88,
+        }),
+        aiConfidence: Number(aiConfidence) || 96,
+        suggestedAngles: aiSuggestedAngles,
+        keyRisks: aiKeyRisks,
+        painLevel: Number(painScore),
+        businessPotential: Number(opportunityScore),
+        overall: Math.round((Number(painScore) + Number(opportunityScore)) / 2),
+      },
       submitterName,
       location,
       audienceSize,
@@ -344,6 +435,7 @@ export const AdminProblemDetailEditor: React.FC<AdminProblemDetailEditorProps> =
       suggestedMVP: {
         coreFeatures: mvpFeatures,
         technicalRequirements,
+        complianceStandards: startupComplianceStandards,
       },
       comments,
       commentsCount: comments.reduce((acc, c) => acc + 1 + (c.replies?.length || 0), 0),
@@ -357,11 +449,15 @@ export const AdminProblemDetailEditor: React.FC<AdminProblemDetailEditorProps> =
       startupModeEnabled: startupModeEnabled,
       startupModeConfig: {
         enabled: startupModeEnabled,
+        thesis: startupThesis.trim(),
         targetSegments: startupTargetSegments,
         avgWillingnessToPay: startupWillingnessToPay,
         valuePropositionDraft: startupValueProp,
         existingSolutionsGaps: startupSolutionsGaps,
-        directionsToExplore: startupDirections,
+        directionsToExplore: startupDirections.slice(0, 3),
+        validationQuestions: startupValidationQuestions,
+        discoveryInterviewPrompt: discoveryInterviewPrompt,
+        complianceStandards: startupComplianceStandards,
       },
     };
 
@@ -1722,12 +1818,27 @@ export const AdminProblemDetailEditor: React.FC<AdminProblemDetailEditorProps> =
                   Startup Workspace Configuration Data
                 </h4>
                 <p className="text-[11px] text-on-surface-variant mt-0.5">
-                  Configure ICP personas, value proposition blueprints, existing competitor gaps, and MVP direction modules.
+                  Configure ICP personas, value proposition blueprints, existing competitor gaps, MVP directions, and AI Co-Founder strategy.
                 </p>
               </div>
             </div>
 
-            {/* 1. Target Segments */}
+            {/* 1. Core Venture Thesis */}
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-bold text-on-surface flex items-center justify-between">
+                <span>Core Venture Thesis</span>
+                <span className="text-[10px] text-primary font-bold">Use **bold** to format key metrics</span>
+              </label>
+              <textarea
+                rows={3}
+                value={startupThesis}
+                onChange={(e) => setStartupThesis(e.target.value)}
+                placeholder="This problem represents an acute systemic inefficiency across **46 million** citizens with an annual wasted cost of **$1.5B**..."
+                className="bg-surface-container rounded-xl p-3 text-xs text-on-surface outline-none focus:ring-1 focus:ring-primary font-normal leading-relaxed"
+              />
+            </div>
+
+            {/* 2. Target Segments */}
             <div className="flex flex-col gap-2.5">
               <label className="text-xs font-bold text-on-surface uppercase tracking-wider">
                 Target Customer Segments ({startupTargetSegments.length})
@@ -1772,6 +1883,7 @@ export const AdminProblemDetailEditor: React.FC<AdminProblemDetailEditorProps> =
                           setNewStartupSegment("");
                           setIsAddingStartupSegment(false);
                         }
+                        if (e.key === "Escape") setIsAddingStartupSegment(false);
                       }}
                     />
                     <button
@@ -1803,7 +1915,7 @@ export const AdminProblemDetailEditor: React.FC<AdminProblemDetailEditorProps> =
               </div>
             </div>
 
-            {/* 2. Willingness to Pay & Value Prop */}
+            {/* 3. Willingness to Pay & Value Prop */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="flex flex-col gap-1.5 md:col-span-1">
                 <label className="text-xs font-bold text-on-surface">
@@ -1831,7 +1943,7 @@ export const AdminProblemDetailEditor: React.FC<AdminProblemDetailEditorProps> =
               </div>
             </div>
 
-            {/* 3. Existing Solutions & Gaps */}
+            {/* 4. Existing Solutions & Gaps */}
             <div className="flex flex-col gap-3 pt-2">
               <div className="flex items-center justify-between">
                 <label className="text-xs font-bold text-on-surface uppercase tracking-wider">
@@ -1930,20 +2042,70 @@ export const AdminProblemDetailEditor: React.FC<AdminProblemDetailEditorProps> =
               </div>
             </div>
 
-            {/* 4. Directions to Explore */}
+            {/* 5. Directions to Explore (Max 3) */}
             <div className="flex flex-col gap-3 pt-2">
-              <label className="text-xs font-bold text-on-surface uppercase tracking-wider">
-                Possible Directions to Explore
-              </label>
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-bold text-on-surface uppercase tracking-wider">
+                  Architectural Directions ({startupDirections.length}/3 Approaches)
+                </label>
+                {startupDirections.length < 3 && (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setStartupDirections([
+                        ...startupDirections,
+                        {
+                          type: "software",
+                          title: "New Venture Angle",
+                          description: "Technical architecture description...",
+                          pros: "High scalability and fast implementation.",
+                          cons: "Market education and integration friction.",
+                          techStack: ["React", "FastAPI", "PostgreSQL"],
+                        },
+                      ])
+                    }
+                    className="text-xs font-bold text-primary hover:underline flex items-center gap-1 cursor-pointer"
+                  >
+                    <Plus className="w-3.5 h-3.5" /> Add Direction
+                  </button>
+                )}
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 {startupDirections.map((dir, idx) => (
                   <div
                     key={idx}
-                    className="p-3.5 bg-surface-container rounded-xl border border-outline-variant/30 flex flex-col gap-1.5"
+                    className="p-3.5 bg-surface-container rounded-xl border border-outline-variant/30 flex flex-col gap-2 relative"
                   >
-                    <span className="text-[10px] font-bold uppercase text-primary tracking-wider">
-                      {dir.type} Approach
-                    </span>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setStartupDirections(
+                          startupDirections.filter((_, i) => i !== idx)
+                        )
+                      }
+                      className="absolute top-2.5 right-2.5 text-gray-400 hover:text-error cursor-pointer"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+
+                    <div className="flex items-center gap-2">
+                      <select
+                        value={dir.type}
+                        onChange={(e) => {
+                          const copy = [...startupDirections];
+                          copy[idx].type = e.target.value;
+                          setStartupDirections(copy);
+                        }}
+                        className="text-[10px] font-bold uppercase text-primary bg-surface-container-highest px-2 py-0.5 rounded outline-none"
+                      >
+                        <option value="software">Software</option>
+                        <option value="service">Service</option>
+                        <option value="hardware">Hardware</option>
+                        <option value="hybrid">Hybrid</option>
+                      </select>
+                    </div>
+
                     <input
                       type="text"
                       value={dir.title}
@@ -1953,10 +2115,10 @@ export const AdminProblemDetailEditor: React.FC<AdminProblemDetailEditorProps> =
                         setStartupDirections(copy);
                       }}
                       placeholder="Title (e.g. Software Approach)"
-                      className="bg-surface-container-high rounded-lg px-2 py-1 text-xs font-bold text-on-surface outline-none"
+                      className="bg-surface-container-high rounded-lg px-2.5 py-1 text-xs font-bold text-on-surface outline-none"
                     />
                     <textarea
-                      rows={3}
+                      rows={2}
                       value={dir.description}
                       onChange={(e) => {
                         const copy = [...startupDirections];
@@ -1964,10 +2126,324 @@ export const AdminProblemDetailEditor: React.FC<AdminProblemDetailEditorProps> =
                         setStartupDirections(copy);
                       }}
                       placeholder="Description..."
-                      className="bg-surface-container-high rounded-lg p-2 text-xs text-on-surface-variant outline-none"
+                      className="bg-surface-container-high rounded-lg p-2 text-xs text-on-surface-variant outline-none font-normal"
+                    />
+                    <input
+                      type="text"
+                      value={dir.pros || ""}
+                      onChange={(e) => {
+                        const copy = [...startupDirections];
+                        copy[idx].pros = e.target.value;
+                        setStartupDirections(copy);
+                      }}
+                      placeholder="Pros (e.g. 90% gross margins)"
+                      className="bg-surface-container-high rounded-lg px-2 py-1 text-[11px] text-emerald-700 outline-none"
+                    />
+                    <input
+                      type="text"
+                      value={dir.cons || ""}
+                      onChange={(e) => {
+                        const copy = [...startupDirections];
+                        copy[idx].cons = e.target.value;
+                        setStartupDirections(copy);
+                      }}
+                      placeholder="Cons (e.g. Requires BAA)"
+                      className="bg-surface-container-high rounded-lg px-2 py-1 text-[11px] text-error outline-none"
+                    />
+                    <input
+                      type="text"
+                      value={(dir.techStack || []).join(", ")}
+                      onChange={(e) => {
+                        const copy = [...startupDirections];
+                        copy[idx].techStack = e.target.value.split(",").map(s => s.trim()).filter(Boolean);
+                        setStartupDirections(copy);
+                      }}
+                      placeholder="Tech Stack (comma-separated)"
+                      className="bg-surface-container-high rounded-lg px-2 py-1 text-[10px] font-mono text-on-surface outline-none"
                     />
                   </div>
                 ))}
+              </div>
+            </div>
+
+            {/* 6. Compliance & Security Standards */}
+            <div className="flex flex-col gap-2.5 pt-2 border-t border-outline-variant/20">
+              <label className="text-xs font-bold text-on-surface uppercase tracking-wider">
+                Compliance & Security Standards
+              </label>
+              <p className="text-[11px] text-on-surface-variant">
+                Click chips to toggle standard compliance badges for this startup problem.
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  "HIPAA BAA Compliant",
+                  "SOC2 Type II Ready",
+                  "FHIR / HL7 Validated",
+                  "Carequality HIE Ready",
+                  "GDPR & Privacy Shield",
+                  "ISO 27001 Certified",
+                  "PCI-DSS Level 1",
+                  "FedRAMP Moderate",
+                  "Zero Trust Encryption (AES-256)",
+                ].map((preset) => {
+                  const isSelected = startupComplianceStandards.includes(preset);
+                  return (
+                    <button
+                      key={preset}
+                      type="button"
+                      onClick={() => {
+                        if (isSelected) {
+                          setStartupComplianceStandards(
+                            startupComplianceStandards.filter((s) => s !== preset)
+                          );
+                        } else {
+                          setStartupComplianceStandards([
+                            ...startupComplianceStandards,
+                            preset,
+                          ]);
+                        }
+                      }}
+                      className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all cursor-pointer flex items-center gap-1.5 ${
+                        isSelected
+                          ? "bg-primary text-white border-primary shadow-xs font-bold"
+                          : "bg-surface-container text-on-surface-variant border-outline-variant/30 hover:bg-surface-container-high"
+                      }`}
+                    >
+                      <span>{preset}</span>
+                      {isSelected && <Check className="w-3.5 h-3.5 stroke-[3]" />}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className="flex gap-2 mt-1">
+                <input
+                  type="text"
+                  value={customStartupStandard}
+                  onChange={(e) => setCustomStartupStandard(e.target.value)}
+                  placeholder="Add custom compliance standard..."
+                  className="flex-1 bg-surface-container rounded-xl px-3 py-2 text-xs text-on-surface outline-none"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && customStartupStandard.trim()) {
+                      e.preventDefault();
+                      if (!startupComplianceStandards.includes(customStartupStandard.trim())) {
+                        setStartupComplianceStandards([
+                          ...startupComplianceStandards,
+                          customStartupStandard.trim(),
+                        ]);
+                      }
+                      setCustomStartupStandard("");
+                    }
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (customStartupStandard.trim()) {
+                      if (!startupComplianceStandards.includes(customStartupStandard.trim())) {
+                        setStartupComplianceStandards([
+                          ...startupComplianceStandards,
+                          customStartupStandard.trim(),
+                        ]);
+                      }
+                      setCustomStartupStandard("");
+                    }
+                  }}
+                  className="px-4 py-2 bg-primary text-white text-xs font-bold rounded-xl cursor-pointer"
+                >
+                  + Add Standard
+                </button>
+              </div>
+            </div>
+
+            {/* 7. Validation Stage-Gate Checklist & Discovery Prompt */}
+            <div className="flex flex-col gap-3 pt-2 border-t border-outline-variant/20">
+              <label className="text-xs font-bold text-on-surface uppercase tracking-wider">
+                Founder Validation Questions & Discovery Script
+              </label>
+
+              <div className="flex flex-col gap-2">
+                {startupValidationQuestions.map((q, idx) => (
+                  <div key={idx} className="flex items-center gap-2 bg-surface-container p-2.5 rounded-xl">
+                    <span className="text-xs font-bold text-primary">{idx + 1}.</span>
+                    <input
+                      type="text"
+                      value={q}
+                      onChange={(e) => {
+                        const copy = [...startupValidationQuestions];
+                        copy[idx] = e.target.value;
+                        setStartupValidationQuestions(copy);
+                      }}
+                      className="flex-1 bg-surface-container-high px-2.5 py-1 text-xs text-on-surface rounded-lg outline-none"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setStartupValidationQuestions(startupValidationQuestions.filter((_, i) => i !== idx))}
+                      className="text-gray-400 hover:text-error"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={newStartupValidationQuestion}
+                  onChange={(e) => setNewStartupValidationQuestion(e.target.value)}
+                  placeholder="New discovery milestone question..."
+                  className="flex-1 bg-surface-container rounded-xl px-3 py-2 text-xs text-on-surface outline-none"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (newStartupValidationQuestion.trim()) {
+                      setStartupValidationQuestions([...startupValidationQuestions, newStartupValidationQuestion.trim()]);
+                      setNewStartupValidationQuestion("");
+                    }
+                  }}
+                  className="px-4 py-2 rounded-xl bg-primary text-white text-xs font-bold cursor-pointer"
+                >
+                  + Add Question
+                </button>
+              </div>
+
+              <div className="flex flex-col gap-1.5 mt-2">
+                <label className="text-xs font-bold text-on-surface">Discovery Interview Script Prompt</label>
+                <textarea
+                  rows={2}
+                  value={discoveryInterviewPrompt}
+                  onChange={(e) => setDiscoveryInterviewPrompt(e.target.value)}
+                  placeholder="Discovery interview question..."
+                  className="bg-surface-container rounded-xl p-3 text-xs text-on-surface outline-none"
+                />
+              </div>
+            </div>
+
+            {/* 8. AI Co-Founder & GTM Strategy (Controlled by Admin) */}
+            <div className="flex flex-col gap-3 pt-2 border-t border-outline-variant/20">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-bold text-on-surface uppercase tracking-wider">
+                  AI Co-Founder Synthesis & Confidence Control
+                </label>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-semibold text-on-surface-variant">
+                    AI Confidence Score:
+                  </span>
+                  <div className="flex items-center gap-1 bg-surface-container px-3 py-1 rounded-xl">
+                    <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+                    <input
+                      type="number"
+                      min={0}
+                      max={100}
+                      value={aiConfidence}
+                      onChange={(e) => setAiConfidence(Number(e.target.value))}
+                      className="w-12 bg-transparent text-xs font-bold text-on-surface outline-none text-right"
+                    />
+                    <span className="text-xs font-bold text-on-surface">%</span>
+                  </div>
+                </div>
+              </div>
+
+              <label className="text-xs font-bold text-on-surface mt-1">
+                Suggested Strategic Angles ({aiSuggestedAngles.length})
+              </label>
+              <div className="flex flex-col gap-2">
+                {aiSuggestedAngles.map((angle, idx) => (
+                  <div key={idx} className="flex items-center gap-2 bg-surface-container p-2.5 rounded-xl">
+                    <span className="text-xs font-bold text-primary">{idx + 1}.</span>
+                    <input
+                      type="text"
+                      value={angle}
+                      onChange={(e) => {
+                        const copy = [...aiSuggestedAngles];
+                        copy[idx] = e.target.value;
+                        setAiSuggestedAngles(copy);
+                      }}
+                      className="flex-1 bg-surface-container-high px-2.5 py-1 text-xs text-on-surface rounded-lg outline-none"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setAiSuggestedAngles(aiSuggestedAngles.filter((_, i) => i !== idx))}
+                      className="text-gray-400 hover:text-error"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={newSuggestedAngle}
+                  onChange={(e) => setNewSuggestedAngle(e.target.value)}
+                  placeholder="Add strategic go-to-market angle..."
+                  className="flex-1 bg-surface-container rounded-xl px-3 py-2 text-xs text-on-surface outline-none"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (newSuggestedAngle.trim()) {
+                      setAiSuggestedAngles([...aiSuggestedAngles, newSuggestedAngle.trim()]);
+                      setNewSuggestedAngle("");
+                    }
+                  }}
+                  className="px-4 py-2 bg-primary text-white text-xs font-bold rounded-xl cursor-pointer"
+                >
+                  + Add Angle
+                </button>
+              </div>
+
+              <label className="text-xs font-bold text-on-surface mt-2">
+                Key Regulatory & Technical Risks ({aiKeyRisks.length})
+              </label>
+              <div className="flex flex-col gap-2">
+                {aiKeyRisks.map((risk, idx) => (
+                  <div key={idx} className="flex items-center gap-2 bg-error-container/20 border border-error/20 p-2.5 rounded-xl">
+                    <span className="text-xs font-bold text-error">{idx + 1}.</span>
+                    <input
+                      type="text"
+                      value={risk}
+                      onChange={(e) => {
+                        const copy = [...aiKeyRisks];
+                        copy[idx] = e.target.value;
+                        setAiKeyRisks(copy);
+                      }}
+                      className="flex-1 bg-transparent px-2 py-0.5 text-xs text-on-surface rounded outline-none font-medium"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setAiKeyRisks(aiKeyRisks.filter((_, i) => i !== idx))}
+                      className="text-gray-400 hover:text-error"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={newKeyRisk}
+                  onChange={(e) => setNewKeyRisk(e.target.value)}
+                  placeholder="Add key regulatory or technical risk..."
+                  className="flex-1 bg-surface-container rounded-xl px-3 py-2 text-xs text-on-surface outline-none"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (newKeyRisk.trim()) {
+                      setAiKeyRisks([...aiKeyRisks, newKeyRisk.trim()]);
+                      setNewKeyRisk("");
+                    }
+                  }}
+                  className="px-4 py-2 bg-primary text-white text-xs font-bold rounded-xl cursor-pointer"
+                >
+                  + Add Risk
+                </button>
               </div>
             </div>
           </div>

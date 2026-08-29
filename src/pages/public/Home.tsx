@@ -224,7 +224,7 @@ export const Home: React.FC = () => {
     window.addEventListener("mousemove", handleWindowMouseMove, { passive: true });
 
     function syncSize() {
-      if (!canvas) return;
+      if (!canvas || !gl) return;
       const rect = canvas.getBoundingClientRect();
       const w = Math.max(Math.floor(rect.width || window.innerWidth), 300);
       const h = Math.max(Math.floor(rect.height || window.innerHeight), 300);
@@ -243,6 +243,7 @@ export const Home: React.FC = () => {
     const startTime = performance.now();
 
     function render() {
+      if (!canvas || !gl) return;
       const t = performance.now() - startTime;
       gl.viewport(0, 0, canvas.width, canvas.height);
       if (uTime) gl.uniform1f(uTime, t * 0.001);

@@ -107,12 +107,14 @@ export const AdminFormBuilder: React.FC = () => {
       slug: slug.trim().toLowerCase().replace(/[^a-z0-9-]/g, "-"),
       fields,
       status: "published",
+      requiresAuth: requiresLogin,
       allowAnonymous,
       createdBy: userDoc ? userDoc.name : "Admin",
       createdByUid: userDoc ? userDoc.uid : "admin_1",
       createdAt: existingForm?.createdAt || new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-      responsesCount: existingForm?.responsesCount || 0,
+      responseCount: existingForm?.responseCount || existingForm?.responsesCount || 0,
+      responsesCount: existingForm?.responsesCount || existingForm?.responseCount || 0,
     };
 
     await createOrUpdateForm(payload);

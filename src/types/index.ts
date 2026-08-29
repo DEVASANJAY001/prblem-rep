@@ -62,7 +62,10 @@ export type ProblemStatus =
   | "under_review"
   | "approved"
   | "rejected"
-  | "needs_info";
+  | "needs_info"
+  | "open"
+  | "in_progress"
+  | "solved";
 
 export type ProblemSeverity = "minor" | "medium" | "major" | "critical";
 
@@ -148,15 +151,22 @@ export interface StartupDirection {
   type: "software" | "service" | "hardware" | "hybrid" | string;
   title: string;
   description: string;
+  pros?: string;
+  cons?: string;
+  techStack?: string[];
 }
 
 export interface StartupModeConfig {
   enabled: boolean;
+  thesis?: string;
   targetSegments?: string[];
   avgWillingnessToPay?: string;
   valuePropositionDraft?: string;
   existingSolutionsGaps?: StartupSolutionGap[];
   directionsToExplore?: StartupDirection[];
+  validationQuestions?: string[];
+  discoveryInterviewPrompt?: string;
+  complianceStandards?: string[];
 }
 
 export interface ProblemDoc {
@@ -209,7 +219,7 @@ export interface ProblemDoc {
   dataPoints?: Array<{ metric: string; label: string }>;
   researchData?: { keyFindings: string[]; methodology: string; academicReferences: string[] };
   competitorData?: Array<{ solution: string; pros: string; cons: string }>;
-  suggestedMVP?: { coreFeatures: string[]; technicalRequirements: string };
+  suggestedMVP?: { coreFeatures: string[]; technicalRequirements: string; complianceStandards?: string[] };
   marketData?: { tam: string; currentPenetration: number; wastedCost: string; citizensAffected: string };
   comments?: ProblemComment[];
   hasStartupMode?: boolean;
@@ -251,23 +261,28 @@ export interface FormSchema {
   title: string;
   description?: string;
   slug: string; // public URL: /f/:slug
+  category?: string;
   fields: FormFieldSchema[];
   requiresAuth: boolean;
   allowAnonymous: boolean;
-  status: FormStatus;
+  status: FormStatus | string;
   createdBy: string;
+  createdByUid?: string;
   responseCount: number;
-  createdAt: string;
-  updatedAt: string;
+  responsesCount?: number;
+  settings?: any;
+  createdAt: any;
+  updatedAt: any;
 }
 
 export interface FormResponseDoc {
   id: string;
   formId: string;
   respondentUid: string | null;
+  respondentName?: string | null;
   respondentEmail?: string | null;
   answers: Record<string, any>;
-  submittedAt: string;
+  submittedAt: any;
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -279,7 +294,9 @@ export interface IndustryDoc {
   name: string;
   icon: string;
   description: string;
-  problemCount: number;
+  problemCount?: number;
+  problemsCount?: number;
+  totalBounties?: string;
   trendingProblem?: string;
   color?: string;
   order?: number;
@@ -295,17 +312,23 @@ export interface IndustryDoc {
 export interface CompetitionDoc {
   id: string;
   title: string;
-  companyId: string;
-  companyName: string;
-  companyLogo: string;
+  companyId?: string;
+  companyName?: string;
+  companyLogo?: string;
+  sponsor?: string;
+  sponsorLogo?: string;
   description: string;
-  rewardAmount: number;
+  rewardAmount?: number;
+  prize?: string;
   deadline: string;
-  status: "open" | "closed" | "evaluating";
-  category: string;
-  submissionCount: number;
-  verified: boolean;
-  tags: string[];
+  daysLeft?: number;
+  problemId?: string;
+  status: "open" | "closed" | "evaluating" | "active" | string;
+  category?: string;
+  submissionCount?: number;
+  participantsCount?: number;
+  verified?: boolean;
+  tags?: string[];
 }
 
 export interface CompanyDoc {
@@ -383,7 +406,7 @@ export interface AuditLogDoc {
   actorName: string;
   action: string;
   targetId: string;
-  targetType: "problem" | "form" | "user" | "invite";
+  targetType: "problem" | "form" | "user" | "invite" | "system" | string;
   details: string;
   timestamp: string;
 }
@@ -438,11 +461,7 @@ export interface UserStartupNotes {
   valueProposition: string;
   selectedSegments: string[];
   selectedDirection: string;
-  validationChecklist: {
-    talkedToUsers: boolean;
-    paysWorkaround: boolean;
-    frequencyVerified: boolean;
-  };
+  validationChecklist: Record<string, boolean>;
   savedAt: string;
 }
 

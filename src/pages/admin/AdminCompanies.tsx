@@ -306,7 +306,7 @@ export const AdminCompanies: React.FC = () => {
                         <div className="flex items-center gap-1.5">
                           <h3 className="text-sm font-bold text-on-surface truncate">{company.name}</h3>
                           {company.verified && (
-                            <CheckCircle2 className="w-3.5 h-3.5 text-primary shrink-0" title="Verified Enterprise" />
+                            <CheckCircle2 className="w-3.5 h-3.5 text-primary shrink-0" aria-label="Verified Enterprise" />
                           )}
                         </div>
                         <span className="text-[11px] text-gray-500 font-medium truncate">{company.industry}</span>

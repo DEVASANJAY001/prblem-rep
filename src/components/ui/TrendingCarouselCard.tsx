@@ -23,7 +23,7 @@ export const TrendingCarouselCard: React.FC<TrendingCarouselCardProps> = ({
     isProblemBookmarked(problem.id, currentUid)
   );
 
-  const initialUpvotes = problem.votes?.upvotes ?? problem.upvotes ?? 0;
+  const initialUpvotes = problem.votes?.upvotes ?? (typeof problem.votes === "number" ? problem.votes : 0);
   const [likesCount, setLikesCount] = useState<number>(initialUpvotes);
   const [isLiked, setIsLiked] = useState<boolean>(problem.votes?.userVote === "up");
   const [likeAnimating, setLikeAnimating] = useState<boolean>(false);
@@ -49,7 +49,6 @@ export const TrendingCarouselCard: React.FC<TrendingCarouselCardProps> = ({
   const rawPain = Number(
     problem.painScore ??
     problem.aiScores?.painLevel ??
-    problem.aiScores?.painScore ??
     87
   );
   const painNormalized = Math.min(100, Math.max(1, rawPain > 10 ? rawPain : Math.round(rawPain * 10)));

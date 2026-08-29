@@ -1,16 +1,24 @@
 import { initializeApp, getApps, getApp, FirebaseApp } from "firebase/app";
 import { getAuth, Auth, GoogleAuthProvider } from "firebase/auth";
-import { getFirestore, Firestore } from "firebase/firestore";
+import {
+  initializeFirestore,
+  getFirestore,
+  Firestore,
+  persistentLocalCache,
+  persistentMultipleTabManager,
+} from "firebase/firestore";
 import { getStorage, FirebaseStorage } from "firebase/storage";
 
+const metaEnv = (import.meta as any).env || {};
+
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyB_u3gqJtkIogv7iZrJBTNLW3glo-PpgTs",
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "prblms-881bb.firebaseapp.com",
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "prblms-881bb",
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "prblms-881bb.firebasestorage.app",
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "313159629487",
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:313159629487:web:8bea75fe7ca079f78f325a",
-  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || "G-0LVYDXFFTT",
+  apiKey: metaEnv.VITE_FIREBASE_API_KEY || "AIzaSyB_u3gqJtkIogv7iZrJBTNLW3glo-PpgTs",
+  authDomain: metaEnv.VITE_FIREBASE_AUTH_DOMAIN || "prblms-881bb.firebaseapp.com",
+  projectId: metaEnv.VITE_FIREBASE_PROJECT_ID || "prblms-881bb",
+  storageBucket: metaEnv.VITE_FIREBASE_STORAGE_BUCKET || "prblms-881bb.firebasestorage.app",
+  messagingSenderId: metaEnv.VITE_FIREBASE_MESSAGING_SENDER_ID || "313159629487",
+  appId: metaEnv.VITE_FIREBASE_APP_ID || "1:313159629487:web:8bea75fe7ca079f78f325a",
+  measurementId: metaEnv.VITE_FIREBASE_MEASUREMENT_ID || "G-0LVYDXFFTT",
 };
 
 let app: FirebaseApp;
@@ -21,7 +29,23 @@ let storage: FirebaseStorage;
 try {
   app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
   auth = getAuth(app);
-  db = getFirestore(app);
+
+  // Initialize Firestore with Multi-Tab IndexedDB Persistence (0 read overhead for cached docs)
+  try {
+    if (typeof window !== "undefined" && typeof indexedDB !== "undefined") {
+      db = initializeFirestore(app, {
+        localCache: persistentLocalCache({
+          tabManager: persistentMultipleTabManager(),
+        }),
+      });
+    } else {
+      db = getFirestore(app);
+    }
+  } catch {
+    // If already initialized or unsupported, use getFirestore fallback
+    db = getFirestore(app);
+  }
+
   storage = getStorage(app);
 } catch (error) {
   console.warn("Firebase initialization warning (using local fallback state):", error);
@@ -36,3 +60,4 @@ export const googleProvider = new GoogleAuthProvider();
 googleProvider.setCustomParameters({ prompt: "select_account" });
 
 export { app, auth, db, storage, firebaseConfig };
+

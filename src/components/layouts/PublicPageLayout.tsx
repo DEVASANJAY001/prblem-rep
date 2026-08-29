@@ -1,11 +1,7 @@
-"use client";
-
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useState } from "react";
+import React, { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
-import { signOut } from "@/lib/firebase/auth-helpers";
 import { Button } from "@/components/ui/button";
 import {
   LayoutGrid,
@@ -31,13 +27,14 @@ const navLinks = [
 ];
 
 export function PublicPageLayout({ children }: { children: React.ReactNode }) {
-  const { user, userDoc, loading, isAdmin } = useAuth();
-  const pathname = usePathname();
+  const { user, userDoc, loading, isAdmin, logout } = useAuth();
+  const location = useLocation();
+  const pathname = location.pathname;
   const [mobileOpen, setMobileOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
 
   const handleSignOut = async () => {
-    await signOut();
+    if (logout) await logout();
     setUserMenuOpen(false);
   };
 
@@ -47,7 +44,7 @@ export function PublicPageLayout({ children }: { children: React.ReactNode }) {
       <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-md">
         <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 font-semibold text-foreground">
+          <Link to="/" className="flex items-center gap-2 font-semibold text-foreground">
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary text-primary-foreground">
               <Zap className="h-4 w-4" />
             </div>
@@ -59,7 +56,7 @@ export function PublicPageLayout({ children }: { children: React.ReactNode }) {
             {navLinks.map((link) => (
               <Link
                 key={link.href}
-                href={link.href}
+                to={link.href}
                 className={cn(
                   "rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
                   pathname.startsWith(link.href)
@@ -97,14 +94,14 @@ export function PublicPageLayout({ children }: { children: React.ReactNode }) {
                           transition={{ duration: 0.15 }}
                           className="absolute right-0 top-full mt-2 w-48 rounded-xl border border-border bg-popover py-1 shadow-lg"
                         >
-                          <Link href="/dashboard" className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-accent" onClick={() => setUserMenuOpen(false)}>
+                          <Link to="/dashboard" className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-accent" onClick={() => setUserMenuOpen(false)}>
                             <User className="h-4 w-4" /> Dashboard
                           </Link>
-                          <Link href="/submit" className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-accent" onClick={() => setUserMenuOpen(false)}>
+                          <Link to="/submit" className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-accent" onClick={() => setUserMenuOpen(false)}>
                             <Zap className="h-4 w-4" /> Submit Problem
                           </Link>
                           {isAdmin && (
-                            <Link href="/admin" className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-accent" onClick={() => setUserMenuOpen(false)}>
+                            <Link to="/admin" className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-accent" onClick={() => setUserMenuOpen(false)}>
                               <Settings className="h-4 w-4" /> Admin Panel
                             </Link>
                           )}
@@ -118,10 +115,10 @@ export function PublicPageLayout({ children }: { children: React.ReactNode }) {
                   </div>
                 ) : (
                   <>
-                    <Link href="/login">
+                    <Link to="/login">
                       <Button variant="ghost" size="sm">Sign in</Button>
                     </Link>
-                    <Link href="/register">
+                    <Link to="/register">
                       <Button size="sm">Get started</Button>
                     </Link>
                   </>
@@ -152,7 +149,7 @@ export function PublicPageLayout({ children }: { children: React.ReactNode }) {
                 {navLinks.map((link) => (
                   <Link
                     key={link.href}
-                    href={link.href}
+                    to={link.href}
                     className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground"
                     onClick={() => setMobileOpen(false)}
                   >
@@ -174,7 +171,7 @@ export function PublicPageLayout({ children }: { children: React.ReactNode }) {
         <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
           <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
             <div>
-              <Link href="/" className="flex items-center gap-2 font-bold text-foreground">
+              <Link to="/" className="flex items-center gap-2 font-bold text-foreground">
                 <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
                   <Zap className="h-3.5 w-3.5" />
                 </div>
@@ -185,10 +182,10 @@ export function PublicPageLayout({ children }: { children: React.ReactNode }) {
               </p>
             </div>
             <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-              <Link href="/about" className="hover:text-foreground">About</Link>
-              <Link href="/explore" className="hover:text-foreground">Explore</Link>
-              <Link href="/leaderboard" className="hover:text-foreground">Leaderboard</Link>
-              <Link href="/admin/login" className="hover:text-foreground">Admin</Link>
+              <Link to="/about" className="hover:text-foreground">About</Link>
+              <Link to="/explore" className="hover:text-foreground">Explore</Link>
+              <Link to="/leaderboard" className="hover:text-foreground">Leaderboard</Link>
+              <Link to="/admin/login" className="hover:text-foreground">Admin</Link>
             </div>
           </div>
           <div className="mt-8 border-t border-border pt-6 text-xs text-muted-foreground">
