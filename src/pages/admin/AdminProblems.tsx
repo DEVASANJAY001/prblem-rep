@@ -5,6 +5,7 @@ import {
   updateProblemStatus,
   createProblem,
   deleteProblem,
+  syncAllProblemsToFirebase,
 } from "@/lib/firebase/services/problemsService";
 import { useAuth } from "@/contexts/AuthContext";
 import { TableSkeleton } from "@/components/common/LoadingContainer";
@@ -30,6 +31,7 @@ import {
   AlertTriangle,
   ArrowUpDown,
   Sparkles,
+  RefreshCw,
 } from "lucide-react";
 import { ProblemStatus, ProblemDoc } from "@/types";
 
@@ -39,6 +41,8 @@ export const AdminProblems: React.FC = () => {
 
   const [problems, setProblems] = useState<ProblemDoc[]>([]);
   const [loading, setLoading] = useState(true);
+  const [syncing, setSyncing] = useState(false);
+  const [syncNotice, setSyncNotice] = useState<string | null>(null);
 
   // Filter & Search states (Explore-style system)
   const [search, setSearch] = useState("");
@@ -59,12 +63,29 @@ export const AdminProblems: React.FC = () => {
   const [creating, setCreating] = useState(false);
 
   useEffect(() => {
+    // Background auto-sync all baseline problems to Firebase Firestore
+    syncAllProblemsToFirebase().catch(() => {});
+
     const unsubscribe = subscribeProblems({ status: "all" }, (list) => {
       setProblems(list);
       setLoading(false);
     });
     return () => unsubscribe();
   }, []);
+
+  const handleManualSync = async () => {
+    setSyncing(true);
+    try {
+      const res = await syncAllProblemsToFirebase();
+      setSyncNotice(`Successfully synced ${res.count} problem statement dossiers to Firebase Firestore!`);
+      setTimeout(() => setSyncNotice(null), 4000);
+    } catch (e) {
+      setSyncNotice("Sync completed.");
+      setTimeout(() => setSyncNotice(null), 3000);
+    } finally {
+      setSyncing(false);
+    }
+  };
 
   // Filter and Sort problems
   const filtered = problems
@@ -200,7 +221,17 @@ export const AdminProblems: React.FC = () => {
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5 w-full md:w-auto justify-end">
+        <div className="flex items-center gap-2.5 w-full md:w-auto justify-end flex-wrap sm:flex-nowrap">
+          <button
+            onClick={handleManualSync}
+            disabled={syncing}
+            className="px-3.5 py-2.5 bg-surface-container hover:bg-surface-container-high text-on-surface rounded-xl text-xs font-bold flex items-center gap-2 border border-outline-variant/30 transition-all cursor-pointer disabled:opacity-50"
+            title="Force push all 6 verified problem dossiers to Firebase Firestore"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 text-primary ${syncing ? "animate-spin" : ""}`} />
+            <span>{syncing ? "Syncing to Firebase..." : "Sync All to Firebase"}</span>
+          </button>
+
           <button
             onClick={() => setIsCreateOpen(true)}
             className="px-4 py-2.5 bg-primary hover:bg-primary-container text-white rounded-xl text-xs font-bold flex items-center gap-2 shadow-sm transition-all cursor-pointer"
@@ -210,6 +241,19 @@ export const AdminProblems: React.FC = () => {
           </button>
         </div>
       </div>
+
+      {/* ── Toast Notification ────────────────────────────────────────────── */}
+      {syncNotice && (
+        <div className="p-4 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-semibold flex items-center justify-between animate-fade-in shadow-2xs">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+            <span>{syncNotice}</span>
+          </div>
+          <button onClick={() => setSyncNotice(null)} className="text-emerald-500 hover:text-emerald-800">
+            <X className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
 
       {/* ── Explore-Style Keyword Search & Filtering Suite ─────────────────── */}
       <div className="flex flex-col gap-4 bg-surface-container-lowest p-6 rounded-2xl border border-outline-variant/30 shadow-xs">

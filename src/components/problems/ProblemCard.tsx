@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ProblemDoc } from "@/types";
 import { BadgePill } from "@/components/ui/BadgePill";
-import { ScoreCircle } from "@/components/ui/ScoreCircle";
 import { voteProblem, toggleBookmark, isProblemBookmarked } from "@/lib/storage";
 import { useAuth } from "@/contexts/AuthContext";
+import { getProblemDetailUrl, getStartupModeUrl } from "@/lib/seoUrls";
 import {
   ArrowUp,
   ArrowDown,
@@ -25,14 +25,15 @@ interface ProblemCardProps {
 export const ProblemCard: React.FC<ProblemCardProps> = ({
   problem,
   onVoteChange,
-  layout = "list",
 }) => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [upvotes, setUpvotes] = useState(problem.votes?.upvotes || 0);
   const [downvotes, setDownvotes] = useState(problem.votes?.downvotes || 0);
   const [userVote, setUserVote] = useState<"up" | "down" | null>(problem.votes?.userVote || null);
-  const [bookmarked, setBookmarked] = useState(() => isProblemBookmarked(problem.id, user?.uid));
+  const [bookmarked, setBookmarked] = useState(() =>
+    isProblemBookmarked(problem.id, user?.uid || "guest")
+  );
   const [copied, setCopied] = useState(false);
 
   const handleVote = (e: React.MouseEvent, type: "up" | "down") => {
@@ -55,7 +56,7 @@ export const ProblemCard: React.FC<ProblemCardProps> = ({
   const handleShare = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    const url = `${window.location.origin}/problem/${problem.id}`;
+    const url = `${window.location.origin}${getProblemDetailUrl(problem)}`;
     navigator.clipboard.writeText(url);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -68,7 +69,7 @@ export const ProblemCard: React.FC<ProblemCardProps> = ({
 
   return (
     <div
-      onClick={() => navigate(`/problem/${problem.id}`)}
+      onClick={() => navigate(getProblemDetailUrl(problem))}
       className="card-hover group relative flex cursor-pointer flex-col justify-between rounded-xl border border-zinc-200 bg-white p-5 transition-all dark:border-zinc-800 dark:bg-zinc-900/90"
     >
       {/* Top Meta Bar */}
@@ -151,7 +152,7 @@ export const ProblemCard: React.FC<ProblemCardProps> = ({
 
         {/* Startup Brief CTA */}
         <Link
-          to={`/startup-mode/${problem.id}`}
+          to={getStartupModeUrl(problem)}
           onClick={(e) => e.stopPropagation()}
           className="inline-flex items-center gap-1.5 rounded-lg border border-primary/20 bg-primary/5 px-2.5 py-1 text-xs font-medium text-primary transition-all hover:bg-primary hover:text-white"
         >

@@ -25,6 +25,13 @@ const SubmitProblem = lazy(() => import("@/pages/public/SubmitProblem").then((m)
 const Dashboard = lazy(() => import("@/pages/public/Dashboard").then((m) => ({ default: m.Dashboard })));
 const SavedProblems = lazy(() => import("@/pages/public/SavedProblems").then((m) => ({ default: m.SavedProblems })));
 const PublicFormRunner = lazy(() => import("@/pages/public/PublicFormRunner").then((m) => ({ default: m.PublicFormRunner })));
+const NotFound = lazy(() => import("@/pages/public/NotFound").then((m) => ({ default: m.NotFound })));
+const Features = lazy(() => import("@/pages/public/Features").then((m) => ({ default: m.Features })));
+const Solutions = lazy(() => import("@/pages/public/Solutions").then((m) => ({ default: m.Solutions })));
+const Contact = lazy(() => import("@/pages/public/Contact").then((m) => ({ default: m.Contact })));
+const Privacy = lazy(() => import("@/pages/public/Privacy").then((m) => ({ default: m.Privacy })));
+const Terms = lazy(() => import("@/pages/public/Terms").then((m) => ({ default: m.Terms })));
+const Cookies = lazy(() => import("@/pages/public/Cookies").then((m) => ({ default: m.Cookies })));
 
 // Admin Console Modules (Loaded on-demand only for authorized administrators)
 const AdminLogin = lazy(() => import("@/pages/admin/AdminLogin").then((m) => ({ default: m.AdminLogin })));
@@ -43,6 +50,7 @@ const AdminSettings = lazy(() => import("@/pages/admin/AdminSettings").then((m) 
 const AdminIndustries = lazy(() => import("@/pages/admin/AdminIndustries").then((m) => ({ default: m.AdminIndustries })));
 const AdminAppController = lazy(() => import("@/pages/admin/AdminAppController").then((m) => ({ default: m.AdminAppController })));
 const AdminCompanies = lazy(() => import("@/pages/admin/AdminCompanies").then((m) => ({ default: m.AdminCompanies })));
+const AdminCredits = lazy(() => import("@/pages/admin/AdminCredits").then((m) => ({ default: m.AdminCredits })));
 
 // Micro Suspense Loader
 const PageLoader = () => (
@@ -81,6 +89,14 @@ export default function App() {
                 <Route path="/dashboard" element={<ProtectedRoute><PublicLayout><Dashboard /></PublicLayout></ProtectedRoute>} />
                 <Route path="/saved" element={<PublicLayout><SavedProblems /></PublicLayout>} />
                 <Route path="/bookmarks" element={<PublicLayout><SavedProblems /></PublicLayout>} />
+                <Route path="/features" element={<PublicLayout><Features /></PublicLayout>} />
+                <Route path="/solutions" element={<PublicLayout><Solutions /></PublicLayout>} />
+                <Route path="/forums" element={<PublicLayout><Community /></PublicLayout>} />
+                <Route path="/partners" element={<PublicLayout><Companies /></PublicLayout>} />
+                <Route path="/contact" element={<PublicLayout><Contact /></PublicLayout>} />
+                <Route path="/privacy" element={<PublicLayout><Privacy /></PublicLayout>} />
+                <Route path="/terms" element={<PublicLayout><Terms /></PublicLayout>} />
+                <Route path="/cookies" element={<PublicLayout><Cookies /></PublicLayout>} />
 
                 {/* Dynamic Public Form Runner */}
                 <Route path="/f/:formSlug" element={<PublicLayout><PublicFormRunner /></PublicLayout>} />
@@ -102,6 +118,7 @@ export default function App() {
                 <Route path="/admin/forms/:id/responses" element={<AdminLayout><AdminFormResponses /></AdminLayout>} />
                 <Route path="/admin/users" element={<AdminLayout><AdminUsers /></AdminLayout>} />
                 <Route path="/admin/badges" element={<AdminLayout><AdminBadges /></AdminLayout>} />
+                <Route path="/admin/credits" element={<AdminLayout><AdminCredits /></AdminLayout>} />
                 <Route path="/admin/companies" element={<AdminLayout><AdminCompanies /></AdminLayout>} />
                 <Route path="/admin/research" element={<AdminLayout><Research /></AdminLayout>} />
                 <Route path="/admin/analytics" element={<AdminLayout><AdminAnalytics /></AdminLayout>} />
@@ -112,13 +129,7 @@ export default function App() {
                   path="*"
                   element={
                     <PublicLayout>
-                      <div className="mx-auto max-w-xl py-24 text-center">
-                        <h1 className="text-3xl font-extrabold text-zinc-900 dark:text-white">404 - Page Not Found</h1>
-                        <p className="mt-2 text-sm text-zinc-500">The requested page does not exist on ProblemAtlas.</p>
-                        <a href="/" className="mt-4 inline-block rounded-xl bg-primary px-5 py-2.5 text-xs font-bold text-white shadow">
-                          Return to Homepage
-                        </a>
-                      </div>
+                      <NotFound />
                     </PublicLayout>
                   }
                 />

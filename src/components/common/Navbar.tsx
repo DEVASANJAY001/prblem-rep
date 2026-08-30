@@ -83,7 +83,7 @@ export const Navbar: React.FC = () => {
 
             <Link
               to="/submit"
-              className="bg-on-surface/90 backdrop-blur-md text-surface px-4 py-2 rounded-xl text-label-md font-label-md hover:bg-primary hover:text-white transition-all shadow-sm hover:shadow-lg hover:shadow-primary/20 hover:-translate-y-0.5 whitespace-nowrap border border-white/20"
+              className="bg-on-surface/90 backdrop-blur-md text-surface px-2.5 py-1.5 sm:px-4 sm:py-2 rounded-lg sm:rounded-xl text-[11px] sm:text-xs md:text-sm font-bold hover:bg-primary hover:text-white transition-all shadow-sm hover:shadow-lg hover:shadow-primary/20 hover:-translate-y-0.5 whitespace-nowrap border border-white/20"
             >
               Submit Problem
             </Link>
@@ -187,22 +187,145 @@ export const Navbar: React.FC = () => {
 
       {/* Mobile Nav Drawer */}
       {mobileMenuOpen && (
-        <div className="border-b border-white/20 bg-surface/95 backdrop-blur-2xl px-4 py-4 md:hidden shadow-xl pointer-events-auto">
-          <div className="flex flex-col gap-2">
-            {navItems.map((item) => (
-              <Link
-                key={item.label}
-                to={item.path}
-                onClick={() => setMobileMenuOpen(false)}
-                className={`rounded-lg px-3 py-2 text-sm font-medium ${
-                  isActive(item.path)
-                    ? "bg-primary/10 text-primary font-bold"
-                    : "text-on-surface-variant hover:bg-surface-container"
-                }`}
-              >
-                {item.label}
-              </Link>
-            ))}
+        <div className="border-b border-outline-variant/30 bg-surface-container-lowest/98 backdrop-blur-2xl px-4 py-5 md:hidden shadow-2xl pointer-events-auto animate-in slide-in-from-top-2 duration-200">
+          <div className="flex flex-col gap-1.5">
+            <Link
+              to="/explore"
+              onClick={() => setMobileMenuOpen(false)}
+              className={`rounded-xl px-3.5 py-2.5 text-sm font-semibold transition-colors ${
+                isActive("/explore")
+                  ? "bg-primary/10 text-primary font-bold"
+                  : "text-on-surface hover:bg-surface-container-low"
+              }`}
+            >
+              Explore Problems
+            </Link>
+            <Link
+              to="/features"
+              onClick={() => setMobileMenuOpen(false)}
+              className={`rounded-xl px-3.5 py-2.5 text-sm font-semibold transition-colors ${
+                isActive("/features")
+                  ? "bg-primary/10 text-primary font-bold"
+                  : "text-on-surface hover:bg-surface-container-low"
+              }`}
+            >
+              Features
+            </Link>
+            <Link
+              to="/solutions"
+              onClick={() => setMobileMenuOpen(false)}
+              className={`rounded-xl px-3.5 py-2.5 text-sm font-semibold transition-colors ${
+                isActive("/solutions")
+                  ? "bg-primary/10 text-primary font-bold"
+                  : "text-on-surface hover:bg-surface-container-low"
+              }`}
+            >
+              Solutions
+            </Link>
+            <Link
+              to="/industries"
+              onClick={() => setMobileMenuOpen(false)}
+              className={`rounded-xl px-3.5 py-2.5 text-sm font-semibold transition-colors ${
+                isActive("/industries")
+                  ? "bg-primary/10 text-primary font-bold"
+                  : "text-on-surface hover:bg-surface-container-low"
+              }`}
+            >
+              Industries
+            </Link>
+            <Link
+              to="/community"
+              onClick={() => setMobileMenuOpen(false)}
+              className={`rounded-xl px-3.5 py-2.5 text-sm font-semibold transition-colors ${
+                isActive("/community")
+                  ? "bg-primary/10 text-primary font-bold"
+                  : "text-on-surface hover:bg-surface-container-low"
+              }`}
+            >
+              Community
+            </Link>
+            <Link
+              to="/companies"
+              onClick={() => setMobileMenuOpen(false)}
+              className={`rounded-xl px-3.5 py-2.5 text-sm font-semibold transition-colors ${
+                isActive("/companies")
+                  ? "bg-primary/10 text-primary font-bold"
+                  : "text-on-surface hover:bg-surface-container-low"
+              }`}
+            >
+              Partners
+            </Link>
+            <Link
+              to="/about"
+              onClick={() => setMobileMenuOpen(false)}
+              className={`rounded-xl px-3.5 py-2.5 text-sm font-semibold transition-colors ${
+                isActive("/about")
+                  ? "bg-primary/10 text-primary font-bold"
+                  : "text-on-surface hover:bg-surface-container-low"
+              }`}
+            >
+              About Us
+            </Link>
+            <Link
+              to="/contact"
+              onClick={() => setMobileMenuOpen(false)}
+              className={`rounded-xl px-3.5 py-2.5 text-sm font-semibold transition-colors ${
+                isActive("/contact")
+                  ? "bg-primary/10 text-primary font-bold"
+                  : "text-on-surface hover:bg-surface-container-low"
+              }`}
+            >
+              Contact Us
+            </Link>
+
+            <div className="my-2 border-t border-outline-variant/20" />
+
+            {user || userDoc ? (
+              <div className="flex flex-col gap-1.5">
+                <Link
+                  to="/dashboard"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="rounded-xl px-3.5 py-2 text-xs font-bold text-on-surface hover:bg-surface-container-low flex items-center justify-between"
+                >
+                  <span>My Dashboard</span>
+                  <UserIcon className="w-4 h-4 text-primary" />
+                </Link>
+                <Link
+                  to="/saved"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="rounded-xl px-3.5 py-2 text-xs font-bold text-on-surface hover:bg-surface-container-low flex items-center justify-between"
+                >
+                  <span>Saved Problems</span>
+                  <Bookmark className="w-4 h-4 text-primary" />
+                </Link>
+                <button
+                  onClick={() => {
+                    logout();
+                    setMobileMenuOpen(false);
+                  }}
+                  className="text-left rounded-xl px-3.5 py-2 text-xs font-bold text-error hover:bg-error-container/30 transition-colors cursor-pointer"
+                >
+                  Sign Out
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2 pt-1">
+                <Link
+                  to="/login"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex-1 text-center py-2.5 rounded-xl border border-outline-variant/30 text-xs font-bold text-on-surface hover:bg-surface-container-low transition-colors"
+                >
+                  Log in
+                </Link>
+                <Link
+                  to="/submit"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex-1 text-center py-2.5 rounded-xl bg-primary text-white text-xs font-bold shadow-sm hover:bg-primary-container transition-colors"
+                >
+                  Submit Problem
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       )}

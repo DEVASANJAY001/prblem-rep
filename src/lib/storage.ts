@@ -14,6 +14,7 @@ import {
   CommentReply,
   ProblemValidations,
   BadgeDoc,
+  CreditSourceDoc,
 } from "@/types";
 import { doc, setDoc, deleteDoc } from "firebase/firestore";
 import { db } from "./firebase/config";
@@ -43,7 +44,74 @@ export const STORAGE_KEYS = {
   SITE_CONTENT: "prblms_site_content_v2",
   COMPANIES: "prblms_companies_v2",
   BADGES: "prblms_badges_v2",
+  CREDITS: "prblms_credits_v2",
 };
+
+export const DEFAULT_CREDITS: CreditSourceDoc[] = [
+  {
+    id: "cred-own-thinking",
+    name: "Own Thinking",
+    category: "Individual Research",
+    description: "Original researcher hypothesis & empirical problem discovery.",
+    isActive: true,
+    order: 1,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: "cred-hack2skill",
+    name: "Hack2skill",
+    category: "Hackathon Platform",
+    description: "National hackathons, enterprise bounty tracks & problem statements.",
+    isActive: true,
+    order: 2,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: "cred-unstop",
+    name: "Unstop",
+    category: "Innovation Challenges",
+    description: "Case competitions, corporate problem statements & university tracks.",
+    isActive: true,
+    order: 3,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: "cred-sih",
+    name: "Smart India Hackathon (SIH)",
+    category: "Government / Ministry",
+    description: "Government ministry & central department real-world problem statements.",
+    isActive: true,
+    order: 4,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: "cred-msme",
+    name: "MSME Idea Hackathon",
+    category: "Government / Industry",
+    description: "Ministry of MSME enterprise & manufacturing innovation challenges.",
+    isActive: true,
+    order: 5,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: "cred-devfolio",
+    name: "Devfolio / Devpost",
+    category: "Hackathon Platform",
+    description: "Global Web3, AI, and developer hackathon challenge tracks.",
+    isActive: true,
+    order: 6,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: "cred-open-innovation",
+    name: "Open Innovation / Corporate",
+    category: "Corporate RFP",
+    description: "Enterprise open innovation challenges and corporate scouting programs.",
+    isActive: true,
+    order: 7,
+    createdAt: new Date().toISOString(),
+  },
+];
 
 // Safe LocalStorage helpers
 export function load<T>(key: string, fallback: T): T {
@@ -64,11 +132,44 @@ export function save<T>(key: string, data: T): void {
   }
 }
 
-// Initialize seed data if empty
+// Initialize seed data if empty or missing baseline statements
 export function initializeStorage() {
-  if (!localStorage.getItem(STORAGE_KEYS.PROBLEMS)) {
+  const currentProblems = load<ProblemDoc[]>(STORAGE_KEYS.PROBLEMS, []);
+  if (!currentProblems || currentProblems.length === 0) {
     save(STORAGE_KEYS.PROBLEMS, REAL_PROBLEMS);
+  } else {
+    // Ensure all 6 baseline REAL_PROBLEMS exist in localStorage without losing user additions
+    let updated = false;
+    const mergedProblems = [...currentProblems];
+    REAL_PROBLEMS.forEach((seed) => {
+      const idx = mergedProblems.findIndex((p) => p.id === seed.id);
+      if (idx === -1) {
+        mergedProblems.push(seed);
+        updated = true;
+      }
+    });
+    if (updated) {
+      save(STORAGE_KEYS.PROBLEMS, mergedProblems);
+    }
   }
+
+  const currentCredits = load<CreditSourceDoc[]>(STORAGE_KEYS.CREDITS, []);
+  if (!currentCredits || currentCredits.length === 0) {
+    save(STORAGE_KEYS.CREDITS, DEFAULT_CREDITS);
+  } else {
+    let credsUpdated = false;
+    const mergedCredits = [...currentCredits];
+    DEFAULT_CREDITS.forEach((seedCred) => {
+      if (!mergedCredits.some((c) => c.id === seedCred.id || c.name === seedCred.name)) {
+        mergedCredits.push(seedCred);
+        credsUpdated = true;
+      }
+    });
+    if (credsUpdated) {
+      save(STORAGE_KEYS.CREDITS, mergedCredits);
+    }
+  }
+
   if (!localStorage.getItem(STORAGE_KEYS.INDUSTRIES)) {
     save(STORAGE_KEYS.INDUSTRIES, REAL_INDUSTRIES);
   }
@@ -1168,4 +1269,69 @@ export function revokeBadgeFromUserInStorage(uid: string, badgeName: string): Us
     return users[index];
   }
   return null;
+}
+
+// ─────────────────────────────────────────────────────────────
+// Credits / 3rd Party Attribution Source Storage Functions
+// ─────────────────────────────────────────────────────────────
+export function getCredits(includeInactive = false): CreditSourceDoc[] {
+  initializeStorage();
+  const list = load<CreditSourceDoc[]>(STORAGE_KEYS.CREDITS, DEFAULT_CREDITS);
+  if (!includeInactive) {
+    return list.filter((c) => c.isActive !== false);
+  }
+  return list;
+}
+
+export function saveCredit(credit: CreditSourceDoc): CreditSourceDoc {
+  initializeStorage();
+  const list = load<CreditSourceDoc[]>(STORAGE_KEYS.CREDITS, DEFAULT_CREDITS);
+  const index = list.findIndex((c) => c.id === credit.id);
+  if (index >= 0) {
+    list[index] = { ...list[index], ...credit, updatedAt: new Date().toISOString() };
+  } else {
+    list.push({ ...credit, createdAt: credit.createdAt || new Date().toISOString() });
+  }
+  save(STORAGE_KEYS.CREDITS, list);
+  return credit;
+}
+
+export function deleteCredit(id: string): boolean {
+  initializeStorage();
+  const list = load<CreditSourceDoc[]>(STORAGE_KEYS.CREDITS, DEFAULT_CREDITS);
+  const nextList = list.filter((c) => c.id !== id);
+  save(STORAGE_KEYS.CREDITS, nextList);
+  return true;
+}
+
+export function toggleCreditActive(id: string): boolean {
+  initializeStorage();
+  const list = load<CreditSourceDoc[]>(STORAGE_KEYS.CREDITS, DEFAULT_CREDITS);
+  const index = list.findIndex((c) => c.id === id);
+  if (index >= 0) {
+    list[index].isActive = !list[index].isActive;
+    list[index].updatedAt = new Date().toISOString();
+    save(STORAGE_KEYS.CREDITS, list);
+    return true;
+  }
+  return false;
+}
+
+export function reorderCredits(orderedIds: string[]): CreditSourceDoc[] {
+  initializeStorage();
+  const list = load<CreditSourceDoc[]>(STORAGE_KEYS.CREDITS, DEFAULT_CREDITS);
+  const ordered: CreditSourceDoc[] = [];
+  orderedIds.forEach((id, idx) => {
+    const item = list.find((c) => c.id === id);
+    if (item) {
+      ordered.push({ ...item, order: idx + 1 });
+    }
+  });
+  list.forEach((item) => {
+    if (!orderedIds.includes(item.id)) {
+      ordered.push(item);
+    }
+  });
+  save(STORAGE_KEYS.CREDITS, ordered);
+  return ordered;
 }

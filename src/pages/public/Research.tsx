@@ -18,6 +18,7 @@ import {
   GraduationCap,
   Zap,
 } from "lucide-react";
+import { SEOHead } from "@/components/common/SEOHead";
 
 export const Research: React.FC = () => {
   const [search, setSearch] = useState("");
@@ -48,6 +49,27 @@ export const Research: React.FC = () => {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 space-y-8">
+      {/* SEO: Research & Datasets CollectionPage */}
+      <SEOHead
+        title="Research & Open Datasets — Empirical Evidence for Problems"
+        description="Explore peer-reviewed research papers, clinical reports, and empirical datasets backing verified problems across AI, healthcare, clean energy, and agriculture."
+        canonicalUrl="https://problematlas.com/research"
+        ogType="website"
+        keywords={["research papers", "open datasets", "empirical evidence", "academic problem validation", "clinical benchmarks", "scientific datasets"]}
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "CollectionPage",
+          "name": "Research & Open Datasets",
+          "description": "Peer-reviewed research papers, clinical reports, and empirical datasets backing verified real-world problems.",
+          "url": "https://problematlas.com/research",
+          "numberOfItems": researchList.length,
+          "publisher": {
+            "@type": "Organization",
+            "name": "ProblemAtlas",
+            "url": "https://problematlas.com"
+          }
+        }}
+      />
       {/* Header */}
       <div>
         <h1 className="text-2xl font-black tracking-tight text-zinc-950 dark:text-white sm:text-3xl">

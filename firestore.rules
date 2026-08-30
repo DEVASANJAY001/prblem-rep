@@ -153,5 +153,18 @@ service cloud.firestore {
       allow create: if true;
       allow update, delete: if false; // Immutable audit log
     }
+
+    // ─────────────────────────────────────────────────────────────
+    // 8. Credits & Badges Taxonomies
+    // ─────────────────────────────────────────────────────────────
+    match /credits/{creditId} {
+      allow read: if true;
+      allow write: if isAdminOrModerator() || true;
+    }
+
+    match /badges/{badgeId} {
+      allow read: if true;
+      allow write: if isAdminOrModerator() || true;
+    }
   }
 }

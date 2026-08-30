@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Lock, ArrowRight, Compass, Shield } from "lucide-react";
+import { HumanVerification } from "@/components/common/HumanVerification";
 
 export const AdminLogin: React.FC = () => {
   const navigate = useNavigate();
@@ -11,11 +12,16 @@ export const AdminLogin: React.FC = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isHumanVerified, setIsHumanVerified] = useState(false);
 
   const handleAdminSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !password) {
       setError("Please enter your admin credentials.");
+      return;
+    }
+    if (!isHumanVerified) {
+      setError("Please complete the 'I am not a robot' verification check.");
       return;
     }
     setLoading(true);
@@ -99,10 +105,20 @@ export const AdminLogin: React.FC = () => {
               />
             </div>
 
+            <div className="pt-1">
+              <HumanVerification
+                onVerify={() => {
+                  setIsHumanVerified(true);
+                  setError(null);
+                }}
+                onExpire={() => setIsHumanVerified(false)}
+              />
+            </div>
+
             <button
               type="submit"
               disabled={loading}
-              className="w-full h-12 mt-2 bg-primary rounded-lg font-label-md text-label-md text-on-primary hover:bg-primary-container transition-colors flex items-center justify-center gap-2 group shadow-md hover:shadow-lg relative overflow-hidden"
+              className="w-full h-12 mt-2 bg-primary rounded-lg font-label-md text-label-md text-on-primary hover:bg-primary-container transition-colors flex items-center justify-center gap-2 group shadow-md hover:shadow-lg relative overflow-hidden cursor-pointer"
             >
               <span className="relative z-10">{loading ? "Authenticating..." : "Log In"}</span>
               <ArrowRight className="h-4 w-4 relative z-10 group-hover:translate-x-1 transition-transform" />

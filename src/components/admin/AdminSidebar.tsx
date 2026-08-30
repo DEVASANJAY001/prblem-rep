@@ -22,6 +22,7 @@ import {
   ChevronRight,
   PanelLeftClose,
   PanelLeftOpen,
+  Tag,
 } from "lucide-react";
 import { UserAvatar } from "@/components/ui/UserAvatar";
 
@@ -58,6 +59,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
     { name: "App Controller", path: "/admin/app-controller", icon: SlidersHorizontal },
     { name: "Users", path: "/admin/users", icon: Users },
     { name: "Badges", path: "/admin/badges", icon: Award },
+    { name: "Credits", path: "/admin/credits", icon: Tag },
     { name: "Forms", path: "/admin/forms", icon: FilePlus2 },
     { name: "Industries", path: "/admin/industries", icon: Building2 },
     { name: "Companies", path: "/admin/companies", icon: Building2 },

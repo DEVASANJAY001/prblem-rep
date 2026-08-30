@@ -161,8 +161,8 @@ export const REAL_PROBLEMS: ProblemDoc[] = [
       citizensAffected: "46 million",
     },
     comments: [],
-    attachedCompanyNames: ["Google"],
-    tags: ["Healthcare", "EHR", "Interoperability", "FHIR", "Rural Health", "Google"],
+    attachedCompanyNames: ["Optum Health", "Epic Systems", "Cerner Corporation"],
+    tags: ["Healthcare", "EHR", "Interoperability", "FHIR", "Rural Health", "Optum Health", "Epic Systems", "Cerner Corporation"],
     hasStartupMode: true,
     startupModeEnabled: true,
     startupModeConfig: {
@@ -240,6 +240,7 @@ export const REAL_PROBLEMS: ProblemDoc[] = [
         "Carequality HIE Ready",
       ],
     },
+    psFrom: ["Own Thinking", "Smart India Hackathon (SIH)", "Hack2skill"],
   },
   {
     id: "prob-2",

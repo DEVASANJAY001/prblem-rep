@@ -1,5 +1,50 @@
 import React from "react";
-import * as LucideIcons from "lucide-react";
+import {
+  Award,
+  Trophy,
+  Rocket,
+  Crown,
+  Shield,
+  ShieldCheck,
+  Flame,
+  Zap,
+  Star,
+  Target,
+  Sparkles,
+  Lightbulb,
+  Flag,
+  Cpu,
+  Layers,
+  BarChart3,
+  TrendingUp,
+  FileText,
+  ThumbsUp,
+  HeartHandshake,
+  Microscope,
+  Compass,
+  Globe,
+  Briefcase,
+  Building2,
+  Code,
+  Database,
+  Terminal,
+  Key,
+  Lock,
+  CheckCircle,
+  CheckCircle2,
+  Activity,
+  Diamond,
+  DollarSign,
+  Eye,
+  Heart,
+  Medal,
+  Users,
+  Search,
+  HelpCircle,
+  CheckSquare,
+  Send,
+  LucideIcon,
+} from "lucide-react";
 import { BadgeTier } from "@/types";
 
 interface DynamicBadgeIconProps {
@@ -64,6 +109,52 @@ export const TIER_CONFIG: Record<
   },
 };
 
+const ICON_MAP: Record<string, LucideIcon> = {
+  award: Award,
+  trophy: Trophy,
+  rocket: Rocket,
+  crown: Crown,
+  shield: Shield,
+  shieldcheck: ShieldCheck,
+  flame: Flame,
+  zap: Zap,
+  star: Star,
+  target: Target,
+  sparkles: Sparkles,
+  lightbulb: Lightbulb,
+  flag: Flag,
+  cpu: Cpu,
+  layers: Layers,
+  barchart3: BarChart3,
+  trendingup: TrendingUp,
+  filetext: FileText,
+  thumbsup: ThumbsUp,
+  hearthandshake: HeartHandshake,
+  microscope: Microscope,
+  compass: Compass,
+  globe: Globe,
+  briefcase: Briefcase,
+  building2: Building2,
+  code: Code,
+  database: Database,
+  terminal: Terminal,
+  key: Key,
+  lock: Lock,
+  checkcircle: CheckCircle,
+  checkcircle2: CheckCircle2,
+  activity: Activity,
+  diamond: Diamond,
+  dollarsign: DollarSign,
+  eye: Eye,
+  heart: Heart,
+  medal: Medal,
+  users: Users,
+  search: Search,
+  helpcircle: HelpCircle,
+  checksquare: CheckSquare,
+  send: Send,
+};
+
 export const DynamicBadgeIcon: React.FC<DynamicBadgeIconProps> = ({
   name,
   className = "w-5 h-5",
@@ -71,46 +162,20 @@ export const DynamicBadgeIcon: React.FC<DynamicBadgeIconProps> = ({
   color,
   size,
 }) => {
-  // Normalize PascalCase or kebab-case icon name
-  const pascalName = name
-    ? name
-        .split(/[-_ ]+/)
-        .map((s) => s.charAt(0).toUpperCase() + s.slice(1).toLowerCase())
-        .join("")
-    : "Award";
+  const normalizedKey = name
+    ? name.toLowerCase().replace(/[^a-z0-9]/g, "")
+    : "award";
 
-  const IconComponent = (LucideIcons as any)[pascalName] || (LucideIcons as any)[name] || LucideIcons.Award;
-
+  const IconComponent = ICON_MAP[normalizedKey] || Award;
   const style = color ? { color } : undefined;
 
   return <IconComponent className={className} style={style} size={size} />;
 };
 
-// Popular 500+ Lucide icon names catalog for search and quick selection in Admin
 export const LUCIDE_ICONS_CATALOG = [
   "Award", "Trophy", "Rocket", "Crown", "Shield", "ShieldCheck", "Flame", "Zap", "Star",
   "Target", "Sparkles", "Lightbulb", "Flag", "Cpu", "Layers", "BarChart3", "TrendingUp",
   "FileText", "ThumbsUp", "HeartHandshake", "Microscope", "Compass", "Globe", "Briefcase",
-  "Building2", "Code", "Database", "Terminal", "Key", "Lock", "Unlock", "Fingerprint",
-  "CheckCircle", "CheckCircle2", "Activity", "Anchor", "Atom", "Binary", "BookOpen",
-  "Bot", "Boxes", "Brain", "Brush", "Bug", "Building", "Calculator", "Calendar",
-  "Camera", "Cast", "CircleDot", "Clapperboard", "Coins", "Command", "Crosshair",
-  "Diamond", "Dna", "DollarSign", "Download", "Drill", "Earth", "Egg", "Eye",
-  "Factory", "Feather", "FileCheck", "FileCode", "FileSearch", "FileSpreadsheet", "Film",
-  "FlaskConical", "FolderGit2", "FolderHeart", "FolderKanban", "Footprints", "Gamepad2",
-  "Gauge", "Gavel", "Gem", "Gift", "GitBranch", "GitCommit", "GitPullRequest",
-  "GraduationCap", "Grid", "Hammer", "HandCoins", "Headphones", "Heart", "HelpCircle",
-  "Hexagon", "History", "Home", "Hourglass", "Image", "Infinity", "Info",
-  "Kanban", "Landmark", "Laptop", "LifeBuoy", "LineChart", "Link", "ListOrdered",
-  "Map", "MapPin", "Medal", "Megaphone", "Milestone", "Monitor", "Mountain",
-  "Music", "Network", "Orbit", "Palette", "Paperclip", "Percent", "Phone",
-  "PieChart", "Pin", "Plane", "Play", "Plug", "Plus", "Pointer", "Power",
-  "Presentation", "Printer", "Puzzle", "Radio", "Receipt", "RefreshCw", "Repeat",
-  "Save", "Scale", "Scan", "Scissors", "Search", "Send", "Server", "Share2",
-  "Ship", "ShoppingBag", "ShoppingCart", "Shuffle", "Sigma", "Siren", "Sliders",
-  "Smile", "Speaker", "SquareCode", "Stamp", "Sun", "Sword", "Swords", "Table",
-  "Tag", "Tags", "Telescope", "Tent", "Thermometer", "Timer", "ToggleRight",
-  "Tool", "TrafficCone", "Trees", "Truck", "Tv", "Umbrella", "Unplug", "User",
-  "UserCheck", "UserPlus", "Users", "Utensils", "Variable", "Vault", "Vibrate",
-  "Video", "Volume2", "Wallet", "Wand2", "Watch", "Waves", "Wifi", "Wind", "Workflow", "Wrench"
+  "Building2", "Code", "Database", "Terminal", "Key", "Lock", "CheckCircle", "CheckCircle2",
+  "Activity", "Diamond", "DollarSign", "Eye", "Heart", "Medal", "Users", "Search"
 ];

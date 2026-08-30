@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Compass, ArrowRight } from "lucide-react";
+import { SEOHead } from "@/components/common/SEOHead";
+import { HumanVerification } from "@/components/common/HumanVerification";
 
 export const Register: React.FC = () => {
   const navigate = useNavigate();
@@ -12,6 +14,7 @@ export const Register: React.FC = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isHumanVerified, setIsHumanVerified] = useState(false);
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,6 +24,10 @@ export const Register: React.FC = () => {
     }
     if (password.length < 6) {
       setError("Password must be at least 6 characters.");
+      return;
+    }
+    if (!isHumanVerified) {
+      setError("Please complete the 'I am not a robot' verification check.");
       return;
     }
     setLoading(true);
@@ -50,6 +57,7 @@ export const Register: React.FC = () => {
 
   return (
     <div className="w-full flex items-center justify-center min-h-[calc(100vh-10rem)] py-12 px-4 bg-surface font-body-md text-on-surface">
+      <SEOHead title="Create Account" description="Join ProblemAtlas to validate and solve problems." noindex />
       <div className="flex flex-col w-full max-w-[420px] bg-surface-container-lowest shadow-sm rounded-xl p-8 gap-8 border border-outline-variant/40">
         <div className="flex flex-col items-center gap-4 text-center">
           <div className="w-12 h-12 rounded-lg bg-primary-container text-on-primary flex items-center justify-center shadow-sm">
@@ -128,6 +136,16 @@ export const Register: React.FC = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
                 className="w-full bg-surface-container-low border border-outline-variant rounded-lg px-4 py-3 font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary transition-colors placeholder:text-outline"
+              />
+            </div>
+
+            <div className="pt-1">
+              <HumanVerification
+                onVerify={() => {
+                  setIsHumanVerified(true);
+                  setError(null);
+                }}
+                onExpire={() => setIsHumanVerified(false)}
               />
             </div>
 

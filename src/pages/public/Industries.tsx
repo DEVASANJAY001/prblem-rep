@@ -5,6 +5,7 @@ import { db } from "@/lib/firebase/config";
 import { subscribeProblems } from "@/lib/firebase/services/problemsService";
 import { REAL_INDUSTRIES } from "@/data/realProductionData";
 import { IndustryDoc, ProblemDoc } from "@/types";
+import { SEOHead } from "@/components/common/SEOHead";
 import {
   Search,
   ArrowRight,
@@ -130,38 +131,61 @@ export const Industries: React.FC = () => {
 
   return (
     <div className="flex flex-col w-full min-h-screen font-['Poppins',sans-serif] text-on-surface bg-surface">
+      {/* SEO: ItemList schema for industry directory */}
+      <SEOHead
+        title="Industry Verticals — Problem Statements by Sector"
+        description={`Browse verified problems across ${filtered.length}+ industry sectors including Healthcare, AI & Machine Learning, Clean Energy, FinTech, Logistics, and more. Find startup opportunities by domain.`}
+        canonicalUrl="https://problematlas.com/industries"
+        ogType="website"
+        keywords={["industry problems", "healthcare startup ideas", "AI problems", "clean energy challenges", "fintech problems", "sector-specific innovation", "domain problems"]}
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "ItemList",
+          "name": "Industry Verticals on ProblemAtlas",
+          "description": "Directory of verified problem statements organized by industry sector.",
+          "url": "https://problematlas.com/industries",
+          "numberOfItems": filtered.length,
+          "itemListElement": filtered.slice(0, 10).map((ind, i) => ({
+            "@type": "ListItem",
+            "position": i + 1,
+            "name": ind.name,
+            "url": `https://problematlas.com/industries/${ind.slug}`,
+            "description": ind.description
+          }))
+        }}
+      />
       {/* ── Top Hero Header Section (Matching Explore / Home Design) ─────────── */}
-      <div className="w-full bg-gradient-to-b from-surface via-surface-container-lowest to-surface pt-12 pb-8 border-b border-outline-variant/20 relative overflow-hidden">
+      <div className="w-full bg-gradient-to-b from-surface via-surface-container-lowest to-surface pt-8 pb-5 sm:pt-12 sm:pb-8 border-b border-outline-variant/20 relative overflow-hidden">
         <div className="absolute -top-32 -left-32 w-96 h-96 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-rose-500/10 rounded-full blur-3xl pointer-events-none" />
 
-        <div className="max-w-7xl mx-auto px-4 md:px-8 relative z-10 space-y-6">
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div className="max-w-7xl mx-auto px-4 md:px-8 relative z-10 space-y-4 sm:space-y-6">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 sm:gap-4">
             <div>
-              <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-on-surface">
+              <h1 className="text-2xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-on-surface">
                 Industry Verticals
               </h1>
-              <p className="text-on-surface-variant text-sm md:text-base mt-2 max-w-2xl font-normal leading-relaxed">
+              <p className="text-on-surface-variant text-xs sm:text-sm md:text-base mt-1 sm:mt-2 max-w-2xl font-normal leading-relaxed">
                 Discover verified real-world operational bottlenecks, clinical friction, and enterprise demand signals categorized by domain sector.
               </p>
             </div>
 
             <Link
               to="/submit"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#1657FF] text-white text-xs font-bold hover:bg-[#0E47E6] shadow-sm transition-all shrink-0"
+              className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-5 py-1.5 sm:py-2.5 rounded-lg sm:rounded-xl bg-[#1657FF] text-white text-[11px] sm:text-xs font-bold hover:bg-[#0E47E6] shadow-sm transition-all shrink-0"
             >
-              <span>Submit Verified Problem</span>
-              <ArrowRight className="h-4 w-4" />
+              <span>Submit Problem</span>
+              <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             </Link>
           </div>
 
           {/* Search Bar with Integrated Action */}
           <div className="w-full relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant h-5 w-5" />
+            <Search className="absolute left-3.5 sm:left-4 top-1/2 -translate-y-1/2 text-on-surface-variant h-4 w-4 sm:h-5 sm:w-5" />
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-surface-container-lowest border border-outline-variant/40 rounded-2xl py-4 pl-12 pr-28 text-sm md:text-base text-on-surface focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all shadow-sm hover:shadow-md placeholder:text-on-surface-variant/60"
+              className="w-full bg-surface-container-lowest border border-outline-variant/40 rounded-2xl py-2.5 sm:py-4 pl-10 sm:pl-12 pr-22 sm:pr-28 text-xs sm:text-base text-on-surface focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all shadow-sm hover:shadow-md placeholder:text-on-surface-variant/60"
               placeholder="Search industries, sectors, or domains..."
               type="text"
             />
@@ -169,7 +193,7 @@ export const Industries: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setSearch("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 bg-surface-container-low text-on-surface-variant hover:text-on-surface px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer"
+                className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 bg-surface-container-low text-on-surface-variant hover:text-on-surface px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl text-[11px] sm:text-xs font-semibold transition-all cursor-pointer"
               >
                 Clear
               </button>
@@ -177,25 +201,25 @@ export const Industries: React.FC = () => {
           </div>
 
           {/* Toolbar: Results Count & Sort Dropdown */}
-          <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-outline-variant/20">
-            <div className="flex items-center gap-2 text-xs text-on-surface-variant font-medium">
+          <div className="flex flex-wrap items-center justify-between gap-2.5 sm:gap-3 pt-2.5 sm:pt-3 border-t border-outline-variant/20">
+            <div className="flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs text-on-surface-variant font-medium">
               <span>Showing</span>
               <span className="text-primary font-bold">{filtered.length}</span>
               <span>industry verticals</span>
             </div>
 
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-medium text-on-surface-variant">Sort:</span>
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <span className="text-[11px] sm:text-xs font-medium text-on-surface-variant">Sort:</span>
               <div className="relative inline-block">
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="appearance-none bg-surface-container-lowest border border-outline-variant/40 hover:border-primary/40 rounded-xl py-1.5 pl-3 pr-8 text-xs font-semibold text-on-surface focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer shadow-2xs transition-colors"
+                  className="appearance-none bg-surface-container-lowest border border-outline-variant/40 hover:border-primary/40 rounded-xl py-1 sm:py-1.5 pl-2.5 sm:pl-3 pr-7 sm:pr-8 text-[11px] sm:text-xs font-semibold text-on-surface focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer shadow-2xs transition-colors"
                 >
                   <option value="Most Problems">Most Problems</option>
                   <option value="Alphabetical">Alphabetical (A–Z)</option>
                 </select>
-                <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none h-3.5 w-3.5" />
+                <ChevronDown className="absolute right-2 sm:right-2.5 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none h-3 w-3 sm:h-3.5 sm:w-3.5" />
               </div>
             </div>
           </div>

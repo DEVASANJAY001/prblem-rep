@@ -11,14 +11,17 @@ export const Footer: React.FC = () => {
             Product
           </h4>
           <nav className="flex flex-col gap-3">
-            <Link to="/explore" className="text-body-md text-on-surface-variant hover:text-primary transition-colors">
+            <Link to="/features" className="text-body-md text-on-surface-variant hover:text-primary transition-colors">
               Features
             </Link>
-            <Link to="/explore" className="text-body-md text-on-surface-variant hover:text-primary transition-colors">
+            <Link to="/solutions" className="text-body-md text-on-surface-variant hover:text-primary transition-colors">
               Solutions
             </Link>
             <Link to="/industries" className="text-body-md text-on-surface-variant hover:text-primary transition-colors">
               Industries
+            </Link>
+            <Link to="/explore" className="text-body-md text-on-surface-variant hover:text-primary transition-colors">
+              Problem Catalog
             </Link>
           </nav>
         </div>
@@ -30,13 +33,13 @@ export const Footer: React.FC = () => {
           </h4>
           <nav className="flex flex-col gap-3">
             <Link to="/community" className="text-body-md text-on-surface-variant hover:text-primary transition-colors">
-              Forums
-            </Link>
-            <Link to="/community" className="text-body-md text-on-surface-variant hover:text-primary transition-colors">
-              Events
+              Forums & Feed
             </Link>
             <Link to="/companies" className="text-body-md text-on-surface-variant hover:text-primary transition-colors">
-              Partners
+              Industry Partners
+            </Link>
+            <Link to="/submit" className="text-body-md text-on-surface-variant hover:text-primary transition-colors">
+              Submit a Problem
             </Link>
           </nav>
         </div>
@@ -47,14 +50,11 @@ export const Footer: React.FC = () => {
             Company
           </h4>
           <nav className="flex flex-col gap-3">
-            <Link to="/" className="text-body-md text-on-surface-variant hover:text-primary transition-colors">
+            <Link to="/about" className="text-body-md text-on-surface-variant hover:text-primary transition-colors">
               About Us
             </Link>
-            <Link to="/" className="text-body-md text-on-surface-variant hover:text-primary transition-colors">
-              Careers
-            </Link>
-            <Link to="/" className="text-body-md text-on-surface-variant hover:text-primary transition-colors">
-              Contact
+            <Link to="/contact" className="text-body-md text-on-surface-variant hover:text-primary transition-colors">
+              Contact Us
             </Link>
           </nav>
         </div>
@@ -65,14 +65,14 @@ export const Footer: React.FC = () => {
             Legal
           </h4>
           <nav className="flex flex-col gap-3">
-            <Link to="/" className="text-body-md text-on-surface-variant hover:text-primary transition-colors">
-              Privacy
+            <Link to="/privacy" className="text-body-md text-on-surface-variant hover:text-primary transition-colors">
+              Privacy Policy
             </Link>
-            <Link to="/" className="text-body-md text-on-surface-variant hover:text-primary transition-colors">
-              Terms
+            <Link to="/terms" className="text-body-md text-on-surface-variant hover:text-primary transition-colors">
+              Terms of Service
             </Link>
-            <Link to="/" className="text-body-md text-on-surface-variant hover:text-primary transition-colors">
-              Cookies
+            <Link to="/cookies" className="text-body-md text-on-surface-variant hover:text-primary transition-colors">
+              Cookie Policy
             </Link>
           </nav>
         </div>
@@ -88,7 +88,7 @@ export const Footer: React.FC = () => {
             ProblemAtlas
           </span>
         </div>
-        <p className="text-label-sm text-outline">© 2024 ProblemAtlas. All rights reserved.</p>
+        <p className="text-label-sm text-outline">© 2026 ProblemAtlas. All rights reserved.</p>
       </div>
     </footer>
   );

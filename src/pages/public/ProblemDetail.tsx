@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import {
   getProblemById,
   subscribeProblemById,
+  subscribeProblems,
   voteProblem,
   addComment,
   recordProblemView,
@@ -18,8 +19,11 @@ import { ProblemDoc, ProblemComment, CommentReply, CompanyDoc } from "@/types";
 import { toggleBookmark, isProblemBookmarked } from "@/lib/storage";
 import { useAuth } from "@/contexts/AuthContext";
 import { LoadingContainer } from "@/components/common/LoadingContainer";
+import { SEOHead } from "@/components/common/SEOHead";
+import { extractProblemId, getProblemDetailUrl, getStartupModeUrl } from "@/lib/seoUrls";
 import { UserAvatar } from "@/components/ui/UserAvatar";
 import { CompanyLogo } from "@/components/ui/CompanyLogo";
+import { TrendingProblemCard } from "@/components/ui/TrendingProblemCard";
 import {
   Bookmark,
   Share2,
@@ -34,6 +38,7 @@ import {
   Leaf,
   Building2,
   ArrowLeft,
+  ArrowRight,
   Send,
   CornerDownRight,
   MessageSquare,
@@ -193,7 +198,7 @@ export const ProblemDetail: React.FC = () => {
       return;
     }
 
-    const cleanId = decodeURIComponent(id).trim();
+    const cleanId = extractProblemId(id);
 
     const unsubscribe = subscribeProblemById(cleanId, (p) => {
       if (p) {
@@ -282,6 +287,22 @@ export const ProblemDetail: React.FC = () => {
     });
     return () => unsub();
   }, []);
+
+  // Subscribe to approved problems for Related Problems internal link section
+  const [allApprovedProblems, setAllApprovedProblems] = useState<ProblemDoc[]>([]);
+  useEffect(() => {
+    const unsub = subscribeProblems({ status: "approved" }, (list) => {
+      setAllApprovedProblems(list);
+    });
+    return () => unsub();
+  }, []);
+
+  const relatedProblems = useMemo(() => {
+    if (!problem) return [];
+    return allApprovedProblems
+      .filter((p) => p.id !== problem.id && (p.industry?.toLowerCase() === problem.industry?.toLowerCase() || p.tags?.some((t) => problem.tags?.includes(t))))
+      .slice(0, 4);
+  }, [allApprovedProblems, problem]);
 
   const requireAuth = () => {
     if (!user && !userDoc) {
@@ -493,12 +514,34 @@ export const ProblemDetail: React.FC = () => {
 
   if (!problem) {
     return (
-      <div className="mx-auto max-w-4xl px-4 py-20 text-center text-on-surface font-['Poppins',sans-serif]">
-        <h2 className="text-2xl font-bold text-on-surface">Problem Not Found</h2>
-        <p className="mt-2 text-sm text-on-surface-variant">The problem you are looking for does not exist or has been removed.</p>
-        <Link to="/explore" className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline">
-          <ArrowLeft className="h-4 w-4" /> Back to Explore
-        </Link>
+      <div className="mx-auto max-w-2xl px-4 py-20 text-center text-on-surface font-['Poppins',sans-serif] space-y-6 animate-fade-in">
+        <SEOHead title="Problem Not Found" description="The requested problem statement could not be found." noindex />
+        <div className="w-16 h-16 rounded-2xl bg-amber-500/10 text-amber-500 border border-amber-500/20 flex items-center justify-center mx-auto shadow-sm">
+          <FileText className="w-8 h-8" />
+        </div>
+        <div className="space-y-1.5">
+          <h2 className="text-2xl sm:text-3xl font-black text-on-surface tracking-tight">
+            Problem Statement Not Found
+          </h2>
+          <p className="text-xs sm:text-sm text-on-surface-variant max-w-md mx-auto leading-relaxed">
+            The problem dossier you requested does not exist, has been merged, or was removed during verification review.
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+          <Link
+            to="/explore"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-white text-xs font-bold shadow-sm hover:bg-primary-container transition-all"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            <span>Explore All Problems</span>
+          </Link>
+          <Link
+            to="/industries"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-outline-variant/40 bg-surface-container-low text-on-surface text-xs font-bold hover:bg-surface-container transition-all"
+          >
+            <span>Browse Industry Hubs</span>
+          </Link>
+        </div>
       </div>
     );
   }
@@ -602,6 +645,100 @@ export const ProblemDetail: React.FC = () => {
 
   return (
     <div className="w-full min-h-screen bg-surface font-['Poppins',sans-serif] text-on-surface">
+      <SEOHead
+        title={`${problem.title} - ${industry}`}
+        description={problem.description || "Explore verified problem statement, market size, TAM, and founder venture thesis on ProblemAtlas."}
+        canonicalUrl={`https://problematlas.com${getProblemDetailUrl(problem)}`}
+        ogType="article"
+        keywords={[industry, ...(problem.psFrom || []), "Problem Statement", "Startup Opportunity", "Venture Thesis", "Market Research"]}
+        jsonLd={[
+          {
+            "@context": "https://schema.org",
+            "@type": "CreativeWork",
+            "name": problem.title,
+            "headline": problem.title,
+            "description": problem.description,
+            "genre": industry,
+            "keywords": [industry, ...(problem.psFrom || [])].join(", "),
+            "author": {
+              "@type": "Person",
+              "name": problem.submitterName || problem.submittedBy || "ProblemAtlas Contributor",
+            },
+            "publisher": {
+              "@type": "Organization",
+              "name": "ProblemAtlas",
+              "url": "https://problematlas.com",
+            },
+            "datePublished": problem.submittedAt || "2026-08-24T00:00:00Z",
+            "dateModified": problem.updatedAt || "2026-08-30T00:00:00Z",
+            ...(problem.votes?.upvotes && problem.votes.upvotes > 0 ? {
+              "aggregateRating": {
+                "@type": "AggregateRating",
+                "ratingValue": Math.min(5, Math.max(1, Math.round((problem.painScore || 70) / 20))),
+                "ratingCount": problem.votes.upvotes,
+                "bestRating": 5,
+                "worstRating": 1,
+              }
+            } : {}),
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Explore",
+                "item": "https://problematlas.com/explore"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": industry,
+                "item": `https://problematlas.com/explore?industry=${encodeURIComponent(industry)}`
+              },
+              {
+                "@type": "ListItem",
+                "position": 3,
+                "name": problem.title,
+                "item": `https://problematlas.com${getProblemDetailUrl(problem)}`
+              }
+            ]
+          },
+          ...(problem.whenItHappens || problem.whoFacesIt || problem.currentSolution ? [{
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": [
+              ...(problem.whenItHappens ? [{
+                "@type": "Question",
+                "name": "When does this problem occur?",
+                "acceptedAnswer": { "@type": "Answer", "text": problem.whenItHappens }
+              }] : []),
+              ...(problem.whoFacesIt ? [{
+                "@type": "Question",
+                "name": "Who faces this problem?",
+                "acceptedAnswer": { "@type": "Answer", "text": problem.whoFacesIt }
+              }] : []),
+              ...(problem.whyFrustrating ? [{
+                "@type": "Question",
+                "name": "Why is this problem frustrating?",
+                "acceptedAnswer": { "@type": "Answer", "text": problem.whyFrustrating }
+              }] : []),
+              ...(problem.currentSolution ? [{
+                "@type": "Question",
+                "name": "What is the current solution or workaround?",
+                "acceptedAnswer": { "@type": "Answer", "text": problem.currentSolution }
+              }] : []),
+              ...(problem.marketData?.tam ? [{
+                "@type": "Question",
+                "name": "What is the total addressable market (TAM) for this problem?",
+                "acceptedAnswer": { "@type": "Answer", "text": `The estimated total addressable market is ${problem.marketData.tam}.` }
+              }] : []),
+            ].filter(q => q)
+          }] : []),
+        ]}
+      />
+
       <main className="w-full max-w-[1280px] mx-auto px-4 md:px-12 py-8 flex flex-col gap-6">
         {/* ── Top Breadcrumb & Action Toolbar (Seamless Flow) ─────────────── */}
         <div className="flex items-center justify-between gap-4 flex-wrap pb-3">
@@ -643,8 +780,9 @@ export const ProblemDetail: React.FC = () => {
         <div className="w-full h-px bg-gradient-to-r from-transparent via-gray-300/70 to-transparent -mt-2" />
 
         {/* ── Header Metadata & Clean Circular Score Dials + Sub-metrics ──── */}
-        <div className="w-full flex flex-col md:flex-row gap-8 items-start justify-between">
-          <div className="flex flex-col gap-3 max-w-2xl flex-1">
+        <div className="w-full flex flex-col gap-6">
+          {/* Top Row: Category Pills, Title, Author & Description */}
+          <div className="flex flex-col gap-3 w-full">
             <div className="flex items-center gap-2.5 flex-wrap">
               <span className="bg-surface-container text-on-surface-variant px-3 py-1 rounded-full text-xs font-semibold">
                 {industry.split("&")[0].trim()}
@@ -656,40 +794,33 @@ export const ProblemDetail: React.FC = () => {
                 <span className="material-symbols-outlined text-[16px]">verified</span>
                 Verified
               </span>
-            </div>
-
-            <h1 className="text-2xl md:text-3xl font-extrabold text-on-surface tracking-tight leading-snug">
-              {problem.title}
-            </h1>
-            <p className="text-xs text-on-surface-variant font-medium">
-              Posted by {problem.submitterName || problem.submittedBy || "Anonymous"} · {relativePostTime}
-            </p>
-
-            <div className="flex items-center gap-4 text-xs text-on-surface-variant mt-0.5">
-              <div className="flex items-center gap-1 font-medium">
-                <span className="material-symbols-outlined text-[16px] text-gray-400">visibility</span>
-                <span>{formattedViews} views</span>
-              </div>
               {isTrending && (
-                <div className="flex items-center gap-1 text-xs font-semibold text-[#ff2a55]">
+                <div className="flex items-center gap-1 text-xs font-semibold text-[#ff2a55] bg-rose-50 px-2.5 py-0.5 rounded-full">
                   <Flame className="w-3.5 h-3.5 fill-[#ff2a55] text-[#ff2a55]" />
                   <span>Trending</span>
                 </div>
               )}
             </div>
 
-            <p className="text-sm text-on-surface-variant leading-relaxed font-normal mt-1">
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-on-surface tracking-tight leading-snug">
+              {problem.title}
+            </h1>
+            <p className="text-[11px] sm:text-xs text-on-surface-variant font-medium">
+              Posted by {problem.submitterName || problem.submittedBy || "Anonymous"} · {relativePostTime}
+            </p>
+
+            <p className="text-xs sm:text-sm text-on-surface-variant leading-relaxed font-normal">
               {problem.description}
             </p>
           </div>
 
-          {/* Right Column: Large Gauges + Generous Spacing + Engagement Metrics + Solver Companies */}
-          <div className="flex flex-col items-center md:items-end gap-6 shrink-0 self-center md:self-start pt-1">
-            {/* Score Dials: Pain Score & Opportunity */}
-            <div className="flex items-center gap-8">
+          {/* ── Scores (Left) & Telemetry Metrics (Right) — Seamless Row without containers ──── */}
+          <div className="w-full flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pt-1">
+            {/* Left Side: Pain Score & Opportunity Dials (No background container) */}
+            <div className="flex items-center gap-6 sm:gap-8 shrink-0">
               {/* Pain Score Dial (Flame Thermal Gradient) */}
-              <div className="flex flex-col items-center justify-center">
-                <div className="relative w-22 h-22 md:w-24 md:h-24">
+              <div className="flex items-center gap-2.5">
+                <div className="relative w-12 h-12 sm:w-14 sm:h-14 shrink-0">
                   <svg className="w-full h-full -rotate-90" viewBox="0 0 96 96">
                     <defs>
                       <linearGradient id="painDetailGrad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -711,21 +842,23 @@ export const ProblemDetail: React.FC = () => {
                       strokeDashoffset={238.76 - 238.76 * (Number(painScore) / 100)}
                     />
                   </svg>
-                  <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-                    <span className="text-base sm:text-lg font-extrabold text-on-surface leading-none tracking-tight">
+                  <div className="absolute inset-0 flex items-center justify-center text-center">
+                    <span className="text-xs sm:text-sm font-extrabold text-on-surface leading-none tracking-tight">
                       {painDecimal}
                     </span>
-                    <span className="text-[9px] text-on-surface-variant font-medium mt-0.5">/10</span>
                   </div>
                 </div>
-                <span className="text-xs font-semibold text-on-surface-variant mt-2 whitespace-nowrap">
-                  Pain Score
-                </span>
+                <div className="flex flex-col">
+                  <span className="text-xs font-bold text-on-surface">Pain Score</span>
+                  <span className="text-[10px] text-on-surface-variant font-medium">Critical Friction</span>
+                </div>
               </div>
 
+              <div className="h-8 w-px bg-gray-200/80 hidden sm:block" />
+
               {/* Opportunity Score Dial (Emerald Green Gradient) */}
-              <div className="flex flex-col items-center justify-center">
-                <div className="relative w-22 h-22 md:w-24 md:h-24">
+              <div className="flex items-center gap-2.5">
+                <div className="relative w-12 h-12 sm:w-14 sm:h-14 shrink-0">
                   <svg className="w-full h-full -rotate-90" viewBox="0 0 96 96">
                     <defs>
                       <linearGradient id="oppDetailGrad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -747,47 +880,50 @@ export const ProblemDetail: React.FC = () => {
                       strokeDashoffset={238.76 - 238.76 * (Number(oppScore) / 100)}
                     />
                   </svg>
-                  <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-                    <span className="text-base sm:text-lg font-extrabold text-on-surface leading-none tracking-tight">
+                  <div className="absolute inset-0 flex items-center justify-center text-center">
+                    <span className="text-xs sm:text-sm font-extrabold text-on-surface leading-none tracking-tight">
                       {oppDecimal}
                     </span>
-                    <span className="text-[9px] text-on-surface-variant font-medium mt-0.5">/10</span>
                   </div>
                 </div>
-                <span className="text-xs font-semibold text-on-surface-variant mt-2 whitespace-nowrap">
-                  Opportunity
-                </span>
+                <div className="flex flex-col">
+                  <span className="text-xs font-bold text-on-surface">Opportunity</span>
+                  <span className="text-[10px] text-on-surface-variant font-medium">High Upside</span>
+                </div>
               </div>
             </div>
 
-            {/* Sub-Metrics Container with generous space */}
-            <div className="flex flex-col items-center md:items-end gap-3 mt-2">
-              {/* Engagement Metrics Container (Views, Face this, Building, Comments) */}
-              <div className="flex items-center gap-2.5 bg-surface-container/50 px-4 py-2 rounded-full text-xs font-medium text-on-surface-variant border border-gray-200/40">
-                <div className="flex items-center gap-1">
-                  <Eye className="w-3.5 h-3.5 text-gray-400" />
-                  <span>{formattedViews} Views</span>
-                </div>
-                <span className="text-gray-300">·</span>
-                <div className="flex items-center gap-1">
-                  <Hand className="w-3.5 h-3.5 text-gray-400" />
-                  <span>{faceCount} Face this</span>
-                </div>
-                <span className="text-gray-300">·</span>
-                <div className="flex items-center gap-1">
-                  <Hammer className="w-3.5 h-3.5 text-gray-400" />
-                  <span>{buildCount} Building</span>
-                </div>
-                <span className="text-gray-300">·</span>
-                <div className="flex items-center gap-1">
-                  <MessageSquare className="w-3.5 h-3.5 text-gray-400" />
-                  <span>{totalCommentsCount} Comments</span>
-                </div>
+            {/* Right Side: Engagement Telemetry & Interested Companies (No background container) */}
+            <div className="flex flex-wrap items-center justify-start md:justify-end gap-3 sm:gap-4 text-xs font-medium text-on-surface-variant">
+              {/* Telemetry Metrics */}
+              <div className="flex items-center gap-1">
+                <Eye className="w-3.5 h-3.5 text-gray-400" />
+                <span className="font-semibold text-on-surface">{formattedViews}</span>
+                <span>Views</span>
+              </div>
+              <span className="text-gray-300">·</span>
+              <div className="flex items-center gap-1">
+                <Hand className="w-3.5 h-3.5 text-gray-400" />
+                <span className="font-semibold text-on-surface">{faceCount}</span>
+                <span>Face this</span>
+              </div>
+              <span className="text-gray-300">·</span>
+              <div className="flex items-center gap-1">
+                <Hammer className="w-3.5 h-3.5 text-gray-400" />
+                <span className="font-semibold text-on-surface">{buildCount}</span>
+                <span>Building</span>
+              </div>
+              <span className="text-gray-300">·</span>
+              <div className="flex items-center gap-1">
+                <MessageSquare className="w-3.5 h-3.5 text-gray-400" />
+                <span className="font-semibold text-on-surface">{totalCommentsCount}</span>
+                <span>Comments</span>
               </div>
 
-              {/* Companies Interested Container */}
-              <div className="flex items-center gap-2.5 bg-surface-container/50 px-4 py-2 rounded-full text-xs font-medium text-on-surface-variant border border-gray-200/40">
-                <span className="text-gray-500 font-medium">Companies interested:</span>
+              {/* Interested Companies */}
+              <span className="text-gray-300 hidden sm:inline">·</span>
+              <div className="flex items-center gap-1.5">
+                <span className="text-gray-500 font-medium">Interested:</span>
                 {attachedCompanies.length > 0 ? (
                   <div className="flex items-center -space-x-1.5">
                     {attachedCompanies.slice(0, 4).map((comp, idx) => (
@@ -796,17 +932,17 @@ export const ProblemDetail: React.FC = () => {
                         name={comp.name}
                         logoUrl={comp.logoUrl}
                         size="xs"
-                        className="w-5.5 h-5.5"
+                        className="w-5 h-5 shadow-2xs ring-1 ring-white"
                       />
                     ))}
                     {attachedCompanies.length > 4 && (
-                      <div className="w-5.5 h-5.5 rounded-full bg-surface-container border border-gray-200/80 shadow-2xs flex items-center justify-center text-[9px] font-bold text-primary shrink-0">
+                      <div className="w-5 h-5 rounded-full bg-surface-container border border-gray-200/80 shadow-2xs flex items-center justify-center text-[8px] font-bold text-primary shrink-0">
                         +{attachedCompanies.length - 4}
                       </div>
                     )}
                   </div>
                 ) : (
-                  <span className="text-[11px] text-on-surface-variant/70 font-normal">None attached</span>
+                  <span className="text-[11px] text-on-surface-variant/70 font-normal">Open</span>
                 )}
               </div>
             </div>
@@ -814,8 +950,8 @@ export const ProblemDetail: React.FC = () => {
         </div>
 
         {/* ── Tabs Navigation ──────────────────────────────────────────────── */}
-        <div className="w-full flex gap-8 border-b border-gray-200/70 pb-1 mt-2">
-          <nav className="flex overflow-x-auto gap-8 w-full hide-scrollbar">
+        <div className="w-full flex gap-4 sm:gap-8 border-b border-gray-200/70 pb-1 mt-2">
+          <nav className="flex overflow-x-auto gap-5 sm:gap-8 w-full hide-scrollbar">
             {[
               { id: "description", label: "Description" },
               { id: "evidence", label: "Evidence" },
@@ -1734,12 +1870,53 @@ export const ProblemDetail: React.FC = () => {
                 )}
               </div>
 
+              {/* Credits: (Problem Statement Origin & Challenge Source) */}
+              <div className="mt-1 pt-3 flex flex-col gap-2.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-semibold text-on-surface-variant flex items-center gap-1.5">
+                    <span>Credits:</span>
+                    <span className="text-[9px] font-bold uppercase tracking-wider text-primary bg-primary/10 px-1.5 py-0.5 rounded">
+                      Origin
+                    </span>
+                  </span>
+                  {isAdmin && (
+                    <Link
+                      to={`/admin/problems/${problem.id}/edit`}
+                      className="text-[10px] text-primary hover:underline font-bold"
+                    >
+                      Edit in PS Control
+                    </Link>
+                  )}
+                </div>
+
+                {problem.psFrom && problem.psFrom.length > 0 ? (
+                  <div className="flex flex-wrap gap-1.5">
+                    {problem.psFrom.map((source, idx) => (
+                      <span
+                        key={idx}
+                        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-surface-container/70 border border-outline-variant/30 text-on-surface text-[11px] font-semibold shadow-2xs hover:bg-surface-container transition-colors"
+                      >
+                        <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
+                        <span>{source}</span>
+                      </span>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="flex flex-wrap gap-1.5">
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-surface-container/70 border border-outline-variant/30 text-on-surface text-[11px] font-semibold shadow-2xs">
+                      <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
+                      <span>Own Thinking</span>
+                    </span>
+                  </div>
+                )}
+              </div>
+
               {/* Build Startup Primary CTA */}
               {problem.hasStartupMode !== false && problem.startupModeEnabled !== false && problem.startupModeConfig?.enabled !== false ? (
                 <button
                   onClick={() => {
                     recordUserInterest(problem.id, user?.uid || "user", "startup_mode_cta");
-                    navigate(`/startup-mode/${problem.id}`);
+                    navigate(getStartupModeUrl(problem));
                   }}
                   className="mt-4 w-full bg-surface hover:bg-primary/5 text-primary border border-primary py-3 rounded-xl text-xs md:text-sm font-bold shadow-xs hover:shadow-sm transition-all cursor-pointer flex items-center justify-center gap-2"
                 >
@@ -1766,6 +1943,34 @@ export const ProblemDetail: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* ── RELATED PROBLEMS IN THIS VERTICAL (Internal Link Structure & High Retention) ── */}
+        {relatedProblems.length > 0 && (
+          <section className="w-full mt-12 pt-8 border-t border-outline-variant/20 space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div>
+                <h3 className="text-xl font-extrabold text-on-surface tracking-tight">
+                  Related Problems in {industry}
+                </h3>
+                <p className="text-xs text-on-surface-variant mt-0.5">
+                  Explore adjacent operational bottlenecks, clinical friction points, and venture opportunities.
+                </p>
+              </div>
+              <Link
+                to={`/explore?industry=${encodeURIComponent(industry)}`}
+                className="text-xs font-bold text-primary hover:underline inline-flex items-center gap-1 shrink-0"
+              >
+                <span>View all {industry} problems</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+              {relatedProblems.map((rp) => (
+                <TrendingProblemCard key={rp.id} problem={rp} className="w-full h-full" />
+              ))}
+            </div>
+          </section>
+        )}
       </main>
 
       {/* ── EMBED & SECURED SHARE MODAL ───────────────────────────────────── */}
@@ -1809,12 +2014,12 @@ export const ProblemDetail: React.FC = () => {
                   <input
                     type="text"
                     readOnly
-                    value={`${window.location.origin}/problem/${problem.id}`}
+                    value={`${window.location.origin}${getProblemDetailUrl(problem)}`}
                     className="flex-1 bg-surface-container-low rounded-xl px-3.5 py-2 text-xs font-mono text-on-surface outline-none border border-outline-variant/30"
                   />
                   <button
                     onClick={() => {
-                      navigator.clipboard.writeText(`${window.location.origin}/problem/${problem.id}`);
+                      navigator.clipboard.writeText(`${window.location.origin}${getProblemDetailUrl(problem)}`);
                       setLinkCopied(true);
                       setTimeout(() => setLinkCopied(false), 2500);
                     }}
@@ -1840,13 +2045,13 @@ export const ProblemDetail: React.FC = () => {
                 <textarea
                   readOnly
                   rows={3}
-                  value={`<iframe src="${window.location.origin}/problem/${problem.id}" width="100%" height="600" frameborder="0" loading="lazy" sandbox="allow-scripts allow-same-origin allow-popups" title="${problem.title.replace(/"/g, '&quot;')}"></iframe>`}
+                  value={`<iframe src="${window.location.origin}${getProblemDetailUrl(problem)}" width="100%" height="600" frameborder="0" loading="lazy" sandbox="allow-scripts allow-same-origin allow-popups" title="${problem.title.replace(/"/g, '&quot;')}"></iframe>`}
                   className="w-full bg-surface-container-low rounded-xl p-3 text-[11px] font-mono text-on-surface outline-none border border-outline-variant/30 resize-none"
                 />
                 <div className="flex justify-end">
                   <button
                     onClick={() => {
-                      const snippet = `<iframe src="${window.location.origin}/problem/${problem.id}" width="100%" height="600" frameborder="0" loading="lazy" sandbox="allow-scripts allow-same-origin allow-popups" title="${problem.title.replace(/"/g, '&quot;')}"></iframe>`;
+                      const snippet = `<iframe src="${window.location.origin}${getProblemDetailUrl(problem)}" width="100%" height="600" frameborder="0" loading="lazy" sandbox="allow-scripts allow-same-origin allow-popups" title="${problem.title.replace(/"/g, '&quot;')}"></iframe>`;
                       navigator.clipboard.writeText(snippet);
                       setEmbedCopied(true);
                       setTimeout(() => setEmbedCopied(false), 2500);

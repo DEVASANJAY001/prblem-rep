@@ -3,6 +3,7 @@ import { useSearchParams, useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { validateAndUseAdminInvite } from "@/lib/storage";
 import { Key, ShieldCheck, ArrowRight, ArrowLeft, Lock, Mail, User, Zap } from "lucide-react";
+import { HumanVerification } from "@/components/common/HumanVerification";
 
 export const AdminRegister: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -15,6 +16,7 @@ export const AdminRegister: React.FC = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [isHumanVerified, setIsHumanVerified] = useState(false);
 
   useEffect(() => {
     const queryToken = searchParams.get("token");
@@ -25,6 +27,10 @@ export const AdminRegister: React.FC = () => {
     e.preventDefault();
     if (!token.trim() || !name || !email || !password) {
       setError("Please provide all required registration fields and a valid token.");
+      return;
+    }
+    if (!isHumanVerified) {
+      setError("Please complete the 'I am not a robot' verification check.");
       return;
     }
 
@@ -133,10 +139,20 @@ export const AdminRegister: React.FC = () => {
             </div>
           </div>
 
+          <div className="pt-1">
+            <HumanVerification
+              onVerify={() => {
+                setIsHumanVerified(true);
+                setError(null);
+              }}
+              onExpire={() => setIsHumanVerified(false)}
+            />
+          </div>
+
           <button
             type="submit"
             disabled={loading}
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#1657FF] py-3 text-xs font-bold text-white shadow-sm hover:bg-[#0E47E6] transition-all hover:scale-[1.01]"
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#1657FF] py-3 text-xs font-bold text-white shadow-sm hover:bg-[#0E47E6] transition-all hover:scale-[1.01] cursor-pointer"
           >
             <span>{loading ? "Registering..." : "Create Admin Account"}</span>
             <ArrowRight className="h-4 w-4" />

@@ -13,6 +13,7 @@ import {
   ArrowRight,
   Sparkles,
 } from "lucide-react";
+import { SEOHead } from "@/components/common/SEOHead";
 
 export const Competitions: React.FC = () => {
   const [activeTab, setActiveTab] = useState("All Competitions");
@@ -52,6 +53,27 @@ export const Competitions: React.FC = () => {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 space-y-8">
+      {/* SEO: Competitions & Hackathons CollectionPage */}
+      <SEOHead
+        title="Innovation Competitions & Problem Bounties"
+        description="Participate in competitive problem-solving challenges, hackathons, and venture bounties with cash prizes and investor backing on ProblemAtlas."
+        canonicalUrl="https://problematlas.com/competitions"
+        ogType="website"
+        keywords={["hackathons", "problem bounties", "innovation challenges", "startup competitions", "bounty pool", "solver challenges"]}
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "CollectionPage",
+          "name": "Innovation Competitions & Problem Bounties",
+          "description": "Competitive problem-solving challenges, hackathons, and venture bounties.",
+          "url": "https://problematlas.com/competitions",
+          "numberOfItems": competitionsList.length,
+          "publisher": {
+            "@type": "Organization",
+            "name": "ProblemAtlas",
+            "url": "https://problematlas.com"
+          }
+        }}
+      />
       {/* Header */}
       <div>
         <h1 className="text-2xl font-black tracking-tight text-zinc-950 dark:text-white sm:text-3xl">

@@ -49,7 +49,7 @@ export const OrganicAtlasSection: React.FC = () => {
 
           {/* Right Column: Seamless 3D Tree with Curved Branches & Exact Logos */}
           <div className="lg:col-span-7">
-            <div className="relative w-full h-[360px] md:h-[400px] flex items-center justify-center">
+            <div className="relative w-full h-[300px] xs:h-[340px] sm:h-[360px] md:h-[400px] flex items-center justify-center overflow-hidden sm:overflow-visible">
               {/* Central 3D Asset */}
               <div className="absolute inset-0 flex items-center justify-center z-10 w-full h-full">
                 <OrganicTreeVisualization />

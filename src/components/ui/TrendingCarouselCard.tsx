@@ -1,10 +1,11 @@
 import React, { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ProblemDoc } from "@/types";
 import { REAL_COMPANIES } from "@/data/realProductionData";
 import { CompanyLogo } from "@/components/ui/CompanyLogo";
 import { useAuth } from "@/contexts/AuthContext";
 import { isProblemBookmarked, toggleBookmark, voteProblem } from "@/lib/storage";
+import { getProblemDetailUrl } from "@/lib/seoUrls";
 import { Eye, ShieldCheck, ThumbsUp, Bookmark } from "lucide-react";
 
 interface TrendingCarouselCardProps {
@@ -16,6 +17,7 @@ export const TrendingCarouselCard: React.FC<TrendingCarouselCardProps> = ({
   problem,
   className = "",
 }) => {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const currentUid = user?.uid || "guest";
 
@@ -27,6 +29,14 @@ export const TrendingCarouselCard: React.FC<TrendingCarouselCardProps> = ({
   const [likesCount, setLikesCount] = useState<number>(initialUpvotes);
   const [isLiked, setIsLiked] = useState<boolean>(problem.votes?.userVote === "up");
   const [likeAnimating, setLikeAnimating] = useState<boolean>(false);
+
+  const handleCardClick = (e: React.MouseEvent) => {
+    const target = e.target as HTMLElement;
+    if (target.closest("button") || target.closest("a")) {
+      return;
+    }
+    navigate(getProblemDetailUrl(problem));
+  };
 
   const handleLike = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -99,7 +109,8 @@ export const TrendingCarouselCard: React.FC<TrendingCarouselCardProps> = ({
 
   return (
     <article
-      className={`bg-white rounded-3xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05),0_2px_8px_-2px_rgba(0,0,0,0.03)] hover:shadow-[0_14px_36px_-6px_rgba(244,63,94,0.12)] transition-all duration-300 overflow-hidden relative flex flex-col justify-between font-['Poppins',sans-serif] border border-gray-100/90 group shrink-0 ${className}`}
+      onClick={handleCardClick}
+      className={`bg-white rounded-3xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05),0_2px_8px_-2px_rgba(0,0,0,0.03)] hover:shadow-[0_14px_36px_-6px_rgba(244,63,94,0.12)] transition-all duration-300 overflow-hidden relative flex flex-col justify-between font-['Poppins',sans-serif] border border-gray-100/90 group shrink-0 cursor-pointer ${className}`}
     >
       {/* 1.5px Curved Corner Red Gradient Stroke directly tracing rounded border */}
       <div className="absolute top-0 right-0 w-32 h-32 pointer-events-none z-20 overflow-hidden">
@@ -122,17 +133,17 @@ export const TrendingCarouselCard: React.FC<TrendingCarouselCardProps> = ({
         </svg>
       </div>
 
-      <div className="p-6 md:p-7 flex flex-col gap-4 flex-1 justify-between relative z-10">
+      <div className="p-4 sm:p-6 md:p-7 flex flex-col gap-3 sm:gap-4 flex-1 justify-between relative z-10">
         {/* Top Header: Category Pill + Company Logos + Views & Interactive Actions */}
-        <header className="flex flex-col gap-3 w-full">
-          <div className="flex items-center justify-between gap-2.5 w-full">
-            <div className="flex items-center gap-2 min-w-0 flex-wrap">
+        <header className="flex flex-col gap-2 sm:gap-3 w-full">
+          <div className="flex items-center justify-between gap-2 w-full">
+            <div className="flex items-center gap-1.5 min-w-0 flex-wrap">
               {/* Category Pill */}
-              <div className="inline-flex items-center gap-1.5 bg-[#f4f2ff] px-2.5 py-1 rounded-full shrink-0">
-                <span className="text-[11px] font-medium tracking-wide text-[#5c37eb] truncate max-w-[130px]">
+              <div className="inline-flex items-center gap-1 sm:gap-1.5 bg-[#f4f2ff] px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full shrink-0">
+                <span className="text-[10px] sm:text-[11px] font-medium tracking-wide text-[#5c37eb] truncate max-w-[100px] xs:max-w-[120px] sm:max-w-[130px]">
                   {industry}
                 </span>
-                <div className="w-1.5 h-1.5 rounded-full bg-[#5c37eb]"></div>
+                <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-[#5c37eb]"></div>
               </div>
 
               {/* Companies Interested Avatar Stack */}
@@ -144,12 +155,12 @@ export const TrendingCarouselCard: React.FC<TrendingCarouselCardProps> = ({
                       name={comp.name}
                       logoUrl={comp.logoUrl}
                       size="xs"
-                      className="w-5 h-5 shadow-2xs ring-1 ring-white"
+                      className="w-4.5 h-4.5 sm:w-5 sm:h-5 shadow-2xs ring-1 ring-white"
                     />
                   ))}
                   {attachedCompanies.length > 3 && (
                     <div
-                      className="w-5 h-5 rounded-full bg-surface-container border border-gray-200/80 shadow-2xs flex items-center justify-center text-[8px] font-bold text-primary shrink-0"
+                      className="w-4.5 h-4.5 sm:w-5 sm:h-5 rounded-full bg-surface-container border border-gray-200/80 shadow-2xs flex items-center justify-center text-[8px] font-bold text-primary shrink-0"
                       title={`${attachedCompanies.length} companies interested`}
                     >
                       +{attachedCompanies.length - 3}
@@ -160,17 +171,17 @@ export const TrendingCarouselCard: React.FC<TrendingCarouselCardProps> = ({
             </div>
 
             {/* Right Side: Views, Like, Save & Verified Checkmark */}
-            <div className="flex items-center gap-1.5 shrink-0">
-              <div className="inline-flex items-center gap-1 text-[11px] font-medium text-gray-500 mr-1">
-                <Eye className="w-3.5 h-3.5 text-gray-400" />
+            <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
+              <div className="inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-medium text-gray-500 mr-0.5 sm:mr-1">
+                <Eye className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-gray-400" />
                 <span>{viewsText}</span>
               </div>
 
-              {/* Like / Upvote Button (Border-free Animated Thumbs Up: Gray if not liked, Blue if liked) */}
+              {/* Like / Upvote Button */}
               <button
                 type="button"
                 onClick={handleLike}
-                className={`inline-flex items-center gap-1 text-[11px] font-semibold transition-all cursor-pointer select-none active:scale-90 ${
+                className={`inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-semibold transition-all cursor-pointer select-none active:scale-90 ${
                   isLiked
                     ? "text-blue-600 font-bold"
                     : "text-gray-400 hover:text-blue-500"
@@ -178,57 +189,57 @@ export const TrendingCarouselCard: React.FC<TrendingCarouselCardProps> = ({
                 title={isLiked ? "Liked" : "Like problem"}
               >
                 <ThumbsUp
-                  className={`w-3.5 h-3.5 transition-all duration-300 ${
+                  className={`w-3 h-3 sm:w-3.5 sm:h-3.5 transition-all duration-300 ${
                     isLiked
                       ? "fill-blue-600 text-blue-600 scale-110"
                       : "text-gray-400 hover:text-blue-500"
                   } ${likeAnimating ? "animate-bounce scale-125" : ""}`}
                 />
-                <span className="font-mono text-[10px]">{likesCount}</span>
+                <span className="font-mono text-[9px] sm:text-[10px]">{likesCount}</span>
               </button>
 
               {/* Save / Bookmark Button */}
               <button
                 type="button"
                 onClick={handleSave}
-                className={`w-6 h-6 rounded-full flex items-center justify-center border transition-all cursor-pointer ${
+                className={`w-5.5 h-5.5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center border transition-all cursor-pointer ${
                   isSaved
                     ? "bg-primary/10 border-primary text-primary shadow-2xs"
                     : "bg-surface-container-lowest border-outline-variant/30 text-on-surface-variant hover:border-primary/40 hover:text-primary"
                 }`}
                 title={isSaved ? "Saved to Bookmarks" : "Save problem statement"}
               >
-                <Bookmark className={`w-3 h-3 ${isSaved ? "fill-primary text-primary" : ""}`} />
+                <Bookmark className={`w-2.5 h-2.5 sm:w-3 sm:h-3 ${isSaved ? "fill-primary text-primary" : ""}`} />
               </button>
 
               <div
-                className="flex items-center justify-center w-6 h-6 rounded-full bg-emerald-50 text-emerald-600 shrink-0 shadow-2xs border border-emerald-100/60"
+                className="flex items-center justify-center w-5.5 h-5.5 sm:w-6 sm:h-6 rounded-full bg-emerald-50 text-emerald-600 shrink-0 shadow-2xs border border-emerald-100/60"
                 title="Verified Problem"
               >
-                <ShieldCheck className="w-3.5 h-3.5" />
+                <ShieldCheck className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
               </div>
             </div>
           </div>
 
           {/* Title */}
-          <Link to={`/problem/${problem.id}`} className="hover:text-[#5c37eb] transition-colors">
-            <h3 className="text-base md:text-lg font-semibold text-gray-900 leading-snug line-clamp-2 tracking-tight group-hover:text-primary transition-colors">
+          <Link to={getProblemDetailUrl(problem)} className="hover:text-[#5c37eb] transition-colors">
+            <h3 className="text-xs sm:text-base md:text-lg font-semibold text-gray-900 leading-snug line-clamp-2 tracking-tight group-hover:text-primary transition-colors">
               {problem.title}
             </h3>
           </Link>
         </header>
 
-        {/* Middle Content Area: Description + Pain Score without /10 */}
-        <div className="flex items-center justify-between gap-4 py-1">
-          <p className="flex-1 text-gray-500 leading-relaxed text-xs font-normal line-clamp-3">
+        {/* Middle Content Area: Description + Pain Score */}
+        <div className="flex items-center justify-between gap-3 sm:gap-4 py-0.5 sm:py-1">
+          <p className="flex-1 text-gray-500 leading-relaxed text-[11px] sm:text-xs font-normal line-clamp-2 sm:line-clamp-3">
             {problem.description}
           </p>
 
-          <div className="w-px h-14 bg-gray-100/90 shrink-0"></div>
+          <div className="w-px h-10 sm:h-14 bg-gray-100/90 shrink-0"></div>
 
-          {/* Pain Score Widget without /10 */}
-          <div className="flex flex-col items-center justify-center shrink-0 px-1">
-            <div className="relative w-12 h-12">
+          {/* Pain Score Widget */}
+          <div className="flex flex-col items-center justify-center shrink-0 px-0.5 sm:px-1">
+            <div className="relative w-10 h-10 sm:w-12 sm:h-12">
               <svg className="w-full h-full -rotate-90" viewBox="0 0 72 72">
                 <defs>
                   <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="100%">
@@ -273,15 +284,15 @@ export const TrendingCarouselCard: React.FC<TrendingCarouselCardProps> = ({
                 />
               </svg>
 
-              {/* Just the Pain Score Value (No /10) */}
+              {/* Just the Pain Score Value */}
               <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-sm font-extrabold text-gray-900 leading-none tracking-tight">
+                <span className="text-xs sm:text-sm font-extrabold text-gray-900 leading-none tracking-tight">
                   {painDecimal}
                 </span>
               </div>
             </div>
 
-            <span className="text-[9px] text-gray-500 font-medium tracking-wide mt-1 whitespace-nowrap">
+            <span className="text-[8px] sm:text-[9px] text-gray-500 font-medium tracking-wide mt-0.5 sm:mt-1 whitespace-nowrap">
               Pain Score
             </span>
           </div>

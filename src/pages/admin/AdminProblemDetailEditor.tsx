@@ -8,9 +8,10 @@ import {
   moderateComment,
 } from "@/lib/firebase/services/problemsService";
 import { subscribeCompanies } from "@/lib/firebase/services/companiesService";
+import { subscribeCredits } from "@/lib/firebase/services/creditsService";
 import { CompanyLogo } from "@/components/ui/CompanyLogo";
 import { useAuth } from "@/contexts/AuthContext";
-import { ProblemDoc, ProblemComment, CompanyDoc, ProblemStatus, EvidenceDocument } from "@/types";
+import { ProblemDoc, ProblemComment, CompanyDoc, ProblemStatus, EvidenceDocument, CreditSourceDoc } from "@/types";
 import { REAL_INDUSTRIES, REAL_COMPANIES } from "@/data/realProductionData";
 import {
   Save,
@@ -132,6 +133,12 @@ export const AdminProblemDetailEditor: React.FC<AdminProblemDetailEditorProps> =
   const [selectedCompanyNames, setSelectedCompanyNames] = useState<string[]>([]);
   const [customSolverTags, setCustomSolverTags] = useState<string[]>([]);
 
+  // Credits: (Problem Statement Origin & 3rd Party Credits)
+  const [psFrom, setPsFrom] = useState<string[]>(["Own Thinking"]);
+  const [psFromCustom, setPsFromCustom] = useState("");
+  const [availableCredits, setAvailableCredits] = useState<CreditSourceDoc[]>([]);
+  const [selectedCreditDropdown, setSelectedCreditDropdown] = useState("");
+
   // Comments
   const [comments, setComments] = useState<ProblemComment[]>([]);
   const [newAdminComment, setNewAdminComment] = useState("");
@@ -235,10 +242,14 @@ export const AdminProblemDetailEditor: React.FC<AdminProblemDetailEditorProps> =
   useEffect(() => {
     if (!problemId) return;
 
-    // Load available companies
+    // Load available companies & credits
     const unsubCompanies = subscribeCompanies((list) => {
       setAvailableCompanies(list);
     });
+
+    const unsubCredits = subscribeCredits((list) => {
+      setAvailableCredits(list);
+    }, true);
 
     const unsubscribe = subscribeProblemById(problemId, (prob) => {
       if (prob) {
@@ -263,6 +274,14 @@ export const AdminProblemDetailEditor: React.FC<AdminProblemDetailEditorProps> =
         setWhoFacesIt(prob.whoFacesIt || "");
         setFrequency(prob.frequency || "");
         setCurrentSolution(prob.currentSolution || "");
+
+        // PS From
+        if (prob.psFrom && prob.psFrom.length > 0) {
+          setPsFrom(prob.psFrom);
+        } else {
+          setPsFrom(["Own Thinking"]);
+        }
+        setPsFromCustom(prob.psFromCustom || "");
 
         // Market Data
         setTam(prob.marketData?.tam || prob.estimatedValue || "$1.0B");
@@ -365,6 +384,7 @@ export const AdminProblemDetailEditor: React.FC<AdminProblemDetailEditorProps> =
     return () => {
       unsubscribe();
       unsubCompanies();
+      unsubCredits();
     };
   }, [problemId]);
 
@@ -409,6 +429,8 @@ export const AdminProblemDetailEditor: React.FC<AdminProblemDetailEditorProps> =
       },
       submitterName,
       location,
+      psFrom: psFrom.length > 0 ? psFrom : ["Own Thinking"],
+      psFromCustom: psFromCustom.trim(),
       audienceSize,
       willingnessToPay,
       estimatedValue,
@@ -793,48 +815,211 @@ export const AdminProblemDetailEditor: React.FC<AdminProblemDetailEditorProps> =
                 />
               </div>
             </div>
+
+            {/* PS From (Problem Statement Origin) */}
+            {/* Credits: (Origin & 3rd Party Credits) */}
+            <div className="flex flex-col gap-2 pt-2 border-t border-gray-200/40">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-bold text-on-surface flex items-center gap-1.5">
+                  <span>Credits:</span>
+                  <span className="text-[10px] text-primary bg-primary/10 px-2 py-0.5 rounded-full font-semibold">
+                    {psFrom.length} Selected
+                  </span>
+                </label>
+                <span className="text-[10px] text-on-surface-variant font-normal">
+                  Origin credit, hackathon platform, or 3rd-party innovation program
+                </span>
+              </div>
+
+              {/* Dropdown Selector & Custom Write-in Row */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div className="relative">
+                  <select
+                    value={selectedCreditDropdown}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (val && !psFrom.includes(val)) {
+                        setPsFrom([...psFrom, val]);
+                      }
+                      setSelectedCreditDropdown("");
+                    }}
+                    className="w-full bg-surface-container-low rounded-xl px-3 py-2 text-xs font-semibold text-on-surface outline-none border border-outline-variant/30 cursor-pointer"
+                  >
+                    <option value="">+ Select Credit from list...</option>
+                    {availableCredits.map((cred) => (
+                      <option key={cred.id} value={cred.name}>
+                        {cred.name} {cred.category ? `(${cred.category})` : ""}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Custom Credit Write-In */}
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={psFromCustom}
+                    onChange={(e) => setPsFromCustom(e.target.value)}
+                    placeholder="Or enter custom credit name..."
+                    className="flex-1 bg-surface-container-low rounded-xl px-3 py-2 text-xs text-on-surface outline-none border border-outline-variant/30"
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        if (psFromCustom.trim() && !psFrom.includes(psFromCustom.trim())) {
+                          setPsFrom([...psFrom, psFromCustom.trim()]);
+                          setPsFromCustom("");
+                        }
+                      }
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (psFromCustom.trim() && !psFrom.includes(psFromCustom.trim())) {
+                        setPsFrom([...psFrom, psFromCustom.trim()]);
+                        setPsFromCustom("");
+                      }
+                    }}
+                    className="px-3 py-2 bg-surface-container text-on-surface hover:bg-surface-container-high text-xs font-bold rounded-xl border border-outline-variant/30 cursor-pointer shrink-0"
+                  >
+                    + Add
+                  </button>
+                </div>
+              </div>
+
+              {/* Selected Credits Pills / Chips */}
+              {psFrom.length > 0 && (
+                <div className="flex flex-wrap gap-1.5 pt-1">
+                  {psFrom.map((source) => (
+                    <span
+                      key={source}
+                      className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-primary text-white shadow-2xs"
+                    >
+                      <span>{source}</span>
+                      <button
+                        type="button"
+                        onClick={() => setPsFrom(psFrom.filter((s) => s !== source))}
+                        className="hover:opacity-80 cursor-pointer p-0.5"
+                        title="Remove credit"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Scores Control Card */}
           <div className="flex flex-col gap-5 bg-surface-container-lowest p-6 rounded-2xl border border-outline-variant/30 shadow-xs">
-            <h3 className="text-sm font-bold text-on-surface uppercase tracking-wider">
-              Scoring Dials & Weights
-            </h3>
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-bold text-on-surface uppercase tracking-wider">
+                Scoring Dials & Weights
+              </h3>
+              <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-primary/10 text-primary">
+                10-Point & 100-Point Scale
+              </span>
+            </div>
 
             {/* Pain Score */}
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-2.5 p-3.5 rounded-xl bg-surface-container/30 border border-outline-variant/20">
               <div className="flex justify-between items-center text-xs font-bold">
-                <span className="text-error flex items-center gap-1">
-                  <Flame className="w-3.5 h-3.5" /> Pain Score (1-100)
+                <span className="text-error flex items-center gap-1.5 font-bold">
+                  <Flame className="w-4 h-4" />
+                  <span>Pain Score (1 - 10)</span>
                 </span>
-                <span className="font-mono text-sm">{painScore} / 100</span>
+                <div className="flex items-center gap-2">
+                  <span className="font-black text-base text-error">
+                    {(painScore > 10 ? painScore / 10 : painScore).toFixed(1)} <span className="text-xs font-semibold text-on-surface-variant">/ 10</span>
+                  </span>
+                  <span className="font-mono text-xs text-on-surface-variant bg-surface-container px-2 py-0.5 rounded">
+                    {painScore > 10 ? painScore : Math.round(painScore * 10)} / 100
+                  </span>
+                </div>
               </div>
+
               <input
                 type="range"
                 min="1"
                 max="100"
-                value={painScore}
+                value={painScore > 10 ? painScore : Math.round(painScore * 10)}
                 onChange={(e) => setPainScore(Number(e.target.value))}
                 className="accent-[#ff2a55] cursor-pointer w-full"
               />
+
+              {/* Quick Presets for Pain Score */}
+              <div className="flex items-center gap-1.5 flex-wrap pt-1">
+                <span className="text-[10px] text-on-surface-variant font-semibold">Quick Presets:</span>
+                {[8.0, 8.5, 8.8, 9.1, 9.3, 9.7, 9.9, 10.0].map((score) => {
+                  const val100 = Math.round(score * 10);
+                  const isCurrent = (painScore > 10 ? painScore : Math.round(painScore * 10)) === val100;
+                  return (
+                    <button
+                      key={score}
+                      type="button"
+                      onClick={() => setPainScore(val100)}
+                      className={`px-2 py-0.5 rounded text-[10px] font-bold transition-all cursor-pointer ${
+                        isCurrent
+                          ? "bg-error text-white shadow-2xs"
+                          : "bg-surface-container text-on-surface-variant hover:bg-surface-container-high"
+                      }`}
+                    >
+                      {score.toFixed(1)}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
             {/* Opportunity Score */}
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-2.5 p-3.5 rounded-xl bg-surface-container/30 border border-outline-variant/20">
               <div className="flex justify-between items-center text-xs font-bold">
-                <span className="text-secondary flex items-center gap-1">
-                  <TrendingUp className="w-3.5 h-3.5" /> Opportunity Score (1-100)
+                <span className="text-secondary flex items-center gap-1.5 font-bold">
+                  <TrendingUp className="w-4 h-4" />
+                  <span>Opportunity Score (1 - 10)</span>
                 </span>
-                <span className="font-mono text-sm">{opportunityScore} / 100</span>
+                <div className="flex items-center gap-2">
+                  <span className="font-black text-base text-secondary">
+                    {(opportunityScore > 10 ? opportunityScore / 10 : opportunityScore).toFixed(1)} <span className="text-xs font-semibold text-on-surface-variant">/ 10</span>
+                  </span>
+                  <span className="font-mono text-xs text-on-surface-variant bg-surface-container px-2 py-0.5 rounded">
+                    {opportunityScore > 10 ? opportunityScore : Math.round(opportunityScore * 10)} / 100
+                  </span>
+                </div>
               </div>
+
               <input
                 type="range"
                 min="1"
                 max="100"
-                value={opportunityScore}
+                value={opportunityScore > 10 ? opportunityScore : Math.round(opportunityScore * 10)}
                 onChange={(e) => setOpportunityScore(Number(e.target.value))}
                 className="accent-secondary cursor-pointer w-full"
               />
+
+              {/* Quick Presets for Opportunity Score */}
+              <div className="flex items-center gap-1.5 flex-wrap pt-1">
+                <span className="text-[10px] text-on-surface-variant font-semibold">Quick Presets:</span>
+                {[6.5, 7.0, 7.3, 7.8, 8.2, 8.5, 9.0, 9.5].map((score) => {
+                  const val100 = Math.round(score * 10);
+                  const isCurrent = (opportunityScore > 10 ? opportunityScore : Math.round(opportunityScore * 10)) === val100;
+                  return (
+                    <button
+                      key={score}
+                      type="button"
+                      onClick={() => setOpportunityScore(val100)}
+                      className={`px-2 py-0.5 rounded text-[10px] font-bold transition-all cursor-pointer ${
+                        isCurrent
+                          ? "bg-secondary text-white shadow-2xs"
+                          : "bg-surface-container text-on-surface-variant hover:bg-surface-container-high"
+                      }`}
+                    >
+                      {score.toFixed(1)}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
             <div className="p-4 bg-surface-container-low rounded-xl text-xs space-y-2 mt-2">

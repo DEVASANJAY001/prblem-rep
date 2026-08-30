@@ -14,10 +14,12 @@ import {
   increment,
   arrayUnion,
   arrayRemove,
+  limit,
 } from "firebase/firestore";
 import { db } from "../config";
 import { ProblemDoc, ProblemStatus, AIScores, ProblemComment, CommentReply, ProblemValidations, EvidenceDocument, UserStartupNotes, StartupModeConfig } from "@/types";
 import { scoreProblemSubmission } from "@/lib/aiScoring";
+import { retryWithBackoff } from "@/lib/resilience";
 import {
   getProblems as getLocalProblems,
   getProblemById as getLocalProblemById,
@@ -103,6 +105,8 @@ export async function createProblem(
     hasStartupMode?: boolean;
     startupModeEnabled?: boolean;
     startupModeConfig?: StartupModeConfig;
+    psFrom?: string[];
+    psFromCustom?: string;
     aiScores?: AIScores;
   }
 ): Promise<{ success: boolean; problemId: string; aiScores: AIScores }> {
@@ -185,6 +189,8 @@ export async function createProblem(
     hasStartupMode: problemData.hasStartupMode ?? true,
     startupModeEnabled: problemData.startupModeEnabled ?? problemData.hasStartupMode ?? true,
     startupModeConfig: problemData.startupModeConfig,
+    psFrom: problemData.psFrom || ["Own Thinking"],
+    psFromCustom: problemData.psFromCustom || "",
     commentsCount: 0,
     bookmarksCount: 0,
     createdAt: now,
@@ -361,26 +367,28 @@ export function subscribeProblems(
 
   if (!stream) {
     const colRef = collection(db, PROBLEMS_COLLECTION);
-    let q = query(colRef, orderBy("createdAt", "desc"));
-
-    if (filter.status && filter.status !== "all") {
-      q = query(colRef, where("status", "==", filter.status), orderBy("createdAt", "desc"));
-    }
-
     const listeners = new Set<(problems: ProblemDoc[]) => void>();
     listeners.add(callback);
 
     const unsubscribe = onSnapshot(
-      q,
+      colRef,
       (snapshot) => {
         if (!snapshot.empty) {
-          const list: ProblemDoc[] = [];
-          snapshot.forEach((d) => list.push(d.data() as ProblemDoc));
-          const currentStream = queryStreams.get(queryKey);
-          if (currentStream) {
-            currentStream.latestData = list;
-            currentStream.listeners.forEach((cb) => cb(list));
-          }
+          snapshot.forEach((d) => {
+            const data = d.data() as ProblemDoc;
+            if (data && data.id) {
+              saveLocalProblem(data);
+            }
+          });
+        }
+        const mergedList = getLocalProblems({
+          status: filter.status === "all" ? undefined : filter.status,
+          industry: filter.industry,
+        });
+        const currentStream = queryStreams.get(queryKey);
+        if (currentStream) {
+          currentStream.latestData = mergedList;
+          currentStream.listeners.forEach((cb) => cb(mergedList));
         }
       },
       (err) => {
@@ -407,6 +415,35 @@ export function subscribeProblems(
       }
     }
   };
+}
+
+/**
+ * Pushes all baseline and locally created problem statements directly to Firestore
+ */
+export async function syncAllProblemsToFirebase(): Promise<{ success: boolean; count: number }> {
+  const problems = getLocalProblems({ status: "all" });
+  let count = 0;
+  if (!db || typeof doc !== "function" || typeof setDoc !== "function") {
+    return { success: true, count: problems.length };
+  }
+
+  for (const prob of problems) {
+    try {
+      const probRef = doc(db, PROBLEMS_COLLECTION, prob.id);
+      await setDoc(
+        probRef,
+        {
+          ...prob,
+          updatedAtServer: serverTimestamp(),
+        },
+        { merge: true }
+      );
+      count++;
+    } catch (err) {
+      console.warn(`Error syncing problem ${prob.id} to Firestore:`, err);
+    }
+  }
+  return { success: true, count };
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

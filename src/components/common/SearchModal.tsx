@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getProblems } from "@/lib/storage";
+import { getProblemDetailUrl } from "@/lib/seoUrls";
+import { ProblemDoc } from "@/types";
 import {
   Search,
   X,
@@ -21,7 +23,13 @@ interface SearchModalProps {
 export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
-  const allProblems = getProblems({ status: "approved" });
+  const [allProblems, setAllProblems] = useState<ProblemDoc[]>([]);
+
+  useEffect(() => {
+    if (isOpen) {
+      setAllProblems(getProblems({ status: "approved" }));
+    }
+  }, [isOpen]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -78,9 +86,9 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => 
       )
     : allProblems.slice(0, 5);
 
-  const handleSelectProblem = (id: string) => {
+  const handleSelectProblem = (prob: ProblemDoc) => {
     onClose();
-    navigate(`/problem/${id}`);
+    navigate(getProblemDetailUrl(prob));
   };
 
   const handleSearchSubmit = (e: React.FormEvent) => {
@@ -168,7 +176,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => 
               {filteredResults.map((prob) => (
                 <div
                   key={prob.id}
-                  onClick={() => handleSelectProblem(prob.id)}
+                  onClick={() => handleSelectProblem(prob)}
                   className="cursor-pointer rounded-xl border border-zinc-100 bg-zinc-50/70 p-3 hover:border-primary/30 hover:bg-primary/5 dark:border-zinc-800 dark:bg-zinc-950/50 transition-all"
                 >
                   <h5 className="font-semibold text-zinc-900 dark:text-zinc-100 line-clamp-1">

@@ -8,8 +8,10 @@ import {
   REAL_RESEARCH,
   REAL_FORMS,
   REAL_USERS,
+  REAL_BADGES,
 } from "@/data/realProductionData";
 import { INITIAL_SITE_CONTENT } from "@/data/initialContent";
+import { DEFAULT_CREDITS } from "@/lib/storage";
 
 export interface SeedResult {
   success: boolean;
@@ -147,7 +149,7 @@ export async function seedAllToFirebase(
     }
 
     // 8. Seed Dynamic Forms
-    log("8/8 Pushing Survey Forms (forms)...");
+    log("8/10 Pushing Survey Forms (forms)...");
     for (const form of REAL_FORMS) {
       try {
         const formRef = doc(db, "forms", form.id);
@@ -156,6 +158,32 @@ export async function seedAllToFirebase(
         log(`  ✓ Synced form: ${form.title}`);
       } catch (err) {
         log(`  ✗ Error syncing form ${form.id}: ${String(err)}`);
+      }
+    }
+
+    // 9. Seed Achievement Badges
+    log("9/10 Pushing Contributor Badges (badges)...");
+    for (const badge of REAL_BADGES) {
+      try {
+        const badgeRef = doc(db, "badges", badge.id);
+        await setDoc(badgeRef, badge, { merge: true });
+        count++;
+        log(`  ✓ Synced badge: ${badge.name}`);
+      } catch (err) {
+        log(`  ✗ Error syncing badge ${badge.id}: ${String(err)}`);
+      }
+    }
+
+    // 10. Seed Credits & 3rd Party Attribution Taxonomies
+    log("10/10 Pushing Attribution Credits (credits)...");
+    for (const credit of DEFAULT_CREDITS) {
+      try {
+        const credRef = doc(db, "credits", credit.id);
+        await setDoc(credRef, credit, { merge: true });
+        count++;
+        log(`  ✓ Synced credit source: ${credit.name}`);
+      } catch (err) {
+        log(`  ✗ Error syncing credit ${credit.id}: ${String(err)}`);
       }
     }
 

@@ -3,8 +3,11 @@ import { generateAdminInvite, subscribeAuditLogs, logAdminAction } from "@/lib/f
 import { seedAllToFirebase, SeedResult } from "@/lib/firebase/services/seedService";
 import { useAuth } from "@/contexts/AuthContext";
 import { AuditLogDoc } from "@/types";
-import { Settings, Key, Shield, Check, Copy, Activity, RefreshCw, Trash2, Sparkles, CheckCircle2, CloudUpload, Database } from "lucide-react";
+import { Settings, Key, Shield, Check, Copy, Activity, RefreshCw, Trash2, Sparkles, CheckCircle2, CloudUpload, Database, Globe, Download, FileCode } from "lucide-react";
 import { saveProblem, getProblems } from "@/lib/storage";
+import { subscribeProblems } from "@/lib/firebase/services/problemsService";
+import { buildSitemapXml } from "@/lib/sitemapGenerator";
+import { ProblemDoc } from "@/types";
 
 export const AdminSettings: React.FC = () => {
   const { userDoc } = useAuth();
@@ -14,10 +17,16 @@ export const AdminSettings: React.FC = () => {
   const [actionNotice, setActionNotice] = useState<string | null>(null);
   const [seeding, setSeeding] = useState<boolean>(false);
   const [seedLogs, setSeedLogs] = useState<string[]>([]);
+  const [allProblems, setAllProblems] = useState<ProblemDoc[]>([]);
+  const [sitemapCopied, setSitemapCopied] = useState(false);
 
   useEffect(() => {
     const unsubscribe = subscribeAuditLogs((list) => setLogs(list));
-    return () => unsubscribe();
+    const unsubProblems = subscribeProblems({ status: "approved" }, (list) => setAllProblems(list));
+    return () => {
+      unsubscribe();
+      unsubProblems();
+    };
   }, []);
 
   const handleGenerate = async () => {
@@ -163,6 +172,70 @@ export const AdminSettings: React.FC = () => {
               ))}
             </div>
           )}
+        </div>
+
+        {/* Box 3: Real-Time Dynamic XML Sitemap & SEO Engine */}
+        <div className="rounded-2xl border border-zinc-200/80 bg-white p-6 space-y-4 shadow-xs">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100">
+                <Globe className="h-4 w-4" />
+              </div>
+              <h3 className="text-sm font-bold text-zinc-900 uppercase tracking-wider">
+                SEO & Dynamic XML Sitemap
+              </h3>
+            </div>
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
+              Live Index
+            </span>
+          </div>
+
+          <p className="text-xs text-zinc-500 leading-relaxed">
+            Generate and export dynamic, search engine crawler-compliant XML sitemaps with Amazon-style semantic slugs for all {allProblems.length} approved problem statements.
+          </p>
+
+          <div className="bg-zinc-50 border border-zinc-200/60 rounded-xl p-3 flex items-center justify-between text-xs">
+            <span className="text-zinc-600 font-medium">Indexable URLs Ready:</span>
+            <span className="font-mono font-bold text-zinc-900">
+              {allProblems.length * 2 + 18} URLs
+            </span>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3 pt-2">
+            <button
+              onClick={() => {
+                const xml = buildSitemapXml(allProblems);
+                const blob = new Blob([xml], { type: "application/xml" });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = "sitemap.xml";
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                setActionNotice("sitemap.xml downloaded successfully!");
+                setTimeout(() => setActionNotice(null), 3000);
+              }}
+              className="inline-flex items-center gap-2 rounded-xl bg-zinc-900 px-4 py-2.5 text-xs font-bold text-white hover:bg-zinc-800 transition-all cursor-pointer shadow-xs"
+            >
+              <Download className="h-4 w-4" />
+              <span>Download Live sitemap.xml</span>
+            </button>
+
+            <button
+              onClick={() => {
+                const xml = buildSitemapXml(allProblems);
+                navigator.clipboard.writeText(xml);
+                setSitemapCopied(true);
+                setTimeout(() => setSitemapCopied(false), 2500);
+              }}
+              className="inline-flex items-center gap-2 rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-xs font-bold text-zinc-700 hover:bg-zinc-50 transition-all cursor-pointer shadow-xs"
+            >
+              {sitemapCopied ? <Check className="h-4 w-4 text-emerald-600" /> : <FileCode className="h-4 w-4" />}
+              <span>{sitemapCopied ? "XML Copied!" : "Copy XML Code"}</span>
+            </button>
+          </div>
         </div>
       </div>
 

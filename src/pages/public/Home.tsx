@@ -8,6 +8,7 @@ import { ProblemCardSkeleton } from "@/components/common/LoadingContainer";
 import { ShaderBackground } from "@/components/ui/ShaderBackground";
 import { OrganicAtlasSection } from "@/components/ui/OrganicAtlasSection";
 import { TrendingProblemCard } from "@/components/ui/TrendingProblemCard";
+import { SEOHead } from "@/components/common/SEOHead";
 
 export const Home: React.FC = () => {
   const navigate = useNavigate();
@@ -101,12 +102,11 @@ export const Home: React.FC = () => {
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       if (mouseGlowRef.current) {
-        mouseGlowRef.current.style.left = `${e.pageX}px`;
-        mouseGlowRef.current.style.top = `${e.pageY}px`;
+        mouseGlowRef.current.style.transform = `translate3d(${e.clientX - 300}px, ${e.clientY - 300}px, 0)`;
       }
     };
-    document.addEventListener("mousemove", handleMouseMove);
-    return () => document.removeEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mousemove", handleMouseMove, { passive: true });
+    return () => window.removeEventListener("mousemove", handleMouseMove);
   }, []);
 
   // WebGL Background Shader Canvas Animation (ANIMATION_32)
@@ -268,11 +268,51 @@ export const Home: React.FC = () => {
 
   return (
     <div className="bg-surface font-body-md text-on-surface antialiased selection:bg-primary/20 selection:text-primary relative overflow-x-hidden min-h-screen">
-      {/* Mouse Glow */}
-      <div ref={mouseGlowRef} className="mouse-glow hidden md:block" id="mouseGlow" />
+      {/* SEO: WebSite + SearchAction schema for Google Sitelinks Search Box */}
+      <SEOHead
+        title="ProblemAtlas — The World's Problem Intelligence Platform"
+        description="Discover, validate and solve real-world verified problems across Healthcare, AI, Energy, FinTech and 140+ industries. The world's largest open registry of startup opportunities."
+        canonicalUrl="https://problematlas.com/"
+        ogType="website"
+        keywords={["problem statements", "startup ideas", "verified problems", "innovation platform", "startup opportunities", "hackathon problems", "problem discovery"]}
+        jsonLd={[
+          {
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            "name": "ProblemAtlas",
+            "url": "https://problematlas.com",
+            "description": "The world's largest open registry of verified real-world problems, startup opportunities, and innovation challenges.",
+            "potentialAction": {
+              "@type": "SearchAction",
+              "target": {
+                "@type": "EntryPoint",
+                "urlTemplate": "https://problematlas.com/explore?q={search_term_string}"
+              },
+              "query-input": "required name=search_term_string"
+            }
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            "name": "ProblemAtlas",
+            "url": "https://problematlas.com",
+            "description": "Open registry of verified real-world problems curated for startup founders, researchers, and enterprise innovators.",
+            "sameAs": [
+              "https://problematlas.com/community",
+              "https://problematlas.com/explore"
+            ]
+          }
+        ]}
+      />
+
+      {/* Mouse Glow with fixed viewport clipping to prevent any page scrollbars */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0 hidden md:block" aria-hidden="true">
+        <div ref={mouseGlowRef} className="mouse-glow" id="mouseGlow" />
+      </div>
 
       {/* iOS Glassmorphic Navbar */}
       <Navbar />
+
 
       {/* Main Content */}
       <main className="w-full bg-surface relative">
@@ -299,7 +339,7 @@ export const Home: React.FC = () => {
                 </div>
               ) : (
                 <>
-                  <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-[76px] xl:text-[84px] leading-[1.08] text-on-surface tracking-tighter max-w-5xl font-extrabold relative text-center">
+                  <h1 className="text-2xl xs:text-3xl sm:text-5xl md:text-6xl lg:text-[76px] xl:text-[84px] leading-[1.08] text-on-surface tracking-tighter max-w-5xl font-extrabold relative text-center">
                     <div className="absolute -inset-4 bg-gradient-to-r from-primary/10 via-purple-500/10 to-primary/10 blur-xl -z-10 rounded-full animate-blob" />
                     <span className="block">{headline1}</span>
                     <span className="block mt-1 sm:mt-2">
@@ -318,7 +358,7 @@ export const Home: React.FC = () => {
                     </span>
                   </h1>
 
-                  <p className="font-body-lg text-base md:text-lg text-on-surface-variant max-w-2xl leading-relaxed">
+                  <p className="font-body-lg text-xs sm:text-base md:text-lg text-on-surface-variant max-w-2xl leading-relaxed">
                     {subheadline}
                   </p>
                 </>
@@ -329,32 +369,32 @@ export const Home: React.FC = () => {
                 className="w-full max-w-2xl relative shadow-2xl shadow-primary/10 rounded-2xl bg-surface-container-lowest/90 backdrop-blur-xl border border-outline-variant/30 hover:border-primary/50 focus-within:border-primary/80 focus-within:shadow-primary/20 transition-all duration-300 group"
               >
                 <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-purple-500/20 blur-lg -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-3xl" />
-                <span className="material-symbols-outlined absolute left-5 top-1/2 transform -translate-y-1/2 text-on-surface-variant group-focus-within:text-primary transition-colors">
+                <span className="material-symbols-outlined absolute left-3.5 sm:left-5 top-1/2 transform -translate-y-1/2 text-on-surface-variant group-focus-within:text-primary transition-colors text-[18px] sm:text-[24px]">
                   search
                 </span>
                 <input
                   value={homeSearchQuery}
                   onChange={(e) => setHomeSearchQuery(e.target.value)}
-                  className="w-full pl-14 pr-36 py-4 md:py-4.5 bg-transparent focus:outline-none focus:ring-0 rounded-2xl font-body-lg text-body-lg text-on-surface placeholder-on-surface-variant/70 border-none"
+                  className="w-full pl-9 sm:pl-14 pr-20 sm:pr-36 py-2.5 sm:py-4 md:py-4.5 bg-transparent focus:outline-none focus:ring-0 rounded-2xl font-body-lg text-xs sm:text-base text-on-surface placeholder-on-surface-variant/70 border-none"
                   placeholder={searchPlaceholder}
                   type="text"
                 />
                 <button
                   type="submit"
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 bg-on-surface text-surface px-6 py-2.5 rounded-xl font-label-md text-label-md hover:bg-primary active:scale-[0.98] transition-colors shadow-sm hover:shadow-md hover:shadow-primary/20 cursor-pointer"
+                  className="absolute right-1.5 sm:right-2.5 top-1/2 -translate-y-1/2 bg-on-surface text-surface px-3 sm:px-6 py-1.5 sm:py-2.5 rounded-xl font-label-md text-[11px] sm:text-sm hover:bg-primary active:scale-[0.98] transition-colors shadow-sm hover:shadow-md hover:shadow-primary/20 cursor-pointer"
                 >
                   {searchBtnLabel}
                 </button>
               </form>
 
-              <div className="flex flex-wrap items-center justify-center gap-2.5 mt-1 min-h-[36px]">
-                <span className="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mr-1 font-semibold">
+              <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2.5 mt-0.5 sm:mt-1 min-h-[30px] sm:min-h-[36px]">
+                <span className="font-label-sm text-[10px] sm:text-xs text-on-surface-variant uppercase tracking-wider mr-0.5 sm:mr-1 font-semibold">
                   Popular:
                 </span>
                 {contentLoading ? (
                   <div className="flex items-center gap-2 animate-pulse">
                     {Array.from({ length: 5 }).map((_, i) => (
-                      <div key={i} className="h-7 w-20 rounded-full bg-surface-container-high/80" />
+                      <div key={i} className="h-6 sm:h-7 w-16 sm:w-20 rounded-full bg-surface-container-high/80" />
                     ))}
                   </div>
                 ) : (
@@ -362,7 +402,7 @@ export const Home: React.FC = () => {
                     <Link
                       key={cat}
                       to={`/explore?industry=${encodeURIComponent(cat)}`}
-                      className="animate-fade-in px-4 py-1.5 rounded-full bg-surface-container-lowest/80 backdrop-blur-sm border border-outline-variant/20 hover:border-primary/50 hover:bg-primary/10 hover:text-primary hover:-translate-y-0.5 hover:shadow-md hover:shadow-primary/10 text-on-surface font-label-md text-xs transition-all duration-300 shadow-sm"
+                      className="animate-fade-in px-2.5 sm:px-4 py-1 sm:py-1.5 rounded-full bg-surface-container-lowest/80 backdrop-blur-sm border border-outline-variant/20 hover:border-primary/50 hover:bg-primary/10 hover:text-primary hover:-translate-y-0.5 hover:shadow-md hover:shadow-primary/10 text-on-surface font-label-md text-[11px] sm:text-xs transition-all duration-300 shadow-sm"
                     >
                       {cat}
                     </Link>
@@ -373,26 +413,26 @@ export const Home: React.FC = () => {
           </section>
 
           {/* Section 2: Stats Counter */}
-          <section className="w-full py-16 border-y border-outline-variant/20 bg-surface-container-lowest/30 backdrop-blur-sm relative z-20">
+          <section className="w-full py-8 sm:py-16 border-y border-outline-variant/20 bg-surface-container-lowest/30 backdrop-blur-sm relative z-20">
             <div className="w-full max-w-[1280px] mx-auto px-4 md:px-8">
               {contentLoading ? (
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-4 divide-x-0 md:divide-x divide-outline-variant/20 animate-pulse">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-4 divide-x-0 md:divide-x divide-outline-variant/20 animate-pulse">
                   {Array.from({ length: 4 }).map((_, i) => (
-                    <div key={i} className="flex flex-col items-center justify-center gap-3 p-4">
-                      <div className="h-4 w-24 bg-surface-container-high rounded-full" />
-                      <div className="h-10 w-28 bg-surface-container-high/70 rounded-xl" />
+                    <div key={i} className="flex flex-col items-center justify-center gap-2 p-2 sm:p-4">
+                      <div className="h-3 w-16 bg-surface-container-high rounded-full" />
+                      <div className="h-7 w-20 bg-surface-container-high/70 rounded-xl" />
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="animate-fade-in grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-4 divide-x-0 md:divide-x divide-outline-variant/20">
-                  <div className="flex flex-col items-center justify-center gap-2 p-4 relative group hover:bg-primary/5 transition-colors rounded-xl overflow-hidden cursor-pointer">
+                <div className="animate-fade-in grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-4 divide-x-0 md:divide-x divide-outline-variant/20">
+                  <div className="flex flex-col items-center justify-center gap-1 sm:gap-2 p-2 sm:p-4 relative group hover:bg-primary/5 transition-colors rounded-xl overflow-hidden cursor-pointer">
                     <div className="absolute top-0 left-0 w-full h-1 bg-primary scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300" />
-                    <span className="font-label-sm text-xs text-on-surface-variant uppercase tracking-widest font-semibold group-hover:text-primary transition-colors">
+                    <span className="font-label-sm text-[10px] sm:text-xs text-on-surface-variant uppercase tracking-widest font-semibold group-hover:text-primary transition-colors">
                       {stat1Label}
                     </span>
-                    <div className="flex items-center gap-2">
-                      <span className="font-headline-lg text-4xl text-on-surface font-bold tracking-tight">
+                    <div className="flex items-center gap-1.5 sm:gap-2">
+                      <span className="font-headline-lg text-2xl sm:text-4xl text-on-surface font-bold tracking-tight">
                         {stat1Val}
                       </span>
                       <svg
@@ -413,15 +453,15 @@ export const Home: React.FC = () => {
 
                   <div className="flex flex-col items-center justify-center gap-2 p-4 relative group hover:bg-secondary/5 transition-colors rounded-xl overflow-hidden cursor-pointer">
                     <div className="absolute top-0 left-0 w-full h-1 bg-secondary scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300" />
-                    <span className="font-label-sm text-xs text-on-surface-variant uppercase tracking-widest font-semibold group-hover:text-secondary transition-colors">
+                    <span className="font-label-sm text-[10px] sm:text-xs text-on-surface-variant uppercase tracking-widest font-semibold group-hover:text-primary transition-colors">
                       {stat2Label}
                     </span>
-                    <div className="flex items-center gap-2">
-                      <span className="font-headline-lg text-4xl text-on-surface font-bold tracking-tight">
+                    <div className="flex items-center gap-1.5 sm:gap-2">
+                      <span className="font-headline-lg text-2xl sm:text-4xl text-on-surface font-bold tracking-tight">
                         {stat2Val}
                       </span>
                       <svg
-                        className="w-5 h-5 text-secondary group-hover:scale-110 transition-transform"
+                        className="w-4 h-4 sm:w-5 sm:h-5 text-secondary group-hover:scale-110 transition-transform"
                         fill="none"
                         stroke="currentColor"
                         strokeLinecap="round"
@@ -436,17 +476,17 @@ export const Home: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="flex flex-col items-center justify-center gap-2 p-4 relative group hover:bg-primary/5 transition-colors rounded-xl overflow-hidden cursor-pointer">
+                  <div className="flex flex-col items-center justify-center gap-1 sm:gap-2 p-2 sm:p-4 relative group hover:bg-primary/5 transition-colors rounded-xl overflow-hidden cursor-pointer">
                     <div className="absolute top-0 left-0 w-full h-1 bg-primary scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300" />
-                    <span className="font-label-sm text-xs text-on-surface-variant uppercase tracking-widest font-semibold group-hover:text-primary transition-colors">
+                    <span className="font-label-sm text-[10px] sm:text-xs text-on-surface-variant uppercase tracking-widest font-semibold group-hover:text-primary transition-colors">
                       {stat3Label}
                     </span>
-                    <div className="flex items-center gap-2">
-                      <span className="font-headline-lg text-4xl text-on-surface font-bold tracking-tight">
+                    <div className="flex items-center gap-1.5 sm:gap-2">
+                      <span className="font-headline-lg text-2xl sm:text-4xl text-on-surface font-bold tracking-tight">
                         {stat3Val}
                       </span>
                       <svg
-                        className="w-5 h-5 text-secondary group-hover:scale-110 transition-transform"
+                        className="w-4 h-4 sm:w-5 sm:h-5 text-secondary group-hover:scale-110 transition-transform"
                         fill="none"
                         stroke="currentColor"
                         strokeLinecap="round"
@@ -461,17 +501,17 @@ export const Home: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="flex flex-col items-center justify-center gap-2 p-4 relative group hover:bg-tertiary/5 transition-colors rounded-xl overflow-hidden cursor-pointer">
+                  <div className="flex flex-col items-center justify-center gap-1 sm:gap-2 p-2 sm:p-4 relative group hover:bg-tertiary/5 transition-colors rounded-xl overflow-hidden cursor-pointer">
                     <div className="absolute top-0 left-0 w-full h-1 bg-tertiary scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300" />
-                    <span className="font-label-sm text-xs text-on-surface-variant uppercase tracking-widest font-semibold group-hover:text-tertiary transition-colors">
+                    <span className="font-label-sm text-[10px] sm:text-xs text-on-surface-variant uppercase tracking-widest font-semibold group-hover:text-tertiary transition-colors">
                       {stat4Label}
                     </span>
-                    <div className="flex items-center gap-2">
-                      <span className="font-headline-lg text-4xl text-on-surface font-bold tracking-tight">
+                    <div className="flex items-center gap-1.5 sm:gap-2">
+                      <span className="font-headline-lg text-2xl sm:text-4xl text-on-surface font-bold tracking-tight">
                         {stat4Val}
                       </span>
                       <svg
-                        className="w-5 h-5 text-secondary group-hover:scale-110 transition-transform"
+                        className="w-4 h-4 sm:w-5 sm:h-5 text-secondary group-hover:scale-110 transition-transform"
                         fill="none"
                         stroke="currentColor"
                         strokeLinecap="round"
@@ -552,12 +592,12 @@ export const Home: React.FC = () => {
               <div
                 ref={trendingScrollRef}
                 onScroll={checkScroll}
-                className="flex flex-row flex-nowrap overflow-x-auto snap-x snap-mandatory gap-6 pb-4 pt-2 hide-scrollbar items-stretch"
+                className="flex flex-row flex-nowrap overflow-x-auto snap-x snap-mandatory gap-6 pb-4 pt-2 hide-scrollbar items-stretch [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
                 style={{ scrollbarWidth: "none" }}
               >
                 {loadingProblems ? (
                   Array.from({ length: 4 }).map((_, i) => (
-                    <div key={i} className="snap-start shrink-0 min-w-[340px] sm:min-w-[480px] md:min-w-[560px] lg:min-w-[620px]">
+                    <div key={i} className="snap-start shrink-0 w-[285px] sm:w-[480px] md:w-[560px] lg:w-[620px] max-w-[85vw] sm:max-w-none">
                       <ProblemCardSkeleton />
                     </div>
                   ))
@@ -570,7 +610,7 @@ export const Home: React.FC = () => {
                     <TrendingProblemCard
                       key={prob.id}
                       problem={prob}
-                      className="snap-start shrink-0 min-w-[340px] sm:min-w-[480px] md:min-w-[560px] lg:min-w-[620px] max-w-[640px]"
+                      className="snap-start shrink-0 w-[285px] sm:w-[480px] md:w-[560px] lg:w-[620px] max-w-[85vw] sm:max-w-[640px]"
                     />
                   ))
                 )}
@@ -579,12 +619,12 @@ export const Home: React.FC = () => {
           </section>
 
           {/* Section: Platform Use Cases */}
-          <section className="w-full pt-10 pb-16 md:pt-12 md:pb-20 bg-surface-container-low/30 border-b border-outline-variant/20">
+          <section className="w-full pt-8 pb-12 sm:pt-10 sm:pb-16 md:pt-12 md:pb-20 bg-surface-container-low/30 border-b border-outline-variant/20 overflow-hidden">
             <div className="flex flex-col w-full h-full relative max-w-[1400px] mx-auto px-4 md:px-8" id="use-cases-container">
-              <div className="w-full flex justify-center pt-4 pb-6">
-                <div className="text-center max-w-3xl px-6">
-                  <h2 className="text-3xl md:text-4xl font-extrabold text-on-surface mb-4 tracking-tight">Platform Use Cases</h2>
-                  <p className="text-base md:text-lg text-on-surface-variant leading-relaxed">
+              <div className="w-full flex justify-center pt-2 sm:pt-4 pb-4 sm:pb-6">
+                <div className="text-center max-w-2xl px-4">
+                  <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-on-surface mb-2 tracking-tight">Platform Use Cases</h2>
+                  <p className="text-xs sm:text-sm md:text-base text-on-surface-variant leading-relaxed">
                     Explore how different innovators and organizations leverage ProblemAtlas to discover, validate, and solve real-world challenges.
                   </p>
                 </div>
@@ -737,64 +777,112 @@ export const Home: React.FC = () => {
                 </div>
               </div>
 
-              {/* Mobile Fallback / Vertical Grid */}
-              <div className="w-full px-4 grid grid-cols-1 sm:grid-cols-2 md:hidden gap-4 pb-16">
-                <div className="bg-surface-container rounded-2xl p-6 shadow-sm border border-outline-variant/20">
-                  <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center mb-4 shadow-sm">
-                    <span className="material-symbols-outlined text-on-primary">search</span>
+              {/* Mobile Structured Grid (Matching Desktop Theme & Wave Aesthetic) */}
+              <div className="w-full px-2 grid grid-cols-1 sm:grid-cols-2 md:hidden gap-3 pb-8">
+                {/* 1: Problem Discovery */}
+                <div className="relative overflow-hidden bg-surface-container rounded-2xl p-4 sm:p-5 shadow-xs border border-outline-variant/20 flex flex-col justify-between">
+                  <div className="absolute inset-0 z-0 bg-primary/5 pointer-events-none">
+                    <svg className="absolute inset-0 w-full h-full opacity-20 text-primary" preserveAspectRatio="none" viewBox="0 0 100 100">
+                      <path d="M0,50 Q25,20 50,50 T100,50 L100,100 L0,100 Z" fill="currentColor" />
+                    </svg>
                   </div>
-                  <h3 className="text-xl font-bold text-on-surface mb-2">Problem Discovery</h3>
-                  <p className="text-sm text-on-surface-variant leading-relaxed">
+                  <div className="relative z-10 flex items-center gap-3 mb-2">
+                    <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0 shadow-xs">
+                      <span className="material-symbols-outlined text-on-primary text-[16px]">search</span>
+                    </div>
+                    <h3 className="text-sm sm:text-base font-bold text-on-surface">Problem Discovery</h3>
+                  </div>
+                  <p className="relative z-10 text-[11px] sm:text-xs text-on-surface-variant leading-relaxed">
                     Identify real-world gaps and document global challenges for innovators to solve.
                   </p>
                 </div>
 
-                <div className="bg-surface-container rounded-2xl p-6 shadow-sm border border-outline-variant/20">
-                  <div className="w-12 h-12 rounded-full bg-error flex items-center justify-center mb-4 shadow-sm">
-                    <span className="material-symbols-outlined text-on-error">trending_up</span>
+                {/* 2: Market Validation */}
+                <div className="relative overflow-hidden bg-surface-container rounded-2xl p-4 sm:p-5 shadow-xs border border-outline-variant/20 flex flex-col justify-between">
+                  <div className="absolute inset-0 z-0 bg-error/5 pointer-events-none">
+                    <svg className="absolute inset-0 w-full h-full opacity-20 text-error" preserveAspectRatio="none" viewBox="0 0 100 100">
+                      <path d="M0,80 Q30,20 60,60 T100,40 L100,100 L0,100 Z" fill="currentColor" />
+                    </svg>
                   </div>
-                  <h3 className="text-xl font-bold text-on-surface mb-2">Market Validation</h3>
-                  <p className="text-sm text-on-surface-variant leading-relaxed">
+                  <div className="relative z-10 flex items-center gap-3 mb-2">
+                    <div className="w-8 h-8 rounded-full bg-error flex items-center justify-center shrink-0 shadow-xs">
+                      <span className="material-symbols-outlined text-on-error text-[16px]">trending_up</span>
+                    </div>
+                    <h3 className="text-sm sm:text-base font-bold text-on-surface">Market Validation</h3>
+                  </div>
+                  <p className="relative z-10 text-[11px] sm:text-xs text-on-surface-variant leading-relaxed">
                     Validate demand and size opportunities using crowd-sourced pain point data.
                   </p>
                 </div>
 
-                <div className="bg-surface-container rounded-2xl p-6 shadow-sm border border-outline-variant/20">
-                  <div className="w-12 h-12 rounded-full bg-secondary flex items-center justify-center mb-4 shadow-sm">
-                    <span className="material-symbols-outlined text-on-secondary">handshake</span>
+                {/* 3: Startup Matching */}
+                <div className="relative overflow-hidden bg-surface-container rounded-2xl p-4 sm:p-5 shadow-xs border border-outline-variant/20 flex flex-col justify-between">
+                  <div className="absolute inset-0 z-0 bg-secondary/5 pointer-events-none">
+                    <svg className="absolute inset-0 w-full h-full opacity-20 text-secondary" preserveAspectRatio="none" viewBox="0 0 100 100">
+                      <path d="M0,20 Q40,80 80,30 T100,50 L100,100 L0,100 Z" fill="currentColor" />
+                    </svg>
                   </div>
-                  <h3 className="text-xl font-bold text-on-surface mb-2">Startup Matching</h3>
-                  <p className="text-sm text-on-surface-variant leading-relaxed">
+                  <div className="relative z-10 flex items-center gap-3 mb-2">
+                    <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center shrink-0 shadow-xs">
+                      <span className="material-symbols-outlined text-on-secondary text-[16px]">handshake</span>
+                    </div>
+                    <h3 className="text-sm sm:text-base font-bold text-on-surface">Startup Matching</h3>
+                  </div>
+                  <p className="relative z-10 text-[11px] sm:text-xs text-on-surface-variant leading-relaxed">
                     Connect startups with verified problems that match their core technology.
                   </p>
                 </div>
 
-                <div className="bg-surface-container rounded-2xl p-6 shadow-sm border border-outline-variant/20">
-                  <div className="w-12 h-12 rounded-full bg-tertiary flex items-center justify-center mb-4 shadow-sm">
-                    <span className="material-symbols-outlined text-on-tertiary">school</span>
+                {/* 4: Academic Research */}
+                <div className="relative overflow-hidden bg-surface-container rounded-2xl p-4 sm:p-5 shadow-xs border border-outline-variant/20 flex flex-col justify-between">
+                  <div className="absolute inset-0 z-0 bg-tertiary/5 pointer-events-none">
+                    <svg className="absolute inset-0 w-full h-full opacity-20 text-tertiary" preserveAspectRatio="none" viewBox="0 0 100 100">
+                      <path d="M0,60 Q20,20 60,70 T100,30 L100,100 L0,100 Z" fill="currentColor" />
+                    </svg>
                   </div>
-                  <h3 className="text-xl font-bold text-on-surface mb-2">Academic Research</h3>
-                  <p className="text-sm text-on-surface-variant leading-relaxed">
+                  <div className="relative z-10 flex items-center gap-3 mb-2">
+                    <div className="w-8 h-8 rounded-full bg-tertiary flex items-center justify-center shrink-0 shadow-xs">
+                      <span className="material-symbols-outlined text-on-tertiary text-[16px]">school</span>
+                    </div>
+                    <h3 className="text-sm sm:text-base font-bold text-on-surface">Academic Research</h3>
+                  </div>
+                  <p className="relative z-10 text-[11px] sm:text-xs text-on-surface-variant leading-relaxed">
                     Surface novel research topics backed by industry-verified data and needs.
                   </p>
                 </div>
 
-                <div className="bg-surface-container rounded-2xl p-6 shadow-sm border border-outline-variant/20">
-                  <div className="w-12 h-12 rounded-full bg-primary-container flex items-center justify-center mb-4 shadow-sm">
-                    <span className="material-symbols-outlined text-on-primary-container">groups</span>
+                {/* 5: Talent Recruitment */}
+                <div className="relative overflow-hidden bg-surface-container rounded-2xl p-4 sm:p-5 shadow-xs border border-outline-variant/20 flex flex-col justify-between">
+                  <div className="absolute inset-0 z-0 bg-primary-container/10 pointer-events-none">
+                    <svg className="absolute inset-0 w-full h-full opacity-20 text-primary-container" preserveAspectRatio="none" viewBox="0 0 100 100">
+                      <path d="M0,30 Q50,90 90,40 T100,60 L100,100 L0,100 Z" fill="currentColor" />
+                    </svg>
                   </div>
-                  <h3 className="text-xl font-bold text-on-surface mb-2">Talent Recruitment</h3>
-                  <p className="text-sm text-on-surface-variant leading-relaxed">
+                  <div className="relative z-10 flex items-center gap-3 mb-2">
+                    <div className="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center shrink-0 shadow-xs">
+                      <span className="material-symbols-outlined text-on-primary-container text-[16px]">groups</span>
+                    </div>
+                    <h3 className="text-sm sm:text-base font-bold text-on-surface">Talent Recruitment</h3>
+                  </div>
+                  <p className="relative z-10 text-[11px] sm:text-xs text-on-surface-variant leading-relaxed">
                     Identify bright minds solving complex problems to build high-impact teams.
                   </p>
                 </div>
 
-                <div className="bg-surface-container rounded-2xl p-6 shadow-sm border border-outline-variant/20">
-                  <div className="w-12 h-12 rounded-full bg-surface-tint flex items-center justify-center mb-4 shadow-sm">
-                    <span className="material-symbols-outlined text-on-primary">lightbulb</span>
+                {/* 6: Internal Innovation */}
+                <div className="relative overflow-hidden bg-surface-container rounded-2xl p-4 sm:p-5 shadow-xs border border-outline-variant/20 flex flex-col justify-between">
+                  <div className="absolute inset-0 z-0 bg-surface-tint/10 pointer-events-none">
+                    <svg className="absolute inset-0 w-full h-full opacity-20 text-surface-tint" preserveAspectRatio="none" viewBox="0 0 100 100">
+                      <path d="M0,50 Q30,10 70,60 T100,20 L100,100 L0,100 Z" fill="currentColor" />
+                    </svg>
                   </div>
-                  <h3 className="text-xl font-bold text-on-surface mb-2">Internal Innovation</h3>
-                  <p className="text-sm text-on-surface-variant leading-relaxed">
+                  <div className="relative z-10 flex items-center gap-3 mb-2">
+                    <div className="w-8 h-8 rounded-full bg-surface-tint flex items-center justify-center shrink-0 shadow-xs">
+                      <span className="material-symbols-outlined text-on-primary text-[16px]">lightbulb</span>
+                    </div>
+                    <h3 className="text-sm sm:text-base font-bold text-on-surface">Internal Innovation</h3>
+                  </div>
+                  <p className="relative z-10 text-[11px] sm:text-xs text-on-surface-variant leading-relaxed">
                     Empower your workforce to drive change and gather employee insights.
                   </p>
                 </div>
@@ -803,7 +891,7 @@ export const Home: React.FC = () => {
           </section>
 
           {/* Section: Innovation Impact Quote with WebGL Shader */}
-          <section className="w-full relative min-h-[560px] flex items-center justify-center py-20 overflow-hidden group bg-surface">
+          <section className="w-full relative min-h-[420px] sm:min-h-[560px] flex items-center justify-center py-10 sm:py-20 overflow-hidden group bg-surface">
             {/* Ambient WebGL Shader Background */}
             <div className="absolute inset-0 z-0 w-full h-full opacity-60 mix-blend-multiply pointer-events-none transition-opacity duration-[2000ms] ease-in-out group-hover:opacity-85">
               <ShaderBackground />
@@ -819,15 +907,15 @@ export const Home: React.FC = () => {
             />
 
             {/* Main Quote Container */}
-            <div className="relative z-10 w-full max-w-4xl mx-auto px-6">
-              <div className="relative bg-surface/90 dark:bg-zinc-900/90 backdrop-blur-xl rounded-[32px] p-8 md:p-16 shadow-2xl shadow-primary-container/10 hover:shadow-primary-container/20 transition-all duration-700 ease-out border border-surface-variant/50 flex flex-col items-center text-center">
+            <div className="relative z-10 w-full max-w-4xl mx-auto px-4 sm:px-6">
+              <div className="relative bg-surface/90 dark:bg-zinc-900/90 backdrop-blur-xl rounded-[24px] sm:rounded-[32px] p-5 sm:p-10 md:p-16 shadow-2xl shadow-primary-container/10 hover:shadow-primary-container/20 transition-all duration-700 ease-out border border-surface-variant/50 flex flex-col items-center text-center">
                 {/* Decorative Quote Mark */}
-                <div className="absolute -top-8 -left-4 md:-top-12 md:-left-8 text-[120px] md:text-[180px] leading-none text-primary-fixed-dim/30 font-serif select-none pointer-events-none transform -rotate-12 transition-transform duration-700 ease-out group-hover:rotate-0">
+                <div className="absolute -top-6 -left-3 md:-top-12 md:-left-8 text-[80px] sm:text-[120px] md:text-[180px] leading-none text-primary-fixed-dim/30 font-serif select-none pointer-events-none transform -rotate-12 transition-transform duration-700 ease-out group-hover:rotate-0">
                   “
                 </div>
 
                 {/* Quote Text */}
-                <h2 className="text-2xl md:text-4xl font-extrabold text-on-surface mb-8 max-w-3xl leading-tight tracking-tight">
+                <h2 className="text-lg sm:text-2xl md:text-4xl font-extrabold text-on-surface mb-4 sm:mb-8 max-w-3xl leading-tight tracking-tight">
                   Innovative companies are{" "}
                   <span className="text-primary relative inline-block group-hover:scale-105 transition-transform duration-500 ease-out">
                     10x faster
@@ -840,19 +928,19 @@ export const Home: React.FC = () => {
                 </h2>
 
                 {/* Attribution */}
-                <div className="text-xs font-semibold text-outline tracking-[0.2em] uppercase mb-10 flex items-center gap-4 opacity-80">
-                  <span className="w-8 h-[1px] bg-outline-variant"></span>
+                <div className="text-[10px] sm:text-xs font-semibold text-outline tracking-[0.2em] uppercase mb-6 sm:mb-10 flex items-center gap-3 sm:gap-4 opacity-80">
+                  <span className="w-6 sm:w-8 h-[1px] bg-outline-variant"></span>
                   by McKinsey Report
-                  <span className="w-8 h-[1px] bg-outline-variant"></span>
+                  <span className="w-6 sm:w-8 h-[1px] bg-outline-variant"></span>
                 </div>
 
                 {/* Call to Action */}
                 <button
                   onClick={() => navigate("/explore")}
-                  className="group/btn relative inline-flex items-center justify-center gap-3 bg-primary text-on-primary font-bold px-8 py-4 rounded-full overflow-hidden transition-all duration-300 ease-out hover:scale-105 hover:shadow-lg hover:shadow-primary/30 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                  className="group/btn relative inline-flex items-center justify-center gap-2 sm:gap-3 bg-primary text-on-primary font-bold px-5 sm:px-8 py-2.5 sm:py-4 rounded-full text-xs sm:text-base overflow-hidden transition-all duration-300 ease-out hover:scale-105 hover:shadow-lg hover:shadow-primary/30 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
                 >
-                  <span className="relative z-10">Experience the impact firsthand</span>
-                  <span className="material-symbols-outlined relative z-10 text-[20px] transition-transform duration-300 ease-out group-hover/btn:translate-x-1">
+                  <span className="relative z-10">Experience the impact</span>
+                  <span className="material-symbols-outlined relative z-10 text-[18px] sm:text-[20px] transition-transform duration-300 ease-out group-hover/btn:translate-x-1">
                     arrow_forward
                   </span>
                   {/* Button Hover Gradient */}
@@ -867,22 +955,22 @@ export const Home: React.FC = () => {
           </section>
 
           {/* Section 7: Dark High-Impact CTA */}
-          <section className="w-full py-32 bg-on-surface text-surface relative overflow-hidden">
+          <section className="w-full py-16 sm:py-24 md:py-32 bg-on-surface text-surface relative overflow-hidden">
             <div className="absolute inset-0 bg-primary/10 pointer-events-none" />
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/20 rounded-full blur-[120px] pointer-events-none animate-pulse-slow" />
-            <div className="max-w-4xl mx-auto px-4 md:px-8 text-center relative z-10 flex flex-col items-center gap-8 w-full">
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] sm:w-[800px] h-[400px] sm:h-[800px] bg-primary/20 rounded-full blur-[120px] pointer-events-none animate-pulse-slow" />
+            <div className="max-w-4xl mx-auto px-4 md:px-8 text-center relative z-10 flex flex-col items-center gap-5 sm:gap-8 w-full">
               {contentLoading ? (
-                <div className="flex flex-col items-center gap-6 w-full animate-pulse">
-                  <div className="h-12 md:h-16 w-3/4 max-w-2xl bg-white/10 rounded-2xl" />
-                  <div className="h-6 w-1/2 max-w-lg bg-white/5 rounded-xl" />
-                  <div className="flex gap-4 mt-4">
-                    <div className="h-14 w-44 bg-white/10 rounded-xl" />
-                    <div className="h-14 w-44 bg-white/5 rounded-xl" />
+                <div className="flex flex-col items-center gap-4 sm:gap-6 w-full animate-pulse">
+                  <div className="h-8 sm:h-12 md:h-16 w-3/4 max-w-2xl bg-white/10 rounded-2xl" />
+                  <div className="h-4 sm:h-6 w-1/2 max-w-lg bg-white/5 rounded-xl" />
+                  <div className="flex gap-3 sm:gap-4 mt-2 sm:mt-4">
+                    <div className="h-10 sm:h-14 w-32 sm:w-44 bg-white/10 rounded-xl" />
+                    <div className="h-10 sm:h-14 w-32 sm:w-44 bg-white/5 rounded-xl" />
                   </div>
                 </div>
               ) : (
-                <div className="animate-fade-in flex flex-col items-center gap-8">
-                  <h2 className="font-headline-lg text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-tight">
+                <div className="animate-fade-in flex flex-col items-center gap-4 sm:gap-8">
+                  <h2 className="font-headline-lg text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-tight">
                     {ctaHeading.includes("pressing problems") ? (
                       <>
                         {ctaHeading.split("pressing problems")[0]}
@@ -893,19 +981,19 @@ export const Home: React.FC = () => {
                       ctaHeading
                     )}
                   </h2>
-                  <p className="font-body-lg text-xl text-surface-variant/80 max-w-2xl">
+                  <p className="font-body-lg text-xs sm:text-base md:text-xl text-surface-variant/80 max-w-2xl">
                     {ctaSubtext}
                   </p>
-                  <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-4">
+                  <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mt-2 sm:mt-4 w-full">
                     <Link
                       to={ctaPrimaryLink}
-                      className="w-full sm:w-auto bg-primary text-white px-8 py-4 rounded-xl font-label-md text-base font-semibold hover:bg-primary-container hover:scale-105 transition-all duration-300 shadow-lg shadow-primary/25 hover:shadow-primary/40 text-center"
+                      className="w-full sm:w-auto bg-primary text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-label-md text-xs sm:text-base font-semibold hover:bg-primary-container hover:scale-105 transition-all duration-300 shadow-lg shadow-primary/25 hover:shadow-primary/40 text-center"
                     >
                       {ctaPrimaryLabel}
                     </Link>
                     <Link
                       to={ctaSecondaryLink}
-                      className="w-full sm:w-auto bg-surface-container-high/40 backdrop-blur-md text-white border border-white/20 px-8 py-4 rounded-xl font-label-md text-base font-semibold hover:bg-white/10 hover:scale-105 transition-all duration-300 text-center"
+                      className="w-full sm:w-auto bg-surface-container-high/40 backdrop-blur-md text-white border border-white/20 px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-label-md text-xs sm:text-base font-semibold hover:bg-white/10 hover:scale-105 transition-all duration-300 text-center"
                     >
                       {ctaSecondaryLabel}
                     </Link>
@@ -918,21 +1006,24 @@ export const Home: React.FC = () => {
       </main>
 
       {/* Footer */}
-      <footer className="w-full bg-surface-container-lowest py-16">
-        <div className="max-w-[1280px] mx-auto px-margin-mobile lg:px-margin-desktop grid grid-cols-2 md:grid-cols-4 gap-12">
+      <footer className="w-full bg-surface-container-lowest py-16 border-t border-outline-variant/20 overflow-hidden">
+        <div className="max-w-[1280px] mx-auto px-4 md:px-8 grid grid-cols-2 md:grid-cols-4 gap-12">
           <div className="flex flex-col gap-4">
             <h4 className="text-label-sm font-semibold text-on-surface uppercase tracking-widest mb-2">
               Product
             </h4>
             <nav className="flex flex-col gap-3">
-              <Link to="/explore" className="text-body-md text-on-surface-variant hover:text-primary transition-colors">
+              <Link to="/features" className="text-body-md text-on-surface-variant hover:text-primary transition-colors">
                 Features
               </Link>
-              <Link to="/explore" className="text-body-md text-on-surface-variant hover:text-primary transition-colors">
+              <Link to="/solutions" className="text-body-md text-on-surface-variant hover:text-primary transition-colors">
                 Solutions
               </Link>
               <Link to="/industries" className="text-body-md text-on-surface-variant hover:text-primary transition-colors">
                 Industries
+              </Link>
+              <Link to="/explore" className="text-body-md text-on-surface-variant hover:text-primary transition-colors">
+                Problem Catalog
               </Link>
             </nav>
           </div>
@@ -942,13 +1033,13 @@ export const Home: React.FC = () => {
             </h4>
             <nav className="flex flex-col gap-3">
               <Link to="/community" className="text-body-md text-on-surface-variant hover:text-primary transition-colors">
-                Forums
-              </Link>
-              <Link to="/community" className="text-body-md text-on-surface-variant hover:text-primary transition-colors">
-                Events
+                Forums & Feed
               </Link>
               <Link to="/companies" className="text-body-md text-on-surface-variant hover:text-primary transition-colors">
-                Partners
+                Industry Partners
+              </Link>
+              <Link to="/submit" className="text-body-md text-on-surface-variant hover:text-primary transition-colors">
+                Submit a Problem
               </Link>
             </nav>
           </div>
@@ -960,11 +1051,8 @@ export const Home: React.FC = () => {
               <Link to="/about" className="text-body-md text-on-surface-variant hover:text-primary transition-colors">
                 About Us
               </Link>
-              <Link to="/about" className="text-body-md text-on-surface-variant hover:text-primary transition-colors">
-                Careers
-              </Link>
-              <Link to="/about" className="text-body-md text-on-surface-variant hover:text-primary transition-colors">
-                Contact
+              <Link to="/contact" className="text-body-md text-on-surface-variant hover:text-primary transition-colors">
+                Contact Us
               </Link>
             </nav>
           </div>
@@ -973,19 +1061,19 @@ export const Home: React.FC = () => {
               Legal
             </h4>
             <nav className="flex flex-col gap-3">
-              <Link to="/about" className="text-body-md text-on-surface-variant hover:text-primary transition-colors">
-                Privacy
+              <Link to="/privacy" className="text-body-md text-on-surface-variant hover:text-primary transition-colors">
+                Privacy Policy
               </Link>
-              <Link to="/about" className="text-body-md text-on-surface-variant hover:text-primary transition-colors">
-                Terms
+              <Link to="/terms" className="text-body-md text-on-surface-variant hover:text-primary transition-colors">
+                Terms of Service
               </Link>
-              <Link to="/about" className="text-body-md text-on-surface-variant hover:text-primary transition-colors">
-                Cookies
+              <Link to="/cookies" className="text-body-md text-on-surface-variant hover:text-primary transition-colors">
+                Cookie Policy
               </Link>
             </nav>
           </div>
         </div>
-        <div className="max-w-[1280px] mx-auto px-margin-mobile lg:px-margin-desktop mt-16 pt-8 border-t border-outline-variant/20 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="max-w-[1280px] mx-auto px-4 md:px-8 mt-16 pt-8 border-t border-outline-variant/20 flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <div className="w-6 h-6 rounded-lg bg-primary/20 text-primary flex items-center justify-center font-black text-xs">
               PA
@@ -994,7 +1082,7 @@ export const Home: React.FC = () => {
               ProblemAtlas
             </span>
           </div>
-          <p className="text-label-sm text-outline">© 2024 ProblemAtlas. All rights reserved.</p>
+          <p className="text-label-sm text-outline">© 2026 ProblemAtlas. All rights reserved.</p>
         </div>
       </footer>
     </div>

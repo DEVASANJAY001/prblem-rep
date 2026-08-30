@@ -19,6 +19,7 @@ import {
   CheckCircle2,
   X,
 } from "lucide-react";
+import { SEOHead } from "@/components/common/SEOHead";
 
 // Industry filter pills (Text-only matching Explore)
 const INDUSTRY_HUBS = [
@@ -166,48 +167,70 @@ export const Companies: React.FC = () => {
 
   return (
     <div className="flex flex-col w-full min-h-screen font-['Poppins',sans-serif] text-on-surface bg-surface">
-      {/* ── Top Header & Filter Suite (Matching Explore container design) ─── */}
-      <div className="w-full bg-gradient-to-b from-surface via-surface-container-lowest to-surface pt-12 pb-8 border-b border-outline-variant/20 relative overflow-hidden">
+      {/* SEO: ItemList schema for corporate / partner directory */}
+      <SEOHead
+        title="Partner Companies & Enterprise Innovation Scouts"
+        description="Explore organizations, enterprises, and research labs actively scouting and solving verified problem statements on ProblemAtlas."
+        canonicalUrl="https://problematlas.com/companies"
+        ogType="website"
+        keywords={["enterprise problem statements", "company challenges", "innovation scouting", "corporate startup programs", "enterprise demand signals"]}
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "ItemList",
+          "name": "Partner Companies & Enterprise Scouts",
+          "description": "Organizations actively scouting and posting verified real-world operational problems.",
+          "url": "https://problematlas.com/companies",
+          "numberOfItems": companiesList.length,
+          "itemListElement": companiesList.slice(0, 10).map((c, idx) => ({
+            "@type": "ListItem",
+            "position": idx + 1,
+            "name": c.name,
+            "description": c.description || `${c.name} in ${c.industry}`
+          }))
+        }}
+      />
+      {/* ── Top Hero Header Section (Matching Explore / Home Design) ─────────── */}
+      <div className="w-full bg-gradient-to-b from-surface via-surface-container-lowest to-surface pt-8 pb-5 sm:pt-12 sm:pb-8 border-b border-outline-variant/20 relative overflow-hidden">
         <div className="absolute -top-32 -left-32 w-96 h-96 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-rose-500/10 rounded-full blur-3xl pointer-events-none" />
 
-        <div className="max-w-7xl mx-auto px-4 md:px-8 relative z-10 space-y-6">
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div className="max-w-7xl mx-auto px-4 md:px-8 relative z-10 space-y-4 sm:space-y-6">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 sm:gap-4">
             <div>
-              <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-on-surface">
+              <h1 className="text-2xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-on-surface">
                 Explore Companies
               </h1>
-              <p className="text-on-surface-variant text-sm md:text-base mt-1 max-w-2xl font-normal">
+              <p className="text-on-surface-variant text-xs sm:text-sm md:text-base mt-1 max-w-2xl font-normal">
                 Discover verified real-world operational bottlenecks, quantified clinical friction, and enterprise demand signals categorized by partner companies.
               </p>
             </div>
 
             <Link
               to="/submit"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-white text-xs font-bold hover:bg-primary-container shadow-sm transition-all shrink-0"
+              className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-5 py-1.5 sm:py-2.5 rounded-lg sm:rounded-xl bg-primary text-white text-[11px] sm:text-xs font-bold hover:bg-primary-container shadow-sm transition-all shrink-0"
             >
-              <PlusCircle className="h-4 w-4" />
-              <span>Submit Problem Statement</span>
+              <PlusCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+              <span>Submit Problem</span>
             </Link>
           </div>
 
           {/* Search Input */}
           <div className="w-full relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant h-5 w-5" />
+            <Search className="absolute left-3.5 sm:left-4 top-1/2 -translate-y-1/2 text-on-surface-variant h-4 w-4 sm:h-5 sm:w-5" />
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-surface-container-lowest border border-outline-variant/40 rounded-2xl py-4 pl-12 pr-4 text-sm md:text-base text-on-surface focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all shadow-sm hover:shadow-md"
+              className="w-full bg-surface-container-lowest border border-outline-variant/40 rounded-2xl py-2.5 sm:py-4 pl-10 sm:pl-12 pr-4 text-xs sm:text-base text-on-surface focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all shadow-sm hover:shadow-md"
               placeholder="Search partner companies by name, sector, or keywords..."
               type="text"
             />
           </div>
 
           {/* Industry Category Filter Pills (Text-only) */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-1 hide-scrollbar">
+          <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-1 hide-scrollbar">
             <button
               onClick={() => setSelectedIndustries([])}
-              className={`px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
+              className={`px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-[11px] sm:text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
                 selectedIndustries.length === 0
                   ? "bg-primary text-white shadow-sm"
                   : "bg-surface-container-low text-on-surface-variant hover:bg-surface-container hover:text-on-surface"
@@ -221,7 +244,7 @@ export const Companies: React.FC = () => {
                 <button
                   key={hub.slug}
                   onClick={() => handleIndustryToggle(hub.name)}
-                  className={`px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all border cursor-pointer ${
+                  className={`px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-[11px] sm:text-xs font-semibold whitespace-nowrap transition-all border cursor-pointer ${
                     active
                       ? "bg-primary/10 border-primary text-primary font-bold shadow-2xs"
                       : "bg-surface-container-lowest border-outline-variant/30 text-on-surface-variant hover:border-primary/40 hover:text-on-surface"

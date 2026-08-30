@@ -6,6 +6,7 @@ import { subscribeProblems } from "@/lib/firebase/services/problemsService";
 import { getBookmarkedProblems, STORAGE_KEYS, load } from "@/lib/storage";
 import { TrendingProblemCard } from "@/components/ui/TrendingProblemCard";
 import { ProblemCardSkeleton } from "@/components/common/LoadingContainer";
+import { SEOHead } from "@/components/common/SEOHead";
 import {
   Bookmark,
   Search,
@@ -123,6 +124,12 @@ export const SavedProblems: React.FC = () => {
 
   return (
     <div className="flex flex-col w-full min-h-screen font-['Poppins',sans-serif] text-on-surface bg-surface">
+      {/* noindex: user-specific bookmarks page, not searchable content */}
+      <SEOHead
+        title="Saved Problems"
+        description="Your saved and bookmarked problem statements on ProblemAtlas."
+        noindex
+      />
       {/* ── Top Header & Integrated Filter Suite ────────────────────────── */}
       <div className="w-full bg-gradient-to-b from-surface via-surface-container-lowest to-surface pt-12 pb-8 border-b border-outline-variant/20 relative overflow-hidden">
         <div className="absolute -top-32 -left-32 w-96 h-96 bg-primary/10 rounded-full blur-3xl pointer-events-none" />

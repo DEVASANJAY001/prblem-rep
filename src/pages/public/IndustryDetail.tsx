@@ -14,6 +14,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
+import { SEOHead } from "@/components/common/SEOHead";
 
 export const IndustryDetail: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -320,6 +321,53 @@ export const IndustryDetail: React.FC = () => {
 
   return (
     <div className="flex flex-col w-full min-h-screen font-['Poppins',sans-serif] text-on-surface bg-surface">
+      {/* SEO: CollectionPage + BreadcrumbList schema */}
+      <SEOHead
+        title={`${industry.name} Problem Statements & Startup Opportunities`}
+        description={industry.description || `Explore verified real-world operational bottlenecks, clinical friction, and enterprise demand signals in ${industry.name}.`}
+        canonicalUrl={`https://problematlas.com/industries/${industrySlug}`}
+        ogType="website"
+        keywords={[industry.name, `${industry.name} problems`, `${industry.name} startup ideas`, "industry bottlenecks", "market pain points", "venture opportunities"]}
+        jsonLd={[
+          {
+            "@context": "https://schema.org",
+            "@type": "CollectionPage",
+            "name": `${industry.name} Problem Statements`,
+            "description": industry.description,
+            "url": `https://problematlas.com/industries/${industrySlug}`,
+            "numberOfItems": problemsList.length,
+            "publisher": {
+              "@type": "Organization",
+              "name": "ProblemAtlas",
+              "url": "https://problematlas.com"
+            }
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://problematlas.com/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Industries",
+                "item": "https://problematlas.com/industries"
+              },
+              {
+                "@type": "ListItem",
+                "position": 3,
+                "name": industry.name,
+                "item": `https://problematlas.com/industries/${industrySlug}`
+              }
+            ]
+          }
+        ]}
+      />
       {/* ── Top Header Bar (Explore-style Header Design without Icon and without Verified Index) ── */}
       <div className="w-full bg-gradient-to-b from-surface via-surface-container-lowest to-surface pt-12 pb-8 border-b border-outline-variant/20 relative overflow-hidden">
         <div className="absolute -top-32 -left-32 w-96 h-96 bg-primary/10 rounded-full blur-3xl pointer-events-none" />

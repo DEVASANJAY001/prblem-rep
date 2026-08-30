@@ -15,6 +15,8 @@ import { REAL_COMPANIES } from "@/data/realProductionData";
 import { ProblemDoc, UserStartupNotes, CompanyDoc } from "@/types";
 import { toggleBookmark, isProblemBookmarked } from "@/lib/storage";
 import { LoadingContainer } from "@/components/common/LoadingContainer";
+import { SEOHead } from "@/components/common/SEOHead";
+import { extractProblemId, getProblemDetailUrl, getStartupModeUrl } from "@/lib/seoUrls";
 import { UserAvatar } from "@/components/ui/UserAvatar";
 import { CompanyLogo } from "@/components/ui/CompanyLogo";
 import {
@@ -221,7 +223,7 @@ export const StartupMode: React.FC = () => {
       return;
     }
 
-    const cleanId = decodeURIComponent(targetId).trim();
+    const cleanId = extractProblemId(targetId);
 
     const unsubscribe = subscribeProblemById(cleanId, (p) => {
       if (p) {
@@ -699,6 +701,58 @@ Generated from Prblms Startup Canvas on ${new Date().toLocaleDateString()}`;
 
   return (
     <div className="w-full min-h-screen bg-surface font-['Poppins',sans-serif] text-on-surface pb-16">
+      <SEOHead
+        title={`Build Startup: ${problem.title}`}
+        description={`Venture thesis, Ideal Customer Profile (ICP), MVP features, and competitive whitespace for ${problem.title}.`}
+        canonicalUrl={`https://problematlas.com${getStartupModeUrl(problem)}`}
+        ogType="article"
+        keywords={[industry, "Startup Idea", "MVP Blueprint", "Venture Thesis", "Ideal Customer Profile", "Business Opportunity"]}
+        jsonLd={[
+          {
+            "@context": "https://schema.org",
+            "@type": "CreativeWork",
+            "name": `Startup Opportunity: ${problem.title}`,
+            "headline": `Build a Startup for ${problem.title}`,
+            "description": problem.startupModeConfig?.thesis || problem.description,
+            "genre": industry,
+            "publisher": {
+              "@type": "Organization",
+              "name": "ProblemAtlas",
+              "url": "https://problematlas.com",
+            },
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Explore",
+                "item": "https://problematlas.com/explore"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": industry,
+                "item": `https://problematlas.com/explore?industry=${encodeURIComponent(industry)}`
+              },
+              {
+                "@type": "ListItem",
+                "position": 3,
+                "name": problem.title,
+                "item": `https://problematlas.com${getProblemDetailUrl(problem)}`
+              },
+              {
+                "@type": "ListItem",
+                "position": 4,
+                "name": "Startup Mode",
+                "item": `https://problematlas.com${getStartupModeUrl(problem)}`
+              }
+            ]
+          }
+        ]}
+      />
       <main className="w-full max-w-[1280px] mx-auto px-4 md:px-12 py-8 flex flex-col gap-6">
         {/* ── Top Breadcrumb & Action Toolbar (Seamless Flow matching ProblemDetail) ── */}
         <div className="flex items-center justify-between gap-4 flex-wrap pb-3">
@@ -710,7 +764,7 @@ Generated from Prblms Startup Canvas on ${new Date().toLocaleDateString()}`;
             <span className="text-on-surface-variant">{industry}</span>
             <span>&gt;</span>
             <Link
-              to={`/problem/${problem.id}`}
+              to={getProblemDetailUrl(problem)}
               className="hover:underline text-on-surface-variant truncate max-w-[220px]"
             >
               {problem.title}
@@ -745,24 +799,26 @@ Generated from Prblms Startup Canvas on ${new Date().toLocaleDateString()}`;
             </div>
 
             <Link
-              to={`/problem/${problem.id}`}
-              className="px-3.5 py-1.5 rounded-full bg-surface-container/60 hover:bg-surface-container text-on-surface text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer"
+              to={getProblemDetailUrl(problem)}
+              className="px-3 sm:px-3.5 py-1.5 rounded-full bg-surface-container/60 hover:bg-surface-container text-on-surface text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
-              <span>Back to Problem</span>
+              <span className="hidden sm:inline">Back to Problem</span>
+              <span className="sm:hidden">Back</span>
             </Link>
 
             <button
               onClick={() => setIsExportModalOpen(true)}
-              className="px-3.5 py-1.5 rounded-full bg-surface-container/60 hover:bg-surface-container text-on-surface-variant text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer"
+              className="px-3 sm:px-3.5 py-1.5 rounded-full bg-surface-container/60 hover:bg-surface-container text-on-surface-variant text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer"
             >
               <Download className="w-3.5 h-3.5 text-primary" />
-              <span>Export Dossier</span>
+              <span className="hidden sm:inline">Export Dossier</span>
+              <span className="sm:hidden">Export</span>
             </button>
 
             <button
               onClick={handleBookmark}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+              className={`px-3 sm:px-3.5 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
                 bookmarked
                   ? "bg-primary/10 text-primary shadow-2xs font-bold"
                   : "bg-surface-container/60 text-on-surface-variant hover:bg-surface-container"
@@ -774,7 +830,7 @@ Generated from Prblms Startup Canvas on ${new Date().toLocaleDateString()}`;
 
             <button
               onClick={() => setIsShareModalOpen(true)}
-              className="px-3.5 py-1.5 rounded-full bg-surface-container/60 hover:bg-surface-container text-on-surface-variant text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer"
+              className="px-3 sm:px-3.5 py-1.5 rounded-full bg-surface-container/60 hover:bg-surface-container text-on-surface-variant text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer"
             >
               <Share2 className="w-3.5 h-3.5" />
               <span>Share</span>
@@ -799,44 +855,42 @@ Generated from Prblms Startup Canvas on ${new Date().toLocaleDateString()}`;
               <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary/10 text-primary shadow-2xs" title="Verified Opportunity">
                 <CheckCircle className="w-4 h-4 fill-primary/20 text-primary stroke-[2.5]" />
               </span>
+              {problem.psFrom && problem.psFrom.length > 0 && (
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  {problem.psFrom.map((src, idx) => (
+                    <span
+                      key={idx}
+                      className="bg-surface-container/70 text-on-surface-variant border border-outline-variant/30 px-2.5 py-0.5 rounded-full text-[10px] font-semibold flex items-center gap-1 shadow-2xs"
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full bg-primary" />
+                      <span>{src}</span>
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
 
-            <h1 className="text-2xl md:text-3xl font-extrabold text-on-surface tracking-tight leading-snug">
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-on-surface tracking-tight leading-snug">
               {problem.title}
             </h1>
-            <p className="text-xs text-on-surface-variant font-medium">
+            <p className="text-[11px] sm:text-xs text-on-surface-variant font-medium">
               Venture Modeling & ICP Workspace · Lead Researcher:{" "}
               {problem.submitterName || problem.submittedBy || "Dr. Elena Rostova"} ·{" "}
               {relativePostTime}
             </p>
 
-            <div className="flex items-center gap-4 text-xs text-on-surface-variant mt-0.5">
-              <div className="flex items-center gap-1 font-medium">
-                <span className="material-symbols-outlined text-[16px] text-gray-400">
-                  visibility
-                </span>
-                <span>{formattedViews} views</span>
-              </div>
-              {isTrending && (
-                <div className="flex items-center gap-1 text-xs font-semibold text-[#ff2a55]">
-                  <Flame className="w-3.5 h-3.5 fill-[#ff2a55] text-[#ff2a55]" />
-                  <span>High Founder Demand</span>
-                </div>
-              )}
-            </div>
-
-            <p className="text-sm text-on-surface-variant leading-relaxed font-normal mt-1">
+            <p className="text-xs sm:text-sm text-on-surface-variant leading-relaxed font-normal">
               {problem.description}
             </p>
           </div>
 
-          {/* Right Column: Score Gauges + Submetrics (Identical to ProblemDetail) */}
-          <div className="flex flex-col items-center md:items-end gap-5 shrink-0 self-center md:self-start pt-1">
-            {/* Score Dials: Pain Score & Opportunity */}
-            <div className="flex items-center gap-8">
+          {/* ── Scores (Left) & Telemetry Metrics (Right) — Seamless Row without containers ──── */}
+          <div className="w-full flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pt-1">
+            {/* Left Side: Pain Score & Opportunity Dials (No background container) */}
+            <div className="flex items-center gap-6 sm:gap-8 shrink-0">
               {/* Pain Score Dial */}
-              <div className="flex flex-col items-center justify-center">
-                <div className="relative w-20 h-20 md:w-22 md:h-22">
+              <div className="flex items-center gap-2.5">
+                <div className="relative w-12 h-12 sm:w-14 sm:h-14 shrink-0">
                   <svg className="w-full h-full -rotate-90" viewBox="0 0 96 96">
                     <defs>
                       <linearGradient id="painStartupGrad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -864,20 +918,23 @@ Generated from Prblms Startup Canvas on ${new Date().toLocaleDateString()}`;
                       strokeDashoffset={238.76 - 238.76 * (Number(painScore) / 100)}
                     />
                   </svg>
-                  <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-                    <span className="text-lg sm:text-xl font-black text-on-surface leading-none tracking-tight">
+                  <div className="absolute inset-0 flex items-center justify-center text-center">
+                    <span className="text-xs sm:text-sm font-extrabold text-on-surface leading-none tracking-tight">
                       {painDecimal}
                     </span>
                   </div>
                 </div>
-                <span className="text-xs font-semibold text-on-surface-variant mt-2 whitespace-nowrap">
-                  Pain Intensity
-                </span>
+                <div className="flex flex-col">
+                  <span className="text-xs font-bold text-on-surface">Pain Intensity</span>
+                  <span className="text-[10px] text-on-surface-variant font-medium">Critical Need</span>
+                </div>
               </div>
 
+              <div className="h-8 w-px bg-gray-200/80 hidden sm:block" />
+
               {/* Opportunity Score Dial */}
-              <div className="flex flex-col items-center justify-center">
-                <div className="relative w-20 h-20 md:w-22 md:h-22">
+              <div className="flex items-center gap-2.5">
+                <div className="relative w-12 h-12 sm:w-14 sm:h-14 shrink-0">
                   <svg className="w-full h-full -rotate-90" viewBox="0 0 96 96">
                     <defs>
                       <linearGradient id="oppStartupGrad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -905,44 +962,45 @@ Generated from Prblms Startup Canvas on ${new Date().toLocaleDateString()}`;
                       strokeDashoffset={238.76 - 238.76 * (Number(oppScore) / 100)}
                     />
                   </svg>
-                  <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-                    <span className="text-lg sm:text-xl font-black text-on-surface leading-none tracking-tight">
+                  <div className="absolute inset-0 flex items-center justify-center text-center">
+                    <span className="text-xs sm:text-sm font-extrabold text-on-surface leading-none tracking-tight">
                       {oppDecimal}
                     </span>
                   </div>
                 </div>
-                <span className="text-xs font-semibold text-on-surface-variant mt-2 whitespace-nowrap">
-                  Venture Opp
-                </span>
+                <div className="flex flex-col">
+                  <span className="text-xs font-bold text-on-surface">Venture Opp</span>
+                  <span className="text-[10px] text-on-surface-variant font-medium">High Upside</span>
+                </div>
               </div>
             </div>
 
-            {/* Sub-Metrics Container (Seamless Page Background) */}
-            <div className="flex flex-col items-center md:items-end gap-1.5 mt-1">
-              <div className="flex items-center gap-2.5 text-xs font-medium text-on-surface-variant">
-                <div className="flex items-center gap-1">
-                  <DollarSign className="w-3.5 h-3.5 text-primary" />
-                  <span className="font-bold text-on-surface">{tamValue}</span>
-                  <span>TAM</span>
-                </div>
-                <span className="text-gray-300">·</span>
-                <div className="flex items-center gap-1">
-                  <TrendingUp className="w-3.5 h-3.5 text-emerald-600" />
-                  <span className="font-bold text-on-surface">{penetrationValue}%</span>
-                  <span>Penetration</span>
-                </div>
-                <span className="text-gray-300">·</span>
-                <div className="flex items-center gap-1">
-                  <Hammer className="w-3.5 h-3.5 text-primary" />
-                  <span className="font-bold text-on-surface">{buildCount}</span>
-                  <span>Founders</span>
-                </div>
+            {/* Right Side: Venture Metrics Container (No background container) */}
+            <div className="flex flex-wrap items-center justify-start md:justify-end gap-3 sm:gap-4 text-xs font-medium text-on-surface-variant">
+              <div className="flex items-center gap-1">
+                <DollarSign className="w-3.5 h-3.5 text-primary" />
+                <span className="font-bold text-on-surface">{tamValue}</span>
+                <span>TAM</span>
               </div>
-
-              <div className="flex items-center gap-2 text-xs font-medium text-on-surface-variant">
-                <span className="text-on-surface-variant font-medium">Verified ICPs:</span>
-                <span className="font-bold text-primary">{selectedSegments.length} Selected</span>
-                <span className="text-gray-300">·</span>
+              <span className="text-gray-300">·</span>
+              <div className="flex items-center gap-1">
+                <TrendingUp className="w-3.5 h-3.5 text-emerald-600" />
+                <span className="font-bold text-on-surface">{penetrationValue}%</span>
+                <span>Penetration</span>
+              </div>
+              <span className="text-gray-300">·</span>
+              <div className="flex items-center gap-1">
+                <Hammer className="w-3.5 h-3.5 text-primary" />
+                <span className="font-bold text-on-surface">{buildCount}</span>
+                <span>Founders</span>
+              </div>
+              <span className="text-gray-300">·</span>
+              <div className="flex items-center gap-1">
+                <span className="text-on-surface-variant font-medium">ICPs:</span>
+                <span className="font-bold text-primary">{selectedSegments.length}</span>
+              </div>
+              <span className="text-gray-300">·</span>
+              <div className="flex items-center gap-1">
                 <span className="text-on-surface-variant font-medium">Avg WTP:</span>
                 <span className="font-bold text-secondary">{avgWtp}</span>
               </div>
@@ -1920,13 +1978,13 @@ Generated from Prblms Startup Canvas on ${new Date().toLocaleDateString()}`;
                   <input
                     type="text"
                     readOnly
-                    value={`${window.location.origin}/startup-mode/${problem.id}`}
+                    value={`${window.location.origin}${getStartupModeUrl(problem)}`}
                     className="flex-1 bg-surface-container-low rounded-xl px-3.5 py-2 text-xs font-mono text-on-surface outline-none border border-outline-variant/30"
                   />
                   <button
                     onClick={() => {
                       navigator.clipboard.writeText(
-                        `${window.location.origin}/startup-mode/${problem.id}`
+                        `${window.location.origin}${getStartupModeUrl(problem)}`
                       );
                       setLinkCopied(true);
                       setTimeout(() => setLinkCopied(false), 2500);

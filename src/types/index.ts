@@ -227,6 +227,26 @@ export interface ProblemDoc {
   startupModeConfig?: StartupModeConfig;
   attachedCompanyNames?: string[];
   attachedCompanyIds?: string[];
+  psFrom?: string[];
+  psFromCustom?: string;
+  credits?: string[];
+  creditsCustom?: string;
+}
+
+// ─────────────────────────────────────────────────────────────
+// Credits & 3rd Party Attribution Source Types
+// ─────────────────────────────────────────────────────────────
+export interface CreditSourceDoc {
+  id: string;
+  name: string;
+  category?: string; // e.g. "Platform Challenge", "Hackathon Platform", "Government / Ministry", "Corporate Innovation", "Individual Research"
+  description?: string;
+  websiteUrl?: string;
+  logoUrl?: string;
+  isActive: boolean;
+  order?: number;
+  createdAt: string;
+  updatedAt?: string;
 }
 
 // ─────────────────────────────────────────────────────────────

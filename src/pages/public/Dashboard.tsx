@@ -7,6 +7,7 @@ import {
   evaluateAndAwardUserBadges,
 } from "@/lib/firebase/services/badgesService";
 import { getBookmarkedProblems } from "@/lib/storage";
+import { getProblemDetailUrl } from "@/lib/seoUrls";
 import { ProblemDoc, BadgeDoc } from "@/types";
 import { UserAvatar } from "@/components/ui/UserAvatar";
 import { AVATAR_PRESETS } from "@/lib/avatars";
@@ -14,6 +15,7 @@ import {
   DynamicBadgeIcon,
   TIER_CONFIG,
 } from "@/components/ui/DynamicBadgeIcon";
+import { SEOHead } from "@/components/common/SEOHead";
 import confetti from "canvas-confetti";
 import {
   FileText,
@@ -282,6 +284,8 @@ export const Dashboard: React.FC = () => {
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4 md:px-8 py-8 md:py-12 font-['Poppins',sans-serif] text-on-surface">
+      {/* noindex: private user dashboard */}
+      <SEOHead title="User Dashboard" description="Your personal ProblemAtlas activity, submissions, and badges." noindex />
       {/* ── New Badge Achievement Toast Notification ─────────────────────── */}
       {newlyUnlockedBadge && (
         <div className="mb-6 p-4 rounded-2xl bg-linear-to-r from-amber-500/15 via-purple-500/15 to-primary/15 border border-amber-500/30 flex items-center justify-between gap-4 animate-fade-in shadow-md">
@@ -577,7 +581,7 @@ export const Dashboard: React.FC = () => {
                     return (
                       <tr
                         key={prob.id}
-                        onClick={() => navigate(`/problem/${prob.id}`)}
+                        onClick={() => navigate(getProblemDetailUrl(prob))}
                         className="hover:bg-surface-container-low/60 transition-colors cursor-pointer group"
                       >
                         <td className="px-6 py-4">

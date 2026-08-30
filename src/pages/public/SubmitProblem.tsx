@@ -1,11 +1,15 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { createProblem } from "@/lib/firebase/services/problemsService";
+import { subscribeCredits } from "@/lib/firebase/services/creditsService";
+import { getProblemDetailUrl, getStartupModeUrl } from "@/lib/seoUrls";
+import { SEOHead } from "@/components/common/SEOHead";
 import { REAL_INDUSTRIES } from "@/data/realProductionData";
-import { EvidenceDocument, ProblemSeverity } from "@/types";
+import { EvidenceDocument, ProblemSeverity, CreditSourceDoc } from "@/types";
 import confetti from "canvas-confetti";
 import { UserAvatar } from "@/components/ui/UserAvatar";
+import { HumanVerification } from "@/components/common/HumanVerification";
 import {
   CheckCircle,
   ArrowRight,
@@ -48,6 +52,7 @@ export const SubmitProblem: React.FC = () => {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [submittedProblemId, setSubmittedProblemId] = useState<string | null>(null);
+  const [isHumanVerified, setIsHumanVerified] = useState(false);
 
   // ── Tab 1: Core Overview & Operational Narrative ─────────────────────────
   const [title, setTitle] = useState("");
@@ -67,6 +72,19 @@ export const SubmitProblem: React.FC = () => {
   const [isAnonymous, setIsAnonymous] = useState(false);
   const [customSubmitterName, setCustomSubmitterName] = useState("");
   const [submitterRole, setSubmitterRole] = useState("");
+
+  // Credits: (Origin / External 3rd Party Attribution Source)
+  const [psFrom, setPsFrom] = useState<string[]>(["Own Thinking"]);
+  const [psFromCustom, setPsFromCustom] = useState("");
+  const [availableCredits, setAvailableCredits] = useState<CreditSourceDoc[]>([]);
+  const [selectedCreditDropdown, setSelectedCreditDropdown] = useState("");
+
+  useEffect(() => {
+    const unsub = subscribeCredits((list) => {
+      setAvailableCredits(list.filter((c) => c.isActive !== false));
+    }, false);
+    return () => unsub();
+  }, []);
 
   // ── Tab 2: Evidence & Statistical Data Points ─────────────────────────────
   const [dataPoints, setDataPoints] = useState<Array<{ metric: string; label: string }>>([]);
@@ -308,6 +326,7 @@ export const SubmitProblem: React.FC = () => {
       "HIPAA BAA compliance hurdles across state health exchanges",
       "Legacy EHR vendor API paywalls and rate limits",
     ]);
+    setPsFrom(["Own Thinking", "Smart India Hackathon (SIH)", "Hack2skill"]);
   };
 
   // ── Form Submission Handler ───────────────────────────────────────────────
@@ -316,6 +335,12 @@ export const SubmitProblem: React.FC = () => {
     if (!title.trim() || !description.trim()) {
       setError("Please provide at least a Problem Title and Core Issue Summary.");
       setActiveTab(1);
+      return;
+    }
+
+    if (!isHumanVerified) {
+      setError("Please complete the 'I am not a robot' human verification check before publishing.");
+      setActiveTab(6);
       return;
     }
 
@@ -345,6 +370,8 @@ export const SubmitProblem: React.FC = () => {
         audienceSize: audienceSize.trim(),
         willingnessToPay: willingnessToPay.trim(),
         estimatedValue: tam.trim(),
+        psFrom: psFrom.length > 0 ? psFrom : ["Own Thinking"],
+        psFromCustom: psFromCustom.trim(),
         marketData: {
           tam: tam.trim() || "$1.0B",
           currentPenetration,
@@ -448,7 +475,11 @@ export const SubmitProblem: React.FC = () => {
 
           <div className="flex flex-col sm:flex-row items-center gap-3 w-full pt-2">
             <button
-              onClick={() => navigate(`/problem/${submittedProblemId}`)}
+              onClick={() =>
+                navigate(
+                  getProblemDetailUrl({ id: submittedProblemId || "prob-1", title })
+                )
+              }
               className="w-full sm:flex-1 bg-primary text-white py-3.5 px-6 rounded-xl text-xs md:text-sm font-bold shadow-md hover:bg-primary-container transition-all cursor-pointer flex items-center justify-center gap-2"
             >
               <span>View Published Problem</span>
@@ -456,7 +487,11 @@ export const SubmitProblem: React.FC = () => {
             </button>
             {hasStartupMode && (
               <button
-                onClick={() => navigate(`/startup-mode/${submittedProblemId}`)}
+                onClick={() =>
+                  navigate(
+                    getStartupModeUrl({ id: submittedProblemId || "prob-1", title })
+                  )
+                }
                 className="w-full sm:flex-1 bg-surface hover:bg-primary/5 text-primary border border-primary py-3.5 px-6 rounded-xl text-xs md:text-sm font-bold shadow-xs hover:shadow-sm transition-all cursor-pointer flex items-center justify-center gap-2"
               >
                 <span>Launch Startup Mode</span>
@@ -482,34 +517,40 @@ export const SubmitProblem: React.FC = () => {
   }
 
   return (
-    <div className="w-full min-h-screen bg-surface py-8 md:py-10 px-4 md:px-8 lg:px-12 font-['Poppins',sans-serif] text-on-surface">
+    <div className="w-full min-h-screen bg-surface py-4 sm:py-8 md:py-10 px-3 sm:px-6 md:px-8 lg:px-12 font-['Poppins',sans-serif] text-on-surface">
+      {/* noindex: form page — not content for search engines */}
+      <SEOHead
+        title="Submit a Verified Problem Statement"
+        description="Submit a verified real-world problem statement to ProblemAtlas. Help the community discover startup opportunities and innovation challenges."
+        noindex
+      />
       {/* ── TOP HERO HEADER & BREADCRUMBS ─────────────────────────────────── */}
-      <div className="w-full flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-gray-200/60 mb-8">
-        <div className="flex flex-col gap-1.5">
-          <div className="flex items-center gap-2 text-xs font-bold text-on-surface-variant">
+
+      <div className="w-full flex flex-col md:flex-row md:items-center justify-between gap-3 sm:gap-4 pb-4 sm:pb-6 border-b border-gray-200/60 mb-5 sm:mb-8">
+        <div className="flex flex-col gap-1 sm:gap-1.5">
+          <div className="flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs font-bold text-on-surface-variant">
             <Link to="/explore" className="hover:text-primary transition-colors">
               Explore
             </Link>
             <span className="text-gray-300">/</span>
             <span className="text-primary font-bold">Submit Problem Statement</span>
           </div>
-          <h1 className="text-2xl md:text-3xl lg:text-4xl font-black text-on-surface tracking-tight">
+          <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black text-on-surface tracking-tight">
             Problem Intelligence Studio
           </h1>
-          <p className="text-xs md:text-sm text-on-surface-variant max-w-3xl">
+          <p className="text-[11px] sm:text-xs md:text-sm text-on-surface-variant max-w-3xl">
             Draft and structure an empirical, evidence-backed problem dossier with market sizing, research citations, and startup venture blueprints.
           </p>
         </div>
 
-        {/* Action Header Buttons */}
-        <div className="flex items-center gap-2.5 shrink-0 self-start md:self-auto">
+        {/* Action Header Buttons (Without Icons, Reduced Size, Mobile-Friendly) */}
+        <div className="flex items-center gap-2 sm:gap-2.5 shrink-0 self-start md:self-auto flex-wrap sm:flex-nowrap">
           <button
             type="button"
             onClick={loadExampleTemplate}
-            className="px-4 py-2.5 rounded-xl bg-surface-container/60 hover:bg-surface-container text-on-surface-variant hover:text-on-surface text-xs font-bold border border-outline-variant/30 flex items-center gap-2 transition-all cursor-pointer shadow-2xs"
+            className="px-2.5 sm:px-4 py-1.5 sm:py-2.5 rounded-lg sm:rounded-xl bg-surface-container/60 hover:bg-surface-container text-on-surface-variant hover:text-on-surface text-[11px] sm:text-xs font-bold border border-outline-variant/30 transition-all cursor-pointer shadow-2xs"
             title="Pre-fill form with real verified Healthcare Interoperability problem"
           >
-            <Sparkles className="w-3.5 h-3.5 text-amber-500" />
             <span>Load Example Template</span>
           </button>
 
@@ -517,27 +558,17 @@ export const SubmitProblem: React.FC = () => {
             type="button"
             disabled={submitting}
             onClick={handleSubmit}
-            className="bg-primary hover:bg-primary-container text-white px-5 py-2.5 rounded-xl text-xs font-bold shadow-xs transition-all cursor-pointer flex items-center gap-2 disabled:opacity-50"
+            className="bg-primary hover:bg-primary-container text-white px-3 sm:px-5 py-1.5 sm:py-2.5 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold shadow-xs transition-all cursor-pointer disabled:opacity-50"
           >
-            {submitting ? (
-              <>
-                <span className="animate-spin">⏳</span>
-                <span>Publishing...</span>
-              </>
-            ) : (
-              <>
-                <span>Publish Problem</span>
-                <Rocket className="w-3.5 h-3.5" />
-              </>
-            )}
+            {submitting ? "Publishing..." : "Publish Problem"}
           </button>
         </div>
       </div>
 
       {/* ── MAIN FULL-PAGE STUDIO ───────────────────────────────── */}
-      <div className="w-full flex flex-col gap-6">
+      <div className="w-full flex flex-col gap-4 sm:gap-6">
         {/* Section Navigation Tab Bar */}
-        <div className="w-full bg-surface-container-lowest p-1.5 rounded-2xl border border-outline-variant/30 shadow-2xs flex items-center gap-1 overflow-x-auto no-scrollbar">
+        <div className="w-full bg-surface-container-lowest p-1 sm:p-1.5 rounded-xl sm:rounded-2xl border border-outline-variant/30 shadow-2xs flex items-center gap-1 overflow-x-auto no-scrollbar scrollbar-none">
           {[
             { id: 1, label: "1. Core Narrative", icon: FileText },
             { id: 2, label: "2. Evidence & Data", icon: BarChart3 },
@@ -550,13 +581,13 @@ export const SubmitProblem: React.FC = () => {
               key={tab.id}
               type="button"
               onClick={() => setActiveTab(tab.id)}
-              className={`px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 transition-all whitespace-nowrap cursor-pointer shrink-0 ${
+              className={`px-2.5 sm:px-4 py-1.5 sm:py-2.5 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold flex items-center gap-1.5 sm:gap-2 transition-all whitespace-nowrap cursor-pointer shrink-0 ${
                 activeTab === tab.id
                   ? "bg-primary text-white shadow-xs"
                   : "text-on-surface-variant hover:text-on-surface hover:bg-surface-container/50"
               }`}
             >
-              <tab.icon className={`w-3.5 h-3.5 ${activeTab === tab.id ? "text-white" : "text-gray-400"}`} />
+              <tab.icon className={`w-3 h-3 sm:w-3.5 sm:h-3.5 ${activeTab === tab.id ? "text-white" : "text-gray-400"}`} />
               <span>{tab.label}</span>
             </button>
           ))}
@@ -573,15 +604,15 @@ export const SubmitProblem: React.FC = () => {
           <form onSubmit={handleSubmit} className="w-full flex flex-col gap-6">
             {/* ── TAB 1: CORE PROBLEM & OPERATIONAL NARRATIVE ───────────────── */}
             {activeTab === 1 && (
-              <div className="bg-surface-container-lowest p-6 md:p-8 rounded-3xl border border-outline-variant/30 shadow-2xs flex flex-col gap-6 animate-fade-in">
-                <div className="flex flex-col gap-1 border-b border-gray-200/60 pb-4">
-                  <span className="text-[11px] font-extrabold uppercase tracking-widest text-primary">
+              <div className="bg-surface-container-lowest p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl border border-outline-variant/30 shadow-2xs flex flex-col gap-4 sm:gap-6 animate-fade-in">
+                <div className="flex flex-col gap-1 border-b border-gray-200/60 pb-3 sm:pb-4">
+                  <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-widest text-primary">
                     Module 1
                   </span>
-                  <h2 className="text-xl font-bold text-on-surface">
+                  <h2 className="text-base sm:text-lg md:text-xl font-bold text-on-surface">
                     Problem Overview & Operational Context
                   </h2>
-                  <p className="text-xs text-on-surface-variant">
+                  <p className="text-[11px] sm:text-xs text-on-surface-variant">
                     Define the core bottleneck, who experiences the friction, and what happens during day-to-day operations.
                   </p>
                 </div>
@@ -674,6 +705,99 @@ export const SubmitProblem: React.FC = () => {
                       className="w-full bg-surface-container/40 rounded-xl px-4 py-2.5 text-xs font-semibold text-on-surface outline-none border border-outline-variant/30"
                     />
                   </div>
+                </div>
+
+                {/* Credits: (Origin / External 3rd Party Attribution Source) */}
+                <div className="flex flex-col gap-2.5 pt-2 border-t border-gray-200/60">
+                  <div className="flex items-center justify-between flex-wrap gap-1">
+                    <label className="text-xs font-bold text-on-surface flex items-center gap-2">
+                      <span>Credits:</span>
+                      <span className="text-[10px] text-primary bg-primary/10 px-2 py-0.5 rounded-full font-semibold">
+                        {psFrom.length} selected
+                      </span>
+                    </label>
+                    <span className="text-[10px] text-on-surface-variant font-normal">
+                      Origin credit, hackathon platform, or 3rd-party innovation program
+                    </span>
+                  </div>
+
+                  {/* Dropdown Selector & Custom Write-in Row */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <div className="relative">
+                      <select
+                        value={selectedCreditDropdown}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          if (val && !psFrom.includes(val)) {
+                            setPsFrom([...psFrom, val]);
+                          }
+                          setSelectedCreditDropdown("");
+                        }}
+                        className="w-full bg-surface-container/40 rounded-xl px-3.5 py-2.5 text-xs font-semibold text-on-surface outline-none border border-outline-variant/30 cursor-pointer"
+                      >
+                        <option value="">+ Select Credit from list...</option>
+                        {availableCredits.map((cred) => (
+                          <option key={cred.id} value={cred.name}>
+                            {cred.name} {cred.category ? `(${cred.category})` : ""}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* Custom Credit Write-In */}
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={psFromCustom}
+                        onChange={(e) => setPsFromCustom(e.target.value)}
+                        placeholder="Or enter custom credit name..."
+                        className="flex-1 bg-surface-container/40 rounded-xl px-3 py-2 text-xs text-on-surface outline-none border border-outline-variant/30"
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            e.preventDefault();
+                            if (psFromCustom.trim() && !psFrom.includes(psFromCustom.trim())) {
+                              setPsFrom([...psFrom, psFromCustom.trim()]);
+                              setPsFromCustom("");
+                            }
+                          }
+                        }}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (psFromCustom.trim() && !psFrom.includes(psFromCustom.trim())) {
+                            setPsFrom([...psFrom, psFromCustom.trim()]);
+                            setPsFromCustom("");
+                          }
+                        }}
+                        className="px-3.5 py-2 bg-surface-container text-on-surface hover:bg-surface-container-high text-xs font-bold rounded-xl border border-outline-variant/30 cursor-pointer shrink-0"
+                      >
+                        + Add
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Selected Credits Pills / Chips */}
+                  {psFrom.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 pt-1">
+                      {psFrom.map((source) => (
+                        <span
+                          key={source}
+                          className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-primary text-white shadow-2xs"
+                        >
+                          <span>{source}</span>
+                          <button
+                            type="button"
+                            onClick={() => setPsFrom(psFrom.filter((s) => s !== source))}
+                            className="hover:opacity-80 cursor-pointer p-0.5"
+                            title="Remove credit"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 {/* Problem Severity Selector */}
@@ -812,15 +936,15 @@ export const SubmitProblem: React.FC = () => {
 
             {/* ── TAB 2: EVIDENCE & STATISTICAL DATA POINTS ─────────────────── */}
             {activeTab === 2 && (
-              <div className="bg-surface-container-lowest p-6 md:p-8 rounded-3xl border border-outline-variant/30 shadow-2xs flex flex-col gap-6 animate-fade-in">
-                <div className="flex flex-col gap-1 border-b border-gray-200/60 pb-4">
-                  <span className="text-[11px] font-extrabold uppercase tracking-widest text-primary">
+              <div className="bg-surface-container-lowest p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl border border-outline-variant/30 shadow-2xs flex flex-col gap-4 sm:gap-6 animate-fade-in">
+                <div className="flex flex-col gap-1 border-b border-gray-200/60 pb-3 sm:pb-4">
+                  <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-widest text-primary">
                     Module 2
                   </span>
-                  <h2 className="text-xl font-bold text-on-surface">
+                  <h2 className="text-base sm:text-lg md:text-xl font-bold text-on-surface">
                     Key Statistical Data Points & Evidence
                   </h2>
-                  <p className="text-xs text-on-surface-variant">
+                  <p className="text-[11px] sm:text-xs text-on-surface-variant">
                     Back your problem statement with empirical numbers, whitepapers, benchmarks, and external links.
                   </p>
                 </div>
@@ -1074,15 +1198,15 @@ export const SubmitProblem: React.FC = () => {
 
             {/* ── TAB 3: MARKET TELEMETRY & FINANCIAL IMPACT ─────────────────── */}
             {activeTab === 3 && (
-              <div className="bg-surface-container-lowest p-6 md:p-8 rounded-3xl border border-outline-variant/30 shadow-2xs flex flex-col gap-6 animate-fade-in">
-                <div className="flex flex-col gap-1 border-b border-gray-200/60 pb-4">
-                  <span className="text-[11px] font-extrabold uppercase tracking-widest text-primary">
+              <div className="bg-surface-container-lowest p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl border border-outline-variant/30 shadow-2xs flex flex-col gap-4 sm:gap-6 animate-fade-in">
+                <div className="flex flex-col gap-1 border-b border-gray-200/60 pb-3 sm:pb-4">
+                  <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-widest text-primary">
                     Module 3
                   </span>
-                  <h2 className="text-xl font-bold text-on-surface">
+                  <h2 className="text-base sm:text-lg md:text-xl font-bold text-on-surface">
                     Market Telemetry & Financial Impact
                   </h2>
-                  <p className="text-xs text-on-surface-variant">
+                  <p className="text-[11px] sm:text-xs text-on-surface-variant">
                     Estimate market TAM, penetration hurdles, economic waste, and willingness to pay.
                   </p>
                 </div>
@@ -1186,15 +1310,15 @@ export const SubmitProblem: React.FC = () => {
 
             {/* ── TAB 4: RESEARCH & COMPETITOR MATRIX ────────────────────────── */}
             {activeTab === 4 && (
-              <div className="bg-surface-container-lowest p-6 md:p-8 rounded-3xl border border-outline-variant/30 shadow-2xs flex flex-col gap-6 animate-fade-in">
-                <div className="flex flex-col gap-1 border-b border-gray-200/60 pb-4">
-                  <span className="text-[11px] font-extrabold uppercase tracking-widest text-primary">
+              <div className="bg-surface-container-lowest p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl border border-outline-variant/30 shadow-2xs flex flex-col gap-4 sm:gap-6 animate-fade-in">
+                <div className="flex flex-col gap-1 border-b border-gray-200/60 pb-3 sm:pb-4">
+                  <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-widest text-primary">
                     Module 4
                   </span>
-                  <h2 className="text-xl font-bold text-on-surface">
+                  <h2 className="text-base sm:text-lg md:text-xl font-bold text-on-surface">
                     Research Methodology & Competitor Matrix
                   </h2>
-                  <p className="text-xs text-on-surface-variant">
+                  <p className="text-[11px] sm:text-xs text-on-surface-variant">
                     Detail academic findings and evaluate why current commercial competitors fail.
                   </p>
                 </div>
@@ -1373,15 +1497,15 @@ export const SubmitProblem: React.FC = () => {
 
             {/* ── TAB 5: SUGGESTED MVP & TECHNICAL SPECS ─────────────────────── */}
             {activeTab === 5 && (
-              <div className="bg-surface-container-lowest p-6 md:p-8 rounded-3xl border border-outline-variant/30 shadow-2xs flex flex-col gap-6 animate-fade-in">
-                <div className="flex flex-col gap-1 border-b border-gray-200/60 pb-4">
-                  <span className="text-[11px] font-extrabold uppercase tracking-widest text-primary">
+              <div className="bg-surface-container-lowest p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl border border-outline-variant/30 shadow-2xs flex flex-col gap-4 sm:gap-6 animate-fade-in">
+                <div className="flex flex-col gap-1 border-b border-gray-200/60 pb-3 sm:pb-4">
+                  <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-widest text-primary">
                     Module 5
                   </span>
-                  <h2 className="text-xl font-bold text-on-surface">
+                  <h2 className="text-base sm:text-lg md:text-xl font-bold text-on-surface">
                     Suggested MVP Scope & Technical Architecture
                   </h2>
-                  <p className="text-xs text-on-surface-variant">
+                  <p className="text-[11px] sm:text-xs text-on-surface-variant">
                     Outline the minimal viable solution features and necessary security/compliance constraints.
                   </p>
                 </div>
@@ -1473,30 +1597,29 @@ export const SubmitProblem: React.FC = () => {
 
             {/* ── TAB 6: STARTUP MODE & VENTURE WORKSPACE ────────────────────── */}
             {activeTab === 6 && (
-              <div className="bg-surface-container-lowest p-6 md:p-8 rounded-3xl border border-outline-variant/30 shadow-2xs flex flex-col gap-6 animate-fade-in">
-                <div className="flex flex-col gap-1 border-b border-gray-200/60 pb-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[11px] font-extrabold uppercase tracking-widest text-primary">
+              <div className="bg-surface-container-lowest p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl border border-outline-variant/30 shadow-2xs flex flex-col gap-4 sm:gap-6 animate-fade-in">
+                <div className="flex flex-col gap-1 border-b border-gray-200/60 pb-3 sm:pb-4">
+                  <div className="flex items-center justify-between flex-wrap gap-2">
+                    <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-widest text-primary">
                       Module 6 · Venture Studio
                     </span>
                     {/* Startup Mode Master Switch */}
                     <button
                       type="button"
                       onClick={() => setHasStartupMode(!hasStartupMode)}
-                      className={`px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
+                      className={`px-2.5 sm:px-3 py-1 rounded-full text-[11px] sm:text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
                         hasStartupMode
                           ? "bg-primary text-white shadow-xs"
                           : "bg-surface-container text-on-surface-variant border border-outline-variant/30"
                       }`}
                     >
-                      <Rocket className="w-3.5 h-3.5" />
                       <span>{hasStartupMode ? "Startup Mode Enabled" : "Startup Mode Disabled"}</span>
                     </button>
                   </div>
-                  <h2 className="text-xl font-bold text-on-surface">
+                  <h2 className="text-base sm:text-lg md:text-xl font-bold text-on-surface">
                     Startup Mode & Venture Economics Builder
                   </h2>
-                  <p className="text-xs text-on-surface-variant">
+                  <p className="text-[11px] sm:text-xs text-on-surface-variant">
                     Equip founders and builders with initial hypotheses, target buyer segments, and value proposition drafts.
                   </p>
                 </div>
@@ -2081,18 +2204,30 @@ export const SubmitProblem: React.FC = () => {
                   </div>
                 )}
 
-                <div className="flex justify-between pt-4 border-t border-gray-200/60">
+                {/* ── Human Anti-Bot Verification Check ───────────────── */}
+                <div className="pt-2">
+                  <HumanVerification
+                    onVerify={() => {
+                      setIsHumanVerified(true);
+                      setError(null);
+                    }}
+                    onExpire={() => setIsHumanVerified(false)}
+                    label="I'm a human contributor (verify to submit)"
+                  />
+                </div>
+
+                <div className="flex justify-between items-center pt-4 border-t border-gray-200/60 flex-wrap gap-2">
                   <button
                     type="button"
                     onClick={() => setActiveTab(5)}
-                    className="text-on-surface-variant text-xs font-bold px-4 py-2.5 rounded-xl hover:bg-surface-container cursor-pointer"
+                    className="text-on-surface-variant text-xs font-bold px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl hover:bg-surface-container cursor-pointer"
                   >
                     Back
                   </button>
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="bg-primary text-white text-xs md:text-sm font-bold px-6 py-3 rounded-xl flex items-center gap-2 hover:bg-primary-container transition-all cursor-pointer shadow-md disabled:opacity-50"
+                    className="bg-primary text-white text-xs sm:text-sm font-bold px-4 sm:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl flex items-center gap-2 hover:bg-primary-container transition-all cursor-pointer shadow-md disabled:opacity-50"
                   >
                     {submitting ? (
                       <>
@@ -2102,7 +2237,7 @@ export const SubmitProblem: React.FC = () => {
                     ) : (
                       <>
                         <span>Submit Verified Problem Statement</span>
-                        <Rocket className="w-4 h-4" />
+                        <Rocket className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                       </>
                     )}
                   </button>

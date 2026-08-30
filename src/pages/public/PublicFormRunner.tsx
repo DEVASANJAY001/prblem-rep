@@ -6,6 +6,7 @@ import { FormFieldRenderer } from "@/components/forms/FormFieldRenderer";
 import { useAuth } from "@/contexts/AuthContext";
 import confetti from "canvas-confetti";
 import { CheckCircle2, ArrowRight, ArrowLeft, Shield, FileText } from "lucide-react";
+import { HumanVerification } from "@/components/common/HumanVerification";
 
 export const PublicFormRunner: React.FC = () => {
   const { formSlug } = useParams<{ formSlug: string }>();
@@ -16,6 +17,8 @@ export const PublicFormRunner: React.FC = () => {
   const [answers, setAnswers] = useState<Record<string, any>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
+  const [isHumanVerified, setIsHumanVerified] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadForm() {
@@ -74,6 +77,12 @@ export const PublicFormRunner: React.FC = () => {
       return;
     }
 
+    if (!isHumanVerified) {
+      setSubmitError("Please complete the 'I am not a robot' verification check.");
+      return;
+    }
+
+    setSubmitError(null);
     await submitFormResponse(form.id, answers, {
       respondentUid: userDoc?.uid || user?.uid,
       respondentEmail: userDoc?.email || user?.email || undefined,
@@ -142,11 +151,27 @@ export const PublicFormRunner: React.FC = () => {
           </div>
         ))}
 
+        {submitError && (
+          <div className="rounded-xl bg-rose-50 border border-rose-200 p-3 text-xs font-semibold text-rose-700">
+            {submitError}
+          </div>
+        )}
+
+        <div className="pt-2">
+          <HumanVerification
+            onVerify={() => {
+              setIsHumanVerified(true);
+              setSubmitError(null);
+            }}
+            onExpire={() => setIsHumanVerified(false)}
+          />
+        </div>
+
         {/* Submit Bar */}
         <div className="flex items-center justify-between pt-4">
           <button
             type="submit"
-            className="rounded-xl bg-primary px-7 py-3 text-xs font-extrabold text-white shadow-lg shadow-primary/25 hover:bg-primary/90 transition-all"
+            className="rounded-xl bg-primary px-7 py-3 text-xs font-extrabold text-white shadow-lg shadow-primary/25 hover:bg-primary/90 transition-all cursor-pointer"
           >
             Submit Response
           </button>
