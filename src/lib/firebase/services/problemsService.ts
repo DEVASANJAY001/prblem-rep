@@ -346,7 +346,11 @@ export function subscribeProblemById(
     if (currentStream) {
       currentStream.listeners.delete(callback);
       if (currentStream.listeners.size === 0) {
-        currentStream.unsubscribe();
+        try {
+          currentStream.unsubscribe();
+        } catch (e) {
+          console.warn("Doc snapshot unsubscribe notice:", e);
+        }
         docStreams.delete(id);
       }
     }
@@ -437,7 +441,11 @@ export function subscribeProblems(
     if (currentStream) {
       currentStream.listeners.delete(callback);
       if (currentStream.listeners.size === 0) {
-        currentStream.unsubscribe();
+        try {
+          currentStream.unsubscribe();
+        } catch (e) {
+          console.warn("Query snapshot unsubscribe notice:", e);
+        }
         queryStreams.delete(queryKey);
       }
     }

@@ -40,11 +40,13 @@ export class ErrorBoundary extends Component<Props, State> {
   private handleClearCacheAndHome = () => {
     try {
       sessionStorage.clear();
-      // Keep essential auth tokens, clear cache entries
+      // Keep essential auth tokens, clear all cached payloads & firestore multi-tab sync keys
       const keysToKeep = ["prblms_auth_user", "firebase:authUser"];
       Object.keys(localStorage).forEach((key) => {
         if (!keysToKeep.some((k) => key.includes(k))) {
-          localStorage.removeItem(key);
+          try {
+            localStorage.removeItem(key);
+          } catch {}
         }
       });
     } catch (e) {

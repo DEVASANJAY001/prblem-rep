@@ -114,6 +114,35 @@ export const DEFAULT_CREDITS: CreditSourceDoc[] = [
 ];
 
 // Safe LocalStorage helpers
+export function cleanupStorage(): void {
+  if (typeof window === "undefined" || !window.localStorage) return;
+  try {
+    const keysToRemove: string[] = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (!k) continue;
+      // Remove stale firestore multi-tab mutation keys and temporary SWR caches that cause QuotaExceededError
+      if (
+        k.startsWith("firestore_mutations_") ||
+        k.startsWith("firestore_clients_") ||
+        k.startsWith("firestore_zombie_") ||
+        k.startsWith("swr_") ||
+        k === "prblms_audit_logs_v2" ||
+        k === "prblms_site_content_v2"
+      ) {
+        keysToRemove.push(k);
+      }
+    }
+    keysToRemove.forEach((k) => {
+      try {
+        localStorage.removeItem(k);
+      } catch {}
+    });
+  } catch (e) {
+    console.warn("Storage cleanup notice:", e);
+  }
+}
+
 export function load<T>(key: string, fallback: T): T {
   try {
     const raw = localStorage.getItem(key);
@@ -128,88 +157,20 @@ export function save<T>(key: string, data: T): void {
   try {
     localStorage.setItem(key, JSON.stringify(data));
   } catch (err) {
-    console.error("Storage save failed:", err);
+    console.warn("Storage save quota notice:", err);
+    // If quota exceeded, clean up stale keys and retry once
+    try {
+      cleanupStorage();
+      localStorage.setItem(key, JSON.stringify(data));
+    } catch (retryErr) {
+      console.warn("Storage save bypassed after quota check:", retryErr);
+    }
   }
 }
 
-// Initialize seed data if empty or missing baseline statements
+// Initialize and cleanup storage safely
 export function initializeStorage() {
-  const currentProblems = load<ProblemDoc[]>(STORAGE_KEYS.PROBLEMS, []);
-  if (!currentProblems || currentProblems.length === 0) {
-    save(STORAGE_KEYS.PROBLEMS, REAL_PROBLEMS);
-  } else {
-    // Ensure all 6 baseline REAL_PROBLEMS exist in localStorage without losing user additions
-    let updated = false;
-    const mergedProblems = [...currentProblems];
-    REAL_PROBLEMS.forEach((seed) => {
-      const idx = mergedProblems.findIndex((p) => p.id === seed.id);
-      if (idx === -1) {
-        mergedProblems.push(seed);
-        updated = true;
-      }
-    });
-    if (updated) {
-      save(STORAGE_KEYS.PROBLEMS, mergedProblems);
-    }
-  }
-
-  const currentCredits = load<CreditSourceDoc[]>(STORAGE_KEYS.CREDITS, []);
-  if (!currentCredits || currentCredits.length === 0) {
-    save(STORAGE_KEYS.CREDITS, DEFAULT_CREDITS);
-  } else {
-    let credsUpdated = false;
-    const mergedCredits = [...currentCredits];
-    DEFAULT_CREDITS.forEach((seedCred) => {
-      if (!mergedCredits.some((c) => c.id === seedCred.id || c.name === seedCred.name)) {
-        mergedCredits.push(seedCred);
-        credsUpdated = true;
-      }
-    });
-    if (credsUpdated) {
-      save(STORAGE_KEYS.CREDITS, mergedCredits);
-    }
-  }
-
-  if (!localStorage.getItem(STORAGE_KEYS.INDUSTRIES)) {
-    save(STORAGE_KEYS.INDUSTRIES, REAL_INDUSTRIES);
-  }
-  if (!localStorage.getItem(STORAGE_KEYS.FORMS)) {
-    save(STORAGE_KEYS.FORMS, REAL_FORMS);
-  }
-  if (!localStorage.getItem(STORAGE_KEYS.USERS)) {
-    save(STORAGE_KEYS.USERS, REAL_USERS);
-  }
-  if (!localStorage.getItem(STORAGE_KEYS.SITE_CONTENT)) {
-    save(STORAGE_KEYS.SITE_CONTENT, INITIAL_SITE_CONTENT);
-  }
-  if (!localStorage.getItem(STORAGE_KEYS.COMPANIES)) {
-    save(STORAGE_KEYS.COMPANIES, REAL_COMPANIES);
-  }
-  if (!localStorage.getItem(STORAGE_KEYS.AUDIT_LOGS)) {
-    const initialLogs: AuditLogDoc[] = [
-      {
-        id: "log-1",
-        actorUid: "admin_1",
-        actorName: "System Moderator",
-        action: "problem.approve",
-        targetId: "prob-1",
-        targetType: "problem",
-        details: "Approved 'Data Interoperability Failure in Rural Clinics' with verified clinical badge",
-        timestamp: "2026-08-24T09:15:00Z",
-      },
-      {
-        id: "log-2",
-        actorUid: "admin_1",
-        actorName: "System Moderator",
-        action: "form.publish",
-        targetId: "form-builder-demo",
-        targetType: "form",
-        details: "Published 'SaaS Churn & Tool Fatigue Survey 2026' to /f/saas-churn-survey",
-        timestamp: "2026-08-01T12:00:00Z",
-      },
-    ];
-    save(STORAGE_KEYS.AUDIT_LOGS, initialLogs);
-  }
+  cleanupStorage();
 }
 
 // ─── Problems Service ──────────────────────────────────────────

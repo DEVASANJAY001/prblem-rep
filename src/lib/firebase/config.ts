@@ -5,7 +5,8 @@ import {
   getFirestore,
   Firestore,
   persistentLocalCache,
-  persistentMultipleTabManager,
+  persistentSingleTabManager,
+  memoryLocalCache,
 } from "firebase/firestore";
 import { getStorage, FirebaseStorage } from "firebase/storage";
 
@@ -35,16 +36,18 @@ try {
   app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
   auth = getAuth(app);
 
-  // Initialize Firestore with Multi-Tab IndexedDB Persistence (0 read overhead for cached docs)
+  // Initialize Firestore with IndexedDB Persistence (Single Tab manager avoids localStorage QuotaExceeded errors)
   try {
     if (typeof window !== "undefined" && typeof indexedDB !== "undefined") {
       db = initializeFirestore(app, {
         localCache: persistentLocalCache({
-          tabManager: persistentMultipleTabManager(),
+          tabManager: persistentSingleTabManager({ forceOwnership: true }),
         }),
       });
     } else {
-      db = getFirestore(app);
+      db = initializeFirestore(app, {
+        localCache: memoryLocalCache(),
+      });
     }
   } catch {
     // If already initialized or unsupported, use getFirestore fallback
