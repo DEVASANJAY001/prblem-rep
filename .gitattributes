@@ -1,0 +1,20 @@
+# Enforce LF line endings for all text files in the repository.
+# This prevents CRLF/LF mixed endings from appearing in diffs and
+# ensures consistent behavior between Windows dev machines and
+# Linux-based CI/CD and production servers (Vercel, Railway, etc.).
+
+* text=auto eol=lf
+
+# Explicitly mark binary files to prevent Git from mangling them
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.svg binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+*.pdf binary
+*.zip binary

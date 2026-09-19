@@ -1352,8 +1352,13 @@ export const REAL_FORMS: FormSchema[] = [
       successMessage: "Thank you! Your verified operational insight has been recorded into the ProblemAtlas dataset.",
     },
     responsesCount: 42,
+    responseCount: 42,
     createdAt: "2026-08-10T12:00:00Z",
     updatedAt: "2026-08-25T08:00:00Z",
+    slug: "saas-churn-survey-2026",
+    requiresAuth: false,
+    allowAnonymous: true,
+    createdBy: "system",
   },
 ];
 

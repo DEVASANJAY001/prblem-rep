@@ -8,6 +8,7 @@ import {
   orderBy,
   onSnapshot,
   serverTimestamp,
+  runTransaction,
 } from "firebase/firestore";
 import { db } from "../config";
 import { AuditLogDoc } from "@/types";
@@ -51,26 +52,33 @@ export async function generateAdminInvite(adminUid: string): Promise<string> {
 
 export async function validateAndUseInvite(token: string): Promise<boolean> {
   const trimmed = token.trim();
-  const localValid = validateLocalToken(trimmed);
-  if (!localValid) return false;
 
-  try {
-    if (db && typeof doc === "function") {
-      const inviteRef = doc(db, INVITES_COLLECTION, trimmed);
-      const snap = await getDoc(inviteRef);
-      if (snap.exists()) {
-        const data = snap.data();
-        if (data.used || new Date(data.expiresAt).getTime() < Date.now()) {
-          return false;
-        }
-        await updateDoc(inviteRef, { used: true });
-      }
-    }
-  } catch (error) {
-    console.warn("Firestore invite validation notice:", error);
+  // Security-critical: must NOT degrade gracefully when Firestore is offline.
+  // If we cannot reach Firestore, we fail closed (return false).
+  if (!db || typeof runTransaction !== "function") {
+    console.warn("[Invite] Firestore unavailable — rejecting invite to prevent offline bypass.");
+    return false;
   }
 
-  return true;
+  try {
+    const inviteRef = doc(db, INVITES_COLLECTION, trimmed);
+    const accepted = await runTransaction(db, async (txn) => {
+      const snap = await txn.get(inviteRef);
+      if (!snap.exists()) return false;
+      const data = snap.data();
+      // Token already used or expired
+      if (data.used || new Date(data.expiresAt).getTime() < Date.now()) return false;
+      // Atomically mark as used inside the transaction
+      txn.update(inviteRef, { used: true });
+      return true;
+    });
+    // Keep local cache in sync for offline fallback display (not for auth gating)
+    if (accepted) validateLocalToken(trimmed);
+    return accepted;
+  } catch (error) {
+    console.warn("[Invite] Firestore transaction failed — rejecting invite:", error);
+    return false;
+  }
 }
 
 export function subscribeAuditLogs(callback: (logs: AuditLogDoc[]) => void): () => void {

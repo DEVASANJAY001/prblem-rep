@@ -137,7 +137,8 @@ export async function createProblem(
         : scored.aiScores.keyRisks,
   };
   const now = new Date().toISOString();
-  const id = `prob-${Date.now()}`;
+  // Use crypto.randomUUID() for collision-safe IDs under concurrent submissions
+  const id = `prob-${crypto.randomUUID()}`;
 
   const newProblem: ProblemDoc = {
     id,
@@ -197,6 +198,13 @@ export async function createProblem(
     submittedAt: now,
     updatedAt: now,
     verified: false,
+    // Required ProblemDoc fields with safe defaults
+    isAnonymous: false,
+    reviewedBy: null,
+    reviewedByUid: undefined,
+    reviewNote: null,
+    reviewedAt: null,
+    publishedAt: null,
   };
 
   // 1. Persist locally first
@@ -349,9 +357,10 @@ export function subscribeProblemById(
 // 4. Multiplexed Query Subscription (0 Duplicate Reads)
 // ─────────────────────────────────────────────────────────────────────────────
 export function subscribeProblems(
-  filter: { status?: "approved" | "pending" | "rejected" | "all"; industry?: string } = {},
+  filter: { status?: "approved" | "pending" | "rejected" | "all"; industry?: string; pageLimit?: number } = {},
   callback: (problems: ProblemDoc[]) => void
 ): () => void {
+  // Immediately emit local data for instant UI
   const local = getLocalProblems({
     status: filter.status === "all" ? undefined : filter.status,
     industry: filter.industry,
@@ -362,7 +371,12 @@ export function subscribeProblems(
     return () => {};
   }
 
-  const queryKey = `${filter.status || "all"}_${filter.industry || "all"}`;
+  // Stable cache key covering all filter params — prevents cache mismatches
+  const queryKey = JSON.stringify({
+    status: filter.status || "all",
+    industry: filter.industry || "",
+    limit: filter.pageLimit || 100,
+  });
   let stream = queryStreams.get(queryKey);
 
   if (!stream) {
@@ -370,8 +384,21 @@ export function subscribeProblems(
     const listeners = new Set<(problems: ProblemDoc[]) => void>();
     listeners.add(callback);
 
+    // Build query constraints — avoids reading the entire collection
+    const constraints: Parameters<typeof query>[1][] = [];
+    if (filter.status && filter.status !== "all") {
+      constraints.push(where("status", "==", filter.status));
+    }
+    // Always sort newest-first so results are deterministic (Firestore returns
+    // docs in insertion order without orderBy, which is unpredictable at scale)
+    constraints.push(orderBy("createdAt", "desc"));
+    // Limit reads to prevent runaway Firestore costs at scale
+    constraints.push(limit(filter.pageLimit || 100));
+
+    const q = query(colRef, ...constraints);
+
     const unsubscribe = onSnapshot(
-      colRef,
+      q,
       (snapshot) => {
         if (!snapshot.empty) {
           snapshot.forEach((d) => {
@@ -758,7 +785,9 @@ export async function recordUserInterest(
         updatedAt: new Date().toISOString(),
       });
     }
-  } catch (err) {}
+  } catch (err) {
+    console.warn("Firestore recordUserInterest sync error:", err);
+  }
   return count;
 }
 

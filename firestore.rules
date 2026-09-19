@@ -1,10 +1,10 @@
-rules_version = '2';
+﻿rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // ─────────────────────────────────────────────────────────────
+    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     // Helper Functions
-    // ─────────────────────────────────────────────────────────────
+    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     function isAuthenticated() {
       return request.auth != null;
     }
@@ -13,24 +13,25 @@ service cloud.firestore {
       return isAuthenticated() && request.auth.uid == userId;
     }
 
+    // NOTE: getUserRole() performs a Firestore get() read on EVERY rule evaluation.
+    // It is intentionally NOT used in isAdmin()/isModerator() to prevent a billable
+    // read on each security check. Roles must be set as Firebase Auth custom claims
+    // (request.auth.token.role) via the server/admin SDK when granting elevated access.
     function getUserRole() {
       return request.auth != null && exists(/databases/$(database)/documents/users/$(request.auth.uid))
         ? get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role
         : 'guest';
     }
 
+    // Role checks use ONLY custom claims â€” zero extra Firestore reads
     function isAdmin() {
-      return isAuthenticated() && (
-        request.auth.token.role == 'admin' ||
-        getUserRole() == 'admin' ||
-        request.auth.uid == 'admin_1'
-      );
+      return isAuthenticated() && request.auth.token.role == 'admin';
     }
 
     function isModerator() {
       return isAuthenticated() && (
         request.auth.token.role == 'moderator' ||
-        getUserRole() == 'moderator'
+        request.auth.token.role == 'admin'
       );
     }
 
@@ -38,133 +39,146 @@ service cloud.firestore {
       return isAdmin() || isModerator();
     }
 
-    // ─────────────────────────────────────────────────────────────
+    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     // 1. Users Collection & Private Startup Notes Subcollection
-    // ─────────────────────────────────────────────────────────────
+    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     match /users/{userId} {
-      // Anyone can view user profiles for contributor badges & leaderboards
+      // Public profiles for contributor badges & leaderboards
       allow read: if true;
-      // User can update their own profile; admins can manage any user
-      allow create, update: if isAuthenticated() && (request.auth.uid == userId || isAdmin()) || true;
+      // Users can create/update their own profile; admins can manage any user
+      allow create: if isOwner(userId) || isAdmin();
+      allow update: if isOwner(userId) || isAdmin();
       allow delete: if isAdmin();
 
-      // Private User Startup Notes Subcollection (/users/{uid}/startupNotes/{problemId})
+      // Private user startup notes â€” owner or admin only
       match /startupNotes/{problemId} {
-        // Only the owner of this workspace can read/write their private value prop & draft notes
-        allow read, write: if isAuthenticated() && (request.auth.uid == userId || isAdmin()) || true;
+        allow read, write: if isOwner(userId) || isAdmin();
       }
     }
 
-    // ─────────────────────────────────────────────────────────────
+    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     // 2. Problems Collection & Subcollections
-    // ─────────────────────────────────────────────────────────────
+    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     match /problems/{problemId} {
-      // Public can read problems across all categories
+      // All problems are publicly readable
       allow read: if true;
-      // Authenticated users and guests can submit problems
-      allow create, update: if true;
-      // Deletions restricted to original author or admin
-      allow delete: if (isAuthenticated() && (resource.data.submittedByUid == request.auth.uid || resource.data.submittedBy == request.auth.uid)) || isAdmin() || true;
+      // Authenticated users can submit new problems
+      allow create: if isAuthenticated();
+      // Admins/mods can update any problem; authors can only update their own pending submissions
+      allow update: if isAdminOrModerator() ||
+                       (isAuthenticated() &&
+                        resource.data.submittedByUid == request.auth.uid &&
+                        resource.data.status == 'pending');
+      // Admins or the original author can delete
+      allow delete: if isAdmin() ||
+                       (isAuthenticated() && resource.data.submittedByUid == request.auth.uid);
 
-      // Comments Subcollection (Threaded Discussion)
+      // Threaded comments subcollection
       match /comments/{commentId} {
         allow read: if true;
-        allow create: if true;
-        allow update, delete: if isAdminOrModerator() || (isAuthenticated() && resource.data.authorUid == request.auth.uid) || true;
+        allow create: if isAuthenticated();
+        allow update, delete: if isAdminOrModerator() ||
+                                 (isAuthenticated() && resource.data.authorUid == request.auth.uid);
       }
 
-      // Validations Subcollection (Faced, Great, Pay, Build)
+      // Community validations (faced / great / pay / build)
       match /validations/{validationId} {
-        allow read, write: if true;
+        allow read: if true;
+        allow write: if isAuthenticated();
       }
     }
 
-    // ─────────────────────────────────────────────────────────────
+    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     // 3. Site Content CMS (App Controller)
-    // ─────────────────────────────────────────────────────────────
+    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     match /site_content/{pageId} {
-      // Public site reads content in real-time across all devices
       allow read: if true;
-      // Admins can publish and save site content
-      allow write: if isAdminOrModerator() || true;
+      allow write: if isAdminOrModerator();
     }
 
-    // ─────────────────────────────────────────────────────────────
+    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     // 4. Dynamic Forms & Form Responses
-    // ─────────────────────────────────────────────────────────────
+    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     match /forms/{formId} {
-      // Public can view active published forms; admins can view all
       allow read: if true;
-      allow write: if isAdminOrModerator() || true;
+      allow write: if isAdminOrModerator();
     }
 
     match /form_responses/{responseId} {
-      // Public/authenticated can submit responses
+      // Anyone (including anonymous) can submit a form response
       allow create: if true;
-      // Admins/moderators and original respondent can read and manage responses
-      allow read, update, delete: if isAdminOrModerator() || (isAuthenticated() && resource.data.respondentUid == request.auth.uid) || true;
+      // Admins/moderators or the original respondent can read/manage
+      allow read: if isAdminOrModerator() ||
+                     (isAuthenticated() && resource.data.respondentUid == request.auth.uid);
+      allow update, delete: if isAdminOrModerator();
     }
 
-    // ─────────────────────────────────────────────────────────────
-    // 5. Industries, Competitions, Companies, Research
-    // ─────────────────────────────────────────────────────────────
+    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // 5. Industries, Competitions, Companies, Research (Reference Data)
+    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     match /industries/{industryId} {
       allow read: if true;
-      allow write: if isAdminOrModerator() || true;
+      allow write: if isAdminOrModerator();
     }
 
     match /competitions/{competitionId} {
       allow read: if true;
-      allow write: if isAdminOrModerator() || true;
+      allow write: if isAdminOrModerator();
     }
 
     match /companies/{companyId} {
       allow read: if true;
-      allow write: if isAdminOrModerator() || true;
+      allow write: if isAdminOrModerator();
     }
 
     match /research/{researchId} {
       allow read: if true;
-      allow write: if isAdminOrModerator() || true;
+      allow write: if isAdminOrModerator();
     }
 
-    // ─────────────────────────────────────────────────────────────
-    // 6. User Votes, Bookmarks, and Activity
-    // ─────────────────────────────────────────────────────────────
+    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // 6. User Votes & Bookmarks
+    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     match /user_votes/{voteId} {
       allow read: if true;
-      allow write: if true;
+      allow write: if isAuthenticated();
     }
 
     match /bookmarks/{bookmarkId} {
-      allow read, write, delete: if true;
+      // Users can only read and manage their own bookmarks
+      allow read: if isAuthenticated() && (resource == null || resource.data.userId == request.auth.uid);
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow update: if isAuthenticated() && resource.data.userId == request.auth.uid;
     }
 
-    // ─────────────────────────────────────────────────────────────
-    // 7. Admin Invites & Audit Logs (Admin-Only)
-    // ─────────────────────────────────────────────────────────────
+    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // 7. Admin Invites & Audit Logs
+    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     match /admin_invites/{token} {
-      allow read: if true; // Validated during registration
-      allow write: if isAdmin() || true;
+      // Only admins can generate and read invite tokens
+      allow read, write: if isAdmin();
     }
 
     match /audit_logs/{logId} {
-      allow read: if isAdminOrModerator() || true;
-      allow create: if true;
-      allow update, delete: if false; // Immutable audit log
+      // Admins and moderators can read audit logs
+      allow read: if isAdminOrModerator();
+      // Authenticated actions can create log entries; logs are immutable after creation
+      allow create: if isAuthenticated();
+      allow update, delete: if false;
     }
 
-    // ─────────────────────────────────────────────────────────────
+    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     // 8. Credits & Badges Taxonomies
-    // ─────────────────────────────────────────────────────────────
+    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     match /credits/{creditId} {
       allow read: if true;
-      allow write: if isAdminOrModerator() || true;
+      allow write: if isAdminOrModerator();
     }
 
     match /badges/{badgeId} {
       allow read: if true;
-      allow write: if isAdminOrModerator() || true;
+      allow write: if isAdminOrModerator();
     }
   }
 }

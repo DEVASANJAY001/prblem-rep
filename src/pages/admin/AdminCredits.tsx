@@ -57,7 +57,7 @@ export const AdminCredits: React.FC = () => {
   const [isActive, setIsActive] = useState(true);
 
   // Real problem count per credit
-  const problems = useMemo(() => getProblems({ includeUnapproved: true }), [credits]);
+  const problems = useMemo(() => getProblems({}), [credits]);
   const creditUsageCounts = useMemo(() => {
     const counts: Record<string, number> = {};
     problems.forEach((p) => {

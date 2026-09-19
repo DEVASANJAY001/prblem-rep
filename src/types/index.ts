@@ -276,6 +276,26 @@ export interface FormFieldSchema {
 
 export type FormStatus = "draft" | "published" | "closed";
 
+/** Covers both ISO-8601 strings and Firestore Timestamp-like server objects */
+export type DateField = string | { seconds: number; nanoseconds: number } | null;
+
+/**
+ * Safely converts a DateField (ISO string, Firestore Timestamp-like object, or null)
+ * into a JavaScript Date. Returns undefined if the value cannot be parsed.
+ */
+export function toDate(field: DateField): Date | undefined {
+  if (!field) return undefined;
+  if (typeof field === "string") {
+    const d = new Date(field);
+    return isNaN(d.getTime()) ? undefined : d;
+  }
+  // Firestore Timestamp-like: { seconds, nanoseconds }
+  if (typeof field === "object" && "seconds" in field) {
+    return new Date(field.seconds * 1000);
+  }
+  return undefined;
+}
+
 export interface FormSchema {
   id: string;
   title: string;
@@ -290,9 +310,9 @@ export interface FormSchema {
   createdByUid?: string;
   responseCount: number;
   responsesCount?: number;
-  settings?: any;
-  createdAt: any;
-  updatedAt: any;
+  settings?: Record<string, unknown>;
+  createdAt: DateField;
+  updatedAt: DateField;
 }
 
 export interface FormResponseDoc {
@@ -301,8 +321,8 @@ export interface FormResponseDoc {
   respondentUid: string | null;
   respondentName?: string | null;
   respondentEmail?: string | null;
-  answers: Record<string, any>;
-  submittedAt: any;
+  answers: Record<string, string | string[] | number | boolean | null>;
+  submittedAt: DateField;
 }
 
 // ─────────────────────────────────────────────────────────────

@@ -6,8 +6,9 @@ import {
   deleteDoc,
   onSnapshot,
   getDocs,
-  getDoc,
   serverTimestamp,
+  arrayUnion,
+  arrayRemove,
 } from "firebase/firestore";
 import { db } from "../config";
 import { BadgeDoc, UserDoc } from "@/types";
@@ -178,17 +179,11 @@ export async function grantBadgeToUser(
   try {
     if (db && typeof doc === "function") {
       const userRef = doc(db, "users", uid);
-      const snap = await getDoc(userRef);
-      if (snap.exists()) {
-        const userData = snap.data() as UserDoc;
-        const currentBadges = userData.badges || [];
-        if (!currentBadges.includes(badgeName)) {
-          await updateDoc(userRef, {
-            badges: [...currentBadges, badgeName],
-            updatedAt: serverTimestamp(),
-          });
-        }
-      }
+      // arrayUnion: atomic add — 0 reads, 1 write, idempotent
+      await updateDoc(userRef, {
+        badges: arrayUnion(badgeName),
+        updatedAt: serverTimestamp(),
+      });
     }
   } catch (err) {
     console.warn("Firestore grantBadgeToUser deferred to storage:", err);
@@ -204,15 +199,11 @@ export async function revokeBadgeFromUser(
   try {
     if (db && typeof doc === "function") {
       const userRef = doc(db, "users", uid);
-      const snap = await getDoc(userRef);
-      if (snap.exists()) {
-        const userData = snap.data() as UserDoc;
-        const currentBadges = userData.badges || [];
-        await updateDoc(userRef, {
-          badges: currentBadges.filter((b) => b !== badgeName),
-          updatedAt: serverTimestamp(),
-        });
-      }
+      // arrayRemove: atomic remove — 0 reads, 1 write
+      await updateDoc(userRef, {
+        badges: arrayRemove(badgeName),
+        updatedAt: serverTimestamp(),
+      });
     }
   } catch (err) {
     console.warn("Firestore revokeBadgeFromUser deferred to storage:", err);

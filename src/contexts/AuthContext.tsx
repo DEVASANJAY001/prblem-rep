@@ -8,7 +8,12 @@ import {
   User as FirebaseUser,
 } from "firebase/auth";
 import { auth, googleProvider } from "@/lib/firebase/config";
-import { syncUserProfile } from "@/lib/firebase/services/usersService";
+import {
+  getUserDoc,
+  createUserDoc,
+  syncUserProfile,
+} from "@/lib/firebase/services/usersService";
+import { validateAndUseInvite } from "@/lib/firebase/services/adminService";
 import { getDefaultAvatar } from "@/lib/avatars";
 import { UserDoc, UserRole } from "@/types";
 
@@ -19,6 +24,8 @@ interface AuthContextType {
   isAdmin: boolean;
   isModerator: boolean;
   loading: boolean;
+  /** True only after userDoc.role has been confirmed from Firestore (not just localStorage cache). */
+  userDocVerified: boolean;
   loginWithGoogle: () => Promise<void>;
   loginWithEmail: (email: string, pass: string) => Promise<void>;
   registerWithEmail: (name: string, email: string, pass: string) => Promise<void>;
@@ -34,159 +41,161 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const LOCAL_USER_KEY = "prblms_current_user_doc_v1";
 
+function readLocalUser(): UserDoc | null {
+  try {
+    const stored = localStorage.getItem(LOCAL_USER_KEY);
+    return stored ? JSON.parse(stored) : null;
+  } catch {
+    return null;
+  }
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<FirebaseUser | null>(null);
-  const [userDoc, setUserDoc] = useState<UserDoc | null>(() => {
-    try {
-      const stored = localStorage.getItem(LOCAL_USER_KEY);
-      return stored ? JSON.parse(stored) : null;
-    } catch {
-      return null;
-    }
-  });
+  const [userDoc, setUserDocState] = useState<UserDoc | null>(readLocalUser);
   const [loading, setLoading] = useState(true);
+  // Starts false — becomes true after Firestore confirms the role for the current user.
+  // Prevents the localStorage cache bypass window on admin routes.
+  const [userDocVerified, setUserDocVerified] = useState(false);
 
-  // Sync Firebase Auth if initialized
+  function setUserDoc(doc: UserDoc | null) {
+    setUserDocState(doc);
+    if (doc) {
+      localStorage.setItem(LOCAL_USER_KEY, JSON.stringify(doc));
+    } else {
+      localStorage.removeItem(LOCAL_USER_KEY);
+    }
+  }
+
+  // â”€â”€ Auth State Observer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   useEffect(() => {
     let unsubscribe = () => {};
     try {
       if (auth && typeof auth.onAuthStateChanged === "function") {
         unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-          setUser(firebaseUser);
-          if (firebaseUser) {
-            // Auto-provision user doc
-            const existing = userDoc;
-            if (!existing || existing.uid !== firebaseUser.uid) {
-              const uName = firebaseUser.displayName || firebaseUser.email?.split("@")[0] || "Innovator";
-              const newDoc: UserDoc = {
-                uid: firebaseUser.uid,
-                name: uName,
-                email: firebaseUser.email || "",
-                photoURL: firebaseUser.photoURL || getDefaultAvatar(uName, firebaseUser.email || firebaseUser.uid),
-                role: existing?.role || (firebaseUser.email?.includes("admin") ? "admin" : "user"),
-                headline: existing?.headline || "Problem Explorer",
-                bio: existing?.bio || "Researching verified real-world problems.",
-                badges: ["Early Member", "Innovator"],
-                counts: {
-                  problemsSubmitted: existing?.counts?.problemsSubmitted || 0,
-                  problemsApproved: existing?.counts?.problemsApproved || 0,
-                  votes: existing?.counts?.votes || 0,
-                  comments: existing?.counts?.comments || 0,
-                },
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString(),
-              };
-              setUserDoc(newDoc);
-              localStorage.setItem(LOCAL_USER_KEY, JSON.stringify(newDoc));
+          // Run async work inside an IIFE so we can use await
+          (async () => {
+            setUser(firebaseUser);
+
+            if (firebaseUser) {
+              // 1. Instantly hydrate from local cache if same user (fast paint)
+              const cached = readLocalUser();
+              if (cached && cached.uid === firebaseUser.uid) {
+                setUserDocState(cached);
+                setLoading(false);
+                // Refresh role & data from Firestore in background; verify once confirmed
+                getUserDoc(firebaseUser.uid)
+                  .then((fresh) => {
+                    if (fresh) {
+                      setUserDoc(fresh);
+                      setUserDocVerified(true);
+                    }
+                  })
+                  .catch(() => {});
+              } else {
+                // Different or missing user â€” fetch from Firestore
+                try {
+                  const firestoreDoc = await getUserDoc(firebaseUser.uid);
+                  if (firestoreDoc) {
+                    setUserDoc(firestoreDoc);
+                    setUserDocVerified(true);
+                  } else {
+                    // Brand-new user â€” create a minimal doc (role defaults to "user")
+                    const uName =
+                      firebaseUser.displayName ||
+                      firebaseUser.email?.split("@")[0] ||
+                      "Innovator";
+                    const newDoc: UserDoc = {
+                      uid: firebaseUser.uid,
+                      name: uName,
+                      email: firebaseUser.email || "",
+                      photoURL:
+                        firebaseUser.photoURL ||
+                        getDefaultAvatar(uName, firebaseUser.email || firebaseUser.uid),
+                      role: "user",
+                      headline: "Problem Explorer",
+                      bio: "",
+                      badges: ["Early Member"],
+                      counts: {
+                        problemsSubmitted: 0,
+                        problemsApproved: 0,
+                        votes: 0,
+                        comments: 0,
+                      },
+                      createdAt: new Date().toISOString(),
+                      updatedAt: new Date().toISOString(),
+                    };
+                    setUserDoc(newDoc);
+                    createUserDoc(newDoc).catch(() => {});
+                  }
+                } catch {
+                  // Firestore unavailable â€” fall back to cache
+                  if (cached) setUserDocState(cached);
+                }
+                setLoading(false);
+              }
+            } else {
+              // Signed out
+              setUserDocState(null);
+              localStorage.removeItem(LOCAL_USER_KEY);
+              setLoading(false);
             }
-          }
-          setLoading(false);
+          })();
         });
       } else {
         setLoading(false);
       }
     } catch (err) {
-      console.warn("Auth state observer fallback:", err);
+      console.warn("Auth state observer error:", err);
       setLoading(false);
     }
     return () => unsubscribe();
   }, []);
 
+  // â”€â”€ Google Sign-In â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const loginWithGoogle = async () => {
-    try {
-      if (auth && typeof signInWithPopup === "function") {
-        const result = await signInWithPopup(auth, googleProvider);
-        const fUser = result.user;
-        const uName = fUser.displayName || fUser.email?.split("@")[0] || "Innovator";
-        const newDoc: UserDoc = {
-          uid: fUser.uid,
-          name: uName,
-          email: fUser.email || "",
-          photoURL: fUser.photoURL || getDefaultAvatar(uName, fUser.email || fUser.uid),
-          role: "user",
-          headline: "Problem Explorer & Innovator",
-          bio: "Passionate about finding problems worth solving.",
-          badges: ["Google Verified", "Early Member"],
-          counts: { problemsSubmitted: 0, problemsApproved: 0, votes: 0, comments: 0 },
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        };
-        const syncedDoc = await syncUserProfile(newDoc);
-        setUser(fUser);
-        setUserDoc(syncedDoc);
-        localStorage.setItem(LOCAL_USER_KEY, JSON.stringify(syncedDoc));
-      }
-    } catch (error: any) {
-      console.error("Google Auth error:", error);
-      // Fallback demo simulation
-      const mockUid = "demo_google_" + Date.now();
-      const mockDoc: UserDoc = {
-        uid: mockUid,
-        name: "Google Explorer",
-        email: "innovator@gmail.com",
-        photoURL: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=240&auto=format&fit=crop&q=80",
+    const result = await signInWithPopup(auth, googleProvider);
+    const fUser = result.user;
+
+    // Check if a Firestore doc already exists for this Google account
+    const existing = await getUserDoc(fUser.uid);
+    if (!existing) {
+      const uName = fUser.displayName || fUser.email?.split("@")[0] || "Innovator";
+      const newDoc: UserDoc = {
+        uid: fUser.uid,
+        name: uName,
+        email: fUser.email || "",
+        photoURL: fUser.photoURL || getDefaultAvatar(uName, fUser.email || fUser.uid),
         role: "user",
-        headline: "Early Adopter & Founder",
-        bio: "Exploring high-pain problem categories.",
-        badges: ["Google Verified", "Active Scout"],
-        counts: { problemsSubmitted: 2, problemsApproved: 1, votes: 14, comments: 3 },
+        headline: "Problem Explorer & Innovator",
+        bio: "Passionate about finding problems worth solving.",
+        badges: ["Google Verified", "Early Member"],
+        counts: { problemsSubmitted: 0, problemsApproved: 0, votes: 0, comments: 0 },
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
-      setUser({ uid: mockUid, email: mockDoc.email, displayName: mockDoc.name } as any);
-      setUserDoc(mockDoc);
-      localStorage.setItem(LOCAL_USER_KEY, JSON.stringify(mockDoc));
+      await createUserDoc(newDoc);
+      setUserDoc(newDoc);
     }
+    // onAuthStateChanged will also fire and do a background sync
   };
 
+  // â”€â”€ Email / Password Sign-In â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const loginWithEmail = async (email: string, pass: string) => {
-    try {
-      if (auth && typeof signInWithEmailAndPassword === "function") {
-        const res = await signInWithEmailAndPassword(auth, email, pass);
-        setUser(res.user);
-      }
-    } catch (error: any) {
-      console.warn("Firebase Auth fallback on local demo mode:", error?.message);
-    }
-
-    // Always ensure userDoc is populated
-    const mockUid = "user_" + btoa(email).substring(0, 10);
-    const isAdminUser = email.toLowerCase().includes("admin");
-    const name = email.split("@")[0].replace(/[\._]/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
-    const doc: UserDoc = {
-      uid: mockUid,
-      name,
-      email,
-      photoURL: getDefaultAvatar(name, email),
-      role: isAdminUser ? "admin" : "user",
-      headline: isAdminUser ? "Platform Administrator" : "Problem Explorer",
-      bio: "Solving real-world friction.",
-      badges: isAdminUser ? ["Platform Admin", "Moderator", "Verified"] : ["Member"],
-      counts: { problemsSubmitted: 1, problemsApproved: 1, votes: 5, comments: 2 },
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-    setUser({ uid: mockUid, email, displayName: doc.name } as any);
-    setUserDoc(doc);
-    localStorage.setItem(LOCAL_USER_KEY, JSON.stringify(doc));
+    // Throws on wrong credentials â€” no mock fallback
+    await signInWithEmailAndPassword(auth, email, pass);
+    // onAuthStateChanged handles userDoc hydration
   };
 
+  // â”€â”€ Email / Password Registration â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const registerWithEmail = async (name: string, email: string, pass: string) => {
-    try {
-      if (auth && typeof createUserWithEmailAndPassword === "function") {
-        const res = await createUserWithEmailAndPassword(auth, email, pass);
-        setUser(res.user);
-      }
-    } catch (error) {
-      console.warn("Firebase register fallback:", error);
-    }
-
-    const mockUid = "user_" + Date.now();
-    const doc: UserDoc = {
-      uid: mockUid,
-      name,
-      email,
-      photoURL: getDefaultAvatar(name, email),
+    const res = await createUserWithEmailAndPassword(auth, email, pass);
+    const uName = name.trim() || res.user.email?.split("@")[0] || "Innovator";
+    const newDoc: UserDoc = {
+      uid: res.user.uid,
+      name: uName,
+      email: res.user.email || email,
+      photoURL: getDefaultAvatar(uName, email),
       role: "user",
       headline: "Problem Explorer",
       bio: "Joined ProblemAtlas to find and submit real problems.",
@@ -195,39 +204,46 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
-    setUser({ uid: mockUid, email, displayName: name } as any);
-    setUserDoc(doc);
-    localStorage.setItem(LOCAL_USER_KEY, JSON.stringify(doc));
+    setUserDoc(newDoc);
+    await createUserDoc(newDoc);
   };
 
+  // â”€â”€ Admin Sign-In (requires admin or moderator role in Firestore) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const adminLogin = async (email: string, pass: string) => {
-    // Validate credentials
-    const isMockAdmin = email.toLowerCase().includes("admin") || pass === "admin123";
-    const name = "Chief Admin";
-    const adminDoc: UserDoc = {
-      uid: "admin_master_1",
-      name,
-      email: email || "admin@problematlas.com",
-      photoURL: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=240&auto=format&fit=crop&q=80",
-      role: "admin",
-      headline: "Master Moderator & Admin",
-      bio: "Operating ProblemAtlas review queue and verified listings.",
-      badges: ["Master Admin", "Lead Moderator", "Founding Team"],
-      counts: { problemsSubmitted: 0, problemsApproved: 45, votes: 120, comments: 40 },
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
+    const res = await signInWithEmailAndPassword(auth, email, pass);
+    const firestoreDoc = await getUserDoc(res.user.uid);
 
-    setUser({ uid: adminDoc.uid, email: adminDoc.email, displayName: adminDoc.name } as any);
-    setUserDoc(adminDoc);
-    localStorage.setItem(LOCAL_USER_KEY, JSON.stringify(adminDoc));
+    if (
+      !firestoreDoc ||
+      (firestoreDoc.role !== "admin" && firestoreDoc.role !== "moderator")
+    ) {
+      // Sign the user back out â€” they don't have admin access
+      await firebaseSignOut(auth);
+      throw new Error(
+        "This account does not have admin access. Contact the platform owner to grant permissions."
+      );
+    }
+    // onAuthStateChanged will hydrate the admin userDoc
   };
 
-  const adminRegisterWithToken = async (token: string, name: string, email: string, pass: string): Promise<boolean> => {
-    // Validate invite token (or allow any token starting with 'inv_' or demo mode)
+  // â”€â”€ Admin Registration with Invite Token â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  const adminRegisterWithToken = async (
+    token: string,
+    name: string,
+    email: string,
+    pass: string
+  ): Promise<boolean> => {
+    // 1. Validate invite token (checks Firestore + local store)
+    const isValid = await validateAndUseInvite(token);
+    if (!isValid) return false;
+
+    // 2. Create a real Firebase Auth account
+    const res = await createUserWithEmailAndPassword(auth, email, pass);
+
+    // 3. Write admin user doc to Firestore with role: "admin"
     const adminDoc: UserDoc = {
-      uid: `admin_${Date.now()}`,
-      name,
+      uid: res.user.uid,
+      name: name.trim(),
       email,
       photoURL: getDefaultAvatar(name, email),
       role: "admin",
@@ -239,12 +255,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       updatedAt: new Date().toISOString(),
     };
 
-    setUser({ uid: adminDoc.uid, email, displayName: name } as any);
     setUserDoc(adminDoc);
-    localStorage.setItem(LOCAL_USER_KEY, JSON.stringify(adminDoc));
+
+    try {
+      await createUserDoc(adminDoc);
+      // Note: updateUserRole is NOT called here â€” role: "admin" is already written
+      // by createUserDoc above. A redundant second write would cause unnecessary
+      // Firestore reads and could silently fail without clearing the correct state.
+    } catch (err) {
+      // Rollback: createUserDoc failed after auth account was created.
+      // Sign out the orphaned Firebase Auth account to keep state consistent.
+      console.error("Admin registration failed after Firebase Auth creation. Rolling back:", err);
+      setUserDoc(null);
+      try {
+        await firebaseSignOut(auth);
+      } catch {
+        // Ignore sign-out error during rollback
+      }
+      throw new Error("Admin registration failed. Please try again.");
+    }
+
     return true;
   };
 
+  // â”€â”€ Sign-Out â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const logout = async () => {
     try {
       if (auth && typeof firebaseSignOut === "function") {
@@ -255,19 +289,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
     setUser(null);
     setUserDoc(null);
-    localStorage.removeItem(LOCAL_USER_KEY);
   };
 
+  // â”€â”€ Profile Mutations â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const updateProfileBio = (bio: string, headline?: string) => {
     if (!userDoc) return;
-    const updated = {
+    const updated: UserDoc = {
       ...userDoc,
       bio,
       headline: headline !== undefined ? headline : userDoc.headline,
       updatedAt: new Date().toISOString(),
     };
     setUserDoc(updated);
-    localStorage.setItem(LOCAL_USER_KEY, JSON.stringify(updated));
     syncUserProfile(updated).catch(() => {});
   };
 
@@ -276,10 +309,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const updated: UserDoc = {
       ...userDoc,
       ...data,
+      // Prevent client from elevating their own role via this method
+      role: userDoc.role,
       updatedAt: new Date().toISOString(),
     };
     setUserDoc(updated);
-    localStorage.setItem(LOCAL_USER_KEY, JSON.stringify(updated));
     await syncUserProfile(updated);
   };
 
@@ -291,7 +325,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       updatedAt: new Date().toISOString(),
     };
     setUserDoc(updated);
-    localStorage.setItem(LOCAL_USER_KEY, JSON.stringify(updated));
     await syncUserProfile(updated);
   };
 
@@ -308,6 +341,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isAdmin,
         isModerator,
         loading,
+        userDocVerified,
         loginWithGoogle,
         loginWithEmail,
         registerWithEmail,
@@ -331,4 +365,3 @@ export function useAuth() {
   }
   return context;
 }
-

@@ -176,7 +176,7 @@ export const StartupMode: React.FC = () => {
   const [savingNotes, setSavingNotes] = useState(false);
   const [lastSavedTime, setLastSavedTime] = useState<string | null>(null);
   const [syncStatus, setSyncStatus] = useState<"synced" | "saving" | "unsaved">("synced");
-  const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isInitialLoad = useRef(true);
 
   // Companies & Profiles

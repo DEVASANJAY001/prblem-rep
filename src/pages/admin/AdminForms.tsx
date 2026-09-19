@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { subscribeForms, deleteForm } from "@/lib/firebase/services/formsService";
-import { FormSchema } from "@/types";
+import { FormSchema, toDate } from "@/types";
 import {
   Plus,
   Search,
@@ -150,13 +150,7 @@ export const AdminForms: React.FC = () => {
 
                 {/* Created Date */}
                 <div className="text-label-sm font-label-sm text-outline mb-6 relative z-10">
-                  {form.createdAt
-                    ? typeof form.createdAt === "string"
-                      ? new Date(form.createdAt).toLocaleDateString()
-                      : form.createdAt?.toDate
-                      ? form.createdAt.toDate().toLocaleDateString()
-                      : "Recently created"
-                    : "Active Form"}
+                  {toDate(form.createdAt)?.toLocaleDateString() ?? "Active Form"}
                 </div>
 
                 {/* Actions Footer */}

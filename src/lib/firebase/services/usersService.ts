@@ -1,6 +1,7 @@
-import {
+﻿import {
   collection,
   doc,
+  getDoc,
   setDoc,
   updateDoc,
   query,
@@ -19,11 +20,50 @@ let leaderboardStream: {
   latestData: UserDoc[] | null;
 } | null = null;
 
+// Read a single user doc from Firestore (includes role â€” source of truth)
+export async function getUserDoc(uid: string): Promise<UserDoc | null> {
+  try {
+    if (db && typeof doc === "function") {
+      const userRef = doc(db, USERS_COLLECTION, uid);
+      const snap = await getDoc(userRef);
+      if (snap.exists()) {
+        return snap.data() as UserDoc;
+      }
+    }
+  } catch (error) {
+    console.warn("Firestore getUserDoc error:", error);
+  }
+  return null;
+}
+
+// Create or fully overwrite a user doc â€” writes the ROLE field.
+// Only call this on first registration; never on subsequent profile updates.
+export async function createUserDoc(userDoc: UserDoc): Promise<UserDoc> {
+  try {
+    if (db && typeof doc === "function") {
+      const userRef = doc(db, USERS_COLLECTION, userDoc.uid);
+      await setDoc(
+        userRef,
+        {
+          ...userDoc,
+          createdAt: userDoc.createdAt || new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        },
+        { merge: true }
+      );
+    }
+  } catch (error) {
+    console.warn("Firestore createUserDoc error:", error);
+  }
+  return userDoc;
+}
+
+// Update only mutable profile fields â€” deliberately excludes `role` to prevent
+// client-side self-elevation. Role changes must go through updateUserRole().
 export async function syncUserProfile(userDoc: UserDoc): Promise<UserDoc> {
   try {
     if (db && typeof doc === "function") {
       const userRef = doc(db, USERS_COLLECTION, userDoc.uid);
-      // Atomic merge write: updates only modified profile fields with 0 read overhead
       await setDoc(
         userRef,
         {
@@ -107,7 +147,9 @@ export async function updateUserRole(uid: string, newRole: UserRole): Promise<bo
       return true;
     }
   } catch (error) {
+    // Previously this returned true even on failure â€” fixed to correctly signal the error
     console.warn("Firestore updateUserRole error:", error);
+    return false;
   }
-  return true;
+  return false;
 }

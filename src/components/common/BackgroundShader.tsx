@@ -116,15 +116,15 @@ export const BackgroundShader: React.FC<{ className?: string }> = ({
     window.addEventListener("mousemove", handleMouseMove, { passive: true });
 
     function resize() {
-      if (!canvas) return;
+      if (!canvas || !gl) return;
       const w = canvas.parentElement?.clientWidth || window.innerWidth;
       const h = canvas.parentElement?.clientHeight || window.innerHeight;
       if (canvas.width !== w || canvas.height !== h) {
         canvas.width = w;
         canvas.height = h;
-        gl.viewport(0, 0, w, h);
+        gl!.viewport(0, 0, w, h);
         if (resolutionLocation) {
-          gl.uniform2f(resolutionLocation, w, h);
+          gl!.uniform2f(resolutionLocation, w, h);
         }
       }
     }
@@ -139,10 +139,10 @@ export const BackgroundShader: React.FC<{ className?: string }> = ({
 
     function render() {
       const elapsed = (performance.now() - startTime) * 0.001;
-      if (timeLocation) gl.uniform1f(timeLocation, elapsed);
-      if (mouseLocation) gl.uniform2f(mouseLocation, mouseX, mouseY);
+      if (timeLocation) gl!.uniform1f(timeLocation, elapsed);
+      if (mouseLocation) gl!.uniform2f(mouseLocation, mouseX, mouseY);
 
-      gl.drawArrays(gl.TRIANGLES, 0, 6);
+      gl!.drawArrays(gl!.TRIANGLES, 0, 6);
       animationFrameId = requestAnimationFrame(render);
     }
 

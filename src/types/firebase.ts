@@ -22,8 +22,9 @@ export interface UserDoc {
     votes: number;
     comments: number;
   };
-  createdAt: Timestamp;
-  updatedAt: Timestamp;
+  // ISO string in client/localStorage; Firestore Timestamp when read from Firestore
+  createdAt: Timestamp | string;
+  updatedAt: Timestamp | string;
 }
 
 export type BadgeTier = "bronze" | "silver" | "gold" | "platinum" | "diamond" | "legendary";
@@ -69,6 +70,8 @@ export type ProblemStatus =
 
 export type ProblemSeverity = "minor" | "medium" | "major" | "critical";
 
+// AIScores — aligned with aiScoring.ts output (the single source of truth).
+// Previously firebase.ts had stale/incorrect field names causing silent data mismatches.
 export interface AIScores {
   clarity: number;
   originality: number;
@@ -81,6 +84,9 @@ export interface AIScores {
   businessPotential: number;
   aiConfidence: number;
   overall: number;
+  summaryFeedback?: string;
+  keyRisks?: string[];
+  suggestedAngles?: string[];
 }
 
 export interface EvidenceDocument {
@@ -119,17 +125,18 @@ export interface ProblemDoc {
     downvotes: number;
   };
   verified: boolean;
-  submittedBy: string; // uid
-  reviewedBy: string | null; // uid of admin
+  submittedBy: string;
+  reviewedBy: string | null;
   reviewNote: string | null;
-  submittedAt: Timestamp;
-  reviewedAt: Timestamp | null;
-  publishedAt: Timestamp | null;
-  updatedAt: Timestamp;
+  // ISO string in client; Firestore Timestamp when read from Firestore
+  submittedAt: Timestamp | string;
+  reviewedAt: Timestamp | string | null;
+  publishedAt: Timestamp | string | null;
+  updatedAt: Timestamp | string;
 }
 
 // ─────────────────────────────────────────────────────────────
-// Dynamic Form Engine — forms/{id}
+// Dynamic Form Engine -- forms/{id}
 // ─────────────────────────────────────────────────────────────
 export type FieldType =
   | "short_text"
@@ -158,15 +165,15 @@ export interface FormSchema {
   id: string;
   title: string;
   description?: string;
-  slug: string; // public URL: /f/[slug]
+  slug: string;
   fields: FormFieldSchema[];
   requiresAuth: boolean;
   allowAnonymous: boolean;
   status: FormStatus;
-  createdBy: string; // uid
+  createdBy: string;
   responseCount: number;
-  createdAt: Timestamp;
-  updatedAt: Timestamp;
+  createdAt: Timestamp | string;
+  updatedAt: Timestamp | string;
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -177,7 +184,7 @@ export interface FormResponseDoc {
   formId: string;
   respondentUid: string | null;
   answers: Record<string, string | string[] | number | boolean | null>;
-  submittedAt: Timestamp;
+  submittedAt: Timestamp | string;
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -201,14 +208,14 @@ export interface CompetitionDoc {
   title: string;
   companyId: string;
   rewardAmount: number;
-  deadline: Timestamp;
+  deadline: Timestamp | string;
   status: CompetitionStatus;
   counts: {
     submissions: number;
     views: number;
   };
-  createdAt: Timestamp;
-  updatedAt: Timestamp;
+  createdAt: Timestamp | string;
+  updatedAt: Timestamp | string;
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -221,7 +228,7 @@ export interface CompanyDoc {
   description: string;
   industry: string;
   verified: boolean;
-  createdAt: Timestamp;
+  createdAt: Timestamp | string;
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -241,7 +248,7 @@ export interface ResearchDoc {
   url: string;
   relatedProblemIds: string[];
   source: string;
-  createdAt: Timestamp;
+  createdAt: Timestamp | string;
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -254,7 +261,7 @@ export interface VoteDoc {
   problemId: string;
   uid: string;
   type: VoteType;
-  createdAt: Timestamp;
+  createdAt: Timestamp | string;
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -278,17 +285,17 @@ export interface AuditLogDoc {
   targetId: string;
   before: Record<string, unknown> | null;
   after: Record<string, unknown> | null;
-  timestamp: Timestamp;
+  timestamp: Timestamp | string;
 }
 
 // ─────────────────────────────────────────────────────────────
-// admin_invites/{token} — for invite-only admin registration
+// admin_invites/{token}
 // ─────────────────────────────────────────────────────────────
 export interface AdminInviteDoc {
   token: string;
-  createdBy: string; // uid
+  createdBy: string;
   used: boolean;
   usedBy: string | null;
-  expiresAt: Timestamp;
-  createdAt: Timestamp;
+  expiresAt: Timestamp | string;
+  createdAt: Timestamp | string;
 }

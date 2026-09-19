@@ -43,7 +43,7 @@ export async function seedAllToFirebase(
 
   try {
     // 1. Seed Site Content (App Controller CMS)
-    log("1/8 Pushing Site Content CMS pages (site_content)...");
+    log("1/10 Pushing Site Content CMS pages (site_content)...");
     for (const page of INITIAL_SITE_CONTENT) {
       try {
         const pageRef = doc(db, "site_content", page.pageId);
@@ -63,7 +63,7 @@ export async function seedAllToFirebase(
     }
 
     // 2. Seed Problems
-    log("2/8 Pushing Verified Problem Statements (problems)...");
+    log("2/10 Pushing Verified Problem Statements (problems)...");
     for (const prob of REAL_PROBLEMS) {
       try {
         const probRef = doc(db, "problems", prob.id);
@@ -83,7 +83,7 @@ export async function seedAllToFirebase(
     }
 
     // 3. Seed Industries
-    log("3/8 Pushing Industry Verticals (industries)...");
+    log("3/10 Pushing Industry Verticals (industries)...");
     for (const ind of REAL_INDUSTRIES) {
       try {
         const indId = ind.id || ind.slug;
@@ -97,7 +97,7 @@ export async function seedAllToFirebase(
     }
 
     // 4. Seed Competitions / Bounties
-    log("4/8 Pushing Sponsored Problem Bounties (competitions)...");
+    log("4/10 Pushing Sponsored Problem Bounties (competitions)...");
     for (const comp of REAL_COMPETITIONS) {
       try {
         const compRef = doc(db, "competitions", comp.id);
@@ -110,7 +110,7 @@ export async function seedAllToFirebase(
     }
 
     // 5. Seed Companies & Ventures
-    log("5/8 Pushing Problem Solving Companies & Ventures (companies)...");
+    log("5/10 Pushing Problem Solving Companies & Ventures (companies)...");
     for (const comp of REAL_COMPANIES) {
       try {
         const compRef = doc(db, "companies", comp.id);
@@ -123,7 +123,7 @@ export async function seedAllToFirebase(
     }
 
     // 6. Seed Research & Datasets
-    log("6/8 Pushing Deep Research Papers & Datasets (research)...");
+    log("6/10 Pushing Deep Research Papers & Datasets (research)...");
     for (const res of REAL_RESEARCH) {
       try {
         const resRef = doc(db, "research", res.id);
@@ -136,7 +136,7 @@ export async function seedAllToFirebase(
     }
 
     // 7. Seed Core Admin & Member Users
-    log("7/8 Pushing Core Users & Roles (users)...");
+    log("7/10 Pushing Core Users & Roles (users)...");
     for (const user of REAL_USERS) {
       try {
         const userRef = doc(db, "users", user.uid);

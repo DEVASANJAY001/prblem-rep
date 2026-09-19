@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { getFormById } from "@/lib/storage";
 import { subscribeFormResponses, exportResponsesToCSV } from "@/lib/firebase/services/formsService";
-import { FormResponseDoc } from "@/types";
+import { FormResponseDoc, toDate } from "@/types";
 import {
   ArrowLeft,
   Download,
@@ -180,7 +180,7 @@ export const AdminFormResponses: React.FC = () => {
                           {String(primaryAnswer)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-on-surface-variant text-sm">
-                          {new Date(resp.submittedAt).toLocaleDateString()}
+                          {toDate(resp.submittedAt)?.toLocaleDateString() ?? "—"}
                         </td>
                         <td className="px-6 py-4 text-center">
                           <button
@@ -231,7 +231,7 @@ export const AdminFormResponses: React.FC = () => {
                   </p>
                   <div className="flex items-center gap-1.5 text-label-sm text-outline">
                     <Calendar className="h-3.5 w-3.5" />
-                    <span>Submitted: {new Date(selectedResponse.submittedAt).toLocaleString()}</span>
+                    <span>Submitted: {toDate(selectedResponse.submittedAt)?.toLocaleString() ?? "—"}</span>
                   </div>
                 </div>
               </div>

@@ -5,12 +5,14 @@ import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import { ShieldAlert, Search, Bell, ExternalLink } from "lucide-react";
 
 export const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { user, userDoc, isAdmin, isModerator, loading } = useAuth();
+  const { user, userDoc, isAdmin, isModerator, loading, userDocVerified } = useAuth();
   const location = useLocation();
   const [isCollapsed, setIsCollapsed] = React.useState(false);
   const [isHovered, setIsHovered] = React.useState(false);
 
-  if (loading) {
+  // Show spinner while auth state resolves OR while awaiting Firestore role confirmation.
+  // The second condition prevents the localStorage cache bypass window (C4).
+  if (loading || (user && !userDocVerified)) {
     return (
       <div className="flex h-screen w-screen items-center justify-center bg-surface text-on-surface">
         <div className="flex flex-col items-center gap-3">

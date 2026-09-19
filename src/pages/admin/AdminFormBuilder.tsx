@@ -34,7 +34,7 @@ export const AdminFormBuilder: React.FC = () => {
     existingForm?.description || "Help us identify acute operational bottlenecks."
   );
   const [slug, setSlug] = useState(existingForm?.slug || `form-${Date.now().toString().slice(-4)}`);
-  const [status, setStatus] = useState<FormStatus>(existingForm?.status || "published");
+  const [status, setStatus] = useState<FormStatus>((existingForm?.status || "published") as FormStatus);
   const [requiresLogin, setRequiresLogin] = useState(true);
   const [allowAnonymous, setAllowAnonymous] = useState(existingForm?.allowAnonymous ?? true);
 
