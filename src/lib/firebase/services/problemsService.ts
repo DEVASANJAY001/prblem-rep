@@ -456,28 +456,36 @@ export function subscribeProblems(
  * Pushes all baseline and locally created problem statements directly to Firestore
  */
 export async function syncAllProblemsToFirebase(): Promise<{ success: boolean; count: number }> {
+  const { writeBatch } = await import("firebase/firestore");
   const problems = getLocalProblems({ status: "all" });
-  let count = 0;
-  if (!db || typeof doc !== "function" || typeof setDoc !== "function") {
+  if (!db || typeof doc !== "function") {
     return { success: true, count: problems.length };
   }
 
-  for (const prob of problems) {
-    try {
+  // Firestore write batches are limited to 500 operations each.
+  // Split into chunks and commit in parallel for maximum throughput.
+  const BATCH_SIZE = 400;
+  let count = 0;
+
+  for (let i = 0; i < problems.length; i += BATCH_SIZE) {
+    const chunk = problems.slice(i, i + BATCH_SIZE);
+    const batch = writeBatch(db);
+    for (const prob of chunk) {
       const probRef = doc(db, PROBLEMS_COLLECTION, prob.id);
-      await setDoc(
+      batch.set(
         probRef,
-        {
-          ...prob,
-          updatedAtServer: serverTimestamp(),
-        },
+        { ...prob, updatedAtServer: serverTimestamp() },
         { merge: true }
       );
       count++;
+    }
+    try {
+      await batch.commit();
     } catch (err) {
-      console.warn(`Error syncing problem ${prob.id} to Firestore:`, err);
+      console.warn(`Error committing sync batch (offset ${i}):`, err);
     }
   }
+
   return { success: true, count };
 }
 
@@ -503,13 +511,19 @@ export async function updateProblemStatus(
         reviewedAt: new Date().toISOString(),
         reviewNote: reviewNote || "",
         verified: newStatus === "approved",
+        // Set publishedAt when transitioning to approved so the timestamp is accurate
+        ...(newStatus === "approved" ? { publishedAt: new Date().toISOString() } : {}),
         updatedAt: new Date().toISOString(),
       });
+      return true;
     }
   } catch (error) {
     console.warn("Firestore updateProblemStatus error:", error);
+    // Return false so callers can surface an error toast instead of silently failing
+    return false;
   }
 
+  // Local-only update succeeded (no db configured)
   return true;
 }
 
@@ -523,10 +537,12 @@ export async function voteProblem(
   try {
     if (db && typeof doc === "function") {
       const problemRef = doc(db, PROBLEMS_COLLECTION, problemId);
-      // Direct field update (0 preliminary reads)
+      // Use atomic increment() to prevent concurrent-write race conditions.
+      // Writing absolute values (e.g., result.upvotes) would cause two simultaneous
+      // voters to overwrite each other's counts. increment() is server-evaluated.
+      const delta = result.userVote === voteType ? 1 : -1;
       await updateDoc(problemRef, {
-        "votes.upvotes": result.upvotes,
-        "votes.downvotes": result.downvotes,
+        [`votes.${voteType}votes`]: increment(delta),
         updatedAt: new Date().toISOString(),
       });
     }
@@ -936,18 +952,22 @@ export async function moderateComment(
 }
 
 export async function seedAllDefaultProblemsToFirestore(): Promise<void> {
+  // Use setDoc with merge:true to skip serial getDoc pre-reads.
+  // This is idempotent — existing docs are untouched on fields not in the payload,
+  // and it eliminates N sequential reads that previously made seeding O(N) in latency.
+  const { writeBatch } = await import("firebase/firestore");
+  if (!db || typeof doc !== "function") return;
+
+  const BATCH_SIZE = 400;
   try {
-    if (db && typeof doc === "function") {
-      for (const prob of REAL_PROBLEMS) {
+    for (let i = 0; i < REAL_PROBLEMS.length; i += BATCH_SIZE) {
+      const chunk = REAL_PROBLEMS.slice(i, i + BATCH_SIZE);
+      const batch = writeBatch(db);
+      for (const prob of chunk) {
         const problemRef = doc(db, PROBLEMS_COLLECTION, prob.id);
-        const snap = await getDoc(problemRef);
-        if (!snap.exists()) {
-          await setDoc(problemRef, {
-            ...prob,
-            createdAtServer: serverTimestamp(),
-          });
-        }
+        batch.set(problemRef, { ...prob, createdAtServer: serverTimestamp() }, { merge: true });
       }
+      await batch.commit();
     }
   } catch (err) {
     console.warn("Firestore problem seeding completed with local mirror:", err);

@@ -106,7 +106,7 @@ export async function createCompany(companyData: {
   description?: string;
   verified?: boolean;
 }): Promise<CompanyDoc> {
-  const id = `comp-${Date.now()}`;
+  const id = `comp-${crypto.randomUUID().replace(/-/g, "").substring(0, 16)}`;
   const now = new Date().toISOString();
 
   const newCompany: CompanyDoc = {

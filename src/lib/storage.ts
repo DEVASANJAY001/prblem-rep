@@ -286,7 +286,7 @@ export function submitProblem(data: any, user: { uid: string; name: string } | n
   });
 
   const newProblem: ProblemDoc = {
-    id: `prob-${Date.now()}`,
+    id: `prob-${crypto.randomUUID()}`,
     title: data.title,
     description: data.description,
     whenItHappens: data.whenItHappens || "",

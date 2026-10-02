@@ -1,20 +1,22 @@
-﻿import express from "express";
+import express from "express";
 import cors from "cors";
 import rateLimit from "express-rate-limit";
 import { initializeApp, getApps, cert, getApp } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
+import { getAuth as getAdminAuth } from "firebase-admin/auth";
 
 const app = express();
 const PORT = process.env.PORT || 4000;
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// Firebase Admin SDK â€” Firestore for persistent server-side state
+// ─────────────────────────────────────────────────────────────────────────────
+// Firebase Admin SDK — Firestore + Auth for persistent server-side state
 // Set FIREBASE_ADMIN_PROJECT_ID, FIREBASE_ADMIN_CLIENT_EMAIL, and
 // FIREBASE_ADMIN_PRIVATE_KEY in your environment (.env.local or Vercel dashboard).
-// Download service account JSON from: Firebase Console â†’ Project Settings â†’
-// Service Accounts â†’ Generate new private key
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Download service account JSON from: Firebase Console → Project Settings →
+// Service Accounts → Generate new private key
+// ─────────────────────────────────────────────────────────────────────────────
 let adminDb = null;
+let adminAuth = null;
 
 try {
   const projectId = process.env.FIREBASE_ADMIN_PROJECT_ID || process.env.VITE_FIREBASE_PROJECT_ID;
@@ -33,10 +35,11 @@ try {
             }),
           });
     adminDb = getFirestore(adminApp);
+    adminAuth = getAdminAuth(adminApp);
     console.log("Firebase Admin SDK initialized successfully.");
   } else {
     console.warn(
-      "Firebase Admin SDK not configured \u2014 invite tokens will be in-memory only.\n" +
+      "Firebase Admin SDK not configured — invite tokens will be in-memory only.\n" +
         "Set FIREBASE_ADMIN_PROJECT_ID, FIREBASE_ADMIN_CLIENT_EMAIL, FIREBASE_ADMIN_PRIVATE_KEY."
     );
   }
@@ -44,9 +47,11 @@ try {
   console.warn("Firebase Admin SDK init error (falling back to in-memory):", err.message);
 }
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// CORS â€” restrict to known origins only
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────────────────────────────────────
+// CORS — restrict to known origins only; disallow no-origin in production
+// ─────────────────────────────────────────────────────────────────────────────
+const IS_PROD = process.env.NODE_ENV === "production";
+
 const ALLOWED_ORIGINS = [
   "http://localhost:5173",  // Vite dev server
   "http://localhost:4173",  // Vite preview
@@ -56,8 +61,14 @@ const ALLOWED_ORIGINS = [
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Allow requests with no origin (e.g., curl, Postman in dev)
-      if (!origin || ALLOWED_ORIGINS.includes(origin)) {
+      // In production, always require an explicit origin — blocks curl/bot abuse.
+      // In development, allow no-origin requests (e.g., Postman) for convenience.
+      if (!origin) {
+        return IS_PROD
+          ? callback(new Error("CORS: Direct API calls not permitted in production."))
+          : callback(null, true);
+      }
+      if (ALLOWED_ORIGINS.includes(origin)) {
         callback(null, true);
       } else {
         callback(new Error(`CORS: Origin ${origin} not permitted.`));
@@ -71,11 +82,11 @@ app.use(
 
 app.use(express.json({ limit: "1mb" }));
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────────────────────────────────────
 // Rate Limiting
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────────────────────────────────────
 
-// General API limiter â€” 100 requests per 15 minutes per IP
+// General API limiter — 100 requests per 15 minutes per IP
 const generalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
@@ -84,7 +95,7 @@ const generalLimiter = rateLimit({
   message: { error: "Too many requests. Please try again in 15 minutes." },
 });
 
-// Stricter limit for write/submit endpoints â€” 10 per 10 minutes per IP
+// Stricter limit for write/submit endpoints — 10 per 10 minutes per IP
 const writeLimiter = rateLimit({
   windowMs: 10 * 60 * 1000,
   max: 10,
@@ -93,7 +104,7 @@ const writeLimiter = rateLimit({
   message: { error: "Submission rate limit reached. Please wait before trying again." },
 });
 
-// Admin endpoints â€” 20 per 15 minutes
+// Admin endpoints — 20 per 15 minutes
 const adminLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 20,
@@ -104,27 +115,88 @@ const adminLimiter = rateLimit({
 
 app.use("/api", generalLimiter);
 
-// In-memory audit log store (local dev fallback only â€” use Firestore in production)
+// ─────────────────────────────────────────────────────────────────────────────
+// Auth Middleware — verifies Firebase ID token from Authorization header
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * requireAuth — verifies a Firebase ID token.
+ * Attaches `req.decodedToken` on success.
+ */
+async function requireAuth(req, res, next) {
+  if (!adminAuth) {
+    // Admin SDK not configured — cannot verify tokens; block request.
+    return res.status(503).json({ error: "Auth service unavailable. Admin SDK not configured." });
+  }
+  const authHeader = req.headers.authorization || "";
+  const idToken = authHeader.startsWith("Bearer ") ? authHeader.slice(7).trim() : null;
+
+  if (!idToken) {
+    return res.status(401).json({ error: "Missing Authorization token." });
+  }
+
+  try {
+    const decoded = await adminAuth.verifyIdToken(idToken);
+    req.decodedToken = decoded;
+    next();
+  } catch (err) {
+    console.warn("[Auth] Token verification failed:", err.message);
+    return res.status(401).json({ error: "Invalid or expired auth token." });
+  }
+}
+
+/**
+ * requireAdmin — verifies token AND checks that custom claim role is 'admin'.
+ * Must be used AFTER requireAuth in the middleware chain.
+ */
+function requireAdmin(req, res, next) {
+  const role = req.decodedToken?.role;
+  if (role !== "admin") {
+    return res.status(403).json({ error: "Forbidden. Admin access required." });
+  }
+  next();
+}
+
+/**
+ * requireModerator — verifies token AND checks role is 'admin' or 'moderator'.
+ */
+function requireModerator(req, res, next) {
+  const role = req.decodedToken?.role;
+  if (role !== "admin" && role !== "moderator") {
+    return res.status(403).json({ error: "Forbidden. Moderator or admin access required." });
+  }
+  next();
+}
+
+// In-memory audit log store (local dev fallback — capped to 500 entries)
+const AUDIT_LOG_CAP = 500;
 let auditLogs = [];
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+function pushAuditLog(entry) {
+  auditLogs.unshift(entry);
+  // Prevent unbounded memory growth
+  if (auditLogs.length > AUDIT_LOG_CAP) {
+    auditLogs.length = AUDIT_LOG_CAP;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // 1. Health Diagnostic
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────────────────────────────────────
 app.get("/api/health", (req, res) => {
   res.json({
     status: "healthy",
     platform: "Prblms Intelligence Engine",
-    version: "2.5.0",
-    firebaseProject: process.env.VITE_FIREBASE_PROJECT_ID || "prblms-881bb",
+    version: "2.6.0",
     adminSdkConnected: adminDb !== null,
     uptimeSeconds: Math.round(process.uptime()),
     timestamp: new Date().toISOString(),
   });
 });
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// 2. AI Scoring Pipeline
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────────────────────────────────────
+// 2. AI Scoring Pipeline (no auth required — public scoring utility)
+// ─────────────────────────────────────────────────────────────────────────────
 app.post("/api/ai/score", writeLimiter, (req, res) => {
   const { title, description, industry, severity } = req.body;
   if (!title || !description) {
@@ -167,10 +239,8 @@ app.post("/api/ai/score", writeLimiter, (req, res) => {
 
   res.json({
     success: true,
-    // Top-level composite scores for the UI
     painScore,
     opportunityScore,
-    // AIScores shape â€” matches firebase.ts AIScores interface exactly
     aiScores: {
       clarity,
       originality,
@@ -198,23 +268,67 @@ app.post("/api/ai/score", writeLimiter, (req, res) => {
   });
 });
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// 3. Problem Intake Ingestion
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-app.post("/api/problems/submit", writeLimiter, (req, res) => {
-  const { title, description, industry, severity, submittedByUid, submittedByName } = req.body;
+// ─────────────────────────────────────────────────────────────────────────────
+// 3. Problem Intake Ingestion — requires authenticated user, persists to Firestore
+// ─────────────────────────────────────────────────────────────────────────────
+app.post("/api/problems/submit", writeLimiter, requireAuth, async (req, res) => {
+  const { title, description, industry, severity } = req.body;
   if (!title || !description) {
     return res.status(400).json({ error: "Missing required fields for problem submission." });
   }
-  if (!submittedByUid) {
-    return res.status(401).json({ error: "Authentication required to submit a problem." });
-  }
+
+  // Use the UID from the verified token — never trust the request body for identity
+  const submittedByUid = req.decodedToken.uid;
+  const submittedByName = req.decodedToken.name || req.body.submittedByName || "Anonymous";
 
   const problemId = `prob-${crypto.randomUUID()}`;
   const now = new Date().toISOString();
   const severityMultiplier = { critical: 95, major: 85, medium: 70, minor: 50 }[severity] || 75;
   const overallPainScore = Math.min(98, Math.round(severityMultiplier * 0.8 + 15));
   const opportunityScore = Math.min(96, Math.round(overallPainScore * 0.9));
+
+  const problemDoc = {
+    id: problemId,
+    title,
+    description,
+    industry: industry || "General",
+    severity: severity || "medium",
+    painScore: overallPainScore,
+    opportunityScore,
+    status: "pending",
+    submittedBy: submittedByName,
+    submittedByUid,
+    createdAt: now,
+    submittedAt: now,
+    updatedAt: now,
+    votes: { upvotes: 0, downvotes: 0 },
+    validations: { faceCount: 0, greatCount: 0, payCount: 0, buildCount: 0, userValidations: {} },
+    views: 0,
+    interestedCount: 0,
+    interestedUsers: [],
+    comments: [],
+    commentsCount: 0,
+    bookmarksCount: 0,
+    verified: false,
+    isAnonymous: false,
+    reviewedBy: null,
+    reviewNote: null,
+    reviewedAt: null,
+    publishedAt: null,
+  };
+
+  if (adminDb) {
+    try {
+      const { FieldValue } = await import("firebase-admin/firestore");
+      await adminDb.collection("problems").doc(problemId).set({
+        ...problemDoc,
+        createdAtServer: FieldValue.serverTimestamp(),
+      });
+    } catch (err) {
+      console.error("Firestore problem intake write failed:", err);
+      return res.status(500).json({ error: "Failed to submit problem. Please try again." });
+    }
+  }
 
   res.json({
     success: true,
@@ -224,70 +338,130 @@ app.post("/api/problems/submit", writeLimiter, (req, res) => {
     opportunityScore,
     status: "pending",
     createdAt: now,
+    persisted: adminDb !== null,
   });
 });
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// 4. Admin Moderation Status Transition
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-app.post("/api/problems/:id/status", adminLimiter, (req, res) => {
+// ─────────────────────────────────────────────────────────────────────────────
+// 4. Admin Moderation Status Transition — requires admin token + persists to Firestore
+// ─────────────────────────────────────────────────────────────────────────────
+app.post("/api/problems/:id/status", adminLimiter, requireAuth, requireModerator, async (req, res) => {
   const { id } = req.params;
-  const { newStatus, adminUid, adminName, reviewNote } = req.body;
+  const { newStatus, reviewNote } = req.body;
 
   const validStatuses = ["approved", "rejected", "needs_info", "pending", "under_review"];
   if (!newStatus || !validStatuses.includes(newStatus)) {
     return res.status(400).json({ error: "Invalid status transition value." });
   }
-  if (!adminUid) {
-    return res.status(401).json({ error: "Admin authentication required." });
-  }
 
-  auditLogs.unshift({
+  // Identity comes from the verified token — never from the request body
+  const adminUid = req.decodedToken.uid;
+  const adminName = req.decodedToken.name || "Admin";
+
+  const auditEntry = {
     id: `log-${Date.now()}`,
     actorUid: adminUid,
-    actorName: adminName || "Admin",
+    actorName: adminName,
     action: `problem.${newStatus}`,
     targetId: id,
     targetType: "problem",
-    details: `Problem ${id} status \u2192 ${newStatus.toUpperCase()}${reviewNote ? ` | Note: ${reviewNote}` : ""}`,
+    details: `Problem ${id} status → ${newStatus.toUpperCase()}${reviewNote ? ` | Note: ${reviewNote}` : ""}`,
     timestamp: new Date().toISOString(),
-  });
+  };
+
+  if (adminDb) {
+    try {
+      const { FieldValue } = await import("firebase-admin/firestore");
+      const batch = adminDb.batch();
+
+      // Update problem status
+      const problemRef = adminDb.collection("problems").doc(id);
+      batch.update(problemRef, {
+        status: newStatus,
+        reviewedBy: adminName,
+        reviewedByUid: adminUid,
+        reviewedAt: new Date().toISOString(),
+        reviewNote: reviewNote || "",
+        verified: newStatus === "approved",
+        updatedAt: new Date().toISOString(),
+        publishedAt: newStatus === "approved" ? new Date().toISOString() : null,
+      });
+
+      // Write audit log atomically
+      const auditRef = adminDb.collection("audit_logs").doc(auditEntry.id);
+      batch.set(auditRef, {
+        ...auditEntry,
+        serverTimestamp: FieldValue.serverTimestamp(),
+      });
+
+      await batch.commit();
+    } catch (err) {
+      console.error("Firestore status update failed:", err);
+      return res.status(500).json({ error: "Failed to update problem status." });
+    }
+  } else {
+    // In-memory fallback for local dev without Admin SDK
+    pushAuditLog(auditEntry);
+  }
 
   res.json({ success: true, problemId: id, newStatus, updatedAt: new Date().toISOString() });
 });
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// 5. Dynamic Form Response Submission
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-app.post("/api/forms/submit", writeLimiter, (req, res) => {
+// ─────────────────────────────────────────────────────────────────────────────
+// 5. Dynamic Form Response Submission — authenticated, persists to Firestore
+// ─────────────────────────────────────────────────────────────────────────────
+app.post("/api/forms/submit", writeLimiter, requireAuth, async (req, res) => {
   const { formId, answers } = req.body;
   if (!formId || !answers) {
     return res.status(400).json({ error: "formId and answers are required." });
   }
 
+  const respondentUid = req.decodedToken.uid;
   const responseId = `resp-${crypto.randomUUID()}`;
+  const submittedAt = new Date().toISOString();
+
+  const responseDoc = {
+    id: responseId,
+    formId,
+    answers,
+    respondentUid,
+    submittedAt,
+  };
+
+  if (adminDb) {
+    try {
+      const { FieldValue } = await import("firebase-admin/firestore");
+      await adminDb.collection("form_responses").doc(responseId).set({
+        ...responseDoc,
+        serverTimestamp: FieldValue.serverTimestamp(),
+      });
+    } catch (err) {
+      console.error("Firestore form response write failed:", err);
+      return res.status(500).json({ error: "Failed to save form response. Please try again." });
+    }
+  }
+
   res.json({
     success: true,
     message: "Form response registered successfully.",
     responseId,
-    submittedAt: new Date().toISOString(),
+    submittedAt,
+    persisted: adminDb !== null,
   });
 });
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// 6. Admin Invite Token Engine â€” backed by Firestore for persistence
+// ─────────────────────────────────────────────────────────────────────────────
+// 6. Admin Invite Token Engine — backed by Firestore for persistence
 //    Falls back to in-memory if Firebase Admin SDK is not configured.
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────────────────────────────────────
 
-// In-memory fallback (lost on restart \u2014 only used when adminDb is null)
+// In-memory fallback (lost on restart — only used when adminDb is null)
 const inviteTokensFallback = {};
 const INVITES_COLLECTION = "admin_invites";
 
-app.post("/api/admin/invite/generate", adminLimiter, async (req, res) => {
-  const { adminUid } = req.body;
-  if (!adminUid) {
-    return res.status(401).json({ error: "Admin UID required." });
-  }
+app.post("/api/admin/invite/generate", adminLimiter, requireAuth, requireAdmin, async (req, res) => {
+  // adminUid sourced from verified token — not request body
+  const adminUid = req.decodedToken.uid;
 
   const token = `inv_${crypto.randomUUID().replace(/-/g, "").substring(0, 16)}`;
   const expiresAt = new Date(Date.now() + 86400000).toISOString();
@@ -295,7 +469,11 @@ app.post("/api/admin/invite/generate", adminLimiter, async (req, res) => {
 
   if (adminDb) {
     try {
-      await adminDb.collection(INVITES_COLLECTION).doc(token).set(tokenDoc);
+      const { FieldValue } = await import("firebase-admin/firestore");
+      await adminDb.collection(INVITES_COLLECTION).doc(token).set({
+        ...tokenDoc,
+        createdAtServer: FieldValue.serverTimestamp(),
+      });
     } catch (err) {
       console.error("Failed to persist invite token to Firestore:", err);
       return res.status(500).json({ error: "Failed to generate invite. Try again." });
@@ -325,18 +503,23 @@ app.post("/api/admin/invite/validate", adminLimiter, async (req, res) => {
   if (adminDb) {
     try {
       const ref = adminDb.collection(INVITES_COLLECTION).doc(trimmed);
-      const snap = await ref.get();
+      const accepted = await adminDb.runTransaction(async (txn) => {
+        const snap = await txn.get(ref);
 
-      if (!snap.exists) {
-        return res.status(400).json({ valid: false, error: "Token not found." });
-      }
+        if (!snap.exists) {
+          return false;
+        }
 
-      const data = snap.data();
-      if (data.used || new Date(data.expiresAt).getTime() < Date.now()) {
+        const data = snap.data();
+        if (data.used || new Date(data.expiresAt).getTime() < Date.now()) return false;
+        // Atomically mark as used inside the transaction
+        txn.update(ref, { used: true, usedAt: new Date().toISOString() });
+        return true;
+      });
+
+      if (!accepted) {
         return res.status(400).json({ valid: false, error: "Token is invalid, expired, or already consumed." });
       }
-
-      await ref.update({ used: true, usedAt: new Date().toISOString() });
       return res.json({ valid: true, message: "Invite token verified and consumed." });
     } catch (err) {
       console.error("Firestore invite validation error:", err);
@@ -354,9 +537,33 @@ app.post("/api/admin/invite/validate", adminLimiter, async (req, res) => {
   res.json({ valid: true, message: "Invite token verified and consumed." });
 });
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// 7. Platform Metrics
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────────────────────────────────────
+// 7. Set Custom Claims — assigns role claim to a Firebase Auth user
+//    Must be called after admin registration to make Firestore rules work.
+// ─────────────────────────────────────────────────────────────────────────────
+app.post("/api/admin/set-claims", adminLimiter, requireAuth, requireAdmin, async (req, res) => {
+  const { targetUid, role } = req.body;
+
+  const validRoles = ["admin", "moderator", "user"];
+  if (!targetUid || !role || !validRoles.includes(role)) {
+    return res.status(400).json({ error: "targetUid and a valid role are required." });
+  }
+  if (!adminAuth) {
+    return res.status(503).json({ error: "Admin Auth SDK unavailable." });
+  }
+
+  try {
+    await adminAuth.setCustomUserClaims(targetUid, { role });
+    res.json({ success: true, uid: targetUid, role, message: "Custom claims updated. User must refresh their token." });
+  } catch (err) {
+    console.error("setCustomUserClaims failed:", err);
+    res.status(500).json({ error: "Failed to set custom claims." });
+  }
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 8. Platform Metrics
+// ─────────────────────────────────────────────────────────────────────────────
 app.get("/api/metrics", async (req, res) => {
   const base = {
     systemStatus: "ONLINE",
@@ -366,7 +573,6 @@ app.get("/api/metrics", async (req, res) => {
   };
 
   if (!adminDb) {
-    // No Admin SDK \u2014 return uptime only, signal that real metrics require setup
     return res.status(501).json({
       ...base,
       note: "Real metrics require Firebase Admin SDK. Set FIREBASE_ADMIN_PROJECT_ID, FIREBASE_ADMIN_CLIENT_EMAIL, FIREBASE_ADMIN_PRIVATE_KEY.",
@@ -374,16 +580,12 @@ app.get("/api/metrics", async (req, res) => {
   }
 
   try {
-    const [problemsSnap, usersSnap] = await Promise.all([
+    // Run all counts in parallel — avoids serial awaits
+    const [problemsSnap, usersSnap, approvedSnap] = await Promise.all([
       adminDb.collection("problems").count().get(),
       adminDb.collection("users").count().get(),
+      adminDb.collection("problems").where("status", "==", "approved").count().get(),
     ]);
-
-    const approvedSnap = await adminDb
-      .collection("problems")
-      .where("status", "==", "approved")
-      .count()
-      .get();
 
     res.json({
       ...base,
@@ -397,14 +599,27 @@ app.get("/api/metrics", async (req, res) => {
   }
 });
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────────────────────────────────────
 // 404 Fallback
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────────────────────────────────────
 app.use((req, res) => {
   res.status(404).json({ error: "Endpoint not found." });
 });
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Global Error Handler
+// ─────────────────────────────────────────────────────────────────────────────
+app.use((err, req, res, _next) => {
+  // Handle CORS errors specifically
+  if (err.message && err.message.startsWith("CORS:")) {
+    return res.status(403).json({ error: err.message });
+  }
+  console.error("Unhandled server error:", err);
+  res.status(500).json({ error: "Internal server error." });
+});
+
 app.listen(PORT, () => {
-  console.log(`\u26a1 Prblms Backend Engine running on http://localhost:${PORT}`);
+  console.log(`⚡ Prblms Backend Engine running on http://localhost:${PORT}`);
   console.log(`   Allowed origins: ${ALLOWED_ORIGINS.join(", ")}`);
+  console.log(`   Environment: ${IS_PROD ? "production" : "development"}`);
 });

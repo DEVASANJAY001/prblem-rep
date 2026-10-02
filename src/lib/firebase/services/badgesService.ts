@@ -283,9 +283,14 @@ export async function evaluateAndAwardUserBadges(
     }
 
     if (isCompleted) {
-      await grantBadgeToUser(uid, badge.name);
       newlyAwarded.push(badge.name);
     }
+  }
+
+  // Grant all earned badges in parallel rather than serially
+  // to avoid N sequential Firestore round-trips during evaluation.
+  if (newlyAwarded.length > 0) {
+    await Promise.allSettled(newlyAwarded.map((name) => grantBadgeToUser(uid, name)));
   }
 
   return newlyAwarded;

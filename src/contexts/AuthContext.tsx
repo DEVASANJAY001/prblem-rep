@@ -57,6 +57,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Starts false — becomes true after Firestore confirms the role for the current user.
   // Prevents the localStorage cache bypass window on admin routes.
   const [userDocVerified, setUserDocVerified] = useState(false);
+  // Tracks UIDs whose userDoc was just written by a sign-in method (loginWithGoogle,
+  // registerWithEmail) so onAuthStateChanged skips the redundant Firestore re-read.
+  const justSignedInRef = React.useRef<Set<string>>(new Set());
 
   function setUserDoc(doc: UserDoc | null) {
     setUserDocState(doc);
@@ -73,11 +76,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       if (auth && typeof auth.onAuthStateChanged === "function") {
         unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-          // Run async work inside an IIFE so we can use await
-          (async () => {
+          // Named async handler with .catch() to prevent silent unhandled rejections.
+          const handleAuthChange = async () => {
             setUser(firebaseUser);
 
             if (firebaseUser) {
+              // Skip redundant Firestore read if loginWithGoogle/registerWithEmail
+              // already fetched or created the doc in the same event loop.
+              if (justSignedInRef.current.has(firebaseUser.uid)) {
+                justSignedInRef.current.delete(firebaseUser.uid);
+                setUserDocVerified(true);
+                setLoading(false);
+                return;
+              }
+
               // 1. Instantly hydrate from local cache if same user (fast paint)
               const cached = readLocalUser();
               if (cached && cached.uid === firebaseUser.uid) {
@@ -140,7 +152,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               localStorage.removeItem(LOCAL_USER_KEY);
               setLoading(false);
             }
-          })();
+          };
+
+          handleAuthChange().catch((err) => {
+            console.warn("Auth state handler error:", err);
+            setLoading(false);
+          });
         });
       } else {
         setLoading(false);
@@ -176,8 +193,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       };
       await createUserDoc(newDoc);
       setUserDoc(newDoc);
+    } else {
+      setUserDoc(existing);
     }
-    // onAuthStateChanged will also fire and do a background sync
+    // Mark this UID so onAuthStateChanged skips a redundant Firestore re-read.
+    // The doc was just fetched/created above — no need to read it again.
+    justSignedInRef.current.add(fUser.uid);
   };
 
   // â”€â”€ Email / Password Sign-In â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -206,6 +227,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
     setUserDoc(newDoc);
     await createUserDoc(newDoc);
+    // Mark so onAuthStateChanged skips redundant re-fetch
+    justSignedInRef.current.add(res.user.uid);
   };
 
   // â”€â”€ Admin Sign-In (requires admin or moderator role in Firestore) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -259,9 +282,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     try {
       await createUserDoc(adminDoc);
-      // Note: updateUserRole is NOT called here â€” role: "admin" is already written
-      // by createUserDoc above. A redundant second write would cause unnecessary
-      // Firestore reads and could silently fail without clearing the correct state.
+      // Set Firebase Auth custom claim so Firestore rules work.
+      // The rules check `request.auth.token.role == 'admin'` which requires a
+      // custom claim — writing only to the Firestore doc is not enough.
+      try {
+        const idToken = await res.user.getIdToken();
+        const backendBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000';
+        const claimRes = await fetch(`${backendBase}/api/admin/set-claims`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${idToken}` },
+          body: JSON.stringify({ targetUid: res.user.uid, role: 'admin' }),
+        });
+        if (claimRes.ok) {
+          await res.user.getIdToken(true);
+        } else {
+          console.warn('[AdminReg] set-claims API non-OK:', claimRes.status);
+        }
+      } catch (claimErr) {
+        console.warn('[AdminReg] Could not set custom claims:', claimErr);
+      }
     } catch (err) {
       // Rollback: createUserDoc failed after auth account was created.
       // Sign out the orphaned Firebase Auth account to keep state consistent.

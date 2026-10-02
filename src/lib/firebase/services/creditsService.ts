@@ -149,13 +149,18 @@ export async function reorderCreditsInFirestore(orderedIds: string[]): Promise<v
   const updated = reorderLocalCredits(orderedIds);
   try {
     if (db && typeof doc === "function" && typeof updateDoc === "function") {
+      // Use WriteBatch so all order fields write atomically in one round-trip
+      // instead of N serial awaited updateDoc calls.
+      const { writeBatch } = await import("firebase/firestore");
+      const batch = writeBatch(db);
       for (const item of updated) {
         const docRef = doc(db, COLLECTION_NAME, item.id);
-        await updateDoc(docRef, {
+        batch.update(docRef, {
           order: item.order,
           updatedAt: new Date().toISOString(),
         });
       }
+      await batch.commit();
     }
   } catch (err) {
     console.warn("Firestore reorderCreditsInFirestore failed, saved locally:", err);
