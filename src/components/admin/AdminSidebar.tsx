@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { generateAdminInviteToken, getProblems } from "@/lib/storage";
+import { getProblems } from "@/lib/storage";
 import {
   LayoutDashboard,
   Inbox,
@@ -40,16 +40,35 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
   onHoverChange,
 }) => {
   const location = useLocation();
-  const { userDoc, logout } = useAuth();
+  const { user, userDoc, logout } = useAuth();
   const [copiedToken, setCopiedToken] = useState<string | null>(null);
+  const [generatingToken, setGeneratingToken] = useState(false);
 
   const pendingCount = getProblems({ status: "pending" }).length;
 
-  const handleGenerateToken = () => {
-    const token = generateAdminInviteToken(userDoc?.uid || "admin_master");
-    setCopiedToken(token);
-    navigator.clipboard.writeText(`${window.location.origin}/admin/register?token=${token}`);
-    setTimeout(() => setCopiedToken(null), 3500);
+  const handleGenerateToken = async () => {
+    if (!user || generatingToken) return;
+    setGeneratingToken(true);
+    try {
+      // Security fix: generate invite server-side (verified admin JWT required)
+      // Previously this was generated client-side via localStorage — VULN-08 fix.
+      const idToken = await user.getIdToken();
+      const backendBase = import.meta.env.VITE_API_BASE_URL || "http://localhost:4000";
+      const res = await fetch(`${backendBase}/api/admin/invite/generate`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${idToken}` },
+      });
+      if (!res.ok) throw new Error(`Server returned ${res.status}`);
+      const data = await res.json();
+      setCopiedToken(data.token);
+      await navigator.clipboard.writeText(data.registrationUrl);
+    } catch (err) {
+      console.error("[AdminSidebar] Invite generation failed:", err);
+      setCopiedToken("ERROR");
+    } finally {
+      setGeneratingToken(false);
+      setTimeout(() => setCopiedToken(null), 3500);
+    }
   };
 
   const navItems = [

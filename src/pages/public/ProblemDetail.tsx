@@ -20,6 +20,7 @@ import { toggleBookmark, isProblemBookmarked } from "@/lib/storage";
 import { useAuth } from "@/contexts/AuthContext";
 import { LoadingContainer } from "@/components/common/LoadingContainer";
 import { SEOHead } from "@/components/common/SEOHead";
+import { SharePanel } from "@/components/common/SharePanel";
 import { extractProblemId, getProblemDetailUrl, getStartupModeUrl } from "@/lib/seoUrls";
 import { UserAvatar } from "@/components/ui/UserAvatar";
 import { CompanyLogo } from "@/components/ui/CompanyLogo";
@@ -754,8 +755,8 @@ export const ProblemDetail: React.FC = () => {
             </span>
           </div>
 
-          {/* Bookmark & Share Buttons */}
-          <div className="flex items-center gap-2 shrink-0">
+          {/* Bookmark + Share Bar */}
+          <div className="flex items-center gap-3 shrink-0 flex-wrap">
             <button
               onClick={handleBookmark}
               className={`px-3.5 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${bookmarked
@@ -766,13 +767,11 @@ export const ProblemDetail: React.FC = () => {
               <Bookmark className={`w-3.5 h-3.5 ${bookmarked ? "fill-current" : ""}`} />
               <span>{bookmarked ? "Saved" : "Save"}</span>
             </button>
-            <button
-              onClick={handleShare}
-              className="px-3.5 py-1.5 rounded-full bg-surface-container/60 hover:bg-surface-container text-on-surface-variant text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer relative"
-            >
-              <Share2 className="w-3.5 h-3.5" />
-              <span>{shared ? "Copied!" : "Share"}</span>
-            </button>
+            <SharePanel
+              url={`https://problematlas.com${getProblemDetailUrl(problem)}`}
+              title={problem.title}
+              industry={industry}
+            />
           </div>
         </div>
 

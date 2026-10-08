@@ -35,6 +35,8 @@ interface AuthContextType {
   updateProfileBio: (bio: string, headline?: string) => void;
   updateUserProfile: (data: Partial<UserDoc>) => Promise<void>;
   updateProfilePhoto: (photoURL: string) => Promise<void>;
+  /** Promotes/demotes a user's role via the backend. Force-refreshes the caller's JWT immediately. */
+  updateUserRole: (targetUid: string, newRole: UserRole) => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -367,6 +369,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await syncUserProfile(updated);
   };
 
+  /**
+   * updateUserRole — sets Firebase Auth custom claim for targetUid via the backend.
+   * Force-refreshes the CURRENT user's token so Firestore rules reflect the change
+   * immediately instead of waiting up to 60 minutes for natural JWT expiry.
+   */
+  const updateUserRole = async (targetUid: string, newRole: UserRole): Promise<boolean> => {
+    try {
+      const backendBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000';
+      const idToken = await user?.getIdToken();
+      if (!idToken) return false;
+
+      const res = await fetch(`${backendBase}/api/admin/set-claims`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${idToken}` },
+        body: JSON.stringify({ targetUid, role: newRole }),
+      });
+
+      if (!res.ok) {
+        console.warn('[updateUserRole] set-claims failed:', res.status);
+        return false;
+      }
+
+      // Force-refresh the JWT so the new custom claim is immediately active
+      // in Firestore rules and subsequent API calls — no 60-min stale window.
+      if (user) await user.getIdToken(true);
+      return true;
+    } catch (err) {
+      console.warn('[updateUserRole] error:', err);
+      return false;
+    }
+  };
+
   const role: UserRole = userDoc?.role || "user";
   const isAdmin = role === "admin";
   const isModerator = role === "moderator" || role === "admin";
@@ -390,6 +424,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         updateProfileBio,
         updateUserProfile,
         updateProfilePhoto,
+        updateUserRole,
       }}
     >
       {children}

@@ -44,10 +44,13 @@ service firebase.storage {
       allow write: if request.auth != null;
     }
 
-    // Default fallback
+    // Default fallback — deny all unmatched writes.
+    // Named paths above are the ONLY writable locations.
+    // This closes the security gap where any authenticated user could write
+    // to arbitrary storage paths not covered by explicit rules above.
     match /{allPaths=**} {
       allow read: if true;
-      allow write: if request.auth != null;
+      allow write: if false; // Deny: only explicitly named paths are writable
     }
   }
 }

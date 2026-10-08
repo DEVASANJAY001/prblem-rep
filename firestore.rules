@@ -1,4 +1,4 @@
-﻿rules_version = '2';
+rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
@@ -106,7 +106,9 @@ service cloud.firestore {
 
     match /form_responses/{responseId} {
       // Anyone (including anonymous) can submit a form response
-      allow create: if true;
+      // Size guard: max 50 fields, prevents quota-burning document spam
+      allow create: if request.resource.data.size() < 50
+                       && request.resource.size() < 8192; // ~8KB max per response
       // Admins/moderators or the original respondent can read/manage
       allow read: if isAdminOrModerator() ||
                      (isAuthenticated() && resource.data.respondentUid == request.auth.uid);

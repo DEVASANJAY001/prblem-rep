@@ -1,6 +1,8 @@
 import express from "express";
 import cors from "cors";
 import rateLimit from "express-rate-limit";
+import helmet from "helmet";
+import morgan from "morgan";
 import { initializeApp, getApps, cert, getApp } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
 import { getAuth as getAdminAuth } from "firebase-admin/auth";
@@ -79,6 +81,23 @@ app.use(
     credentials: true,
   })
 );
+
+// ─────────────────────────────────────────────────────────────────────────
+// Helmet — sets HTTP security headers on all responses
+// contentSecurityPolicy: OFF (managed by vercel.json headers)
+// crossOriginEmbedderPolicy: OFF (Firebase Storage requires cross-origin access)
+// ─────────────────────────────────────────────────────────────────────────
+app.use(helmet({
+  contentSecurityPolicy: false,         // Managed by vercel.json
+  crossOriginEmbedderPolicy: false,     // Firebase Storage needs cross-origin
+  crossOriginResourcePolicy: { policy: "cross-origin" }, // Allow Firebase CDN assets
+}));
+
+// ─────────────────────────────────────────────────────────────────────────
+// Morgan — HTTP request logging
+// Combined format in production, concise dev format in development
+// ─────────────────────────────────────────────────────────────────────────
+app.use(morgan(IS_PROD ? "combined" : "dev"));
 
 app.use(express.json({ limit: "1mb" }));
 
@@ -597,6 +616,79 @@ app.get("/api/metrics", async (req, res) => {
     console.error("Firestore metrics aggregation error:", err);
     res.status(500).json({ ...base, error: "Failed to load metrics from Firestore." });
   }
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 9. Dynamic XML Sitemap — generated from Firestore approved problems
+//    Previously static/committed — now serves all problem pages dynamically.
+//    Cached 1 hour at the edge; stale-while-revalidate for zero-downtime refresh.
+// ─────────────────────────────────────────────────────────────────────────────
+app.get("/sitemap.xml", async (req, res) => {
+  const BASE_URL = process.env.PRODUCTION_ORIGIN || "https://problematlas.com";
+  const today = new Date().toISOString().slice(0, 10);
+
+  const staticEntries = [
+    { loc: `${BASE_URL}/`, changefreq: "daily", priority: "1.00" },
+    { loc: `${BASE_URL}/explore`, changefreq: "daily", priority: "0.90" },
+    { loc: `${BASE_URL}/features`, changefreq: "weekly", priority: "0.85" },
+    { loc: `${BASE_URL}/solutions`, changefreq: "weekly", priority: "0.85" },
+    { loc: `${BASE_URL}/industries`, changefreq: "weekly", priority: "0.85" },
+    { loc: `${BASE_URL}/community`, changefreq: "daily", priority: "0.80" },
+    { loc: `${BASE_URL}/companies`, changefreq: "weekly", priority: "0.80" },
+    { loc: `${BASE_URL}/research`, changefreq: "weekly", priority: "0.75" },
+    { loc: `${BASE_URL}/about`, changefreq: "monthly", priority: "0.70" },
+    { loc: `${BASE_URL}/contact`, changefreq: "monthly", priority: "0.60" },
+    { loc: `${BASE_URL}/privacy`, changefreq: "monthly", priority: "0.40" },
+    { loc: `${BASE_URL}/terms`, changefreq: "monthly", priority: "0.40" },
+    { loc: `${BASE_URL}/cookies`, changefreq: "monthly", priority: "0.30" },
+  ];
+
+  const problemEntries = [];
+
+  if (adminDb) {
+    try {
+      const snap = await adminDb.collection("problems")
+        .where("status", "==", "approved")
+        .orderBy("publishedAt", "desc")
+        .limit(1000)
+        .get();
+
+      snap.forEach((doc) => {
+        const p = doc.data();
+        const titleSlug = (p.title || "problem")
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-+|-+$/g, "")
+          .substring(0, 60);
+        const slug = `${titleSlug}-${doc.id}`;
+        const lastmod = p.updatedAt
+          ? new Date(p.updatedAt.toDate ? p.updatedAt.toDate() : p.updatedAt).toISOString().slice(0, 10)
+          : today;
+        problemEntries.push({
+          loc: `${BASE_URL}/problem/${slug}`,
+          lastmod,
+          changefreq: "weekly",
+          priority: "0.95",
+        });
+      });
+    } catch (err) {
+      console.warn("[Sitemap] Firestore fetch failed, serving static only:", err.message);
+    }
+  }
+
+  const toXmlEntry = (e) =>
+    `  <url>\n    <loc>${e.loc}</loc>\n    <lastmod>${e.lastmod || today}</lastmod>\n    <changefreq>${e.changefreq}</changefreq>\n    <priority>${e.priority}</priority>\n  </url>`;
+
+  const allEntries = [
+    ...staticEntries.map(toXmlEntry),
+    ...problemEntries.map(toXmlEntry),
+  ].join("\n");
+
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${allEntries}\n</urlset>`;
+
+  res.set("Content-Type", "application/xml; charset=utf-8");
+  res.set("Cache-Control", "public, max-age=3600, stale-while-revalidate=86400");
+  res.send(xml);
 });
 
 // ─────────────────────────────────────────────────────────────────────────────

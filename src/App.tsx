@@ -4,7 +4,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { PublicLayout } from "@/components/layouts/PublicLayout";
 import { AdminLayout } from "@/components/layouts/AdminLayout";
-import { ProtectedRoute } from "@/components/common/ProtectedRoute";
+import { ProtectedRoute, AdminRoute } from "@/components/common/ProtectedRoute";
 import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 import { ScrollRestoration } from "@/components/common/ScrollRestoration";
 
@@ -105,24 +105,26 @@ export default function App() {
                 <Route path="/admin/login" element={<AdminLogin />} />
                 <Route path="/admin/register" element={<AdminRegister />} />
 
-                {/* ── Guarded Admin Console Suite (/admin/*) ───────────── */}
-                <Route path="/admin" element={<AdminLayout><AdminOverview /></AdminLayout>} />
-                <Route path="/admin/review-queue" element={<AdminLayout><AdminReviewQueue /></AdminLayout>} />
-                <Route path="/admin/problems" element={<AdminLayout><AdminProblems /></AdminLayout>} />
-                <Route path="/admin/problems/:id/edit" element={<AdminLayout><AdminProblemDetailEditor /></AdminLayout>} />
-                <Route path="/admin/app-controller" element={<AdminLayout><AdminAppController /></AdminLayout>} />
-                <Route path="/admin/industries" element={<AdminLayout><AdminIndustries /></AdminLayout>} />
-                <Route path="/admin/forms" element={<AdminLayout><AdminForms /></AdminLayout>} />
-                <Route path="/admin/forms/new" element={<AdminLayout><AdminFormBuilder /></AdminLayout>} />
-                <Route path="/admin/forms/:id/edit" element={<AdminLayout><AdminFormBuilder /></AdminLayout>} />
-                <Route path="/admin/forms/:id/responses" element={<AdminLayout><AdminFormResponses /></AdminLayout>} />
-                <Route path="/admin/users" element={<AdminLayout><AdminUsers /></AdminLayout>} />
-                <Route path="/admin/badges" element={<AdminLayout><AdminBadges /></AdminLayout>} />
-                <Route path="/admin/credits" element={<AdminLayout><AdminCredits /></AdminLayout>} />
-                <Route path="/admin/companies" element={<AdminLayout><AdminCompanies /></AdminLayout>} />
-                <Route path="/admin/research" element={<AdminLayout><Research /></AdminLayout>} />
-                <Route path="/admin/analytics" element={<AdminLayout><AdminAnalytics /></AdminLayout>} />
-                <Route path="/admin/settings" element={<AdminLayout><AdminSettings /></AdminLayout>} />
+                {/* ── Guarded Admin Console Suite (/admin/*) ───────────────────────────────── */}
+                {/* AdminRoute verifies: Firebase Auth + Firestore-confirmed role (custom claim) */}
+                {/* userDocVerified must be true — blocks localStorage role spoofing attack window */}
+                <Route path="/admin" element={<AdminRoute><AdminLayout><AdminOverview /></AdminLayout></AdminRoute>} />
+                <Route path="/admin/review-queue" element={<AdminRoute><AdminLayout><AdminReviewQueue /></AdminLayout></AdminRoute>} />
+                <Route path="/admin/problems" element={<AdminRoute><AdminLayout><AdminProblems /></AdminLayout></AdminRoute>} />
+                <Route path="/admin/problems/:id/edit" element={<AdminRoute><AdminLayout><AdminProblemDetailEditor /></AdminLayout></AdminRoute>} />
+                <Route path="/admin/app-controller" element={<AdminRoute><AdminLayout><AdminAppController /></AdminLayout></AdminRoute>} />
+                <Route path="/admin/industries" element={<AdminRoute><AdminLayout><AdminIndustries /></AdminLayout></AdminRoute>} />
+                <Route path="/admin/forms" element={<AdminRoute><AdminLayout><AdminForms /></AdminLayout></AdminRoute>} />
+                <Route path="/admin/forms/new" element={<AdminRoute><AdminLayout><AdminFormBuilder /></AdminLayout></AdminRoute>} />
+                <Route path="/admin/forms/:id/edit" element={<AdminRoute><AdminLayout><AdminFormBuilder /></AdminLayout></AdminRoute>} />
+                <Route path="/admin/forms/:id/responses" element={<AdminRoute><AdminLayout><AdminFormResponses /></AdminLayout></AdminRoute>} />
+                <Route path="/admin/users" element={<AdminRoute><AdminLayout><AdminUsers /></AdminLayout></AdminRoute>} />
+                <Route path="/admin/badges" element={<AdminRoute><AdminLayout><AdminBadges /></AdminLayout></AdminRoute>} />
+                <Route path="/admin/credits" element={<AdminRoute><AdminLayout><AdminCredits /></AdminLayout></AdminRoute>} />
+                <Route path="/admin/companies" element={<AdminRoute><AdminLayout><AdminCompanies /></AdminLayout></AdminRoute>} />
+                <Route path="/admin/research" element={<AdminRoute><AdminLayout><Research /></AdminLayout></AdminRoute>} />
+                <Route path="/admin/analytics" element={<AdminRoute><AdminLayout><AdminAnalytics /></AdminLayout></AdminRoute>} />
+                <Route path="/admin/settings" element={<AdminRoute><AdminLayout><AdminSettings /></AdminLayout></AdminRoute>} />
 
                 {/* ── Fallback 404 ─────────────────────────────────────── */}
                 <Route
