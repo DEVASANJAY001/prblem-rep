@@ -9,6 +9,7 @@ import { ShaderBackground } from "@/components/ui/ShaderBackground";
 import { OrganicAtlasSection } from "@/components/ui/OrganicAtlasSection";
 import { TrendingProblemCard } from "@/components/ui/TrendingProblemCard";
 import { SEOHead } from "@/components/common/SEOHead";
+import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
 
 export const Home: React.FC = () => {
   const navigate = useNavigate();
@@ -552,26 +553,26 @@ export const Home: React.FC = () => {
                     onClick={() => scrollTrending("left")}
                     className="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:text-primary hover:bg-surface-container-lowest transition-all cursor-pointer shadow-2xs"
                     title="Scroll Left"
+                    aria-label="Scroll Left"
                   >
-                    <span className="material-symbols-outlined text-[18px]">chevron_left</span>
+                    <ChevronLeft className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => scrollTrending("right")}
                     className="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:text-primary hover:bg-surface-container-lowest transition-all cursor-pointer shadow-2xs"
                     title="Scroll Right"
+                    aria-label="Scroll Right"
                   >
-                    <span className="material-symbols-outlined text-[18px]">chevron_right</span>
+                    <ChevronRight className="w-4 h-4" />
                   </button>
                 </div>
 
                 <Link
                   to="/explore"
-                  className="font-medium text-xs md:text-sm text-primary hover:text-primary-container transition-colors flex items-center gap-1 group bg-primary/5 px-4 py-2 rounded-full hover:bg-primary/10"
+                  className="font-medium text-xs md:text-sm text-primary hover:text-primary-container transition-colors flex items-center gap-1.5 group bg-primary/5 px-4 py-2 rounded-full hover:bg-primary/10"
                 >
-                  View all{" "}
-                  <span className="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">
-                    arrow_forward
-                  </span>
+                  <span>View all</span>
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </Link>
               </div>
             </div>
@@ -940,9 +941,7 @@ export const Home: React.FC = () => {
                   className="group/btn relative inline-flex items-center justify-center gap-2 sm:gap-3 bg-primary text-on-primary font-bold px-5 sm:px-8 py-2.5 sm:py-4 rounded-full text-xs sm:text-base overflow-hidden transition-all duration-300 ease-out hover:scale-105 hover:shadow-lg hover:shadow-primary/30 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
                 >
                   <span className="relative z-10">Experience the impact</span>
-                  <span className="material-symbols-outlined relative z-10 text-[18px] sm:text-[20px] transition-transform duration-300 ease-out group-hover/btn:translate-x-1">
-                    arrow_forward
-                  </span>
+                  <ArrowRight className="relative z-10 w-4 h-4 sm:w-5 sm:h-5 transition-transform duration-300 ease-out group-hover/btn:translate-x-1" />
                   {/* Button Hover Gradient */}
                   <div className="absolute inset-0 z-0 bg-gradient-to-r from-primary-container to-surface-tint opacity-0 transition-opacity duration-300 ease-out group-hover/btn:opacity-100"></div>
                 </button>
