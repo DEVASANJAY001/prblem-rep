@@ -214,11 +214,50 @@ export const OrganicAtlasSection: React.FC = () => {
                       className="w-11 h-11 md:w-13 md:h-13 bg-white rounded-2xl shadow-md p-2.5 border border-outline-variant/30 flex items-center justify-center transition-all duration-300 group-hover/node:scale-115 group-hover/node:shadow-lg group-hover/node:border-primary/40 shadow-primary/10 cursor-pointer"
                       title="IBM"
                     >
-                      <svg viewBox="0 0 64 26" className="w-7 h-3.5 shrink-0">
-                        <path
-                          fill="#0F62FE"
-                          d="M0 0h8v2H0zm0 3.5h8v2H0zm0 3.5h8v2H0zm0 3.5h8v2H0zm0 3.5h8v2H0zm0 3.5h8v2H0zm0 3.5h8v2H0zm0 3.5h8v2H0zm15-24h12c4 0 6.5 1.5 6.5 4.5 0 2-1.2 3.5-3.2 4 2.5.5 4.2 2.2 4.2 4.8 0 3.5-2.8 5.7-7.5 5.7H15zm9 2.5h-5v2h5c1.5 0 2.5-.5 2.5-1s-1-1-2.5-1zm0 3.5h-5v2h5c1.5 0 2.5-.5 2.5-1s-1-1-2.5-1zm1 9h-6v2h6c2 0 3-.5 3-1s-1-1-3-1zm0 3.5h-6v2h6c2 0 3-.5 3-1s-1-1-3-1zm16-18.5h8l4 9 4-9h8v22h-6v-13l-4 9h-4l-4-9v13h-6z"
-                        />
+                      <svg viewBox="0 0 1000 401.15" className="w-8 h-3.5 shrink-0" fill="#0F62FE">
+                        <g id="I">
+                          <rect y="373.17" width="194.43" height="27.932"/>
+                          <rect y="319.83" width="194.43" height="27.932"/>
+                          <rect x="55.468" y="266.54" width="83.399" height="27.932"/>
+                          <rect x="55.468" y="213.25" width="83.399" height="27.932"/>
+                          <rect x="55.468" y="159.96" width="83.399" height="27.932"/>
+                          <rect x="55.468" y="106.58" width="83.399" height="27.932"/>
+                          <rect y="53.288" width="194.43" height="27.932"/>
+                          <rect width="194.43" height="27.932"/>
+                        </g>
+                        <g id="B">
+                          <path d="m222.17 400.85 207.11 0.297c27.734 0 52.793-10.697 71.513-27.932h-278.62z"/>
+                          <path d="m222.17 347.76h299.03c5.051-8.617 8.815-18.027 11.094-27.932h-310.12z"/>
+                          <rect x="277.73" y="266.54" width="83.3" height="27.932"/>
+                          <path d="m444.43 266.54v27.932h90.927c0-9.608-1.288-19.017-3.764-27.932z"/>
+                          <path d="m497.92 213.25h-220.19v27.932h243.46c-6.34-10.698-14.165-20.107-23.277-27.932z"/>
+                          <path d="m277.73 159.96v27.932h220.19c9.311-7.825 17.135-17.235 23.277-27.932z"/>
+                          <rect x="277.73" y="106.58" width="83.3" height="27.932"/>
+                          <path d="m444.43 134.51h87.163c2.476-8.914 3.764-18.324 3.764-27.932h-90.927z"/>
+                          <path d="m521.2 53.288h-299.03v27.932h310.12c-2.575-9.905-6.339-19.314-11.093-27.932z"/>
+                          <path d="m429.28 0h-207.11v27.932h278.53c-18.621-17.235-43.878-27.932-71.414-27.932z"/>
+                        </g>
+                        <g id="M">
+                          <polygon points="555.57 81.22 742.67 81.22 733.06 53.288 555.57 53.288"/>
+                          <polygon points="555.57 27.932 724.25 27.932 714.64 0 555.57 0"/>
+                          <polygon points="861.03 401.17 861.03 373.24 1000 373.24 1000 401.17"/>
+                          <polygon points="861.03 347.76 861.03 319.83 1000 319.83 1000 347.76"/>
+                          <polygon points="777.73 182.54 769.91 159.96 694.43 159.96 611.03 159.96 611.03 187.89 694.43 187.89 694.43 162.24 703.25 187.89 852.22 187.89 861.03 162.24 861.03 187.89 944.43 187.89 944.43 159.96 861.03 159.96 785.56 159.96"/>
+                          <polygon points="944.43 106.58 803.98 106.58 794.37 134.51 944.43 134.51"/>
+                          <polygon points="1000 27.932 1000 0 840.93 0 831.32 27.932"/>
+                          <polygon points="768.13 373.22 777.73 400.85 787.34 373.22"/>
+                          <polygon points="749.5 319.83 759.31 347.76 796.16 347.76 806.06 319.83"/>
+                          <polygon points="730.78 266.54 740.59 294.47 814.88 294.47 824.68 266.54"/>
+                          <polygon points="721.97 241.18 833.6 241.18 843.11 213.25 712.36 213.25"/>
+                          <polygon points="611.03 134.51 761.09 134.51 751.49 106.58 611.03 106.58"/>
+                          <polygon points="1000 53.288 822.4 53.288 812.9 81.22 1000 81.22"/>
+                          <rect x="555.57" y="373.22" width="138.97" height="27.932"/>
+                          <rect x="555.57" y="319.83" width="138.97" height="27.932"/>
+                          <rect x="611.03" y="266.54" width="83.399" height="27.932"/>
+                          <rect x="611.03" y="213.25" width="83.399" height="27.932"/>
+                          <rect x="861.03" y="213.25" width="83.399" height="27.932"/>
+                          <rect x="861.03" y="266.54" width="83.399" height="27.932"/>
+                        </g>
                       </svg>
                     </div>
                     <span className="absolute -bottom-5.5 opacity-0 group-hover/node:opacity-100 transition-opacity duration-200 pointer-events-none text-[10px] font-bold text-gray-700 bg-white/95 px-2 py-0.5 rounded-full shadow-2xs border border-gray-100 whitespace-nowrap">
