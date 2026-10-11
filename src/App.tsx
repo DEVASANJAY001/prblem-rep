@@ -32,6 +32,7 @@ const Contact = lazy(() => import("@/pages/public/Contact").then((m) => ({ defau
 const Privacy = lazy(() => import("@/pages/public/Privacy").then((m) => ({ default: m.Privacy })));
 const Terms = lazy(() => import("@/pages/public/Terms").then((m) => ({ default: m.Terms })));
 const Cookies = lazy(() => import("@/pages/public/Cookies").then((m) => ({ default: m.Cookies })));
+const Competitions = lazy(() => import("@/pages/public/Competitions").then((m) => ({ default: m.Competitions })));
 
 // Admin Console Modules (Loaded on-demand only for authorized administrators)
 const AdminLogin = lazy(() => import("@/pages/admin/AdminLogin").then((m) => ({ default: m.AdminLogin })));
@@ -97,6 +98,7 @@ export default function App() {
                 <Route path="/privacy" element={<PublicLayout><Privacy /></PublicLayout>} />
                 <Route path="/terms" element={<PublicLayout><Terms /></PublicLayout>} />
                 <Route path="/cookies" element={<PublicLayout><Cookies /></PublicLayout>} />
+                <Route path="/competitions" element={<PublicLayout><Competitions /></PublicLayout>} />
 
                 {/* Dynamic Public Form Runner */}
                 <Route path="/f/:formSlug" element={<PublicLayout><PublicFormRunner /></PublicLayout>} />

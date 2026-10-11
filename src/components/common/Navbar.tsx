@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Menu, X, Shield, Sparkles, User as UserIcon, Bookmark } from "lucide-react";
@@ -9,6 +9,24 @@ export const Navbar: React.FC = () => {
   const { user, userDoc, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close mobile menu on route change (handles browser back button)
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [location.pathname]);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    if (!userDropdownOpen) return;
+    const handleOutsideClick = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setUserDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
+  }, [userDropdownOpen]);
 
   const navItems = [
     { label: "Explore", path: "/explore" },
@@ -91,7 +109,7 @@ export const Navbar: React.FC = () => {
 
           {/* Profile Avatar Container - STRICTLY RENDERED ONLY WHEN LOGGED IN */}
           {(user || userDoc) && (
-            <div className="relative">
+            <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setUserDropdownOpen(!userDropdownOpen)}
                 className="rounded-full ring-2 ring-white/60 dark:ring-white/20 hover:ring-primary/60 transition-all flex items-center justify-center shadow-sm cursor-pointer hover:scale-105 active:scale-95"

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { sendPasswordResetEmail } from "firebase/auth";
+import { sendPasswordResetEmail, setPersistence, browserLocalPersistence, browserSessionPersistence } from "firebase/auth";
 import { auth } from "@/lib/firebase/config";
 import {
   Compass,
@@ -72,6 +72,7 @@ export const Login: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
+      await setPersistence(auth, rememberMe ? browserLocalPersistence : browserSessionPersistence);
       await loginWithEmail(email, password);
       navigate(from, { replace: true });
     } catch (err: any) {
