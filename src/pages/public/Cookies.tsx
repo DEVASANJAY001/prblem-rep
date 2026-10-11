@@ -18,15 +18,15 @@ export const Cookies: React.FC = () => {
   return (
     <div className="flex flex-col w-full min-h-screen font-['Poppins',sans-serif] text-on-surface bg-surface selection:bg-primary/15 selection:text-primary">
       <SEOHead
-        title="Cookie & Storage Policy — ProblemAtlas"
+        title="Cookie & Storage Policy — Stuckhere"
         description="Comprehensive Cookie & Local Storage Policy. Transparent breakdown of essential authentication tokens, functional preferences, and privacy controls."
-        canonicalUrl="https://problematlas.com/cookies"
+        canonicalUrl="https://stuckhere.com/cookies"
         ogType="website"
         keywords={[
           "cookie policy",
           "browser cookies",
           "local storage",
-          "ProblemAtlas cookies",
+          "Stuckhere cookies",
           "privacy controls",
           "session management",
         ]}
@@ -127,7 +127,7 @@ export const Cookies: React.FC = () => {
             1. What Are Cookies & Web Storage Technologies?
           </h2>
           <p>
-            When you visit ProblemAtlas, we use standard web storage technologies to provide a smooth, secure, and
+            When you visit Stuckhere, we use standard web storage technologies to provide a smooth, secure, and
             reliable experience. These include:
           </p>
           <ul className="space-y-2 text-xs sm:text-sm pl-4 list-disc marker:text-primary">
@@ -154,7 +154,7 @@ export const Cookies: React.FC = () => {
           </h2>
           <p>
             We believe in total transparency. The following tables document every cookie and local storage item
-            utilized across ProblemAtlas:
+            utilized across Stuckhere:
           </p>
 
           {/* Table 1: Strictly Necessary */}
@@ -225,13 +225,13 @@ export const Cookies: React.FC = () => {
                     <td className="p-3">1 Year</td>
                   </tr>
                   <tr>
-                    <td className="p-3 font-mono text-[11px] font-semibold text-primary">problematlas_saved_problems</td>
+                    <td className="p-3 font-mono text-[11px] font-semibold text-primary">stuckhere_saved_problems</td>
                     <td className="p-3">LocalStorage</td>
                     <td className="p-3">Caches bookmarked problem dossier IDs for instant zero-latency loading.</td>
                     <td className="p-3">Persistent</td>
                   </tr>
                   <tr>
-                    <td className="p-3 font-mono text-[11px] font-semibold text-primary">problematlas_view_mode</td>
+                    <td className="p-3 font-mono text-[11px] font-semibold text-primary">stuckhere_view_mode</td>
                     <td className="p-3">LocalStorage</td>
                     <td className="p-3">Remembers whether you prefer Grid or Compact List view on problem discovery feeds.</td>
                     <td className="p-3">6 Months</td>
@@ -328,7 +328,7 @@ export const Cookies: React.FC = () => {
             4. Do Not Track (DNT) & Global Privacy Control (GPC)
           </h2>
           <p>
-            ProblemAtlas respects modern user privacy signals. When your browser transmits a{" "}
+            Stuckhere respects modern user privacy signals. When your browser transmits a{" "}
             <strong>Global Privacy Control (GPC)</strong> or <strong>Do Not Track (DNT)</strong> header, our
             application automatically suppresses non-essential third-party analytics scripts, ensuring your visit
             proceeds without secondary telemetry.
@@ -347,10 +347,10 @@ export const Cookies: React.FC = () => {
           </p>
           <p className="text-xs">
             Email:{" "}
-            <a href="mailto:privacy@problematlas.com" className="text-primary font-bold hover:underline">
-              privacy@problematlas.com
+            <a href="mailto:privacy@stuckhere.com" className="text-primary font-bold hover:underline">
+              privacy@stuckhere.com
             </a>{" "}
-            • ProblemAtlas Privacy Architecture Desk
+            • Stuckhere Privacy Architecture Desk
           </p>
         </section>
 

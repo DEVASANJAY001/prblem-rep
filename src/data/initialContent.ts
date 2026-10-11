@@ -240,7 +240,7 @@ export const INITIAL_SITE_CONTENT: PageContent[] = [
             fieldId: "page_title",
             label: "Page Title",
             type: "text",
-            value: "Explore Problem Atlas",
+            value: "Explore Stuckhere",
           },
           {
             fieldId: "page_subtitle",
@@ -333,7 +333,7 @@ export const INITIAL_SITE_CONTENT: PageContent[] = [
             label: "Mission Statement",
             type: "textarea",
             value:
-              "ProblemAtlas is dedicated to accelerating human progress by categorizing, quantifying, and distributing the most urgent real-world problems to founders, researchers, and builders.",
+              "Stuckhere is dedicated to accelerating human progress by categorizing, quantifying, and distributing the most urgent real-world problems to founders, researchers, and builders.",
           },
         ],
       },
@@ -357,13 +357,13 @@ export const INITIAL_SITE_CONTENT: PageContent[] = [
             fieldId: "headline",
             label: "Contact Headline",
             type: "text",
-            value: "Get in Touch with ProblemAtlas",
+            value: "Get in Touch with Stuckhere",
           },
           {
             fieldId: "support_email",
             label: "Support Email Address",
             type: "text",
-            value: "support@problematlas.com",
+            value: "support@stuckhere.com",
           },
           {
             fieldId: "description",

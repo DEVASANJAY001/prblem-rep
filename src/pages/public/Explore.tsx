@@ -221,7 +221,7 @@ export const Explore: React.FC = () => {
       <SEOHead
         title="Explore Verified Problem Statements — Healthcare, AI, Energy & More"
         description={`Browse ${allProblems.length}+ verified real-world problems across 140+ industry verticals. Discover startup opportunities, pain points, and innovation challenges curated by domain experts.`}
-        canonicalUrl="https://problematlas.com/explore"
+        canonicalUrl="https://stuckhere.com/explore"
         ogType="website"
         keywords={["problem statements", "startup ideas", "verified problems", "healthcare problems", "AI challenges", "clean energy problems", "fintech pain points", "innovation opportunities"]}
         jsonLd={{
@@ -229,12 +229,12 @@ export const Explore: React.FC = () => {
           "@type": "CollectionPage",
           "name": "Explore Verified Problem Statements",
           "description": "Browse verified real-world problems across healthcare, AI, energy, fintech and 140+ industries.",
-          "url": "https://problematlas.com/explore",
+          "url": "https://stuckhere.com/explore",
           "numberOfItems": allProblems.length,
           "publisher": {
             "@type": "Organization",
-            "name": "ProblemAtlas",
-            "url": "https://problematlas.com"
+            "name": "Stuckhere",
+            "url": "https://stuckhere.com"
           }
         }}
       />

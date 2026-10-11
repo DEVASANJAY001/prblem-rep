@@ -1,6 +1,5 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Compass } from "lucide-react";
 
 export const Footer: React.FC = () => {
   return (
@@ -81,15 +80,12 @@ export const Footer: React.FC = () => {
 
       {/* Bottom Bar matching Stitch */}
       <div className="max-w-[1280px] mx-auto px-4 md:px-8 mt-16 pt-8 border-t border-outline-variant/20 flex flex-col md:flex-row items-center justify-between gap-4">
-        <Link to="/" className="flex items-center gap-2 group">
-          <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-primary to-blue-700 text-white flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
-            <Compass className="w-3.5 h-3.5" />
-          </div>
-          <span className="font-label-sm text-on-surface font-bold tracking-tight">
-            Problem<span className="text-primary">Atlas</span>
+        <Link to="/" className="flex items-center group">
+          <span className="font-headline-sm text-xl md:text-2xl tracking-tight text-on-surface font-extrabold flex items-center transition-transform group-hover:scale-[1.02]">
+            Stuck<span className="text-primary ml-0.5">here</span>
           </span>
         </Link>
-        <p className="text-label-sm text-outline">© 2026 ProblemAtlas. All rights reserved.</p>
+        <p className="text-label-sm text-outline">© 2026 Stuckhere. All rights reserved.</p>
       </div>
     </footer>
   );

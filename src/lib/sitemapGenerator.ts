@@ -15,7 +15,7 @@ export interface SitemapUrlEntry {
 export function buildSitemapXml(
   problems: ProblemDoc[] = [],
   industries: IndustryDoc[] = REAL_INDUSTRIES,
-  baseUrl: string = "https://problematlas.com"
+  baseUrl: string = "https://stuckhere.com"
 ): string {
   const today = new Date().toISOString().slice(0, 10);
 

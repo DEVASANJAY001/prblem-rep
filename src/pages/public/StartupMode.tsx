@@ -54,7 +54,6 @@ import {
   Target,
   Zap,
   Users,
-  Compass,
   Cpu,
   Layers,
   HelpCircle,
@@ -704,7 +703,7 @@ Generated from Prblms Startup Canvas on ${new Date().toLocaleDateString()}`;
       <SEOHead
         title={`Build Startup: ${problem.title}`}
         description={`Venture thesis, Ideal Customer Profile (ICP), MVP features, and competitive whitespace for ${problem.title}.`}
-        canonicalUrl={`https://problematlas.com${getStartupModeUrl(problem)}`}
+        canonicalUrl={`https://stuckhere.com${getStartupModeUrl(problem)}`}
         ogType="article"
         keywords={[industry, "Startup Idea", "MVP Blueprint", "Venture Thesis", "Ideal Customer Profile", "Business Opportunity"]}
         jsonLd={[
@@ -717,8 +716,8 @@ Generated from Prblms Startup Canvas on ${new Date().toLocaleDateString()}`;
             "genre": industry,
             "publisher": {
               "@type": "Organization",
-              "name": "ProblemAtlas",
-              "url": "https://problematlas.com",
+              "name": "Stuckhere",
+              "url": "https://stuckhere.com",
             },
           },
           {
@@ -729,25 +728,25 @@ Generated from Prblms Startup Canvas on ${new Date().toLocaleDateString()}`;
                 "@type": "ListItem",
                 "position": 1,
                 "name": "Explore",
-                "item": "https://problematlas.com/explore"
+                "item": "https://stuckhere.com/explore"
               },
               {
                 "@type": "ListItem",
                 "position": 2,
                 "name": industry,
-                "item": `https://problematlas.com/explore?industry=${encodeURIComponent(industry)}`
+                "item": `https://stuckhere.com/explore?industry=${encodeURIComponent(industry)}`
               },
               {
                 "@type": "ListItem",
                 "position": 3,
                 "name": problem.title,
-                "item": `https://problematlas.com${getProblemDetailUrl(problem)}`
+                "item": `https://stuckhere.com${getProblemDetailUrl(problem)}`
               },
               {
                 "@type": "ListItem",
                 "position": 4,
                 "name": "Startup Mode",
-                "item": `https://problematlas.com${getStartupModeUrl(problem)}`
+                "item": `https://stuckhere.com${getStartupModeUrl(problem)}`
               }
             ]
           }

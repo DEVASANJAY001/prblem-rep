@@ -21,7 +21,7 @@ export const OrganicAtlasSection: React.FC = () => {
             <h2 className="text-3xl md:text-5xl font-extrabold text-on-surface mb-4 tracking-tight leading-tight">
               The Organic{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-primary-container to-secondary">
-                Problem Atlas
+                Stuckhere
               </span>
             </h2>
 

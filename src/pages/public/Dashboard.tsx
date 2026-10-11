@@ -285,7 +285,7 @@ export const Dashboard: React.FC = () => {
   return (
     <div className="w-full max-w-7xl mx-auto px-4 md:px-8 py-8 md:py-12 font-['Poppins',sans-serif] text-on-surface">
       {/* noindex: private user dashboard */}
-      <SEOHead title="User Dashboard" description="Your personal ProblemAtlas activity, submissions, and badges." noindex />
+      <SEOHead title="User Dashboard" description="Your personal Stuckhere activity, submissions, and badges." noindex />
       {/* ── New Badge Achievement Toast Notification ─────────────────────── */}
       {newlyUnlockedBadge && (
         <div className="mb-6 p-4 rounded-2xl bg-linear-to-r from-amber-500/15 via-purple-500/15 to-primary/15 border border-amber-500/30 flex items-center justify-between gap-4 animate-fade-in shadow-md">
@@ -341,7 +341,7 @@ export const Dashboard: React.FC = () => {
               <div className="flex flex-wrap items-center gap-3 pt-1 text-xs text-on-surface-variant">
                 <span className="flex items-center gap-1 font-mono">
                   <Mail className="h-3.5 w-3.5 text-outline" />
-                  {userDoc?.email || user?.email || "verified@problematlas.com"}
+                  {userDoc?.email || user?.email || "verified@stuckhere.com"}
                 </span>
                 <span className="text-outline">•</span>
                 <span className="flex items-center gap-1">

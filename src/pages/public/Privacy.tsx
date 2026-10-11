@@ -22,16 +22,16 @@ export const Privacy: React.FC = () => {
   return (
     <div className="flex flex-col w-full min-h-screen font-['Poppins',sans-serif] text-on-surface bg-surface selection:bg-primary/15 selection:text-primary">
       <SEOHead
-        title="Privacy Policy — ProblemAtlas"
-        description="Comprehensive Privacy Policy detailing how ProblemAtlas collects, processes, encrypts, and protects your data in compliance with GDPR, CCPA, and international standards."
-        canonicalUrl="https://problematlas.com/privacy"
+        title="Privacy Policy — Stuckhere"
+        description="Comprehensive Privacy Policy detailing how Stuckhere collects, processes, encrypts, and protects your data in compliance with GDPR, CCPA, and international standards."
+        canonicalUrl="https://stuckhere.com/privacy"
         ogType="website"
         keywords={[
           "privacy policy",
           "data protection",
           "GDPR compliance",
           "CCPA rights",
-          "ProblemAtlas privacy",
+          "Stuckhere privacy",
           "data security",
         ]}
       />
@@ -131,28 +131,28 @@ export const Privacy: React.FC = () => {
             1. Overview, Identity of the Data Controller & Contact
           </h2>
           <p>
-            ProblemAtlas (referred to as <strong>"ProblemAtlas"</strong>, <strong>"we"</strong>,{" "}
+            Stuckhere (referred to as <strong>"Stuckhere"</strong>, <strong>"we"</strong>,{" "}
             <strong>"our"</strong>, or <strong>"us"</strong>) is the world's open problem intelligence registry
             and venture modeling canvas. We empower entrepreneurs, researchers, and organizations to discover,
             empirically validate, and solve real-world problems.
           </p>
           <p>
             For the purposes of the European Union General Data Protection Regulation (<strong>GDPR</strong>), the UK
-            Data Protection Act 2018, and California Consumer Privacy Act (<strong>CCPA/CPRA</strong>), ProblemAtlas
+            Data Protection Act 2018, and California Consumer Privacy Act (<strong>CCPA/CPRA</strong>), Stuckhere
             acts as the <strong>Data Controller</strong> responsible for the processing of your personal data
-            collected through <span className="font-mono text-xs text-primary">problematlas.com</span> and our
+            collected through <span className="font-mono text-xs text-primary">stuckhere.com</span> and our
             related web services.
           </p>
           <div className="p-4 rounded-2xl bg-surface-container-low border border-outline-variant/30 text-xs space-y-1">
             <p className="font-semibold text-on-surface">Data Protection Officer (DPO) Contact Details:</p>
             <p>
               Email:{" "}
-              <a href="mailto:privacy@problematlas.com" className="text-primary font-bold hover:underline">
-                privacy@problematlas.com
+              <a href="mailto:privacy@stuckhere.com" className="text-primary font-bold hover:underline">
+                privacy@stuckhere.com
               </a>{" "}
               • Legal Department:{" "}
-              <a href="mailto:legal@problematlas.com" className="text-primary font-bold hover:underline">
-                legal@problematlas.com
+              <a href="mailto:legal@stuckhere.com" className="text-primary font-bold hover:underline">
+                legal@stuckhere.com
               </a>
             </p>
             <p>Response SLA: All formal privacy inquiries and subject rights requests are addressed within 30 calendar days.</p>
@@ -251,7 +251,7 @@ export const Privacy: React.FC = () => {
             4. Authorized Sub-Processors & Infrastructure Partners
           </h2>
           <p>
-            To operate a highly available, globally distributed platform, ProblemAtlas collaborates with enterprise
+            To operate a highly available, globally distributed platform, Stuckhere collaborates with enterprise
             infrastructure providers who meet rigorous security standards (SOC 2 Type II, ISO 27001):
           </p>
 
@@ -296,7 +296,7 @@ export const Privacy: React.FC = () => {
 
           <div className="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-950 dark:text-emerald-200 flex items-center gap-2">
             <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-            <span><strong>Our Anti-Monetization Guarantee:</strong> ProblemAtlas does NOT sell, rent, monetize, or barter your personal identity or contact records with ad networks or data brokers.</span>
+            <span><strong>Our Anti-Monetization Guarantee:</strong> Stuckhere does NOT sell, rent, monetize, or barter your personal identity or contact records with ad networks or data brokers.</span>
           </div>
         </section>
 
@@ -307,7 +307,7 @@ export const Privacy: React.FC = () => {
             5. International Transfers & Standard Contractual Clauses
           </h2>
           <p>
-            ProblemAtlas operates servers in the United States and global edge nodes. If you access the platform
+            Stuckhere operates servers in the United States and global edge nodes. If you access the platform
             from the European Economic Area (EEA), United Kingdom, or Switzerland, your data is transferred to the
             United States pursuant to the European Commission's approved <strong>Standard Contractual Clauses (SCCs)</strong>{" "}
             and supplementary technical measures, including rest encryption and access partition boundaries.
@@ -342,7 +342,7 @@ export const Privacy: React.FC = () => {
             7. Your Legal Rights (GDPR, CCPA/CPRA & Global Frameworks)
           </h2>
           <p>
-            Regardless of your geographic location, ProblemAtlas provides transparent controls over your personal data:
+            Regardless of your geographic location, Stuckhere provides transparent controls over your personal data:
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
@@ -366,8 +366,8 @@ export const Privacy: React.FC = () => {
 
           <p className="text-xs pt-1">
             To exercise any of these rights, contact us at{" "}
-            <a href="mailto:privacy@problematlas.com" className="text-primary font-bold hover:underline">
-              privacy@problematlas.com
+            <a href="mailto:privacy@stuckhere.com" className="text-primary font-bold hover:underline">
+              privacy@stuckhere.com
             </a>
             . We do not discriminate against users for exercising their statutory privacy rights.
           </p>
@@ -398,11 +398,11 @@ export const Privacy: React.FC = () => {
             9. Protection of Children's Privacy
           </h2>
           <p>
-            ProblemAtlas is strictly intended for individuals aged <strong>16 and older</strong> (or 13 where permitted
+            Stuckhere is strictly intended for individuals aged <strong>16 and older</strong> (or 13 where permitted
             by local law under parent supervision). We do not knowingly collect personal data from minors. If you believe
             a child under 16 has registered an account, contact{" "}
-            <a href="mailto:privacy@problematlas.com" className="text-primary font-bold hover:underline">
-              privacy@problematlas.com
+            <a href="mailto:privacy@stuckhere.com" className="text-primary font-bold hover:underline">
+              privacy@stuckhere.com
             </a>{" "}
             for immediate deletion.
           </p>
@@ -432,7 +432,7 @@ export const Privacy: React.FC = () => {
             <p className="text-xs text-on-surface-variant">Our privacy team is available to assist with data exports, corrections, or audit inquiries.</p>
           </div>
           <a
-            href="mailto:privacy@problematlas.com"
+            href="mailto:privacy@stuckhere.com"
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary text-white text-xs font-bold hover:bg-primary/90 transition-all shadow-xs shrink-0"
           >
             <span>Contact Privacy Team</span>

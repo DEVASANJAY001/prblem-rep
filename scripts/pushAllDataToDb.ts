@@ -28,7 +28,7 @@ const db = getFirestore(app);
 
 async function pushAllData() {
   console.log("🚀 ========================================================");
-  console.log("🚀  PROBLEM ATLAS: PUSHING ALL REAL PRODUCTION DATA TO DB  ");
+  console.log("🚀  STUCKHERE: PUSHING ALL REAL PRODUCTION DATA TO DB      ");
   console.log("🚀 ========================================================");
   console.log(`Target Project: ${firebaseConfig.projectId}`);
 

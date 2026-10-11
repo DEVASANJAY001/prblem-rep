@@ -31,19 +31,19 @@ export const Contact: React.FC = () => {
     {
       icon: Building2,
       title: "Enterprise & Partnerships",
-      email: "partners@problematlas.com",
+      email: "partners@stuckhere.com",
       description: "Custom problem scouting, private bounty escrow, and innovation pipeline licensing.",
     },
     {
       icon: MessageSquare,
       title: "Community & Solver Support",
-      email: "support@problematlas.com",
+      email: "support@stuckhere.com",
       description: "Assistance with problem submissions, leaderboard scores, and badge verification.",
     },
     {
       icon: Mail,
       title: "Research & Data Access",
-      email: "research@problematlas.com",
+      email: "research@stuckhere.com",
       description: "Academic licensing, empirical bulk dataset APIs, and clinical benchmark integrations.",
     },
   ];
@@ -51,11 +51,11 @@ export const Contact: React.FC = () => {
   return (
     <div className="flex flex-col w-full min-h-screen font-['Poppins',sans-serif] text-on-surface bg-surface">
       <SEOHead
-        title="Contact Us — ProblemAtlas"
-        description="Get in touch with the ProblemAtlas team for enterprise scouting, research dataset partnerships, or platform inquiries."
-        canonicalUrl="https://problematlas.com/contact"
+        title="Contact Us — Stuckhere"
+        description="Get in touch with the Stuckhere team for enterprise scouting, research dataset partnerships, or platform inquiries."
+        canonicalUrl="https://stuckhere.com/contact"
         ogType="website"
-        keywords={["contact problematlas", "enterprise scouting inquiry", "problem bounties support", "research partnerships"]}
+        keywords={["contact stuckhere", "enterprise scouting inquiry", "problem bounties support", "research partnerships"]}
       />      {/* ── Top Header Section ───────────────────────────────────────────── */}
       <div className="w-full bg-gradient-to-b from-surface via-surface-container-lowest to-surface pt-8 pb-5 sm:pt-12 sm:pb-8 border-b border-outline-variant/20 relative overflow-hidden">
         <div className="absolute -top-32 -left-32 w-96 h-96 bg-primary/10 rounded-full blur-3xl pointer-events-none" />

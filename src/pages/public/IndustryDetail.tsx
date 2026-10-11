@@ -325,7 +325,7 @@ export const IndustryDetail: React.FC = () => {
       <SEOHead
         title={`${industry.name} Problem Statements & Startup Opportunities`}
         description={industry.description || `Explore verified real-world operational bottlenecks, clinical friction, and enterprise demand signals in ${industry.name}.`}
-        canonicalUrl={`https://problematlas.com/industries/${industrySlug}`}
+        canonicalUrl={`https://stuckhere.com/industries/${industrySlug}`}
         ogType="website"
         keywords={[industry.name, `${industry.name} problems`, `${industry.name} startup ideas`, "industry bottlenecks", "market pain points", "venture opportunities"]}
         jsonLd={[
@@ -334,12 +334,12 @@ export const IndustryDetail: React.FC = () => {
             "@type": "CollectionPage",
             "name": `${industry.name} Problem Statements`,
             "description": industry.description,
-            "url": `https://problematlas.com/industries/${industrySlug}`,
+            "url": `https://stuckhere.com/industries/${industrySlug}`,
             "numberOfItems": problemsList.length,
             "publisher": {
               "@type": "Organization",
-              "name": "ProblemAtlas",
-              "url": "https://problematlas.com"
+              "name": "Stuckhere",
+              "url": "https://stuckhere.com"
             }
           },
           {
@@ -350,19 +350,19 @@ export const IndustryDetail: React.FC = () => {
                 "@type": "ListItem",
                 "position": 1,
                 "name": "Home",
-                "item": "https://problematlas.com/"
+                "item": "https://stuckhere.com/"
               },
               {
                 "@type": "ListItem",
                 "position": 2,
                 "name": "Industries",
-                "item": "https://problematlas.com/industries"
+                "item": "https://stuckhere.com/industries"
               },
               {
                 "@type": "ListItem",
                 "position": 3,
                 "name": industry.name,
-                "item": `https://problematlas.com/industries/${industrySlug}`
+                "item": `https://stuckhere.com/industries/${industrySlug}`
               }
             ]
           }

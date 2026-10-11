@@ -56,7 +56,7 @@ export const Navbar: React.FC = () => {
         <div className="flex items-center gap-8">
           <Link to="/" className="flex items-center group">
             <span className="font-headline-sm text-xl md:text-2xl tracking-tight text-on-surface font-extrabold flex items-center transition-transform group-hover:scale-[1.02]">
-              Problem<span className="text-primary ml-0.5">Atlas</span>
+              Stuck<span className="text-primary ml-0.5">here</span>
             </span>
           </Link>
 
@@ -89,6 +89,13 @@ export const Navbar: React.FC = () => {
                 className="text-body-md font-body-md text-on-surface-variant hover:text-primary transition-colors hidden sm:block px-2.5 py-1"
               >
                 Dashboard
+              </Link>
+            ) : location.pathname === "/login" ? (
+              <Link
+                to="/register"
+                className="text-body-md font-body-md text-primary hover:text-primary-container transition-colors px-3 py-1.5 font-semibold"
+              >
+                Sign up
               </Link>
             ) : (
               <Link
@@ -329,11 +336,11 @@ export const Navbar: React.FC = () => {
             ) : (
               <div className="flex items-center gap-2 pt-1">
                 <Link
-                  to="/login"
+                  to={location.pathname === "/login" ? "/register" : "/login"}
                   onClick={() => setMobileMenuOpen(false)}
                   className="flex-1 text-center py-2.5 rounded-xl border border-outline-variant/30 text-xs font-bold text-on-surface hover:bg-surface-container-low transition-colors"
                 >
-                  Log in
+                  {location.pathname === "/login" ? "Sign up" : "Log in"}
                 </Link>
                 <Link
                   to="/submit"

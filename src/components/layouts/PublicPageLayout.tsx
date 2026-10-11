@@ -44,11 +44,10 @@ export function PublicPageLayout({ children }: { children: React.ReactNode }) {
       <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-md">
         <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 font-semibold text-foreground">
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-              <Zap className="h-4 w-4" />
-            </div>
-            <span className="text-sm font-bold tracking-tight">ProblemAtlas</span>
+          <Link to="/" className="flex items-center group font-semibold text-foreground">
+            <span className="font-headline-sm text-lg md:text-xl font-extrabold tracking-tight flex items-center transition-transform group-hover:scale-[1.02]">
+              Stuck<span className="text-primary ml-0.5">here</span>
+            </span>
           </Link>
 
           {/* Desktop nav */}
@@ -171,11 +170,10 @@ export function PublicPageLayout({ children }: { children: React.ReactNode }) {
         <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
           <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
             <div>
-              <Link to="/" className="flex items-center gap-2 font-bold text-foreground">
-                <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
-                  <Zap className="h-3.5 w-3.5" />
-                </div>
-                ProblemAtlas
+              <Link to="/" className="flex items-center group font-bold text-foreground">
+                <span className="font-headline-sm text-lg md:text-xl font-extrabold tracking-tight flex items-center transition-transform group-hover:scale-[1.02]">
+                  Stuck<span className="text-primary ml-0.5">here</span>
+                </span>
               </Link>
               <p className="mt-1 text-sm text-muted-foreground">
                 Every Great Innovation Starts With A Problem.
@@ -189,7 +187,7 @@ export function PublicPageLayout({ children }: { children: React.ReactNode }) {
             </div>
           </div>
           <div className="mt-8 border-t border-border pt-6 text-xs text-muted-foreground">
-            © {new Date().getFullYear()} ProblemAtlas. All rights reserved.
+            © {new Date().getFullYear()} Stuckhere. All rights reserved.
           </div>
         </div>
       </footer>

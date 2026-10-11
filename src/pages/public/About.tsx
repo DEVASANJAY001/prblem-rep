@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { usePageContent } from "@/hooks/usePageContent";
-import { ShieldCheck, Check, ArrowRight, Sparkles, Compass, Users, Target } from "lucide-react";
+import { ShieldCheck, Check, ArrowRight, Sparkles, Users, Target } from "lucide-react";
 import { SEOHead } from "@/components/common/SEOHead";
 
 export const About: React.FC = () => {
@@ -10,32 +10,32 @@ export const About: React.FC = () => {
   const body = getField(
     "mission",
     "mission_body",
-    "ProblemAtlas is dedicated to accelerating human progress by categorizing, quantifying, and distributing the most urgent real-world problems to founders, researchers, and builders."
+    "Stuckhere is dedicated to accelerating human progress by categorizing, quantifying, and distributing the most urgent real-world problems to founders, researchers, and builders."
   );
 
   return (
     <div className="flex flex-col w-full min-h-screen font-['Poppins',sans-serif] text-on-surface bg-surface">
       {/* SEO: AboutPage + Organization schema */}
       <SEOHead
-        title="About ProblemAtlas — Mapping the World's Unsolved Problems"
-        description="ProblemAtlas is dedicated to accelerating human progress by categorizing, quantifying, and distributing the most urgent real-world problems to founders, researchers, and builders."
-        canonicalUrl="https://problematlas.com/about"
+        title="About Stuckhere — Mapping the World's Unsolved Problems"
+        description="Stuckhere is dedicated to accelerating human progress by categorizing, quantifying, and distributing the most urgent real-world problems to founders, researchers, and builders."
+        canonicalUrl="https://stuckhere.com/about"
         ogType="website"
-        keywords={["about problematlas", "problem intelligence", "startup incubator", "open problem registry", "innovation framework"]}
+        keywords={["about stuckhere", "problem intelligence", "startup incubator", "open problem registry", "innovation framework"]}
         jsonLd={{
           "@context": "https://schema.org",
           "@type": "AboutPage",
-          "name": "About ProblemAtlas",
-          "description": "ProblemAtlas is the open problem intelligence platform categorizing and quantifying real-world problems for founders and researchers.",
-          "url": "https://problematlas.com/about",
+          "name": "About Stuckhere",
+          "description": "Stuckhere is the open problem intelligence platform categorizing and quantifying real-world problems for founders and researchers.",
+          "url": "https://stuckhere.com/about",
           "mainEntity": {
             "@type": "Organization",
-            "name": "ProblemAtlas",
-            "url": "https://problematlas.com",
+            "name": "Stuckhere",
+            "url": "https://stuckhere.com",
             "description": "Open problem intelligence platform.",
             "founder": {
               "@type": "Organization",
-              "name": "ProblemAtlas Core Team"
+              "name": "Stuckhere Core Team"
             }
           }
         }}
@@ -53,7 +53,7 @@ export const About: React.FC = () => {
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 sm:gap-4">
             <div>
               <h1 className="text-2xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-on-surface">
-                {loading ? "About ProblemAtlas" : headline}
+                {loading ? "About Stuckhere" : headline}
               </h1>
               <p className="text-on-surface-variant text-xs sm:text-sm md:text-base mt-1 sm:mt-2 max-w-2xl font-normal leading-relaxed">
                 Every great innovation starts with a problem — not a product. We are building the open problem registry for humanity.
@@ -77,7 +77,7 @@ export const About: React.FC = () => {
           {/* Mission Card */}
           <div className="rounded-2xl border border-outline-variant/30 bg-surface-container-lowest p-4 sm:p-8 shadow-xs space-y-3 sm:space-y-4">
             <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
-              <Compass className="w-4 h-4 sm:w-5 sm:h-5" />
+              <Target className="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
             <h2 className="text-base sm:text-xl font-bold text-on-surface">Our Core Mission</h2>
             <p className="text-xs sm:text-sm text-on-surface-variant leading-relaxed">

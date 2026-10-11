@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { Lock, ArrowRight, Compass, Shield } from "lucide-react";
+import { Lock, ArrowRight, Shield } from "lucide-react";
 import { HumanVerification } from "@/components/common/HumanVerification";
 
 export const AdminLogin: React.FC = () => {
@@ -39,22 +39,23 @@ export const AdminLogin: React.FC = () => {
   return (
     <div className="bg-inverse-surface font-body-md text-inverse-on-surface min-h-screen flex flex-col items-center justify-center p-4">
       {/* Top Left Brand */}
-      <div className="fixed top-8 left-8 flex items-center gap-2">
-        <div className="w-8 h-8 rounded-lg bg-primary text-on-primary flex items-center justify-center font-bold text-sm shadow-sm">
-          PA
-        </div>
-        <span className="font-headline-sm text-headline-sm text-inverse-on-surface">ProblemAtlas</span>
-      </div>
+      <Link to="/" className="fixed top-8 left-8 flex items-center group">
+        <span className="font-headline-sm text-xl md:text-2xl tracking-tight text-inverse-on-surface font-extrabold flex items-center transition-transform group-hover:scale-[1.02]">
+          Stuck<span className="text-primary ml-0.5">here</span>
+        </span>
+      </Link>
 
       <main className="w-full max-w-md">
         <div className="w-full bg-surface rounded-xl shadow-xl p-8 md:p-10 flex flex-col gap-6 relative overflow-hidden text-on-surface border border-outline-variant/30">
           <div className="absolute inset-0 bg-gradient-to-br from-transparent via-primary/5 to-transparent pointer-events-none" />
 
           {/* Logo & Admin Badge */}
-          <div className="flex items-center gap-3 z-10">
-            <div className="w-9 h-9 rounded-lg bg-primary-container text-on-primary flex items-center justify-center shadow-sm">
-              <Compass className="h-5 w-5 text-on-primary" />
-            </div>
+          <div className="flex items-center justify-between z-10">
+            <Link to="/" className="flex items-center group">
+              <span className="font-headline-sm text-xl tracking-tight text-on-surface font-extrabold flex items-center transition-transform group-hover:scale-[1.02]">
+                Stuck<span className="text-primary ml-0.5">here</span>
+              </span>
+            </Link>
             <div className="flex items-center gap-1.5 px-2.5 py-1 bg-surface-container-highest rounded-full">
               <Lock className="h-3 w-3 text-on-surface-variant" />
               <span className="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">
@@ -85,7 +86,7 @@ export const AdminLogin: React.FC = () => {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="admin@problematlas.com"
+                placeholder="admin@stuckhere.com"
                 className="w-full h-11 px-4 bg-surface rounded-lg border border-outline-variant focus:border-primary focus:outline-none font-body-md text-on-surface placeholder:text-outline transition-colors"
               />
             </div>

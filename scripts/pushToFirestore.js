@@ -600,7 +600,7 @@ const SITE_CONTENT = [
             fieldId: "page_title",
             label: "Page Title",
             type: "text",
-            value: "Explore Problem Atlas",
+            value: "Explore Stuckhere",
           },
           {
             fieldId: "page_subtitle",
@@ -726,11 +726,11 @@ const USERS = [
   {
     uid: "admin_1",
     name: "System Master Admin",
-    email: "admin@problematlas.com",
+    email: "admin@stuckhere.com",
     photoURL:
       "https://lh3.googleusercontent.com/aida-public/AB6AXuCoYpAH-FSaYi5CgZBBvvPOXYceP0W0FKdVidoUp_b2jxBlV5qDa9fQjPEKjXBz7c8A8Z5Kbo6Shz0oR48j3V9WAgJ69ojmqnFmw3-pp8m9LfzZSEaZWGSWnelGeNA8sPu1rnGH4MG28rD1ZSkzTbTMPX5a8aA1RaKSirBt2Qn9_vI1fTOg-i6Ukc6q7Tx3sZF-pewRUQU3Q9tKwmKAcIReNTO6GyJkbsEF04cIr5IZu9zxcpJhixo",
     role: "admin",
-    headline: "ProblemAtlas Core Architect & Lead Moderator",
+    headline: "Stuckhere Core Architect & Lead Moderator",
     badges: ["Verified Staff", "Founding Architect", "Super Admin"],
     counts: {
       problemsSubmitted: 18,

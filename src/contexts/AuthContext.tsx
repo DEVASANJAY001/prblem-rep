@@ -221,7 +221,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       photoURL: getDefaultAvatar(uName, email),
       role: "user",
       headline: "Problem Explorer",
-      bio: "Joined ProblemAtlas to find and submit real problems.",
+      bio: "Joined Stuckhere to find and submit real problems.",
       badges: ["New Member"],
       counts: { problemsSubmitted: 0, problemsApproved: 0, votes: 0, comments: 0 },
       createdAt: new Date().toISOString(),

@@ -44,7 +44,7 @@ export function scoreProblemSubmission(data: {
         businessPotential: 10,
         aiConfidence: 95,
         overall: 15,
-        summaryFeedback: "Submission flagged for low quality or spam triggers. Does not meet ProblemAtlas verification standards.",
+        summaryFeedback: "Submission flagged for low quality or spam triggers. Does not meet Stuckhere verification standards.",
       },
       painScore: 12,
       opportunityScore: 10,

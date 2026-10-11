@@ -19,14 +19,14 @@ export const Terms: React.FC = () => {
   return (
     <div className="flex flex-col w-full min-h-screen font-['Poppins',sans-serif] text-on-surface bg-surface selection:bg-primary/15 selection:text-primary">
       <SEOHead
-        title="Terms of Service — ProblemAtlas"
-        description="Official Terms of Service for ProblemAtlas. Learn about acceptable use standards, contributor verification guidelines, open problem licenses, and 100% solver IP protection."
-        canonicalUrl="https://problematlas.com/terms"
+        title="Terms of Service — Stuckhere"
+        description="Official Terms of Service for Stuckhere. Learn about acceptable use standards, contributor verification guidelines, open problem licenses, and 100% solver IP protection."
+        canonicalUrl="https://stuckhere.com/terms"
         ogType="website"
         keywords={[
           "terms of service",
           "user agreement",
-          "ProblemAtlas terms",
+          "Stuckhere terms",
           "solver IP rights",
           "problem verification standard",
           "acceptable use policy",
@@ -129,9 +129,9 @@ export const Terms: React.FC = () => {
           </h2>
           <p>
             These Terms of Service (<strong>"Terms"</strong>) constitute a legally binding agreement between you
-            (whether personally or on behalf of an entity) and <strong>ProblemAtlas</strong> (<strong>"we"</strong>,{" "}
+            (whether personally or on behalf of an entity) and <strong>Stuckhere</strong> (<strong>"we"</strong>,{" "}
             <strong>"us"</strong>, or <strong>"our"</strong>), governing your access to and use of{" "}
-            <span className="font-mono text-xs text-primary">problematlas.com</span> and all associated tools,
+            <span className="font-mono text-xs text-primary">stuckhere.com</span> and all associated tools,
             APIs, and services (collectively, the <strong>"Platform"</strong>).
           </p>
           <p>
@@ -158,8 +158,8 @@ export const Terms: React.FC = () => {
           <ul className="space-y-1.5 text-xs sm:text-sm pl-4 list-disc marker:text-primary">
             <li>You agree to provide true, current, and complete registration information.</li>
             <li>You are responsible for safeguarding your credentials and for all activities conducted under your account.</li>
-            <li>You must notify us immediately at <a href="mailto:security@problematlas.com" className="text-primary font-bold hover:underline">security@problematlas.com</a> upon discovering any unauthorized account breach or compromise.</li>
-            <li>ProblemAtlas reserves the right to suspend or terminate accounts that violate security protocols or impersonate other individuals or brands.</li>
+            <li>You must notify us immediately at <a href="mailto:security@stuckhere.com" className="text-primary font-bold hover:underline">security@stuckhere.com</a> upon discovering any unauthorized account breach or compromise.</li>
+            <li>Stuckhere reserves the right to suspend or terminate accounts that violate security protocols or impersonate other individuals or brands.</li>
           </ul>
         </section>
 
@@ -170,7 +170,7 @@ export const Terms: React.FC = () => {
             3. Problem Submission Standards & Diagnostic Verification
           </h2>
           <p>
-            ProblemAtlas is committed to cultivating a high-signal registry of verified human friction. To maintain
+            Stuckhere is committed to cultivating a high-signal registry of verified human friction. To maintain
             editorial integrity, contributors submitting problem statements must adhere to our <strong>10-Point Diagnostic Verification Standard</strong>:
           </p>
 
@@ -214,13 +214,13 @@ export const Terms: React.FC = () => {
             <div className="p-4 rounded-2xl bg-surface-container-lowest border border-outline-variant/30 space-y-2">
               <h3 className="font-bold text-xs uppercase tracking-wider text-primary">A. Solver & Founder Protection (Our Core Principle)</h3>
               <p className="text-xs text-on-surface-variant leading-relaxed">
-                ProblemAtlas exists to ignite venture creation. If you develop a solution, software application,
+                Stuckhere exists to ignite venture creation. If you develop a solution, software application,
                 hardware prototype, machine learning model, pharmaceutical formulation, patentable invention, or
-                commercial business inspired by or addressing a public problem dossier on ProblemAtlas:
+                commercial business inspired by or addressing a public problem dossier on Stuckhere:
               </p>
               <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-950 dark:text-emerald-200 font-medium">
                 <strong>You retain 100% full, exclusive, and unencumbered intellectual property ownership</strong> of all
-                code, designs, patents, trademarks, corporate equity, and revenue generated by your solution. ProblemAtlas
+                code, designs, patents, trademarks, corporate equity, and revenue generated by your solution. Stuckhere
                 makes ZERO claim to your intellectual property, equity, or commercial proceeds.
               </div>
             </div>
@@ -228,7 +228,7 @@ export const Terms: React.FC = () => {
             <div className="p-4 rounded-2xl bg-surface-container-lowest border border-outline-variant/30 space-y-2">
               <h3 className="font-bold text-xs uppercase tracking-wider text-primary">B. Contributor License Grant</h3>
               <p className="text-xs text-on-surface-variant leading-relaxed">
-                By submitting a problem statement, dossier, or empirical citation to ProblemAtlas, you grant ProblemAtlas
+                By submitting a problem statement, dossier, or empirical citation to Stuckhere, you grant Stuckhere
                 a worldwide, non-exclusive, royalty-free, perpetual, and irrevocable license to index, catalog, display,
                 synthesize, translate, and algorithmically score the problem content for public educational and entrepreneurial
                 exploration across the Platform.
@@ -238,9 +238,9 @@ export const Terms: React.FC = () => {
             <div className="p-4 rounded-2xl bg-surface-container-lowest border border-outline-variant/30 space-y-2">
               <h3 className="font-bold text-xs uppercase tracking-wider text-primary">C. Platform Proprietary Rights</h3>
               <p className="text-xs text-on-surface-variant leading-relaxed">
-                The ProblemAtlas platform, including its brand marks, custom logos, visual designs, UI component tokens,
+                The Stuckhere platform, including its brand marks, custom logos, visual designs, UI component tokens,
                 underlying software code, proprietary scoring algorithms (PainScore, Opportunity Index), and ontology
-                taxonomies, are the exclusive intellectual property of ProblemAtlas and protected by international copyright
+                taxonomies, are the exclusive intellectual property of Stuckhere and protected by international copyright
                 and trademark laws.
               </p>
             </div>
@@ -270,16 +270,16 @@ export const Terms: React.FC = () => {
             6. Digital Millennium Copyright Act (DMCA) Notice & Takedown
           </h2>
           <p>
-            We respect the intellectual property rights of others. If you believe that content hosted on ProblemAtlas
+            We respect the intellectual property rights of others. If you believe that content hosted on Stuckhere
             infringes your copyright, submit a written notification to our Designated Copyright Agent at{" "}
-            <a href="mailto:legal@problematlas.com" className="text-primary font-bold hover:underline">
-              legal@problematlas.com
+            <a href="mailto:legal@stuckhere.com" className="text-primary font-bold hover:underline">
+              legal@stuckhere.com
             </a>{" "}
             containing:
           </p>
           <ul className="space-y-1 text-xs pl-4 list-disc marker:text-primary">
             <li>Identification of the copyrighted work claimed to have been infringed.</li>
-            <li>Exact URL or path to the allegedly infringing material on ProblemAtlas.</li>
+            <li>Exact URL or path to the allegedly infringing material on Stuckhere.</li>
             <li>Your physical or electronic signature and direct contact information (email, phone, address).</li>
             <li>A statement of good faith belief that the disputed use is not authorized by the copyright owner, its agent, or the law.</li>
             <li>A statement under penalty of perjury that the information in your notice is accurate.</li>
@@ -295,12 +295,12 @@ export const Terms: React.FC = () => {
           <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-xs space-y-2 text-amber-950 dark:text-amber-200">
             <p className="font-bold">Informational & Exploratory Research Only:</p>
             <p>
-              All quantitative metrics displayed on ProblemAtlas—including Total Addressable Market (TAM) estimates,
+              All quantitative metrics displayed on Stuckhere—including Total Addressable Market (TAM) estimates,
               opportunity scores, willingness-to-pay calculations, and AI-synthesized risk profiles—are algorithmic
               approximations generated for exploratory hypothesis formulation.
             </p>
             <p>
-              ProblemAtlas does NOT provide financial, legal, investment, regulatory, or clinical advice. Solvers and
+              Stuckhere does NOT provide financial, legal, investment, regulatory, or clinical advice. Solvers and
               investors must conduct independent due diligence, regulatory verification, and customer discovery before
               allocating capital or incorporating commercial entities.
             </p>
@@ -317,15 +317,15 @@ export const Terms: React.FC = () => {
             The platform is provided on an "as is" and "as available" basis without warranties of any kind.
           </p>
           <p className="text-xs">
-            To the maximum extent permitted by applicable law, ProblemAtlas and its officers, directors, employees,
+            To the maximum extent permitted by applicable law, Stuckhere and its officers, directors, employees,
             and partners disclaim all express or implied warranties, including merchantability, fitness for a particular
             purpose, non-infringement, and accuracy of user-submitted problem statements.
           </p>
           <p className="text-xs">
-            In no event shall ProblemAtlas be liable for indirect, incidental, special, consequential, or punitive damages
+            In no event shall Stuckhere be liable for indirect, incidental, special, consequential, or punitive damages
             (including loss of profits, data, goodwill, or business opportunity) arising out of or related to your use of
             the platform. In jurisdictions where limitations of liability are restricted, our aggregate liability shall not
-            exceed the greater of fifty U.S. dollars ($50.00 USD) or the total amount paid by you to ProblemAtlas in the
+            exceed the greater of fifty U.S. dollars ($50.00 USD) or the total amount paid by you to Stuckhere in the
             preceding six (6) months.
           </p>
         </section>
@@ -337,14 +337,14 @@ export const Terms: React.FC = () => {
             9. Indemnification & Dispute Resolution
           </h2>
           <p>
-            You agree to defend, indemnify, and hold harmless ProblemAtlas against any claims, liabilities, damages,
+            You agree to defend, indemnify, and hold harmless Stuckhere against any claims, liabilities, damages,
             or expenses (including reasonable legal fees) arising from your breach of these Terms, unauthorized submission
             of proprietary trade secrets, or infringement of third-party rights.
           </p>
           <p>
             <strong>Mandatory Informal Negotiation:</strong> Prior to initiating arbitration or legal proceedings, both
             parties agree to engage in good-faith informal negotiations for at least 30 calendar days by providing written
-            notice to <a href="mailto:legal@problematlas.com" className="text-primary font-bold hover:underline">legal@problematlas.com</a>.
+            notice to <a href="mailto:legal@stuckhere.com" className="text-primary font-bold hover:underline">legal@stuckhere.com</a>.
           </p>
         </section>
 
@@ -371,7 +371,7 @@ export const Terms: React.FC = () => {
             <p className="text-xs text-on-surface-variant">Our legal team is available to assist enterprise partners and founders.</p>
           </div>
           <a
-            href="mailto:legal@problematlas.com"
+            href="mailto:legal@stuckhere.com"
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary text-white text-xs font-bold hover:bg-primary/90 transition-all shadow-xs shrink-0"
           >
             <span>Contact Legal Team</span>

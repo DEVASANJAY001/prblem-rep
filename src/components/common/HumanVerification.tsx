@@ -111,12 +111,12 @@ export const HumanVerification: React.FC<HumanVerificationProps> = ({
     <div className={`flex flex-col gap-2 ${className}`}>
       {/* ── Main Checkbox Widget ────────────────────────────────────────────── */}
       <div
-        className={`w-full max-w-[320px] p-3 rounded-2xl border transition-all duration-300 flex items-center justify-between gap-3 shadow-2xs select-none ${
+        className={`w-full p-2.5 rounded-xl border transition-all duration-300 flex items-center justify-between gap-3 shadow-2xs select-none ${
           status === "verified"
-            ? "bg-emerald-50/70 border-emerald-300 text-emerald-950"
+            ? "bg-emerald-50/70 border-emerald-300 text-emerald-950 dark:bg-emerald-950/30 dark:border-emerald-700/50 dark:text-emerald-200"
             : status === "error"
-            ? "bg-rose-50/70 border-rose-300 text-rose-950"
-            : "bg-surface-container-lowest border-outline-variant/40 text-on-surface hover:border-primary/40 hover:bg-surface-container/20"
+            ? "bg-rose-50/70 border-rose-300 text-rose-950 dark:bg-rose-950/30 dark:border-rose-700/50 dark:text-rose-200"
+            : "bg-surface-container-lowest/70 dark:bg-surface-container/40 border-outline-variant/35 text-on-surface hover:border-primary/40 hover:bg-surface-container/30"
         }`}
       >
         {/* Interactive Checkbox */}
@@ -152,7 +152,7 @@ export const HumanVerification: React.FC<HumanVerificationProps> = ({
         <div className="flex flex-col items-end shrink-0 text-right opacity-80">
           <div className="flex items-center gap-1 text-[10px] font-bold text-primary">
             <ShieldCheck className="w-3.5 h-3.5 text-primary" />
-            <span>ProblemAtlas</span>
+            <span>Stuckhere</span>
           </div>
           <span className="text-[8px] text-on-surface-variant">Bot Shield</span>
         </div>

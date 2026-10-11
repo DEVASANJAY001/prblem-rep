@@ -19,8 +19,7 @@ const Companies = lazy(() => import("@/pages/public/Companies").then((m) => ({ d
 const Research = lazy(() => import("@/pages/public/Research").then((m) => ({ default: m.Research })));
 const Community = lazy(() => import("@/pages/public/Community").then((m) => ({ default: m.Community })));
 const About = lazy(() => import("@/pages/public/About").then((m) => ({ default: m.About })));
-const Login = lazy(() => import("@/pages/public/Login").then((m) => ({ default: m.Login })));
-const Register = lazy(() => import("@/pages/public/Register").then((m) => ({ default: m.Register })));
+const AuthPage = lazy(() => import("@/pages/public/AuthPage").then((m) => ({ default: m.AuthPage })));
 const SubmitProblem = lazy(() => import("@/pages/public/SubmitProblem").then((m) => ({ default: m.SubmitProblem })));
 const Dashboard = lazy(() => import("@/pages/public/Dashboard").then((m) => ({ default: m.Dashboard })));
 const SavedProblems = lazy(() => import("@/pages/public/SavedProblems").then((m) => ({ default: m.SavedProblems })));
@@ -84,8 +83,8 @@ export default function App() {
                 <Route path="/community" element={<PublicLayout><Community /></PublicLayout>} />
                 <Route path="/leaderboard" element={<PublicLayout><Community /></PublicLayout>} />
                 <Route path="/about" element={<PublicLayout><About /></PublicLayout>} />
-                <Route path="/login" element={<PublicLayout><Login /></PublicLayout>} />
-                <Route path="/register" element={<PublicLayout><Register /></PublicLayout>} />
+                <Route path="/login" element={<PublicLayout><AuthPage defaultMode="login" /></PublicLayout>} />
+                <Route path="/register" element={<PublicLayout><AuthPage defaultMode="register" /></PublicLayout>} />
                 <Route path="/submit" element={<ProtectedRoute><PublicLayout><SubmitProblem /></PublicLayout></ProtectedRoute>} />
                 <Route path="/dashboard" element={<ProtectedRoute><PublicLayout><Dashboard /></PublicLayout></ProtectedRoute>} />
                 <Route path="/saved" element={<PublicLayout><SavedProblems /></PublicLayout>} />

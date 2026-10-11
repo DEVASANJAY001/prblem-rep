@@ -9,7 +9,7 @@ export function generateStartupBrief(problem: ProblemDoc): StartupBrief {
     problemId: problem.id,
     problemTitle: problem.title,
     industry: problem.industry,
-    executiveSummary: `ProblemAtlas Startup Intelligence has synthesized a verified commercial blueprint for: "${problem.title}". With an acute Pain Score of ${problem.painScore}/100 and Opportunity Score of ${problem.opportunityScore}/100, this problem exhibits strong indicators for venture-scale commercialization via automated workflows and specialized domain infrastructure.`,
+    executiveSummary: `Stuckhere Startup Intelligence has synthesized a verified commercial blueprint for: "${problem.title}". With an acute Pain Score of ${problem.painScore}/100 and Opportunity Score of ${problem.opportunityScore}/100, this problem exhibits strong indicators for venture-scale commercialization via automated workflows and specialized domain infrastructure.`,
     solutionHypotheses: [
       {
         name: `Automated ${problem.industry.split(" ")[0]} Intelligence Copilot`,
@@ -57,7 +57,7 @@ export function generateStartupBrief(problem: ProblemDoc): StartupBrief {
         phase: "Phase 1: Zero-to-One Wedge (Months 1-4)",
         milestone: "10 Design Partners & Reference Case Studies",
         keyActions: [
-          "Conduct 30 deep-dive customer discovery calls using ProblemAtlas verified respondents",
+          "Conduct 30 deep-dive customer discovery calls using Stuckhere verified respondents",
           "Deploy manual concierge MVP solving the core pain point in under 48 hours",
           "Secure 5 signed letters of intent (LOI) with upfront pilot deposits",
         ],

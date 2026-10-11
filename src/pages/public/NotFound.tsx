@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { SEOHead } from "@/components/common/SEOHead";
 import {
-  Compass,
   Search,
   ArrowRight,
   Home,
@@ -36,7 +35,7 @@ export const NotFound: React.FC = () => {
     <div className="min-h-[75vh] w-full flex items-center justify-center px-4 py-16 font-['Poppins',sans-serif] text-on-surface">
       <SEOHead
         title="404 — Page Not Found"
-        description="The requested page or problem statement could not be found on ProblemAtlas."
+        description="The requested page or problem statement could not be found on Stuckhere."
         noindex
       />
 
@@ -44,7 +43,7 @@ export const NotFound: React.FC = () => {
         {/* Visual Badge */}
         <div className="relative inline-block">
           <div className="w-20 h-20 rounded-3xl bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto text-primary shadow-lg shadow-primary/5">
-            <Compass className="w-10 h-10 animate-spin-slow" />
+            <HelpCircle className="w-10 h-10 text-primary" />
           </div>
           <span className="absolute -bottom-2 -right-2 px-2.5 py-0.5 rounded-full bg-rose-500 text-white text-[11px] font-black tracking-widest uppercase shadow-sm">
             404
@@ -54,7 +53,7 @@ export const NotFound: React.FC = () => {
         {/* Heading & Subtitle */}
         <div className="space-y-2">
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-on-surface tracking-tight">
-            Lost on the Atlas?
+            Stuck somewhere?
           </h1>
           <p className="text-sm sm:text-base text-on-surface-variant max-w-md mx-auto leading-relaxed">
             The problem statement, dossier, or page you were looking for doesn't exist, was renamed, or has been archived.

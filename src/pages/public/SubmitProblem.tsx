@@ -521,7 +521,7 @@ export const SubmitProblem: React.FC = () => {
       {/* noindex: form page — not content for search engines */}
       <SEOHead
         title="Submit a Verified Problem Statement"
-        description="Submit a verified real-world problem statement to ProblemAtlas. Help the community discover startup opportunities and innovation challenges."
+        description="Submit a verified real-world problem statement to Stuckhere. Help the community discover startup opportunities and innovation challenges."
         noindex
       />
       {/* ── TOP HERO HEADER & BREADCRUMBS ─────────────────────────────────── */}

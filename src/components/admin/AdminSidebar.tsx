@@ -114,12 +114,10 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
       <div className={`p-4 flex items-center ${isExpanded ? "justify-between" : "justify-center"} border-b border-outline-variant/30 h-16`}>
         {isExpanded ? (
           <>
-            <Link to="/admin" className="flex items-center gap-2.5 min-w-0">
-              <div className="w-8 h-8 rounded-lg bg-primary text-on-primary flex items-center justify-center font-bold text-sm shadow-sm shrink-0">
-                PA
-              </div>
-              <span className="font-headline-sm text-base font-bold text-on-surface tracking-tight truncate">
-                Admin
+            <Link to="/admin" className="flex items-center min-w-0 group">
+              <span className="font-headline-sm text-base font-extrabold text-on-surface tracking-tight truncate flex items-center">
+                Stuck<span className="text-primary ml-0.5">here</span>
+                <span className="ml-1.5 text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-primary/10 text-primary uppercase">Admin</span>
               </span>
             </Link>
             <div className="flex items-center gap-1">

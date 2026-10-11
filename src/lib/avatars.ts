@@ -1,4 +1,4 @@
-// Avatar presets and helper utilities for ProblemAtlas
+// Avatar presets and helper utilities for Stuckhere
 
 export interface AvatarPreset {
   id: string;

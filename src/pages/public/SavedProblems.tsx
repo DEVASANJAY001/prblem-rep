@@ -127,7 +127,7 @@ export const SavedProblems: React.FC = () => {
       {/* noindex: user-specific bookmarks page, not searchable content */}
       <SEOHead
         title="Saved Problems"
-        description="Your saved and bookmarked problem statements on ProblemAtlas."
+        description="Your saved and bookmarked problem statements on Stuckhere."
         noindex
       />
       {/* ── Top Header & Integrated Filter Suite ────────────────────────── */}

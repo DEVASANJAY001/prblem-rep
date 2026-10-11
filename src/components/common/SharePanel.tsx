@@ -18,12 +18,12 @@ export const SharePanel: React.FC<SharePanelProps> = ({ url, title, industry, cl
 
   const encodedUrl = encodeURIComponent(url);
   const tweetText = encodeURIComponent(
-    `Unsolved: "${title}"\n\nCould this be the next startup opportunity?\n${url}\n\nvia @ProblemAtlas`
+    `Unsolved: "${title}"\n\nCould this be the next startup opportunity?\n${url}\n\nvia @Stuckhere`
   );
   const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`;
   const twitterUrl = `https://twitter.com/intent/tweet?text=${tweetText}`;
   // WhatsApp: wa.me share deeplink works on mobile + web
-  const whatsAppText = encodeURIComponent(`Check out this problem on ProblemAtlas: "${title}"\n${url}`);
+  const whatsAppText = encodeURIComponent(`Check out this problem on Stuckhere: "${title}"\n${url}`);
   const whatsAppUrl = `https://wa.me/?text=${whatsAppText}`;
 
   const handleCopy = async () => {

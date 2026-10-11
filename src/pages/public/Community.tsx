@@ -185,20 +185,20 @@ export const Community: React.FC = () => {
       {/* SEO: Community WebPage schema */}
       <SEOHead
         title="Community \u2014 Problem Finders, Builders & Validators"
-        description={`Join ${users.length || "thousands of"} problem finders, startup builders, and domain validators on ProblemAtlas. Climb the leaderboard, explore trending problems, and connect with innovators.`}
-        canonicalUrl="https://problematlas.com/community"
+        description={`Join ${users.length || "thousands of"} problem finders, startup builders, and domain validators on Stuckhere. Climb the leaderboard, explore trending problems, and connect with innovators.`}
+        canonicalUrl="https://stuckhere.com/community"
         ogType="website"
         keywords={["problem solving community", "startup community", "innovation leaderboard", "problem validators", "startup builders", "hackathon community"]}
         jsonLd={{
           "@context": "https://schema.org",
           "@type": "WebPage",
-          "name": "ProblemAtlas Community",
-          "description": "Leaderboard, activity feed, and member directory for the ProblemAtlas problem-solving community.",
-          "url": "https://problematlas.com/community",
+          "name": "Stuckhere Community",
+          "description": "Leaderboard, activity feed, and member directory for the Stuckhere problem-solving community.",
+          "url": "https://stuckhere.com/community",
           "isPartOf": {
             "@type": "WebSite",
-            "name": "ProblemAtlas",
-            "url": "https://problematlas.com"
+            "name": "Stuckhere",
+            "url": "https://stuckhere.com"
           }
         }}
       />
@@ -219,7 +219,7 @@ export const Community: React.FC = () => {
                 Community
               </h1>
               <p className="text-on-surface-variant text-xs sm:text-sm mt-1 max-w-xl">
-                Problem finders, startup builders, and validators shaping the ProblemAtlas ecosystem.
+                Problem finders, startup builders, and validators shaping the Stuckhere ecosystem.
               </p>
             </div>
 

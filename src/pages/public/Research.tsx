@@ -53,7 +53,7 @@ export const Research: React.FC = () => {
       <SEOHead
         title="Research & Open Datasets — Empirical Evidence for Problems"
         description="Explore peer-reviewed research papers, clinical reports, and empirical datasets backing verified problems across AI, healthcare, clean energy, and agriculture."
-        canonicalUrl="https://problematlas.com/research"
+        canonicalUrl="https://stuckhere.com/research"
         ogType="website"
         keywords={["research papers", "open datasets", "empirical evidence", "academic problem validation", "clinical benchmarks", "scientific datasets"]}
         jsonLd={{
@@ -61,12 +61,12 @@ export const Research: React.FC = () => {
           "@type": "CollectionPage",
           "name": "Research & Open Datasets",
           "description": "Peer-reviewed research papers, clinical reports, and empirical datasets backing verified real-world problems.",
-          "url": "https://problematlas.com/research",
+          "url": "https://stuckhere.com/research",
           "numberOfItems": researchList.length,
           "publisher": {
             "@type": "Organization",
-            "name": "ProblemAtlas",
-            "url": "https://problematlas.com"
+            "name": "Stuckhere",
+            "url": "https://stuckhere.com"
           }
         }}
       />

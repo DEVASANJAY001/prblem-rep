@@ -33,6 +33,7 @@ import {
   recordLocalInterest,
 } from "@/lib/storage";
 import { REAL_PROBLEMS } from "@/data/realProductionData";
+import { swrCache } from "@/lib/swrCache";
 
 const PROBLEMS_COLLECTION = "problems";
 
@@ -43,6 +44,7 @@ interface StreamSubscription<T> {
   unsubscribe: () => void;
   listeners: Set<(data: T) => void>;
   latestData: T | null;
+  teardownTimer?: any;
 }
 
 const docStreams = new Map<string, StreamSubscription<ProblemDoc | null>>();
@@ -226,17 +228,35 @@ export async function createProblem(
   return { success: true, problemId: id, aiScores };
 }
 
-import { swrCache } from "@/lib/swrCache";
+// Helper to synchronously sync storage, SWR cache (memory & sessionStorage), and notify multiplexed stream listeners
+function syncProblemCache(problem: ProblemDoc): void {
+  if (!problem || !problem.id) return;
+  saveLocalProblem(problem);
+  swrCache.set(`problem_${problem.id}`, problem, 300_000);
+  const stream = docStreams.get(problem.id);
+  if (stream) {
+    stream.latestData = problem;
+    stream.listeners.forEach((cb) => cb(problem));
+  }
+}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 2. Optimized Read with Local-First & In-Memory SWR Cache (0 Duplicates)
 // ─────────────────────────────────────────────────────────────────────────────
 export async function getProblemById(id: string): Promise<ProblemDoc | null> {
+  // 1. Check active stream latest data
   const cachedStream = docStreams.get(id);
   if (cachedStream && cachedStream.latestData) {
     return cachedStream.latestData;
   }
 
+  // 2. Check SWR cache (Tier 1 Memory LRU + Tier 2 SessionStorage)
+  const cachedSWR = swrCache.get<ProblemDoc | null>(`problem_${id}`);
+  if (cachedSWR) {
+    return cachedSWR;
+  }
+
+  // 3. Fallback to SWR fetcher with 5-minute TTL (300_000ms)
   return swrCache.fetch<ProblemDoc | null>(
     `problem_${id}`,
     async () => {
@@ -258,7 +278,7 @@ export async function getProblemById(id: string): Promise<ProblemDoc | null> {
       }
       return null;
     },
-    20_000 // 20s in-memory SWR TTL
+    300_000 // 5 minutes SWR TTL
   );
 }
 
@@ -272,11 +292,14 @@ export async function updateProblemModule<K extends keyof ProblemDoc>(
 ): Promise<boolean> {
   // 1. Optimistically update local storage
   updateFullProblemInStorage(problemId, { [moduleKey]: moduleData });
+  const updated = getLocalProblemById(problemId);
+  if (updated) {
+    syncProblemCache(updated);
+  } else {
+    swrCache.invalidate(`problem_${problemId}`);
+  }
 
-  // 2. Invalidate SWR cache for this problem
-  swrCache.invalidate(`problem_${problemId}`);
-
-  // 3. Direct field-level atomic write to Firestore (0 duplicate field writes)
+  // 2. Direct field-level atomic write to Firestore (0 duplicate field writes)
   try {
     if (db && typeof doc === "function") {
       const problemRef = doc(db, PROBLEMS_COLLECTION, problemId);
@@ -300,58 +323,99 @@ export function subscribeProblemById(
   id: string,
   callback: (problem: ProblemDoc | null) => void
 ): () => void {
-  // Always emit local data immediately
-  const initial = getLocalProblemById(id);
-  callback(initial);
+  // 1. Instantly emit cached data (0ms latency, zero layout shift)
+  const streamData = docStreams.get(id)?.latestData;
+  const swrData = swrCache.get<ProblemDoc>(`problem_${id}`);
+  const localData = getLocalProblemById(id);
+  const initial = streamData || swrData || localData || null;
+
+  if (initial) {
+    if (!swrData) {
+      swrCache.set(`problem_${id}`, initial, 300_000);
+    }
+    callback(initial);
+  } else {
+    callback(null);
+  }
 
   if (!db || typeof doc !== "function") {
     return () => {};
   }
 
   let stream = docStreams.get(id);
-  if (!stream) {
-    const ref = doc(db, PROBLEMS_COLLECTION, id);
-    const listeners = new Set<(problem: ProblemDoc | null) => void>();
-    listeners.add(callback);
 
-    const unsubscribe = onSnapshot(
-      ref,
-      (snap) => {
-        if (snap.exists()) {
-          const data = snap.data() as ProblemDoc;
-          saveLocalProblem(data);
-          const currentStream = docStreams.get(id);
-          if (currentStream) {
-            currentStream.latestData = data;
-            currentStream.listeners.forEach((cb) => cb(data));
-          }
-        }
-      },
-      (err) => {
-        console.warn("Problem detail snapshot warning:", err.message);
-      }
-    );
-
-    stream = { unsubscribe, listeners, latestData: initial };
-    docStreams.set(id, stream);
-  } else {
+  if (stream) {
+    // If stream is pending teardown, cancel it immediately
+    if (stream.teardownTimer) {
+      clearTimeout(stream.teardownTimer);
+      stream.teardownTimer = undefined;
+    }
     stream.listeners.add(callback);
     if (stream.latestData) {
       callback(stream.latestData);
     }
+  } else {
+    const isCachedFresh = swrCache.has(`problem_${id}`);
+    const listeners = new Set<(problem: ProblemDoc | null) => void>();
+    listeners.add(callback);
+
+    let unsubscribeFirestore = () => {};
+
+    // Only attach new Firestore onSnapshot listener if NOT already fresh in SWR cache
+    // (This guarantees 0 Firestore reads when navigating from /explore to /problem/:id)
+    if (!isCachedFresh) {
+      try {
+        const ref = doc(db, PROBLEMS_COLLECTION, id);
+        unsubscribeFirestore = onSnapshot(
+          ref,
+          (snap) => {
+            if (snap.exists()) {
+              const data = snap.data() as ProblemDoc;
+              saveLocalProblem(data);
+              swrCache.set(`problem_${id}`, data, 300_000);
+              const currentStream = docStreams.get(id);
+              if (currentStream) {
+                currentStream.latestData = data;
+                currentStream.listeners.forEach((cb) => cb(data));
+              }
+            }
+          },
+          (err) => {
+            console.warn("Problem detail snapshot warning:", err.message);
+          }
+        );
+      } catch (err) {
+        console.warn("Problem detail onSnapshot init error:", err);
+      }
+    }
+
+    stream = {
+      unsubscribe: unsubscribeFirestore,
+      listeners,
+      latestData: initial,
+    };
+    docStreams.set(id, stream);
   }
 
+  // Teardown with 120-second keepalive debounce across route transitions
   return () => {
     const currentStream = docStreams.get(id);
     if (currentStream) {
       currentStream.listeners.delete(callback);
       if (currentStream.listeners.size === 0) {
-        try {
-          currentStream.unsubscribe();
-        } catch (e) {
-          console.warn("Doc snapshot unsubscribe notice:", e);
+        if (currentStream.teardownTimer) {
+          clearTimeout(currentStream.teardownTimer);
         }
-        docStreams.delete(id);
+        currentStream.teardownTimer = setTimeout(() => {
+          if (currentStream.listeners.size === 0) {
+            try {
+              currentStream.unsubscribe();
+            } catch (e) {
+              console.warn("Doc snapshot unsubscribe notice:", e);
+            }
+            docStreams.delete(id);
+          }
+        }, 120_000);
       }
     }
   };
@@ -364,39 +428,55 @@ export function subscribeProblems(
   filter: { status?: "approved" | "pending" | "rejected" | "all"; industry?: string; pageLimit?: number } = {},
   callback: (problems: ProblemDoc[]) => void
 ): () => void {
-  // Immediately emit local data for instant UI
-  const local = getLocalProblems({
-    status: filter.status === "all" ? undefined : filter.status,
-    industry: filter.industry,
-  });
-  callback(local);
-
-  if (!db || typeof collection !== "function") {
-    return () => {};
-  }
-
-  // Stable cache key covering all filter params — prevents cache mismatches
+  // Stable query cache key
   const queryKey = JSON.stringify({
     status: filter.status || "all",
     industry: filter.industry || "",
     limit: filter.pageLimit || 100,
   });
+
+  // 1. Immediately emit from in-flight stream, SWR cache, or local storage
+  const streamData = queryStreams.get(queryKey)?.latestData;
+  const swrQueryData = swrCache.get<ProblemDoc[]>(`query_${queryKey}`);
+  const local = getLocalProblems({
+    status: filter.status === "all" ? undefined : filter.status,
+    industry: filter.industry,
+  });
+
+  const initial = streamData || swrQueryData || (local.length > 0 ? local : []);
+  if (initial && initial.length > 0) {
+    callback(initial);
+  } else {
+    callback(local);
+  }
+
+  if (!db || typeof collection !== "function") {
+    return () => {};
+  }
+
   let stream = queryStreams.get(queryKey);
 
-  if (!stream) {
+  if (stream) {
+    // If stream is pending teardown, cancel it immediately
+    if (stream.teardownTimer) {
+      clearTimeout(stream.teardownTimer);
+      stream.teardownTimer = undefined;
+    }
+    stream.listeners.add(callback);
+    if (stream.latestData) {
+      callback(stream.latestData);
+    }
+  } else {
     const colRef = collection(db, PROBLEMS_COLLECTION);
     const listeners = new Set<(problems: ProblemDoc[]) => void>();
     listeners.add(callback);
 
-    // Build query constraints — avoids reading the entire collection
+    // Build query constraints
     const constraints: Parameters<typeof query>[1][] = [];
     if (filter.status && filter.status !== "all") {
       constraints.push(where("status", "==", filter.status));
     }
-    // Always sort newest-first so results are deterministic (Firestore returns
-    // docs in insertion order without orderBy, which is unpredictable at scale)
     constraints.push(orderBy("createdAt", "desc"));
-    // Limit reads to prevent runaway Firestore costs at scale
     constraints.push(limit(filter.pageLimit || 100));
 
     const q = query(colRef, ...constraints);
@@ -416,6 +496,14 @@ export function subscribeProblems(
           status: filter.status === "all" ? undefined : filter.status,
           industry: filter.industry,
         });
+
+        // 1. Cache full query list in SWR (Memory LRU + SessionStorage)
+        swrCache.set(`query_${queryKey}`, mergedList, 300_000);
+
+        // 2. Batch-seed EVERY individual problem into SWR cache
+        // Enables instant 0ms, 0-read opening of /problem/:id and /startup-mode/:id!
+        swrCache.setMany(mergedList, "problem_", 300_000);
+
         const currentStream = queryStreams.get(queryKey);
         if (currentStream) {
           currentStream.latestData = mergedList;
@@ -427,26 +515,29 @@ export function subscribeProblems(
       }
     );
 
-    stream = { unsubscribe, listeners, latestData: local };
+    stream = { unsubscribe, listeners, latestData: initial.length > 0 ? initial : null };
     queryStreams.set(queryKey, stream);
-  } else {
-    stream.listeners.add(callback);
-    if (stream.latestData) {
-      callback(stream.latestData);
-    }
   }
 
+  // Teardown with 120-second keepalive debounce across route transitions
   return () => {
     const currentStream = queryStreams.get(queryKey);
     if (currentStream) {
       currentStream.listeners.delete(callback);
       if (currentStream.listeners.size === 0) {
-        try {
-          currentStream.unsubscribe();
-        } catch (e) {
-          console.warn("Query snapshot unsubscribe notice:", e);
+        if (currentStream.teardownTimer) {
+          clearTimeout(currentStream.teardownTimer);
         }
-        queryStreams.delete(queryKey);
+        currentStream.teardownTimer = setTimeout(() => {
+          if (currentStream.listeners.size === 0) {
+            try {
+              currentStream.unsubscribe();
+            } catch (e) {
+              console.warn("Query snapshot unsubscribe notice:", e);
+            }
+            queryStreams.delete(queryKey);
+          }
+        }, 120_000);
       }
     }
   };
@@ -499,6 +590,8 @@ export async function updateProblemStatus(
   reviewNote?: string
 ): Promise<boolean> {
   updateLocalProblemStatus(problemId, newStatus, reviewNote, adminUser);
+  const updatedProb = getLocalProblemById(problemId);
+  if (updatedProb) syncProblemCache(updatedProb);
 
   try {
     if (db && typeof doc === "function") {
@@ -533,6 +626,8 @@ export async function voteProblem(
   userUid: string = "guest"
 ): Promise<{ upvotes: number; downvotes: number; userVote: "up" | "down" | null }> {
   const result = voteLocalProblem(problemId, voteType, userUid);
+  const updatedProb = getLocalProblemById(problemId);
+  if (updatedProb) syncProblemCache(updatedProb);
 
   try {
     if (db && typeof doc === "function") {
@@ -571,7 +666,7 @@ export async function addComment(
     createdAt: new Date().toISOString(),
   };
 
-  // 1. Update Local Storage
+  // 1. Update Local Storage and SWR Cache
   const local = getLocalProblemById(problemId);
   let updatedComments: ProblemComment[] = [newComment];
   let totalCount = 1;
@@ -582,7 +677,7 @@ export async function addComment(
     local.commentsCount = local.comments.reduce((acc, c) => acc + 1 + (c.replies?.length || 0), 0);
     updatedComments = local.comments;
     totalCount = local.commentsCount;
-    saveLocalProblem(local);
+    syncProblemCache(local);
   }
 
   // 2. Direct atomic update to Firestore with 0 getDoc reads!
@@ -632,7 +727,7 @@ export async function addProblemReply(
       local.commentsCount = local.comments.reduce((acc, c) => acc + 1 + (c.replies?.length || 0), 0);
       updatedComments = local.comments;
       totalCount = local.commentsCount;
-      saveLocalProblem(local);
+      syncProblemCache(local);
     }
   }
 
@@ -661,7 +756,7 @@ export async function toggleCommentLike(
 ): Promise<{ likes: number; liked: boolean }> {
   let result = { likes: 0, liked: false };
 
-  // 1. Update local storage
+  // 1. Update local storage and SWR cache
   const local = getLocalProblemById(problemId);
   let updatedComments: ProblemComment[] = [];
 
@@ -683,7 +778,7 @@ export async function toggleCommentLike(
         }
         target.liked = result.liked;
         updatedComments = local.comments;
-        saveLocalProblem(local);
+        syncProblemCache(local);
       }
     }
   }
@@ -721,7 +816,7 @@ export async function toggleCommentCompanyStatus(
       comment.isInterestedCompany = newStatus;
       if (companyName) comment.companyName = companyName;
       updatedComments = local.comments;
-      saveLocalProblem(local);
+      syncProblemCache(local);
     }
   }
 
@@ -763,6 +858,9 @@ export async function toggleCommunityValidation(
   userUid: string = "guest"
 ): Promise<{ validations: ProblemValidations; userHasValidated: boolean }> {
   const result = toggleLocalValidation(problemId, type, userUid);
+  const updatedProb = getLocalProblemById(problemId);
+  if (updatedProb) syncProblemCache(updatedProb);
+
   try {
     if (db && typeof doc === "function") {
       const problemRef = doc(db, PROBLEMS_COLLECTION, problemId);
@@ -836,7 +934,7 @@ export async function toggleUserInterest(
       isInterested = true;
     }
     count = local.interestedCount;
-    saveLocalProblem(local);
+    syncProblemCache(local);
   }
 
   // Atomic Cloud Firestore update with 0 getDoc reads!
@@ -873,6 +971,12 @@ export async function updateFullProblemDetails(
 ): Promise<boolean> {
   // 1. Update in local storage
   updateFullProblemInStorage(problemId, deltaProblemData);
+  const updatedProb = getLocalProblemById(problemId);
+  if (updatedProb) {
+    syncProblemCache(updatedProb);
+  } else {
+    swrCache.invalidate(`problem_${problemId}`);
+  }
 
   // 2. Clean delta payload to write only specific updated fields
   const cleanPayload = cleanDeltaPayload({
@@ -896,6 +1000,7 @@ export async function updateFullProblemDetails(
 
 export async function deleteProblem(problemId: string): Promise<boolean> {
   deleteProblemFromStorage(problemId);
+  swrCache.invalidate(`problem_${problemId}`);
 
   try {
     if (db && typeof doc === "function") {

@@ -56,7 +56,7 @@ export class ErrorBoundary extends Component<Props, State> {
   };
 
   private handleCopyDiagnostics = () => {
-    const report = `--- ProblemAtlas Error Report ---
+    const report = `--- Stuckhere Error Report ---
 Timestamp: ${new Date().toISOString()}
 URL: ${window.location.href}
 UserAgent: ${navigator.userAgent}

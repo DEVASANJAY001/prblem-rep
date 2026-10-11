@@ -2,7 +2,6 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { SEOHead } from "@/components/common/SEOHead";
 import {
-  Compass,
   ShieldCheck,
   BarChart3,
   Rocket,
@@ -22,7 +21,7 @@ export const Features: React.FC = () => {
       title: "Verifiable Problem Dossiers",
       tagline: "Primary-source backed operational challenges",
       description:
-        "Every problem listed in the Atlas must specify a distinct trigger point, impacted role, and evidence link from clinical audits, financial filings, or domain practitioner reports.",
+        "Every problem listed in Stuckhere must specify a distinct trigger point, impacted role, and evidence link from clinical audits, financial filings, or domain practitioner reports.",
       benefits: [
         "10-point AI diagnostic heuristic screening",
         "Empirical references and primary documentation links",
@@ -75,9 +74,9 @@ export const Features: React.FC = () => {
   return (
     <div className="flex flex-col w-full min-h-screen font-['Poppins',sans-serif] text-on-surface bg-surface">
       <SEOHead
-        title="Platform Features — ProblemAtlas Problem Intelligence"
-        description="Discover how ProblemAtlas structures, verifies, and quantifies real-world problems for founders, researchers, and enterprise teams."
-        canonicalUrl="https://problematlas.com/features"
+        title="Platform Features — Stuckhere Problem Intelligence"
+        description="Discover how Stuckhere structures, verifies, and quantifies real-world problems for founders, researchers, and enterprise teams."
+        canonicalUrl="https://stuckhere.com/features"
         ogType="website"
         keywords={["features", "problem intelligence", "startup validation tools", "pain scoring", "venture thesis builder"]}
       />

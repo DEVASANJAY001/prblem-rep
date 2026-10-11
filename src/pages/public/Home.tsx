@@ -271,23 +271,23 @@ export const Home: React.FC = () => {
     <div className="bg-surface font-body-md text-on-surface antialiased selection:bg-primary/20 selection:text-primary relative overflow-x-hidden min-h-screen">
       {/* SEO: WebSite + SearchAction schema for Google Sitelinks Search Box */}
       <SEOHead
-        title="ProblemAtlas — The World's Problem Intelligence Platform"
+        title="Stuckhere — The World's Problem Intelligence Platform"
         description="Discover, validate and solve real-world verified problems across Healthcare, AI, Energy, FinTech and 140+ industries. The world's largest open registry of startup opportunities."
-        canonicalUrl="https://problematlas.com/"
+        canonicalUrl="https://stuckhere.com/"
         ogType="website"
         keywords={["problem statements", "startup ideas", "verified problems", "innovation platform", "startup opportunities", "hackathon problems", "problem discovery"]}
         jsonLd={[
           {
             "@context": "https://schema.org",
             "@type": "WebSite",
-            "name": "ProblemAtlas",
-            "url": "https://problematlas.com",
+            "name": "Stuckhere",
+            "url": "https://stuckhere.com",
             "description": "The world's largest open registry of verified real-world problems, startup opportunities, and innovation challenges.",
             "potentialAction": {
               "@type": "SearchAction",
               "target": {
                 "@type": "EntryPoint",
-                "urlTemplate": "https://problematlas.com/explore?q={search_term_string}"
+                "urlTemplate": "https://stuckhere.com/explore?q={search_term_string}"
               },
               "query-input": "required name=search_term_string"
             }
@@ -295,12 +295,12 @@ export const Home: React.FC = () => {
           {
             "@context": "https://schema.org",
             "@type": "Organization",
-            "name": "ProblemAtlas",
-            "url": "https://problematlas.com",
+            "name": "Stuckhere",
+            "url": "https://stuckhere.com",
             "description": "Open registry of verified real-world problems curated for startup founders, researchers, and enterprise innovators.",
             "sameAs": [
-              "https://problematlas.com/community",
-              "https://problematlas.com/explore"
+              "https://stuckhere.com/community",
+              "https://stuckhere.com/explore"
             ]
           }
         ]}
@@ -531,7 +531,7 @@ export const Home: React.FC = () => {
             </div>
           </section>
 
-          {/* Section 3: The Organic Problem Atlas */}
+          {/* Section 3: The Organic Stuckhere */}
           <OrganicAtlasSection />
 
           {/* Section 4: Trending Problems */}
@@ -626,7 +626,7 @@ export const Home: React.FC = () => {
                 <div className="text-center max-w-2xl px-4">
                   <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-on-surface mb-2 tracking-tight">Platform Use Cases</h2>
                   <p className="text-xs sm:text-sm md:text-base text-on-surface-variant leading-relaxed">
-                    Explore how different innovators and organizations leverage ProblemAtlas to discover, validate, and solve real-world challenges.
+                    Explore how different innovators and organizations leverage Stuckhere to discover, validate, and solve real-world challenges.
                   </p>
                 </div>
               </div>
@@ -1073,15 +1073,12 @@ export const Home: React.FC = () => {
           </div>
         </div>
         <div className="max-w-[1280px] mx-auto px-4 md:px-8 mt-16 pt-8 border-t border-outline-variant/20 flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-lg bg-primary/20 text-primary flex items-center justify-center font-black text-xs">
-              PA
-            </div>
-            <span className="font-label-sm text-outline font-bold tracking-widest uppercase">
-              ProblemAtlas
+          <Link to="/" className="flex items-center group">
+            <span className="font-headline-sm text-xl md:text-2xl tracking-tight text-on-surface font-extrabold flex items-center transition-transform group-hover:scale-[1.02]">
+              Stuck<span className="text-primary ml-0.5">here</span>
             </span>
-          </div>
-          <p className="text-label-sm text-outline">© 2026 ProblemAtlas. All rights reserved.</p>
+          </Link>
+          <p className="text-label-sm text-outline">© 2026 Stuckhere. All rights reserved.</p>
         </div>
       </footer>
     </div>

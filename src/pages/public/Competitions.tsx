@@ -56,8 +56,8 @@ export const Competitions: React.FC = () => {
       {/* SEO: Competitions & Hackathons CollectionPage */}
       <SEOHead
         title="Innovation Competitions & Problem Bounties"
-        description="Participate in competitive problem-solving challenges, hackathons, and venture bounties with cash prizes and investor backing on ProblemAtlas."
-        canonicalUrl="https://problematlas.com/competitions"
+        description="Participate in competitive problem-solving challenges, hackathons, and venture bounties with cash prizes and investor backing on Stuckhere."
+        canonicalUrl="https://stuckhere.com/competitions"
         ogType="website"
         keywords={["hackathons", "problem bounties", "innovation challenges", "startup competitions", "bounty pool", "solver challenges"]}
         jsonLd={{
@@ -65,12 +65,12 @@ export const Competitions: React.FC = () => {
           "@type": "CollectionPage",
           "name": "Innovation Competitions & Problem Bounties",
           "description": "Competitive problem-solving challenges, hackathons, and venture bounties.",
-          "url": "https://problematlas.com/competitions",
+          "url": "https://stuckhere.com/competitions",
           "numberOfItems": competitionsList.length,
           "publisher": {
             "@type": "Organization",
-            "name": "ProblemAtlas",
-            "url": "https://problematlas.com"
+            "name": "Stuckhere",
+            "url": "https://stuckhere.com"
           }
         }}
       />

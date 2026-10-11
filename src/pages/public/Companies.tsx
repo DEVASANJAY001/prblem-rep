@@ -170,8 +170,8 @@ export const Companies: React.FC = () => {
       {/* SEO: ItemList schema for corporate / partner directory */}
       <SEOHead
         title="Partner Companies & Enterprise Innovation Scouts"
-        description="Explore organizations, enterprises, and research labs actively scouting and solving verified problem statements on ProblemAtlas."
-        canonicalUrl="https://problematlas.com/companies"
+        description="Explore organizations, enterprises, and research labs actively scouting and solving verified problem statements on Stuckhere."
+        canonicalUrl="https://stuckhere.com/companies"
         ogType="website"
         keywords={["enterprise problem statements", "company challenges", "innovation scouting", "corporate startup programs", "enterprise demand signals"]}
         jsonLd={{
@@ -179,7 +179,7 @@ export const Companies: React.FC = () => {
           "@type": "ItemList",
           "name": "Partner Companies & Enterprise Scouts",
           "description": "Organizations actively scouting and posting verified real-world operational problems.",
-          "url": "https://problematlas.com/companies",
+          "url": "https://stuckhere.com/companies",
           "numberOfItems": companiesList.length,
           "itemListElement": companiesList.slice(0, 10).map((c, idx) => ({
             "@type": "ListItem",
@@ -259,7 +259,7 @@ export const Companies: React.FC = () => {
           {/* Filter Status & Simple Sort Toolbar */}
           <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-outline-variant/20 text-xs">
             <div className="flex flex-wrap items-center gap-2.5">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-surface-container-low border border-outline-variant/30 font-semibold text-on-surface-variant">
+              <div className="inline-flex items-center gap-1.5 font-semibold text-on-surface-variant">
                 <span>Total Companies :</span>
                 <span className="text-primary font-bold">{filteredCompanies.length}</span>
               </div>

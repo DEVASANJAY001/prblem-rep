@@ -24,7 +24,7 @@ export const SEOHead: React.FC<SEOHeadProps> = ({
 }) => {
   useEffect(() => {
     // 1. Set Title
-    const formattedTitle = title.includes("ProblemAtlas") ? title : `${title} | ProblemAtlas`;
+    const formattedTitle = title.includes("Stuckhere") ? title : `${title} | Stuckhere`;
     document.title = formattedTitle;
 
     // Helper to update or create meta tags

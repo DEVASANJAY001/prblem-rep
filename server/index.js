@@ -624,7 +624,7 @@ app.get("/api/metrics", async (req, res) => {
 //    Cached 1 hour at the edge; stale-while-revalidate for zero-downtime refresh.
 // ─────────────────────────────────────────────────────────────────────────────
 app.get("/sitemap.xml", async (req, res) => {
-  const BASE_URL = process.env.PRODUCTION_ORIGIN || "https://problematlas.com";
+  const BASE_URL = process.env.PRODUCTION_ORIGIN || "https://stuckhere.com";
   const today = new Date().toISOString().slice(0, 10);
 
   const staticEntries = [

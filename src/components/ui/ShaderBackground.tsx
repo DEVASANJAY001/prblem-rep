@@ -54,7 +54,7 @@ export const ShaderBackground: React.FC<ShaderBackgroundProps> = ({ className = 
       void main() {
           vec2 uv = v_texCoord;
           
-          // Subtle slow-moving mesh gradient based on ProblemAtlas blue (#2554f0)
+          // Subtle slow-moving mesh gradient based on Stuckhere blue (#2554f0)
           vec3 color1 = vec3(0.145, 0.329, 0.941); // #2554f0
           vec3 color2 = vec3(0.976, 0.976, 1.0);   // #f9f9ff (Surface)
           vec3 color3 = vec3(0.851, 0.851, 0.875); // #d9d9df (Surface-dim)

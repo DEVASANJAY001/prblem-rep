@@ -648,8 +648,8 @@ export const ProblemDetail: React.FC = () => {
     <div className="w-full min-h-screen bg-surface font-['Poppins',sans-serif] text-on-surface">
       <SEOHead
         title={`${problem.title} - ${industry}`}
-        description={problem.description || "Explore verified problem statement, market size, TAM, and founder venture thesis on ProblemAtlas."}
-        canonicalUrl={`https://problematlas.com${getProblemDetailUrl(problem)}`}
+        description={problem.description || "Explore verified problem statement, market size, TAM, and founder venture thesis on Stuckhere."}
+        canonicalUrl={`https://stuckhere.com${getProblemDetailUrl(problem)}`}
         ogType="article"
         keywords={[industry, ...(problem.psFrom || []), "Problem Statement", "Startup Opportunity", "Venture Thesis", "Market Research"]}
         jsonLd={[
@@ -663,12 +663,12 @@ export const ProblemDetail: React.FC = () => {
             "keywords": [industry, ...(problem.psFrom || [])].join(", "),
             "author": {
               "@type": "Person",
-              "name": problem.submitterName || problem.submittedBy || "ProblemAtlas Contributor",
+              "name": problem.submitterName || problem.submittedBy || "Stuckhere Contributor",
             },
             "publisher": {
               "@type": "Organization",
-              "name": "ProblemAtlas",
-              "url": "https://problematlas.com",
+              "name": "Stuckhere",
+              "url": "https://stuckhere.com",
             },
             "datePublished": problem.submittedAt || "2026-08-24T00:00:00Z",
             "dateModified": problem.updatedAt || "2026-08-30T00:00:00Z",
@@ -690,19 +690,19 @@ export const ProblemDetail: React.FC = () => {
                 "@type": "ListItem",
                 "position": 1,
                 "name": "Explore",
-                "item": "https://problematlas.com/explore"
+                "item": "https://stuckhere.com/explore"
               },
               {
                 "@type": "ListItem",
                 "position": 2,
                 "name": industry,
-                "item": `https://problematlas.com/explore?industry=${encodeURIComponent(industry)}`
+                "item": `https://stuckhere.com/explore?industry=${encodeURIComponent(industry)}`
               },
               {
                 "@type": "ListItem",
                 "position": 3,
                 "name": problem.title,
-                "item": `https://problematlas.com${getProblemDetailUrl(problem)}`
+                "item": `https://stuckhere.com${getProblemDetailUrl(problem)}`
               }
             ]
           },
@@ -768,7 +768,7 @@ export const ProblemDetail: React.FC = () => {
               <span>{bookmarked ? "Saved" : "Save"}</span>
             </button>
             <SharePanel
-              url={`https://problematlas.com${getProblemDetailUrl(problem)}`}
+              url={`https://stuckhere.com${getProblemDetailUrl(problem)}`}
               title={problem.title}
               industry={industry}
             />

@@ -1,39 +1,104 @@
 /**
- * SWR (Stale-While-Revalidate) In-Memory Cache with Single-Flight Request Coalescing
- * and LRU (Least Recently Used) eviction to prevent unbounded memory growth.
- * Modeled after Amazon/Flipkart/Stripe high-efficiency client caching architecture.
+ * SWR (Stale-While-Revalidate) Client Cache Manager
+ * Multi-Tiered Architecture:
+ *   Tier 1: High-Speed In-Memory LRU Cache (0ms, 0 allocations)
+ *   Tier 2: SessionStorage Cache (Persists across page navigation & back/forward)
+ *   Tier 3: Single-Flight Request Coalescing (Deduplicates simultaneous identical fetches)
+ * 
+ * Dramatically cuts Firestore reads when navigating between /explore and /problem/:id.
  */
 
 interface CacheEntry<T> {
   data: T;
   timestamp: number;
   expiresAt: number;
-  lastAccessed: number; // used for LRU eviction ordering
+  lastAccessed: number;
 }
+
+const SESSION_PREFIX = "prblms_swr_";
 
 class SWRCacheManager {
   private cache = new Map<string, CacheEntry<any>>();
   private inFlight = new Map<string, Promise<any>>();
-  private defaultTTL = 30_000; // 30 seconds default in-memory TTL
+  private defaultTTL = 300_000; // 5 minutes default TTL for problem data
   private maxEntries: number;
 
-  constructor(maxEntries = 200) {
+  constructor(maxEntries = 250) {
     this.maxEntries = maxEntries;
   }
 
   /**
-   * Evict the least-recently-used entries when the cache exceeds maxEntries.
-   * Called before every set() to keep memory footprint bounded.
+   * Safe SessionStorage Getter
+   */
+  private getFromSessionStorage<T>(key: string): CacheEntry<T> | null {
+    if (typeof window === "undefined" || !window.sessionStorage) return null;
+    try {
+      const raw = window.sessionStorage.getItem(SESSION_PREFIX + key);
+      if (!raw) return null;
+      const parsed: CacheEntry<T> = JSON.parse(raw);
+      if (Date.now() > parsed.expiresAt) {
+        window.sessionStorage.removeItem(SESSION_PREFIX + key);
+        return null;
+      }
+      return parsed;
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * Safe SessionStorage Setter
+   */
+  private saveToSessionStorage<T>(key: string, entry: CacheEntry<T>): void {
+    if (typeof window === "undefined" || !window.sessionStorage) return;
+    try {
+      window.sessionStorage.setItem(SESSION_PREFIX + key, JSON.stringify(entry));
+    } catch (e) {
+      // Quota exceeded: clean up oldest session entries
+      try {
+        const toDelete: string[] = [];
+        for (let i = 0; i < window.sessionStorage.length; i++) {
+          const k = window.sessionStorage.key(i);
+          if (k && k.startsWith(SESSION_PREFIX)) {
+            toDelete.push(k);
+          }
+        }
+        // Remove first 25% of SWR session keys
+        const removeCount = Math.max(1, Math.floor(toDelete.length * 0.25));
+        for (let i = 0; i < removeCount; i++) {
+          window.sessionStorage.removeItem(toDelete[i]);
+        }
+      } catch {}
+    }
+  }
+
+  /**
+   * Safe SessionStorage Remover
+   */
+  private removeFromSessionStorage(keyOrPrefix: string): void {
+    if (typeof window === "undefined" || !window.sessionStorage) return;
+    try {
+      const toDelete: string[] = [];
+      for (let i = 0; i < window.sessionStorage.length; i++) {
+        const k = window.sessionStorage.key(i);
+        if (k && (k === SESSION_PREFIX + keyOrPrefix || k.startsWith(SESSION_PREFIX + keyOrPrefix))) {
+          toDelete.push(k);
+        }
+      }
+      toDelete.forEach((k) => window.sessionStorage.removeItem(k));
+    } catch {}
+  }
+
+  /**
+   * Evict LRU entries when exceeding maxEntries in memory
    */
   private evictIfNeeded(): void {
     if (this.cache.size < this.maxEntries) return;
 
-    // Sort entries by lastAccessed ascending (oldest first)
     const sorted = [...this.cache.entries()].sort(
       ([, a], [, b]) => a.lastAccessed - b.lastAccessed
     );
 
-    // Evict the oldest 20% of entries
     const evictCount = Math.max(1, Math.floor(this.maxEntries * 0.2));
     for (let i = 0; i < evictCount; i++) {
       this.cache.delete(sorted[i][0]);
@@ -49,31 +114,33 @@ class SWRCacheManager {
     ttlMs: number = this.defaultTTL
   ): Promise<T> {
     const now = Date.now();
-    const entry = this.cache.get(key);
+    let entry = this.cache.get(key);
 
-    // 1. If fresh cache exists, return immediately (0ms, 0 network reads)
+    // If not in memory, check SessionStorage (Tier 2)
+    if (!entry) {
+      const sess = this.getFromSessionStorage<T>(key);
+      if (sess) {
+        entry = sess;
+        this.cache.set(key, entry);
+      }
+    }
+
+    // 1. If fresh cache exists, return immediately (0ms, 0 Firestore reads)
     if (entry && now < entry.expiresAt) {
-      entry.lastAccessed = now; // bump LRU position
+      entry.lastAccessed = now;
       return entry.data;
     }
 
-    // 2. Coalesce in-flight requests (if 10 components ask for "prob-1" simultaneously, run only 1 fetch)
+    // 2. Coalesce in-flight requests (simultaneous queries share single fetch)
     if (this.inFlight.has(key)) {
       return this.inFlight.get(key)!;
     }
 
-    // 3. If stale cache exists, return stale data immediately (Stale-While-Revalidate)
-    // and quietly trigger the in-flight revalidation
+    // 3. Stale-While-Revalidate: fetch in background, return stale immediately if present
     const fetchPromise = (async () => {
       try {
         const fresh = await fetcher();
-        this.evictIfNeeded();
-        this.cache.set(key, {
-          data: fresh,
-          timestamp: Date.now(),
-          expiresAt: Date.now() + ttlMs,
-          lastAccessed: Date.now(),
-        });
+        this.set(key, fresh, ttlMs);
         return fresh;
       } finally {
         this.inFlight.delete(key);
@@ -83,33 +150,68 @@ class SWRCacheManager {
     this.inFlight.set(key, fetchPromise);
 
     if (entry) {
-      // Revalidate in background, return stale immediately
       entry.lastAccessed = now;
-      return entry.data;
+      return entry.data; // Return stale immediately while revalidating
     }
 
     return fetchPromise;
   }
 
   /**
-   * Directly get from memory without async
+   * Synchronously get from Memory or SessionStorage
    */
   public get<T>(key: string): T | undefined {
-    const entry = this.cache.get(key);
-    if (entry) entry.lastAccessed = Date.now();
-    return entry?.data;
+    const now = Date.now();
+    let entry = this.cache.get(key);
+
+    if (!entry) {
+      const sess = this.getFromSessionStorage<T>(key);
+      if (sess) {
+        entry = sess;
+        this.cache.set(key, entry);
+      }
+    }
+
+    if (entry && now < entry.expiresAt) {
+      entry.lastAccessed = now;
+      return entry.data;
+    }
+
+    return undefined;
   }
 
   /**
-   * Set cache entry directly (useful for optimistic updates)
+   * Check if fresh, unexpired cache exists in memory or sessionStorage
+   */
+  public has(key: string): boolean {
+    return this.get(key) !== undefined;
+  }
+
+  /**
+   * Directly write to both Memory & SessionStorage
    */
   public set<T>(key: string, data: T, ttlMs: number = this.defaultTTL): void {
+    if (data === undefined || data === null) return;
     this.evictIfNeeded();
-    this.cache.set(key, {
+    const entry: CacheEntry<T> = {
       data,
       timestamp: Date.now(),
       expiresAt: Date.now() + ttlMs,
       lastAccessed: Date.now(),
+    };
+    this.cache.set(key, entry);
+    this.saveToSessionStorage(key, entry);
+  }
+
+  /**
+   * Seed multiple problem items in one batch (e.g., when catalog loads)
+   */
+  public setMany<T extends { id?: string }>(items: T[], keyPrefix = "problem_", ttlMs: number = this.defaultTTL): void {
+    if (!Array.isArray(items)) return;
+    items.forEach((item) => {
+      if (item && item.id) {
+        this.set(`${keyPrefix}${item.id}`, item, ttlMs);
+      }
     });
   }
 
@@ -122,6 +224,7 @@ class SWRCacheManager {
         this.cache.delete(k);
       }
     }
+    this.removeFromSessionStorage(keyOrPrefix);
   }
 
   /**
@@ -130,10 +233,20 @@ class SWRCacheManager {
   public clear(): void {
     this.cache.clear();
     this.inFlight.clear();
+    if (typeof window !== "undefined" && window.sessionStorage) {
+      const toDelete: string[] = [];
+      for (let i = 0; i < window.sessionStorage.length; i++) {
+        const k = window.sessionStorage.key(i);
+        if (k && k.startsWith(SESSION_PREFIX)) {
+          toDelete.push(k);
+        }
+      }
+      toDelete.forEach((k) => window.sessionStorage.removeItem(k));
+    }
   }
 
   /**
-   * Returns cache stats for debugging / monitoring
+   * Returns cache stats
    */
   public stats(): { size: number; inFlight: number; maxEntries: number } {
     return {
@@ -144,4 +257,4 @@ class SWRCacheManager {
   }
 }
 
-export const swrCache = new SWRCacheManager(200);
+export const swrCache = new SWRCacheManager(300);

@@ -45,7 +45,7 @@ export const PublicFormRunner: React.FC = () => {
         <h2 className="text-2xl font-bold">Form Not Found</h2>
         <p className="mt-2 text-sm text-zinc-500">The requested form does not exist or has been closed.</p>
         <Link to="/" className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-primary">
-          <ArrowLeft className="h-4 w-4" /> Return to Prblms
+          <ArrowLeft className="h-4 w-4" /> Return to Stuckhere
         </Link>
       </div>
     );
@@ -107,7 +107,7 @@ export const PublicFormRunner: React.FC = () => {
           to="/"
           className="mt-8 inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-xs font-bold text-white shadow hover:bg-primary/90"
         >
-          <span>Return to ProblemAtlas</span>
+          <span>Return to Stuckhere</span>
           <ArrowRight className="h-4 w-4" />
         </Link>
       </div>
@@ -121,7 +121,7 @@ export const PublicFormRunner: React.FC = () => {
         <div className="flex items-center justify-between text-xs text-zinc-400">
           <span className="flex items-center gap-1">
             <FileText className="h-3.5 w-3.5 text-primary" />
-            ProblemAtlas Form Engine
+            Stuckhere Form Engine
           </span>
           {form.allowAnonymous && <span>Anonymous Submissions Allowed</span>}
         </div>
@@ -175,7 +175,7 @@ export const PublicFormRunner: React.FC = () => {
           >
             Submit Response
           </button>
-          <span className="text-xs text-zinc-400">Powered by ProblemAtlas Dynamic Form Engine</span>
+          <span className="text-xs text-zinc-400">Powered by Stuckhere Dynamic Form Engine</span>
         </div>
       </form>
     </div>

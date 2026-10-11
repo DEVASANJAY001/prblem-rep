@@ -18,7 +18,7 @@ export const Solutions: React.FC = () => {
       title: "For Early-Stage Founders & Solvers",
       subtitle: "Stop building products looking for problems. Start with verified demand.",
       description:
-        "Building a startup takes years of your life. ProblemAtlas helps you start with a verified, quantified bottleneck where customers already feel intense friction and have demonstrated budget for solutions.",
+        "Building a startup takes years of your life. Stuckhere helps you start with a verified, quantified bottleneck where customers already feel intense friction and have demonstrated budget for solutions.",
       benefits: [
         "Discover real problems with verified buyer willingness-to-pay signals",
         "Pre-calculated Total Addressable Market (TAM) and economic loss metrics",
@@ -66,8 +66,8 @@ export const Solutions: React.FC = () => {
     <div className="flex flex-col w-full min-h-screen font-['Poppins',sans-serif] text-on-surface bg-surface">
       <SEOHead
         title="Solutions — Problem Intelligence for Founders, VCs & Enterprise"
-        description="Explore ProblemAtlas solutions for early-stage founders, venture investors, and enterprise innovation teams."
-        canonicalUrl="https://problematlas.com/solutions"
+        description="Explore Stuckhere solutions for early-stage founders, venture investors, and enterprise innovation teams."
+        canonicalUrl="https://stuckhere.com/solutions"
         ogType="website"
         keywords={["solutions", "startup ideation", "venture validation", "enterprise problem scouting", "pain score analysis"]}
       />
@@ -87,7 +87,7 @@ export const Solutions: React.FC = () => {
                 Tailored Solutions
               </h1>
               <p className="text-on-surface-variant text-xs sm:text-sm md:text-base mt-1 sm:mt-2 max-w-2xl font-normal leading-relaxed">
-                Whether you are founding your next company, evaluating market opportunities, or mapping enterprise bottlenecks, ProblemAtlas provides actionable problem intelligence.
+                Whether you are founding your next company, evaluating market opportunities, or mapping enterprise bottlenecks, Stuckhere provides actionable problem intelligence.
               </p>
             </div>
 
