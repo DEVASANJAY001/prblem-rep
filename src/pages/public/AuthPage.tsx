@@ -187,7 +187,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ defaultMode }) => {
   };
 
   return (
-    <div className="w-full flex-1 min-h-[calc(100vh-4rem)] flex items-center justify-center p-3 sm:p-5 font-['Poppins',sans-serif] text-on-surface bg-surface relative overflow-hidden selection:bg-primary/15 selection:text-primary">
+    <div className="w-full flex-1 min-h-[calc(100vh-4rem)] md:h-[calc(100vh-4rem)] md:overflow-hidden flex items-center justify-center p-3 sm:p-5 font-['Poppins',sans-serif] text-on-surface bg-surface relative overflow-hidden selection:bg-primary/15 selection:text-primary">
       <SEOHead
         title={mode === "login" ? "Sign In — Stuckhere" : "Create Account — Stuckhere"}
         description={
@@ -205,10 +205,10 @@ export const AuthPage: React.FC<AuthPageProps> = ({ defaultMode }) => {
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/[0.03] via-transparent to-transparent pointer-events-none" />
 
       {/* 2-Column Split: Form on Left | Separator | Stuckhere Logo & Slogan on Right */}
-      <div className="w-full max-w-4xl lg:max-w-5xl mx-auto relative z-10 flex flex-col md:flex-row items-center md:items-start justify-center md:justify-between gap-8 md:gap-12 lg:gap-16 py-8 sm:py-12">
+      <div className="w-full max-w-4xl lg:max-w-5xl mx-auto relative z-10 flex flex-col md:flex-row items-center md:items-center justify-center md:justify-between gap-8 md:gap-12 lg:gap-16 py-2 sm:py-4 md:py-0 my-auto">
         
         {/* Left Column: Form with Smooth Crossfade & Slide Transition (Stable Fixed Height to prevent jump) */}
-        <div className="w-full max-w-[380px] min-h-[580px] flex flex-col space-y-3.5 order-2 md:order-1">
+        <div className="w-full max-w-[380px] min-h-[500px] flex flex-col space-y-3 order-2 md:order-1">
           
           {/* Segmented Mode Switcher Pill - Stays in exact same fixed position */}
           <div className="flex p-1 bg-surface-container-low/80 dark:bg-surface-container/60 rounded-xl border border-outline-variant/30 w-[220px] shadow-2xs select-none shrink-0">
@@ -612,10 +612,10 @@ export const AuthPage: React.FC<AuthPageProps> = ({ defaultMode }) => {
         </div>
 
         {/* Center Vertical Separator */}
-        <div className="hidden md:block w-px self-stretch bg-gradient-to-b from-transparent via-outline-variant/30 to-transparent min-h-[480px]" />
+        <div className="hidden md:block w-px self-stretch bg-gradient-to-b from-transparent via-outline-variant/30 to-transparent min-h-[440px]" />
 
         {/* Right Column: Stuckhere Logo & Slogan (Hidden on mobile, visible on desktop md+) */}
-        <div className="hidden md:flex w-full max-w-[380px] flex-col items-start text-left space-y-3.5 md:order-2 py-4 md:pt-12">
+        <div className="hidden md:flex w-full max-w-[380px] flex-col items-start text-left space-y-3.5 md:order-2 py-2">
           <Link
             to="/"
             className="group inline-flex items-center"
