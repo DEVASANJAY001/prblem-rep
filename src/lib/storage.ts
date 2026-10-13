@@ -185,10 +185,17 @@ export function getProblems(filter?: {
   initializeStorage();
   let list = load<ProblemDoc[]>(STORAGE_KEYS.PROBLEMS, REAL_PROBLEMS);
 
+  // Ensure any baseline problems from REAL_PROBLEMS (including seed moderation items) are present
+  for (const seed of REAL_PROBLEMS) {
+    if (!list.some((p) => p.id === seed.id)) {
+      list.push(seed);
+    }
+  }
+
   if (filter) {
     if (filter.status && filter.status !== "all") {
       list = list.filter((p) => p.status === filter.status);
-    } else if (!filter.status) {
+    } else if (filter.status === undefined) {
       list = list.filter((p) => p.status === "approved");
     }
     if (filter.industry && filter.industry !== "All") {

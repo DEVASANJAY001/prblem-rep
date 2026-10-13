@@ -108,7 +108,7 @@ export function notifyQueryStreams(): void {
     try {
       const filter = JSON.parse(key);
       const updatedList = getLocalProblems({
-        status: filter.status === "all" ? undefined : filter.status,
+        status: filter.status || "all",
         industry: filter.industry,
       });
       stream.latestData = updatedList;
@@ -515,7 +515,7 @@ export function subscribeProblems(
   const streamData = queryStreams.get(queryKey)?.latestData;
   const swrQueryData = swrCache.get<ProblemDoc[]>(`query_${queryKey}`);
   const local = getLocalProblems({
-    status: filter.status === "all" ? undefined : filter.status,
+    status: filter.status || "all",
     industry: filter.industry,
   });
 
@@ -547,13 +547,12 @@ export function subscribeProblems(
     const listeners = new Set<(problems: ProblemDoc[]) => void>();
     listeners.add(callback);
 
-    // Build query constraints
+    // Build query constraints safely without requiring composite index
     const constraints: Parameters<typeof query>[1][] = [];
     if (filter.status && filter.status !== "all") {
       constraints.push(where("status", "==", filter.status));
     }
-    constraints.push(orderBy("createdAt", "desc"));
-    constraints.push(limit(filter.pageLimit || 100));
+    constraints.push(limit(filter.pageLimit || 150));
 
     const q = query(colRef, ...constraints);
 
@@ -569,7 +568,7 @@ export function subscribeProblems(
           });
         }
         const mergedList = getLocalProblems({
-          status: filter.status === "all" ? undefined : filter.status,
+          status: filter.status || "all",
           industry: filter.industry,
         });
 
