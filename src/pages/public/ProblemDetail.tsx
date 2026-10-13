@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams, Link, useNavigate, useLocation } from "react-router-dom";
 import {
   getProblemById,
   subscribeProblemById,
@@ -148,6 +148,7 @@ function formatRelativeTime(dateString?: string): string {
 export const ProblemDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, userDoc } = useAuth();
   const currentUid = user?.uid || userDoc?.uid || "guest";
 
@@ -220,16 +221,23 @@ export const ProblemDetail: React.FC = () => {
       return;
     }
 
+    setLoading(true);
+    setProblem(null);
+    hasRecordedView.current = false;
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, behavior: "instant" });
+    }
+
     const cleanId = extractProblemId(id);
 
     const unsubscribe = subscribeProblemById(cleanId, (p) => {
       if (p) {
         setProblem((prev) => (prev ? { ...prev, ...p } : p));
-        // Automatically canonicalize URL in browser bar to /problem/slug--id
+        // Canonicalize URL safely via React Router (preserves history state and back navigation)
         if (p.title && typeof window !== "undefined") {
           const canonical = getProblemDetailUrl(p);
-          if (window.location.pathname !== canonical) {
-            window.history.replaceState(null, "", canonical);
+          if (location.pathname !== canonical) {
+            navigate(canonical, { replace: true });
           }
         }
         setViewsCount((prev) => Math.max(prev, p.views || 0));

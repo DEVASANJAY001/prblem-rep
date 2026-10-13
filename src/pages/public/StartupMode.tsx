@@ -227,11 +227,11 @@ export const StartupMode: React.FC = () => {
     const unsubscribe = subscribeProblemById(cleanId, (p) => {
       if (p) {
         setProblem((prev) => (prev ? { ...prev, ...p } : p));
-        // Automatically canonicalize URL in browser bar to remove any UUIDs
+        // Automatically canonicalize URL safely via React Router
         if (p.title && typeof window !== "undefined") {
           const canonical = getStartupModeUrl(p);
-          if (window.location.pathname !== canonical) {
-            window.history.replaceState(null, "", canonical);
+          if (location.pathname !== canonical) {
+            navigate(canonical, { replace: true });
           }
         }
         setViewsCount((prev) => Math.max(prev, p.views || 0));

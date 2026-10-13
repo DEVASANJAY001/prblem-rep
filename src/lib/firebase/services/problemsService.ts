@@ -35,6 +35,7 @@ import {
 } from "@/lib/storage";
 import { REAL_PROBLEMS } from "@/data/realProductionData";
 import { swrCache } from "@/lib/swrCache";
+import { slugify } from "@/lib/seoUrls";
 
 const PROBLEMS_COLLECTION = "problems";
 
@@ -463,6 +464,28 @@ export function subscribeProblemById(
                 currentStream.latestData = data;
                 currentStream.listeners.forEach((cb) => cb(data));
               }
+            } else {
+              // Fallback: search Firestore collection if id is a slug or alias
+              try {
+                getDocs(query(collection(db, PROBLEMS_COLLECTION))).then((qSnap) => {
+                  for (const d of qSnap.docs) {
+                    const docData = d.data() as ProblemDoc;
+                    if (
+                      docData &&
+                      (docData.id === id || (docData.title && slugify(docData.title) === id))
+                    ) {
+                      saveLocalProblem(docData);
+                      swrCache.set(`problem_${docData.id}`, docData, 300_000);
+                      const currentStream = docStreams.get(id);
+                      if (currentStream) {
+                        currentStream.latestData = docData;
+                        currentStream.listeners.forEach((cb) => cb(docData));
+                      }
+                      break;
+                    }
+                  }
+                }).catch(() => {});
+              } catch {}
             }
           },
           (err) => {
