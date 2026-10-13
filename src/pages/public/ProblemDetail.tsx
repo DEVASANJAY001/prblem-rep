@@ -194,6 +194,25 @@ export const ProblemDetail: React.FC = () => {
   const [replyText, setReplyText] = useState("");
 
   const hasRecordedView = useRef(false);
+  const [approving, setApproving] = useState(false);
+
+  const handleApproveFromDetail = async () => {
+    if (!problem) return;
+    setApproving(true);
+    try {
+      await updateProblemStatus(
+        problem.id,
+        "approved",
+        userDoc ? { uid: userDoc.uid, name: userDoc.name } : { uid: "admin_moderator", name: "Administrator" },
+        "Approved directly from Problem Dossier View"
+      );
+      setProblem((prev) => (prev ? { ...prev, status: "approved", verified: true } : prev));
+    } catch (err) {
+      console.error("Detail approve error:", err);
+    } finally {
+      setApproving(false);
+    }
+  };
 
   useEffect(() => {
     if (!id) {
@@ -563,25 +582,6 @@ export const ProblemDetail: React.FC = () => {
     : (problem.comments || []);
 
   const isAdmin = userDoc?.role === "admin" || (userDoc as any)?.role === "superadmin" || Boolean(user?.email?.includes("admin"));
-
-  const [approving, setApproving] = useState(false);
-  const handleApproveFromDetail = async () => {
-    if (!problem) return;
-    setApproving(true);
-    try {
-      await updateProblemStatus(
-        problem.id,
-        "approved",
-        userDoc ? { uid: userDoc.uid, name: userDoc.name } : { uid: "admin_moderator", name: "Administrator" },
-        "Approved directly from Problem Dossier View"
-      );
-      setProblem((prev) => (prev ? { ...prev, status: "approved", verified: true } : prev));
-    } catch (err) {
-      console.error("Detail approve error:", err);
-    } finally {
-      setApproving(false);
-    }
-  };
 
   // Companies attached by admin from PS Control (problem.attachedCompanyNames)
   const attachedCompanies: Array<{ name: string; logoUrl?: string; industry?: string }> = (
