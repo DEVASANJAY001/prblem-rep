@@ -902,7 +902,7 @@ export const SubmitProblem: React.FC = () => {
           keyRisks: keyRisks.filter(Boolean),
           aiConfidence: 96,
         } as any,
-        status: "approved",
+        status: "pending",
       });
 
       if (res.success && res.problemId) {
@@ -927,7 +927,7 @@ export const SubmitProblem: React.FC = () => {
     }
   };
 
-  // ── Success State Modal / Overlay ─────────────────────────────────────────
+  // ── Success State Modal / Overlay (Live Firestore Storage & Moderation Connectivity) ──
   if (submittedProblemId) {
     return (
       <div className="w-full min-h-screen bg-surface py-16 px-4 md:px-8 font-['Poppins',sans-serif] text-on-surface flex items-center justify-center animate-fade-in">
@@ -937,15 +937,43 @@ export const SubmitProblem: React.FC = () => {
           </div>
 
           <div className="flex flex-col gap-2">
-            <span className="text-xs font-extrabold uppercase tracking-widest text-primary bg-primary/10 px-3 py-1 rounded-full self-center">
-              Dossier Live in Community Index
-            </span>
+            <div className="inline-flex items-center gap-2 self-center bg-amber-500/10 border border-amber-500/20 px-3.5 py-1 rounded-full text-xs font-extrabold text-amber-700">
+              <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+              <span>Stored in Firebase · Queued for Admin Review</span>
+            </div>
             <h2 className="text-2xl md:text-3xl font-black text-on-surface">
-              Problem Statement Published!
+              Problem Statement Sent for Admin Review!
             </h2>
             <p className="text-sm text-on-surface-variant max-w-lg mx-auto">
-              Your empirical problem dossier has been scored by the AI Engine and recorded. Practitioners and founders can now validate and build solutions.
+              Your empirical problem dossier has been stored in Firebase Firestore under the <code className="bg-surface-container px-1.5 py-0.5 rounded text-xs font-mono text-primary font-bold">problems</code> collection. It is now awaiting review and approval by an administrator.
             </p>
+          </div>
+
+          {/* Database & Moderation Pipeline Status */}
+          <div className="w-full flex flex-col gap-2.5 p-4 bg-surface-container/40 rounded-2xl border border-outline-variant/20 text-left">
+            <div className="flex items-center justify-between text-xs py-1 border-b border-outline-variant/15">
+              <span className="text-on-surface-variant font-medium flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                Firebase Firestore Storage
+              </span>
+              <span className="font-mono text-emerald-600 font-bold">Stored (ID: {submittedProblemId})</span>
+            </div>
+            <div className="flex items-center justify-between text-xs py-1 border-b border-outline-variant/15">
+              <span className="text-on-surface-variant font-medium flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+                Moderation Status
+              </span>
+              <span className="inline-flex items-center gap-1 font-bold text-amber-700 bg-amber-100/60 px-2 py-0.5 rounded-full text-[11px]">
+                Pending Admin Review
+              </span>
+            </div>
+            <div className="flex items-center justify-between text-xs py-1">
+              <span className="text-on-surface-variant font-medium flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-blue-500" />
+                Public Directory Status
+              </span>
+              <span className="font-semibold text-on-surface-variant">Publishes instantly upon approval</span>
+            </div>
           </div>
 
           {/* Quick Metrics Bar */}
@@ -964,44 +992,47 @@ export const SubmitProblem: React.FC = () => {
             </div>
           </div>
 
+          {/* Navigation Action Buttons */}
           <div className="flex flex-col sm:flex-row items-center gap-3 w-full pt-2">
+            <button
+              onClick={() => navigate("/admin/review-queue")}
+              className="w-full sm:flex-1 bg-primary text-white py-3.5 px-6 rounded-xl text-xs md:text-sm font-bold shadow-md hover:bg-primary-container transition-all cursor-pointer flex items-center justify-center gap-2"
+            >
+              <span>Review & Approve as Admin</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => navigate("/dashboard")}
+              className="w-full sm:flex-1 bg-surface-container hover:bg-surface-container-high text-on-surface border border-outline-variant/40 py-3.5 px-6 rounded-xl text-xs md:text-sm font-bold transition-all cursor-pointer flex items-center justify-center gap-2"
+            >
+              <span>Track in Dashboard</span>
+            </button>
+          </div>
+
+          <div className="flex items-center gap-4 text-xs font-bold text-on-surface-variant pt-1">
             <button
               onClick={() =>
                 navigate(
                   getProblemDetailUrl({ id: submittedProblemId || "prob-1", title })
                 )
               }
-              className="w-full sm:flex-1 bg-primary text-white py-3.5 px-6 rounded-xl text-xs md:text-sm font-bold shadow-md hover:bg-primary-container transition-all cursor-pointer flex items-center justify-center gap-2"
+              className="hover:text-primary transition-colors cursor-pointer"
             >
-              <span>View Published Problem</span>
-              <ArrowRight className="w-4 h-4" />
+              Preview Problem Dossier
             </button>
-            {hasStartupMode && (
-              <button
-                onClick={() =>
-                  navigate(
-                    getStartupModeUrl({ id: submittedProblemId || "prob-1", title })
-                  )
-                }
-                className="w-full sm:flex-1 bg-surface hover:bg-primary/5 text-primary border border-primary py-3.5 px-6 rounded-xl text-xs md:text-sm font-bold shadow-xs hover:shadow-sm transition-all cursor-pointer flex items-center justify-center gap-2"
-              >
-                <span>Launch Startup Mode</span>
-                <Rocket className="w-4 h-4 text-primary" />
-              </button>
-            )}
+            <span>•</span>
+            <button
+              onClick={() => {
+                setSubmittedProblemId(null);
+                setActiveTab(1);
+                setTitle("");
+                setDescription("");
+              }}
+              className="hover:text-primary transition-colors cursor-pointer"
+            >
+              + Submit Another Problem
+            </button>
           </div>
-
-          <button
-            onClick={() => {
-              setSubmittedProblemId(null);
-              setActiveTab(1);
-              setTitle("");
-              setDescription("");
-            }}
-            className="text-xs font-bold text-on-surface-variant hover:text-on-surface transition-colors cursor-pointer mt-2"
-          >
-            + Submit Another Problem Statement
-          </button>
         </div>
       </div>
     );

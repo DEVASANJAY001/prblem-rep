@@ -200,7 +200,7 @@ export interface ProblemDoc {
   submittedByUid?: string;
   submitterName?: string;
   reviewedBy: string | null;
-  reviewedByUid?: string;
+  reviewedByUid?: string | null;
   reviewNote: string | null;
   adminReviewNote?: string;
   createdAt?: string;

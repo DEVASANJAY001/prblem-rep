@@ -436,7 +436,8 @@ export function saveProblem(incoming: ProblemDoc): void {
   // Sync to Cloud Firestore
   try {
     if (db && typeof doc === "function") {
-      setDoc(doc(db, "problems", incoming.id), incoming, { merge: true }).catch(() => {});
+      const cleanIncoming = JSON.parse(JSON.stringify(incoming));
+      setDoc(doc(db, "problems", incoming.id), cleanIncoming, { merge: true }).catch(() => {});
     }
   } catch {}
 }

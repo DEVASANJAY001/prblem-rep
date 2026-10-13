@@ -12,6 +12,7 @@ import {
   toggleUserInterest,
   addProblemReply,
   toggleCommentLike,
+  updateProblemStatus,
 } from "@/lib/firebase/services/problemsService";
 import { subscribeCompanies } from "@/lib/firebase/services/companiesService";
 import { REAL_COMPANIES } from "@/data/realProductionData";
@@ -29,6 +30,7 @@ import {
   Bookmark,
   Share2,
   CheckCircle,
+  Clock,
   Eye,
   Flame,
   FileText,
@@ -562,6 +564,25 @@ export const ProblemDetail: React.FC = () => {
 
   const isAdmin = userDoc?.role === "admin" || (userDoc as any)?.role === "superadmin" || Boolean(user?.email?.includes("admin"));
 
+  const [approving, setApproving] = useState(false);
+  const handleApproveFromDetail = async () => {
+    if (!problem) return;
+    setApproving(true);
+    try {
+      await updateProblemStatus(
+        problem.id,
+        "approved",
+        userDoc ? { uid: userDoc.uid, name: userDoc.name } : { uid: "admin_moderator", name: "Administrator" },
+        "Approved directly from Problem Dossier View"
+      );
+      setProblem((prev) => (prev ? { ...prev, status: "approved", verified: true } : prev));
+    } catch (err) {
+      console.error("Detail approve error:", err);
+    } finally {
+      setApproving(false);
+    }
+  };
+
   // Companies attached by admin from PS Control (problem.attachedCompanyNames)
   const attachedCompanies: Array<{ name: string; logoUrl?: string; industry?: string }> = (
     Array.isArray(problem.attachedCompanyNames)
@@ -778,6 +799,50 @@ export const ProblemDetail: React.FC = () => {
         {/* ── Top Split Fade Divider Line ─────────────────────────────────── */}
         <div className="w-full h-px bg-gradient-to-r from-transparent via-gray-300/70 to-transparent -mt-2" />
 
+        {/* Moderation Review Status Alert Banner */}
+        {problem.status === "pending" && (
+          <div className="w-full bg-amber-500/10 border border-amber-500/30 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-2xs">
+            <div className="flex items-start gap-3">
+              <div className="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-700 flex items-center justify-center shrink-0 mt-0.5 sm:mt-0">
+                <Clock className="w-5 h-5 text-amber-600 animate-pulse" />
+              </div>
+              <div className="flex flex-col gap-0.5">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-black uppercase tracking-wider text-amber-800">
+                    Awaiting Admin Moderation
+                  </span>
+                  <span className="px-2 py-0.2 rounded-full text-[10px] font-bold bg-amber-200/60 text-amber-800">
+                    Pending
+                  </span>
+                </div>
+                <p className="text-xs text-amber-900/80 leading-relaxed">
+                  This empirical statement is securely stored in Firebase and undergoing administrative review. Once approved, it will be published to the global Explore index.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 self-stretch sm:self-auto shrink-0">
+              {isAdmin ? (
+                <button
+                  onClick={handleApproveFromDetail}
+                  disabled={approving}
+                  className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-all shadow-sm flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
+                >
+                  <CheckCircle className="w-4 h-4" />
+                  <span>{approving ? "Approving..." : "Approve Problem Now"}</span>
+                </button>
+              ) : null}
+              <Link
+                to="/admin/review-queue"
+                className="w-full sm:w-auto px-3.5 py-2.5 rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface text-xs font-bold border border-outline-variant/30 transition-all flex items-center justify-center gap-1.5 shadow-2xs text-center"
+              >
+                <span>Admin Queue</span>
+                <ArrowRight className="w-3.5 h-3.5 text-primary" />
+              </Link>
+            </div>
+          </div>
+        )}
+
         {/* ── Header Metadata & Clean Circular Score Dials + Sub-metrics ──── */}
         <div className="w-full flex flex-col gap-6">
           {/* Top Row: Category Pills, Title, Author & Description */}
@@ -789,10 +854,17 @@ export const ProblemDetail: React.FC = () => {
               <span className="bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full text-xs font-semibold">
                 Open
               </span>
-              <span className="flex items-center gap-1 text-primary text-xs font-bold bg-primary/10 px-3 py-1 rounded-full">
-                <span className="material-symbols-outlined text-[16px]">verified</span>
-                Verified
-              </span>
+              {problem.status === "pending" ? (
+                <span className="flex items-center gap-1 text-amber-700 text-xs font-bold bg-amber-500/10 border border-amber-500/20 px-3 py-1 rounded-full">
+                  <Clock className="w-3.5 h-3.5 text-amber-600" />
+                  Pending Admin Review
+                </span>
+              ) : (
+                <span className="flex items-center gap-1 text-primary text-xs font-bold bg-primary/10 px-3 py-1 rounded-full">
+                  <ShieldCheck className="w-4 h-4 text-primary" />
+                  Verified & Active
+                </span>
+              )}
               {isTrending && (
                 <div className="flex items-center gap-1 text-xs font-semibold text-[#ff2a55] bg-rose-50 px-2.5 py-0.5 rounded-full">
                   <Flame className="w-3.5 h-3.5 fill-[#ff2a55] text-[#ff2a55]" />

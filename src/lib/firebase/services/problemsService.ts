@@ -53,6 +53,9 @@ const queryStreams = new Map<string, StreamSubscription<ProblemDoc[]>>();
 /**
  * Strips undefined values to produce a clean delta payload for Firestore
  */
+/**
+ * Strips undefined values to produce a clean delta payload for Firestore
+ */
 function cleanDeltaPayload<T extends Record<string, any>>(obj: T): Record<string, any> {
   const clean: Record<string, any> = {};
   for (const [key, value] of Object.entries(obj)) {
@@ -63,8 +66,62 @@ function cleanDeltaPayload<T extends Record<string, any>>(obj: T): Record<string
   return clean;
 }
 
+/**
+ * Deeply sanitizes an object tree to ensure zero undefined values reach Firestore,
+ * while preserving FieldValue sentinels (serverTimestamp, increment, etc.) and Date objects.
+ */
+export function sanitizeForFirestore<T>(data: T): T {
+  if (data === null || data === undefined) {
+    return null as any;
+  }
+  if (Array.isArray(data)) {
+    return data
+      .filter((item) => item !== undefined)
+      .map((item) => sanitizeForFirestore(item)) as any;
+  }
+  if (typeof data === "object") {
+    // If it's a Firestore FieldValue or Date, preserve it intact
+    if (
+      (data as any)._methodName ||
+      typeof (data as any).isEqual === "function" ||
+      (data as any).constructor?.name === "FieldValue" ||
+      data instanceof Date
+    ) {
+      return data;
+    }
+    const cleanObj: Record<string, any> = {};
+    for (const [key, val] of Object.entries(data)) {
+      if (val !== undefined) {
+        cleanObj[key] = sanitizeForFirestore(val);
+      }
+    }
+    return cleanObj as any;
+  }
+  return data;
+}
+
+/**
+ * Broadcasts data changes across all active multiplexed query streams (Admin review queue, Explore, Dashboard)
+ */
+export function notifyQueryStreams(): void {
+  for (const [key, stream] of queryStreams.entries()) {
+    try {
+      const filter = JSON.parse(key);
+      const updatedList = getLocalProblems({
+        status: filter.status === "all" ? undefined : filter.status,
+        industry: filter.industry,
+      });
+      stream.latestData = updatedList;
+      swrCache.set(`query_${key}`, updatedList, 300_000);
+      stream.listeners.forEach((cb) => cb(updatedList));
+    } catch {
+      // ignore JSON parse or callback error
+    }
+  }
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
-// 1. Create Problem (Single Atomic Write)
+// 1. Create Problem (Single Atomic Write to Firestore & Local Registry)
 // ─────────────────────────────────────────────────────────────────────────────
 export async function createProblem(
   problemData: {
@@ -143,7 +200,9 @@ export async function createProblem(
   // Use crypto.randomUUID() for collision-safe IDs under concurrent submissions
   const id = `prob-${crypto.randomUUID()}`;
 
-  const resolvedStatus = problemData.status || "approved";
+  // Default newly submitted problem statements to "pending" so the administrator
+  // receives it in the review queue to moderate and approve.
+  const resolvedStatus: ProblemStatus = problemData.status || "pending";
 
   const newProblem: ProblemDoc = {
     id,
@@ -190,7 +249,7 @@ export async function createProblem(
     suggestedMVP: {
       coreFeatures: problemData.suggestedMVP?.coreFeatures || [],
       technicalRequirements: problemData.suggestedMVP?.technicalRequirements || "",
-      complianceStandards: problemData.suggestedMVP?.complianceStandards,
+      complianceStandards: problemData.suggestedMVP?.complianceStandards || [],
     },
     hasStartupMode: problemData.hasStartupMode ?? true,
     startupModeEnabled: problemData.startupModeEnabled ?? problemData.hasStartupMode ?? true,
@@ -202,11 +261,11 @@ export async function createProblem(
     createdAt: now,
     submittedAt: now,
     updatedAt: now,
-    verified: false,
-    // Required ProblemDoc fields with safe defaults
+    verified: resolvedStatus === "approved",
+    // Explicit null defaults so Firestore never rejects undefined values
     isAnonymous: false,
     reviewedBy: null,
-    reviewedByUid: undefined,
+    reviewedByUid: null,
     reviewNote: null,
     reviewedAt: null,
     publishedAt: resolvedStatus === "approved" ? now : null,
@@ -215,6 +274,7 @@ export async function createProblem(
   // 1. Persist locally first and warm SWR cache immediately for zero-lag reading
   saveLocalProblem(newProblem);
   swrCache.set(`doc_${id}`, newProblem);
+  swrCache.set(`problem_${id}`, newProblem, 300_000);
 
   const existingDocStream = docStreams.get(id);
   if (existingDocStream) {
@@ -222,17 +282,22 @@ export async function createProblem(
     existingDocStream.listeners.forEach((l) => l(newProblem));
   }
 
-  // 2. Persist to Firestore (1 write operation)
+  // Notify any active query listeners (e.g. Admin Review Queue and Admin Overview)
+  notifyQueryStreams();
+
+  // 2. Persist directly to Cloud Firestore collection 'problems'
   try {
     if (db && typeof doc === "function") {
       const problemRef = doc(db, PROBLEMS_COLLECTION, id);
-      await setDoc(problemRef, {
+      const firestorePayload = sanitizeForFirestore({
         ...newProblem,
         createdAtServer: serverTimestamp(),
       });
+      await setDoc(problemRef, firestorePayload);
+      console.log(`[Firebase Firestore] Problem ${id} successfully stored in collection '${PROBLEMS_COLLECTION}' with status: '${resolvedStatus}'`);
     }
   } catch (error) {
-    console.warn("Firestore createProblem error:", error);
+    console.error("Firestore createProblem error:", error);
   }
 
   return { success: true, problemId: id, aiScores };
@@ -248,6 +313,7 @@ function syncProblemCache(problem: ProblemDoc): void {
     stream.latestData = problem;
     stream.listeners.forEach((cb) => cb(problem));
   }
+  notifyQueryStreams();
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -599,29 +665,47 @@ export async function updateProblemStatus(
   adminUser: { uid: string; name: string },
   reviewNote?: string
 ): Promise<boolean> {
+  const reviewedAt = new Date().toISOString();
+  const publishedAt = newStatus === "approved" ? reviewedAt : null;
+
   updateLocalProblemStatus(problemId, newStatus, reviewNote, adminUser);
   const updatedProb = getLocalProblemById(problemId);
-  if (updatedProb) syncProblemCache(updatedProb);
+  if (updatedProb) {
+    updatedProb.status = newStatus;
+    updatedProb.reviewedBy = adminUser.name;
+    updatedProb.reviewedByUid = adminUser.uid;
+    updatedProb.reviewedAt = reviewedAt;
+    updatedProb.reviewNote = reviewNote || "";
+    updatedProb.verified = newStatus === "approved";
+    if (newStatus === "approved") {
+      updatedProb.publishedAt = publishedAt;
+    }
+    saveLocalProblem(updatedProb);
+    syncProblemCache(updatedProb);
+  }
+  notifyQueryStreams();
 
   try {
     if (db && typeof doc === "function") {
       const problemRef = doc(db, PROBLEMS_COLLECTION, problemId);
-      // Direct partial update (0 preliminary reads)
-      await updateDoc(problemRef, {
+      const updatePayload: Record<string, any> = {
         status: newStatus,
         reviewedBy: adminUser.name,
         reviewedByUid: adminUser.uid,
-        reviewedAt: new Date().toISOString(),
+        reviewedAt,
         reviewNote: reviewNote || "",
         verified: newStatus === "approved",
-        // Set publishedAt when transitioning to approved so the timestamp is accurate
-        ...(newStatus === "approved" ? { publishedAt: new Date().toISOString() } : {}),
-        updatedAt: new Date().toISOString(),
-      });
+        updatedAt: reviewedAt,
+      };
+      if (newStatus === "approved") {
+        updatePayload.publishedAt = publishedAt;
+      }
+      await updateDoc(problemRef, sanitizeForFirestore(updatePayload));
+      console.log(`[Firebase Firestore] Problem ${problemId} status updated to '${newStatus}' by admin ${adminUser.name}`);
       return true;
     }
   } catch (error) {
-    console.warn("Firestore updateProblemStatus error:", error);
+    console.error("Firestore updateProblemStatus error:", error);
     // Return false so callers can surface an error toast instead of silently failing
     return false;
   }
