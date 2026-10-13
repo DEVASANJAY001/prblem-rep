@@ -457,6 +457,37 @@ export const StartupMode: React.FC = () => {
     );
   }
 
+  const isApproved = problem.status === "approved";
+  const isAuthor = Boolean(currentUid && problem.submittedByUid && currentUid === problem.submittedByUid);
+  const canViewProblem = isApproved || isAdmin || isAuthor;
+
+  if (!canViewProblem) {
+    return (
+      <div className="mx-auto max-w-xl px-4 py-20 text-center font-['Poppins',sans-serif] space-y-5 animate-fade-in">
+        <div className="w-16 h-16 rounded-2xl bg-amber-500/10 text-amber-600 border border-amber-500/20 flex items-center justify-center mx-auto shadow-sm">
+          <Clock className="w-8 h-8 animate-pulse" />
+        </div>
+        <div className="space-y-2">
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300">
+            Pending Admin Review
+          </span>
+          <h2 className="text-xl font-bold text-on-surface">Startup Mode Locked</h2>
+          <p className="text-xs text-on-surface-variant max-w-md mx-auto leading-relaxed">
+            Startup Workspace is restricted while this statement undergoes administrative moderation. Public access is activated after official approval by Stuckhere administrators.
+          </p>
+        </div>
+        <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+          <Link
+            to="/explore"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-xl bg-primary text-white text-xs font-bold shadow-xs hover:bg-primary-container transition-all"
+          >
+            <ArrowLeft className="h-4 w-4" /> Back to Explore
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   const isStartupModeActive =
     problem.hasStartupMode !== false &&
     problem.startupModeEnabled !== false &&

@@ -583,6 +583,52 @@ export const ProblemDetail: React.FC = () => {
     );
   }
 
+  const isAdmin = userDoc?.role === "admin" || (userDoc as any)?.role === "superadmin" || Boolean(user?.email?.includes("admin"));
+  const isApproved = problem.status === "approved";
+  const isAuthor = Boolean(currentUid && problem.submittedByUid && currentUid === problem.submittedByUid);
+  const canViewProblem = isApproved || isAdmin || isAuthor;
+
+  if (!canViewProblem) {
+    return (
+      <div className="mx-auto max-w-xl px-4 py-20 text-center text-on-surface font-['Poppins',sans-serif] space-y-6 animate-fade-in">
+        <SEOHead
+          title="Under Administrative Review"
+          description="This problem statement is pending administrative review and is not publicly accessible."
+          noindex
+        />
+        <div className="w-16 h-16 rounded-2xl bg-amber-500/10 text-amber-600 border border-amber-500/20 flex items-center justify-center mx-auto shadow-sm">
+          <Clock className="w-8 h-8 animate-pulse" />
+        </div>
+        <div className="space-y-2">
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300">
+            Pending Admin Review
+          </span>
+          <h2 className="text-2xl font-black text-on-surface tracking-tight">
+            Not Published Live Yet
+          </h2>
+          <p className="text-xs sm:text-sm text-on-surface-variant max-w-md mx-auto leading-relaxed">
+            This problem statement has been submitted and is currently undergoing administrative review. Problem details and public URLs are only activated after official verification and publishing by Stuckhere administrators.
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+          <Link
+            to="/explore"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-white text-xs font-bold shadow-sm hover:bg-primary-container transition-all"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            <span>Explore Published Problems</span>
+          </Link>
+          <Link
+            to="/"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-outline-variant/40 bg-surface-container-low text-on-surface text-xs font-bold hover:bg-surface-container transition-all"
+          >
+            <span>Back to Home</span>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   // Calculated Pain and Opportunity scores
   const rawPain = problem.painScore || 93;
   const painScore = rawPain <= 10 ? (rawPain * 10).toFixed(0) : rawPain.toFixed(0);
@@ -595,8 +641,6 @@ export const ProblemDetail: React.FC = () => {
   const effectiveComments = comments.length > 0
     ? comments
     : (problem.comments || []);
-
-  const isAdmin = userDoc?.role === "admin" || (userDoc as any)?.role === "superadmin" || Boolean(user?.email?.includes("admin"));
 
   // Companies attached by admin from PS Control (problem.attachedCompanyNames)
   const attachedCompanies: Array<{ name: string; logoUrl?: string; industry?: string }> = (

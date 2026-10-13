@@ -46,7 +46,7 @@ import {
 
 export const SubmitProblem: React.FC = () => {
   const navigate = useNavigate();
-  const { user, userDoc } = useAuth();
+  const { user, userDoc, isAdmin } = useAuth();
 
   const [activeTab, setActiveTab] = useState<number>(1);
   const [submitting, setSubmitting] = useState(false);
@@ -994,45 +994,72 @@ export const SubmitProblem: React.FC = () => {
 
           {/* Navigation Action Buttons */}
           <div className="flex flex-col sm:flex-row items-center gap-3 w-full pt-2">
-            <button
-              onClick={() => navigate("/admin/review-queue")}
-              className="w-full sm:flex-1 bg-primary text-white py-3.5 px-6 rounded-xl text-xs md:text-sm font-bold shadow-md hover:bg-primary-container transition-all cursor-pointer flex items-center justify-center gap-2"
-            >
-              <span>Review & Approve as Admin</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => navigate("/dashboard")}
-              className="w-full sm:flex-1 bg-surface-container hover:bg-surface-container-high text-on-surface border border-outline-variant/40 py-3.5 px-6 rounded-xl text-xs md:text-sm font-bold transition-all cursor-pointer flex items-center justify-center gap-2"
-            >
-              <span>Track in Dashboard</span>
-            </button>
+            {isAdmin ? (
+              <>
+                <button
+                  onClick={() => navigate("/admin/review-queue")}
+                  className="w-full sm:flex-1 bg-primary text-white py-3.5 px-6 rounded-xl text-xs md:text-sm font-bold shadow-md hover:bg-primary-container transition-all cursor-pointer flex items-center justify-center gap-2"
+                >
+                  <span>Review & Approve Live (Admin)</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() =>
+                    navigate(
+                      getProblemDetailUrl({ id: submittedProblemId || "prob-1", title })
+                    )
+                  }
+                  className="w-full sm:flex-1 bg-surface-container hover:bg-surface-container-high text-on-surface border border-outline-variant/40 py-3.5 px-6 rounded-xl text-xs md:text-sm font-bold transition-all cursor-pointer flex items-center justify-center gap-2"
+                >
+                  <Eye className="w-4 h-4" />
+                  <span>Admin Preview Dossier</span>
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  onClick={() => navigate("/dashboard")}
+                  className="w-full sm:flex-1 bg-primary text-white py-3.5 px-6 rounded-xl text-xs md:text-sm font-bold shadow-md hover:bg-primary-container transition-all cursor-pointer flex items-center justify-center gap-2"
+                >
+                  <span>Track Status in Dashboard</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => {
+                    setSubmittedProblemId(null);
+                    setActiveTab(1);
+                    setTitle("");
+                    setDescription("");
+                  }}
+                  className="w-full sm:flex-1 bg-surface-container hover:bg-surface-container-high text-on-surface border border-outline-variant/40 py-3.5 px-6 rounded-xl text-xs md:text-sm font-bold transition-all cursor-pointer flex items-center justify-center gap-2"
+                >
+                  <span>+ Submit Another Problem</span>
+                </button>
+              </>
+            )}
           </div>
 
-          <div className="flex items-center gap-4 text-xs font-bold text-on-surface-variant pt-1">
-            <button
-              onClick={() =>
-                navigate(
-                  getProblemDetailUrl({ id: submittedProblemId || "prob-1", title })
-                )
-              }
-              className="hover:text-primary transition-colors cursor-pointer"
-            >
-              Preview Problem Dossier
-            </button>
-            <span>•</span>
-            <button
-              onClick={() => {
-                setSubmittedProblemId(null);
-                setActiveTab(1);
-                setTitle("");
-                setDescription("");
-              }}
-              className="hover:text-primary transition-colors cursor-pointer"
-            >
-              + Submit Another Problem
-            </button>
-          </div>
+          {!isAdmin && (
+            <p className="text-[11px] text-on-surface-variant text-center max-w-md pt-1">
+              🔒 <strong>Publishing Policy:</strong> Public canonical URLs are activated only after administrator verification and approval.
+            </p>
+          )}
+
+          {isAdmin && (
+            <div className="flex items-center gap-4 text-xs font-bold text-on-surface-variant pt-1">
+              <button
+                onClick={() => {
+                  setSubmittedProblemId(null);
+                  setActiveTab(1);
+                  setTitle("");
+                  setDescription("");
+                }}
+                className="hover:text-primary transition-colors cursor-pointer"
+              >
+                + Submit Another Problem
+              </button>
+            </div>
+          )}
         </div>
       </div>
     );
