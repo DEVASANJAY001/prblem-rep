@@ -73,7 +73,11 @@ export function subscribeBadges(
     if (badgesStream) {
       badgesStream.listeners.delete(callback);
       if (badgesStream.listeners.size === 0) {
-        badgesStream.unsubscribe();
+        try {
+          badgesStream.unsubscribe();
+        } catch (e) {
+          console.warn("Badges unsubscribe notice:", e);
+        }
         badgesStream = null;
       }
     }

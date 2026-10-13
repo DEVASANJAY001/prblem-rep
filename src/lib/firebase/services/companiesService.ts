@@ -72,7 +72,11 @@ export function subscribeCompanies(
     if (companiesStream) {
       companiesStream.listeners.delete(callback);
       if (companiesStream.listeners.size === 0) {
-        companiesStream.unsubscribe();
+        try {
+          companiesStream.unsubscribe();
+        } catch (e) {
+          console.warn("Companies snapshot unsubscribe notice:", e);
+        }
         companiesStream = null;
       }
     }

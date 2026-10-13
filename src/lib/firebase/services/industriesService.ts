@@ -72,7 +72,11 @@ export function subscribeIndustries(
     if (industriesStream) {
       industriesStream.listeners.delete(callback);
       if (industriesStream.listeners.size === 0) {
-        industriesStream.unsubscribe();
+        try {
+          industriesStream.unsubscribe();
+        } catch (e) {
+          console.warn("Industries unsubscribe notice:", e);
+        }
         industriesStream = null;
       }
     }

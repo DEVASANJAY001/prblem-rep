@@ -225,6 +225,13 @@ export const ProblemDetail: React.FC = () => {
     const unsubscribe = subscribeProblemById(cleanId, (p) => {
       if (p) {
         setProblem((prev) => (prev ? { ...prev, ...p } : p));
+        // Automatically canonicalize URL in browser bar to /problem/slug--id
+        if (p.title && typeof window !== "undefined") {
+          const canonical = getProblemDetailUrl(p);
+          if (window.location.pathname !== canonical) {
+            window.history.replaceState(null, "", canonical);
+          }
+        }
         setViewsCount((prev) => Math.max(prev, p.views || 0));
         setInterestedCount((prev) =>
           Math.max(prev, p.interestedCount || 0, p.interestedUsers?.length || 0)
@@ -1559,7 +1566,7 @@ export const ProblemDetail: React.FC = () => {
                   <h3 className="text-base md:text-lg font-bold text-on-surface mb-2">Related Problems</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <Link
-                      to="/problem/prob-1"
+                      to={getProblemDetailUrl({ id: "prob-1", title: "Data Interoperability Failure in Rural Clinics" })}
                       className="bg-surface-container/40 p-4 rounded-xl flex flex-col gap-2 hover:bg-surface-container transition-colors cursor-pointer border border-outline-variant/20"
                     >
                       <div className="flex justify-between items-start">
@@ -1573,7 +1580,7 @@ export const ProblemDetail: React.FC = () => {
                       </h4>
                     </Link>
                     <Link
-                      to="/problem/prob-3"
+                      to={getProblemDetailUrl({ id: "prob-3", title: "Subsurface Hydrogen Pipeline Micro-Leaks" })}
                       className="bg-surface-container/40 p-4 rounded-xl flex flex-col gap-2 hover:bg-surface-container transition-colors cursor-pointer border border-outline-variant/20"
                     >
                       <div className="flex justify-between items-start">
@@ -1587,7 +1594,7 @@ export const ProblemDetail: React.FC = () => {
                       </h4>
                     </Link>
                     <Link
-                      to="/problem/prob-4"
+                      to={getProblemDetailUrl({ id: "prob-4", title: "Autonomous Freight Sensor Phantom Occlusion" })}
                       className="bg-surface-container/40 p-4 rounded-xl flex flex-col gap-2 hover:bg-surface-container transition-colors cursor-pointer border border-outline-variant/20"
                     >
                       <div className="flex justify-between items-start">

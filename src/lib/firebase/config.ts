@@ -36,21 +36,13 @@ try {
   app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
   auth = getAuth(app);
 
-  // Initialize Firestore with IndexedDB Persistence (Single Tab manager avoids localStorage QuotaExceeded errors)
+  // Initialize Firestore with robust memoryLocalCache (avoids IndexedDB multi-tab assertion crashes)
   try {
-    if (typeof window !== "undefined" && typeof indexedDB !== "undefined") {
-      db = initializeFirestore(app, {
-        localCache: persistentLocalCache({
-          tabManager: persistentSingleTabManager({ forceOwnership: true }),
-        }),
-      });
-    } else {
-      db = initializeFirestore(app, {
-        localCache: memoryLocalCache(),
-      });
-    }
+    db = initializeFirestore(app, {
+      localCache: memoryLocalCache(),
+    });
   } catch {
-    // If already initialized or unsupported, use getFirestore fallback
+    // If already initialized, use getFirestore fallback
     db = getFirestore(app);
   }
 

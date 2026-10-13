@@ -11,6 +11,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { TableSkeleton } from "@/components/common/LoadingContainer";
 import { AdminProblemDetailEditor } from "./AdminProblemDetailEditor";
 import { REAL_INDUSTRIES } from "@/data/realProductionData";
+import { getProblemDetailUrl } from "@/lib/seoUrls";
 import {
   Search,
   Filter,
@@ -594,7 +595,7 @@ export const AdminProblems: React.FC = () => {
 
                     {/* View Live Link */}
                     <Link
-                      to={`/problem/${prob.id}`}
+                      to={getProblemDetailUrl(prob)}
                       target="_blank"
                       className="p-1.5 text-on-surface-variant hover:text-primary hover:bg-surface-container rounded-lg transition-colors"
                       title="View Public Page"

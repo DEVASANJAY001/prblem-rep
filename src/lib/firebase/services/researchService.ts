@@ -54,7 +54,11 @@ export function subscribeResearch(
     if (researchStream) {
       researchStream.listeners.delete(callback);
       if (researchStream.listeners.size === 0) {
-        researchStream.unsubscribe();
+        try {
+          researchStream.unsubscribe();
+        } catch (e) {
+          console.warn("Research unsubscribe notice:", e);
+        }
         researchStream = null;
       }
     }

@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { subscribeProblems, updateProblemStatus } from "@/lib/firebase/services/problemsService";
 import { subscribeIndustries } from "@/lib/firebase/services/industriesService";
 import { REAL_INDUSTRIES } from "@/data/realProductionData";
+import { getProblemDetailUrl } from "@/lib/seoUrls";
 import { useAuth } from "@/contexts/AuthContext";
 import { TableSkeleton, LoadingContainer } from "@/components/common/LoadingContainer";
 import {
@@ -372,7 +373,7 @@ export const AdminReviewQueue: React.FC = () => {
 
                     {/* Quick Link to Preview problem */}
                     <Link
-                      to={`/problem/${problem.id}`}
+                      to={getProblemDetailUrl(problem)}
                       target="_blank"
                       className="p-2 rounded-xl text-on-surface-variant hover:text-primary hover:bg-surface-container transition-colors shrink-0"
                       title="Preview Problem in New Tab"

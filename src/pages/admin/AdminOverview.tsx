@@ -5,6 +5,7 @@ import { subscribeIndustries } from "@/lib/firebase/services/industriesService";
 import { subscribeBadges } from "@/lib/firebase/services/badgesService";
 import { subscribeResearch } from "@/lib/firebase/services/researchService";
 import { ProblemDoc, IndustryDoc, BadgeDoc, ResearchDoc } from "@/types";
+import { getProblemDetailUrl } from "@/lib/seoUrls";
 import {
   BarChart2,
   PlusCircle,
@@ -374,7 +375,7 @@ export const AdminOverview: React.FC = () => {
                   <div className="flex-1 min-w-0 pr-4 space-y-1">
                     <div className="flex items-center gap-2">
                       <Link
-                        to={`/problem/${p.id}`}
+                        to={getProblemDetailUrl(p)}
                         target="_blank"
                         className="text-sm font-bold text-on-surface hover:text-primary transition-colors truncate flex items-center gap-1"
                       >

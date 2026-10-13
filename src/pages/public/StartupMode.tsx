@@ -470,7 +470,7 @@ export const StartupMode: React.FC = () => {
         </p>
         <div className="mt-6 flex items-center justify-center gap-3">
           <Link
-            to={`/problem/${problem.id}`}
+            to={getProblemDetailUrl(problem)}
             className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary text-white text-xs font-bold shadow-xs hover:bg-primary-container transition-all"
           >
             <ArrowLeft className="h-4 w-4" /> Back to Problem Statement
@@ -1880,7 +1880,7 @@ Generated from Prblms Startup Canvas on ${new Date().toLocaleDateString()}`;
           <div className="max-w-[1280px] mx-auto px-4 md:px-12 flex flex-col sm:flex-row justify-between items-center gap-4">
             <div className="flex items-center gap-4 order-2 sm:order-1">
               <Link
-                to={`/problem/${problem.id}`}
+                to={getProblemDetailUrl(problem)}
                 className="bg-surface border border-outline-variant/40 text-on-surface text-xs font-bold px-4 py-2 rounded-xl hover:bg-surface-container transition-colors cursor-pointer flex items-center gap-1.5"
               >
                 <ArrowLeft className="w-3.5 h-3.5" />

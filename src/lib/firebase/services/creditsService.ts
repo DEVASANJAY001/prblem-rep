@@ -74,7 +74,11 @@ export function subscribeCredits(
     if (creditsStream) {
       creditsStream.listeners.delete(callback);
       if (creditsStream.listeners.size === 0) {
-        creditsStream.unsubscribe();
+        try {
+          creditsStream.unsubscribe();
+        } catch (e) {
+          console.warn("Credits unsubscribe notice:", e);
+        }
         creditsStream = null;
       }
     }

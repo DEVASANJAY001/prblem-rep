@@ -13,6 +13,7 @@ import { CompanyLogo } from "@/components/ui/CompanyLogo";
 import { useAuth } from "@/contexts/AuthContext";
 import { ProblemDoc, ProblemComment, CompanyDoc, ProblemStatus, EvidenceDocument, CreditSourceDoc } from "@/types";
 import { REAL_INDUSTRIES, REAL_COMPANIES } from "@/data/realProductionData";
+import { getProblemDetailUrl } from "@/lib/seoUrls";
 import {
   Save,
   Trash2,
@@ -617,7 +618,7 @@ export const AdminProblemDetailEditor: React.FC<AdminProblemDetailEditorProps> =
         {/* Global Actions */}
         <div className="flex items-center gap-2.5 w-full md:w-auto justify-end flex-wrap">
           <Link
-            to={`/problem/${problem.id}`}
+            to={getProblemDetailUrl(problem)}
             target="_blank"
             className="px-3.5 py-2 rounded-xl bg-surface-container hover:bg-surface-container-high text-xs font-bold text-on-surface flex items-center gap-1.5 transition-colors shadow-2xs"
           >
