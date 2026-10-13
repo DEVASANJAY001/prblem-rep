@@ -30,6 +30,7 @@ import {
 } from "@/data/realProductionData";
 import { INITIAL_SITE_CONTENT } from "@/data/initialContent";
 import { scoreProblemSubmission } from "./aiScoring";
+import { slugify } from "./seoUrls";
 
 export const STORAGE_KEYS = {
   PROBLEMS: "prblms_problems_v2",
@@ -237,12 +238,40 @@ export function getProblems(filter?: {
   return list;
 }
 
+/**
+ * Generates the next sequential problem ID (e.g. prob-7, prob-8, prob-9)
+ * ensuring clean human IDs matching prob-1/prob-2 without raw UUIDs.
+ */
+export function generateNextProblemId(): string {
+  initializeStorage();
+  const list = load<ProblemDoc[]>(STORAGE_KEYS.PROBLEMS, REAL_PROBLEMS);
+  let maxNum = 0;
+  for (const p of [...list, ...REAL_PROBLEMS]) {
+    if (!p || !p.id) continue;
+    const match = p.id.match(/^prob-(\d+)$/i);
+    if (match) {
+      const num = parseInt(match[1], 10);
+      if (!isNaN(num) && num > maxNum) {
+        maxNum = num;
+      }
+    }
+  }
+  return `prob-${maxNum + 1}`;
+}
+
 export function getProblemById(id: string): ProblemDoc | null {
   initializeStorage();
   const list = load<ProblemDoc[]>(STORAGE_KEYS.PROBLEMS, REAL_PROBLEMS);
-  const found = list.find((p) => p.id === id);
+  let found = list.find((p) => p.id === id);
+  if (!found) {
+    // Fallback: match by title slug (e.g. "data-interoperability-failure-in-rural-clinics")
+    found = list.find((p) => (p.title && slugify(p.title) === id) || p.id?.toLowerCase() === id?.toLowerCase());
+  }
+  if (!found) {
+    found = REAL_PROBLEMS.find((p) => p.id === id || (p.title && slugify(p.title) === id));
+  }
   if (found) {
-    const seed = REAL_PROBLEMS.find((p) => p.id === id);
+    const seed = REAL_PROBLEMS.find((p) => p.id === found!.id);
     if (seed) {
       if (!found.evidenceDocuments || found.evidenceDocuments.length < (seed.evidenceDocuments?.length || 0) || !found.evidenceDocuments[0]?.description) {
         found.evidenceDocuments = seed.evidenceDocuments;
@@ -270,7 +299,7 @@ export function getProblemById(id: string): ProblemDoc | null {
     }
     return found;
   }
-  return REAL_PROBLEMS.find((p) => p.id === id) || null;
+  return null;
 }
 
 export function submitProblem(data: any, user: { uid: string; name: string } | null): ProblemDoc {
@@ -293,7 +322,7 @@ export function submitProblem(data: any, user: { uid: string; name: string } | n
   });
 
   const newProblem: ProblemDoc = {
-    id: `prob-${crypto.randomUUID()}`,
+    id: generateNextProblemId(),
     title: data.title,
     description: data.description,
     whenItHappens: data.whenItHappens || "",

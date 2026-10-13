@@ -18,14 +18,34 @@ export function slugify(text: string): string {
 }
 
 /**
+ * Detects whether a string looks like an auto-generated UUID or long hash
+ * (e.g. "834e1337-f231-4f5e-a819-bdf862824c2d" or "prob-834e1337-f231-4f5e-a819-bdf862824c2d")
+ */
+export function isUuidLike(text?: string): boolean {
+  if (!text) return false;
+  return /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}/i.test(text) || (text.length > 25 && text.includes("-"));
+}
+
+/**
  * Generates an SEO-optimized slugged URL for a problem statement
- * Example: "Data Interoperability Failure in Rural Clinics" -> "data-interoperability-failure-in-rural-clinics--prob-1"
+ * Formats:
+ * - Clean ID: /problem/data-interoperability-failure-in-rural-clinics--prob-1
+ * - Legacy UUID: /problem/data-interoperability-failure-in-rural-clinics (UUID stripped completely!)
  */
 export function getProblemSlug(problem: { id: string; title?: string }): string {
   if (!problem) return "";
-  if (!problem.title) return problem.id;
-  const cleanSlug = slugify(problem.title);
-  return cleanSlug ? `${cleanSlug}--${problem.id}` : problem.id;
+  const cleanSlug = problem.title ? slugify(problem.title) : "";
+
+  // NEVER show UUID strings like prob-834e1337-f231-4f5e-a819-bdf862824c2d in any URL
+  if (isUuidLike(problem.id)) {
+    return cleanSlug || "problem-statement";
+  }
+
+  // Clean short IDs (e.g. prob-1, prob-2, prob-7):
+  if (cleanSlug && problem.id) {
+    return `${cleanSlug}--${problem.id}`;
+  }
+  return cleanSlug || problem.id || "problem-statement";
 }
 
 /**

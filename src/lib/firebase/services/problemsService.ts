@@ -31,6 +31,7 @@ import {
   incrementProblemViews as incrementLocalProblemViews,
   toggleLocalValidation,
   recordLocalInterest,
+  generateNextProblemId,
 } from "@/lib/storage";
 import { REAL_PROBLEMS } from "@/data/realProductionData";
 import { swrCache } from "@/lib/swrCache";
@@ -197,8 +198,8 @@ export async function createProblem(
         : scored.aiScores.keyRisks,
   };
   const now = new Date().toISOString();
-  // Use crypto.randomUUID() for collision-safe IDs under concurrent submissions
-  const id = `prob-${crypto.randomUUID()}`;
+  // Sequential clean IDs matching prob-1, prob-2, prob-7 standard (no raw UUIDs in URLs)
+  const id = generateNextProblemId();
 
   // Default newly submitted problem statements to "pending" so the administrator
   // receives it in the review queue to moderate and approve.
@@ -319,29 +320,34 @@ function syncProblemCache(problem: ProblemDoc): void {
 // ─────────────────────────────────────────────────────────────────────────────
 // 2. Optimized Read with Local-First & In-Memory SWR Cache (0 Duplicates)
 // ─────────────────────────────────────────────────────────────────────────────
-export async function getProblemById(id: string): Promise<ProblemDoc | null> {
+export async function getProblemById(idOrSlug: string): Promise<ProblemDoc | null> {
+  const local = getLocalProblemById(idOrSlug);
+  const targetId = local ? local.id : idOrSlug;
+
   // 1. Check active stream latest data
-  const cachedStream = docStreams.get(id);
+  const cachedStream = docStreams.get(targetId);
   if (cachedStream && cachedStream.latestData) {
     return cachedStream.latestData;
   }
 
   // 2. Check SWR cache (Tier 1 Memory LRU + Tier 2 SessionStorage)
-  const cachedSWR = swrCache.get<ProblemDoc | null>(`problem_${id}`);
+  const cachedSWR = swrCache.get<ProblemDoc | null>(`problem_${targetId}`);
   if (cachedSWR) {
     return cachedSWR;
   }
 
+  if (local) {
+    swrCache.set(`problem_${targetId}`, local, 300_000);
+    return local;
+  }
+
   // 3. Fallback to SWR fetcher with 5-minute TTL (300_000ms)
   return swrCache.fetch<ProblemDoc | null>(
-    `problem_${id}`,
+    `problem_${targetId}`,
     async () => {
-      const local = getLocalProblemById(id);
-      if (local) return local;
-
       try {
         if (db && typeof doc === "function") {
-          const ref = doc(db, PROBLEMS_COLLECTION, id);
+          const ref = doc(db, PROBLEMS_COLLECTION, targetId);
           const snap = await getDoc(ref);
           if (snap.exists()) {
             const live = snap.data() as ProblemDoc;
@@ -396,13 +402,16 @@ export async function updateProblemModule<K extends keyof ProblemDoc>(
 // 3. Multiplexed Shared Problem Detail Listener (0 Duplicate Reads)
 // ─────────────────────────────────────────────────────────────────────────────
 export function subscribeProblemById(
-  id: string,
+  idOrSlug: string,
   callback: (problem: ProblemDoc | null) => void
 ): () => void {
+  // Resolve slug or alias to canonical ID if available locally
+  const localData = getLocalProblemById(idOrSlug);
+  const id = localData ? localData.id : idOrSlug;
+
   // 1. Instantly emit cached data (0ms latency, zero layout shift)
   const streamData = docStreams.get(id)?.latestData;
   const swrData = swrCache.get<ProblemDoc>(`problem_${id}`);
-  const localData = getLocalProblemById(id);
   const initial = streamData || swrData || localData || null;
 
   if (initial) {
