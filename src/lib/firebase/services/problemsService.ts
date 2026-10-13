@@ -110,6 +110,7 @@ export async function createProblem(
     psFrom?: string[];
     psFromCustom?: string;
     aiScores?: AIScores;
+    status?: ProblemStatus;
   }
 ): Promise<{ success: boolean; problemId: string; aiScores: AIScores }> {
   const scored = scoreProblemSubmission({
@@ -142,6 +143,8 @@ export async function createProblem(
   // Use crypto.randomUUID() for collision-safe IDs under concurrent submissions
   const id = `prob-${crypto.randomUUID()}`;
 
+  const resolvedStatus = problemData.status || "approved";
+
   const newProblem: ProblemDoc = {
     id,
     title: problemData.title,
@@ -157,7 +160,7 @@ export async function createProblem(
     interestedCount: 1,
     interestedUsers: [problemData.submittedByUid],
     comments: [],
-    status: "pending",
+    status: resolvedStatus,
     submittedBy: problemData.submittedByName,
     submittedByUid: problemData.submittedByUid,
     whenItHappens: problemData.whenItHappens || "",
@@ -206,11 +209,18 @@ export async function createProblem(
     reviewedByUid: undefined,
     reviewNote: null,
     reviewedAt: null,
-    publishedAt: null,
+    publishedAt: resolvedStatus === "approved" ? now : null,
   };
 
-  // 1. Persist locally first
+  // 1. Persist locally first and warm SWR cache immediately for zero-lag reading
   saveLocalProblem(newProblem);
+  swrCache.set(`doc_${id}`, newProblem);
+
+  const existingDocStream = docStreams.get(id);
+  if (existingDocStream) {
+    existingDocStream.latestData = newProblem;
+    existingDocStream.listeners.forEach((l) => l(newProblem));
+  }
 
   // 2. Persist to Firestore (1 write operation)
   try {
