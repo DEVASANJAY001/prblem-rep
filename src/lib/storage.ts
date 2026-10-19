@@ -49,6 +49,7 @@ export const STORAGE_KEYS = {
   BADGES: "prblms_badges_v2",
   CREDITS: "prblms_credits_v2",
   USER_SUBMISSIONS: "prblms_user_submissions_v2",
+  DELETED_PROBLEMS: "prblms_deleted_problems_v2",
 };
 
 export const DEFAULT_CREDITS: CreditSourceDoc[] = [
@@ -187,11 +188,15 @@ export function getProblems(filter?: {
   submittedBy?: string;
 }): ProblemDoc[] {
   initializeStorage();
+  const deletedIds = new Set(load<string[]>(STORAGE_KEYS.DELETED_PROBLEMS, []));
   let list = load<ProblemDoc[]>(STORAGE_KEYS.PROBLEMS, REAL_PROBLEMS);
 
-  // Ensure any baseline problems from REAL_PROBLEMS (including seed moderation items) are present
+  // Exclude deleted items from list
+  list = list.filter((p) => !deletedIds.has(p.id));
+
+  // Ensure any baseline problems from REAL_PROBLEMS are present UNLESS explicitly deleted
   for (const seed of REAL_PROBLEMS) {
-    if (!list.some((p) => p.id === seed.id)) {
+    if (!deletedIds.has(seed.id) && !list.some((p) => p.id === seed.id)) {
       list.push(seed);
     }
   }
@@ -272,14 +277,17 @@ export function generateNextProblemId(): string {
 
 export function getProblemById(id: string): ProblemDoc | null {
   initializeStorage();
+  const deletedIds = new Set(load<string[]>(STORAGE_KEYS.DELETED_PROBLEMS, []));
+  if (deletedIds.has(id)) return null;
+
   const list = load<ProblemDoc[]>(STORAGE_KEYS.PROBLEMS, REAL_PROBLEMS);
-  let found = list.find((p) => p.id === id);
+  let found = list.find((p) => p.id === id && !deletedIds.has(p.id));
   if (!found) {
     // Fallback: match by title slug (e.g. "data-interoperability-failure-in-rural-clinics")
-    found = list.find((p) => (p.title && slugify(p.title) === id) || p.id?.toLowerCase() === id?.toLowerCase());
+    found = list.find((p) => !deletedIds.has(p.id) && ((p.title && slugify(p.title) === id) || p.id?.toLowerCase() === id?.toLowerCase()));
   }
   if (!found) {
-    found = REAL_PROBLEMS.find((p) => p.id === id || (p.title && slugify(p.title) === id));
+    found = REAL_PROBLEMS.find((p) => !deletedIds.has(p.id) && (p.id === id || (p.title && slugify(p.title) === id)));
   }
   if (found) {
     const seed = REAL_PROBLEMS.find((p) => p.id === found!.id);
@@ -445,6 +453,10 @@ function mergeValidationsObject(existing?: any, incoming?: any): any {
 
 export function saveProblem(incoming: ProblemDoc): void {
   initializeStorage();
+  const deletedList = load<string[]>(STORAGE_KEYS.DELETED_PROBLEMS, []);
+  if (deletedList.includes(incoming.id)) {
+    save(STORAGE_KEYS.DELETED_PROBLEMS, deletedList.filter((id) => id !== incoming.id));
+  }
   const list = load<ProblemDoc[]>(STORAGE_KEYS.PROBLEMS, REAL_PROBLEMS);
   const index = list.findIndex((p) => p.id === incoming.id);
   if (index >= 0) {
@@ -1341,6 +1353,10 @@ export function updateFullProblemInStorage(
 
 export function deleteProblemFromStorage(problemId: string): boolean {
   initializeStorage();
+  const deletedList = load<string[]>(STORAGE_KEYS.DELETED_PROBLEMS, []);
+  if (!deletedList.includes(problemId)) {
+    save(STORAGE_KEYS.DELETED_PROBLEMS, [...deletedList, problemId]);
+  }
   const list = load<ProblemDoc[]>(STORAGE_KEYS.PROBLEMS, REAL_PROBLEMS);
   const nextList = list.filter((p) => p.id !== problemId);
   save(STORAGE_KEYS.PROBLEMS, nextList);

@@ -64,9 +64,6 @@ export const AdminProblems: React.FC = () => {
   const [creating, setCreating] = useState(false);
 
   useEffect(() => {
-    // Background auto-sync all baseline problems to Firebase Firestore
-    syncAllProblemsToFirebase().catch(() => {});
-
     const unsubscribe = subscribeProblems({ status: "all" }, (list) => {
       setProblems(list);
       setLoading(false);

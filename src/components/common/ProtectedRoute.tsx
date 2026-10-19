@@ -42,10 +42,7 @@ export const AdminRoute: React.FC<{ children: React.ReactNode }> = ({ children }
   const { user, isAdmin, isModerator, loading, userDocVerified } = useAuth();
   const location = useLocation();
 
-  if (loading || !userDocVerified) {
-    // Show spinner while either:
-    // 1. Firebase Auth state is resolving (loading), OR
-    // 2. Firestore hasn't confirmed the role yet (userDocVerified is false)
+  if (loading) {
     return (
       <div className="flex h-96 w-full items-center justify-center">
         <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
@@ -55,6 +52,14 @@ export const AdminRoute: React.FC<{ children: React.ReactNode }> = ({ children }
 
   if (!user) {
     return <Navigate to="/admin/login" state={{ from: location }} replace />;
+  }
+
+  if (!userDocVerified) {
+    return (
+      <div className="flex h-96 w-full items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+      </div>
+    );
   }
 
   if (!isAdmin && !isModerator) {

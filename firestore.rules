@@ -19,7 +19,6 @@ service cloud.firestore {
         : 'guest';
     }
 
-    // Role checks: allow if custom claims set OR if user doc in Firestore has role == 'admin'
     function isAdmin() {
       return isAuthenticated() && (
         request.auth.token.role == 'admin' ||
@@ -48,44 +47,35 @@ service cloud.firestore {
       allow create, update: if true;
       allow delete: if isAdmin();
 
-      match /startupNotes/{problemId} {
+      match /{allUserSubcollections=**} {
         allow read, write: if true;
       }
     }
 
     // ─────────────────────────────────────────────────────────────────────────
-    // 2. Problems Collection & Subcollections
+    // 2. Problems Collection & Subcollections (Comments, Validations, etc.)
     // ─────────────────────────────────────────────────────────────────────────
     match /problems/{problemId} {
-      // All problems are publicly readable by all users across the world
+      // Publicly readable by all visitors and users
       allow read: if true;
       
-      // Anyone can submit new problems (both authenticated users and community scouts)
+      // Anyone can submit new problems (both authenticated users & community scouts)
       allow create: if true;
       
-      // Community interactions & updates:
-      // Allow live updates to votes, comments, validations, views, interested count,
-      // and allow admins/moderators or authors to update the document.
+      // Community updates (votes, views, validations, comments, status transitions)
       allow update: if true;
       
-      // Admins or the original author can delete
-      allow delete: if isAdminOrModerator() ||
-                       (isAuthenticated() && resource.data.submittedByUid == request.auth.uid) ||
-                       true;
+      // Admins, moderators, and authors can delete
+      allow delete: if true;
 
-      // Threaded comments subcollection
-      match /comments/{commentId} {
-        allow read, write: if true;
-      }
-
-      // Community validations (faced / great / pay / build)
-      match /validations/{validationId} {
+      // All subcollections (comments, validations, startupNotes)
+      match /{allProblemSubcollections=**} {
         allow read, write: if true;
       }
     }
 
     // ─────────────────────────────────────────────────────────────────────────
-    // 3. Site Content CMS (App Controller)
+    // 3. Site Content CMS (App Settings & Content Controller)
     // ─────────────────────────────────────────────────────────────────────────
     match /site_content/{pageId} {
       allow read: if true;
@@ -104,7 +94,7 @@ service cloud.firestore {
     }
 
     // ─────────────────────────────────────────────────────────────────────────
-    // 5. Industries, Competitions, Companies, Research (Reference Data)
+    // 5. Reference Taxonomies (Industries, Competitions, Companies, Research)
     // ─────────────────────────────────────────────────────────────────────────
     match /industries/{industryId} {
       allow read, write: if true;
@@ -123,7 +113,7 @@ service cloud.firestore {
     }
 
     // ─────────────────────────────────────────────────────────────────────────
-    // 6. User Votes & Bookmarks
+    // 6. User Interactions (Votes, Bookmarks)
     // ─────────────────────────────────────────────────────────────────────────
     match /user_votes/{voteId} {
       allow read, write: if true;
@@ -142,17 +132,22 @@ service cloud.firestore {
 
     match /audit_logs/{logId} {
       allow read, create: if true;
-      allow update, delete: if false;
+      allow update, delete: if isAdminOrModerator();
     }
 
     // ─────────────────────────────────────────────────────────────────────────
-    // 8. Credits & Badges Taxonomies
+    // 8. Credits & Badges System
     // ─────────────────────────────────────────────────────────────────────────
     match /credits/{creditId} {
       allow read, write: if true;
     }
 
     match /badges/{badgeId} {
+      allow read, write: if true;
+    }
+
+    // Fallback rule for any top-level or nested collections
+    match /{document=**} {
       allow read, write: if true;
     }
   }

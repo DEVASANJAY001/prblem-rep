@@ -152,6 +152,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               // Signed out
               setUserDocState(null);
               localStorage.removeItem(LOCAL_USER_KEY);
+              setUserDocVerified(true);
               setLoading(false);
             }
           };
@@ -248,7 +249,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         "This account does not have admin access. Contact the platform owner to grant permissions."
       );
     }
-    // onAuthStateChanged will hydrate the admin userDoc
+    setUserDoc(firestoreDoc);
+    justSignedInRef.current.add(res.user.uid);
+    setUserDocVerified(true);
   };
 
   // â”€â”€ Admin Registration with Invite Token â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -281,6 +284,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     setUserDoc(adminDoc);
+    justSignedInRef.current.add(res.user.uid);
+    setUserDocVerified(true);
 
     try {
       await createUserDoc(adminDoc);

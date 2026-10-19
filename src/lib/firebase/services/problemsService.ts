@@ -205,8 +205,8 @@ export async function createProblem(
   const rawId = generateNextProblemId();
   const id = `${rawId}-${Date.now().toString(36).slice(-4)}`;
 
-  // Default newly submitted problem statements to "approved" so all users can view immediately in cloud
-  const resolvedStatus: ProblemStatus = problemData.status || "approved";
+  // Default newly submitted problem statements to "pending" so admin can review and approve
+  const resolvedStatus: ProblemStatus = problemData.status || "pending";
 
   const newProblem: ProblemDoc = {
     id,
@@ -1144,12 +1144,12 @@ export async function deleteProblem(problemId: string): Promise<boolean> {
     if (db && typeof doc === "function") {
       const problemRef = doc(db, PROBLEMS_COLLECTION, problemId);
       await deleteDoc(problemRef);
-      return true;
     }
   } catch (error) {
     console.warn("Firestore deleteProblem error:", error);
   }
 
+  notifyQueryStreams();
   return true;
 }
 
