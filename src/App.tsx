@@ -1,5 +1,7 @@
 import React, { Suspense, lazy } from "react";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { PublicLayout } from "@/components/layouts/PublicLayout";
@@ -148,6 +150,8 @@ export default function App() {
               </Routes>
             </Suspense>
           </RoutedErrorBoundary>
+          <Analytics />
+          <SpeedInsights />
         </BrowserRouter>
       </AuthProvider>
     </ThemeProvider>
