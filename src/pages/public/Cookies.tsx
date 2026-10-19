@@ -38,6 +38,15 @@ export const Cookies: React.FC = () => {
         <div className="absolute -bottom-20 left-1/4 w-80 h-80 bg-blue-500/5 rounded-full blur-3xl pointer-events-none" />
 
         <div className="max-w-5xl mx-auto px-4 md:px-8 relative z-10 space-y-4">
+          {/* Breadcrumbs */}
+          <div className="flex items-center gap-2 text-xs font-semibold text-on-surface-variant">
+            <Link to="/" className="hover:text-primary transition-colors">Home</Link>
+            <span>/</span>
+            <span className="text-on-surface font-bold">Legal</span>
+            <span>/</span>
+            <span className="text-primary font-bold">Cookie Policy</span>
+          </div>
+
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold uppercase tracking-wider">
             <Cookie className="h-3.5 w-3.5" />
             <span>Browser Storage Transparency</span>

@@ -31,6 +31,7 @@ import {
   Sparkles,
   CheckCircle2,
   TrendingUp,
+  Flame,
   Heart,
   Leaf,
   Bot,
@@ -89,6 +90,8 @@ export const AdminIndustries: React.FC = () => {
   const [subcategoriesStr, setSubcategoriesStr] = useState(
     "Patient Care, Hospitals & Clinics, Medical Devices, HealthTech, Pharma & Biotech, Mental Health, Public Health, Health Insurance"
   );
+  const [isPopular, setIsPopular] = useState(false);
+  const [isTrending, setIsTrending] = useState(false);
 
   const loadAll = () => {
     setIndustries(getIndustries(true));
@@ -119,6 +122,8 @@ export const AdminIndustries: React.FC = () => {
     setTrendingCount(64);
     setAvgPainScore(88);
     setSubcategoriesStr("General Operations, Automation, Compliance, Customer Experience");
+    setIsPopular(false);
+    setIsTrending(false);
     setIsModalOpen(true);
   };
 
@@ -138,6 +143,8 @@ export const AdminIndustries: React.FC = () => {
       ind.subcategories?.map((s) => s.name).join(", ") ||
         "Patient Care, Hospitals & Clinics, Medical Devices, HealthTech, Pharma & Biotech, Mental Health"
     );
+    setIsPopular(Boolean(ind.isPopular));
+    setIsTrending(Boolean(ind.isTrending));
     setIsModalOpen(true);
   };
 
@@ -168,6 +175,8 @@ export const AdminIndustries: React.FC = () => {
       avgPainScore,
       problemCount: editingSlug ? industries.find((i) => i.slug === editingSlug)?.problemCount || 12840 : 12840,
       subcategories: subcats,
+      isPopular,
+      isTrending,
     };
 
     await saveIndustryToFirestore(payload);
@@ -180,6 +189,20 @@ export const AdminIndustries: React.FC = () => {
     const isNowHidden = await toggleIndustryVisibilityInFirestore(slugToToggle);
     loadAll();
     showNotification(`Industry is now ${!isNowHidden ? "Visible on public site" : "Hidden from public view"}`);
+  };
+
+  const handleTogglePopular = async (ind: IndustryDoc) => {
+    const nextVal = !ind.isPopular;
+    await saveIndustryToFirestore({ ...ind, isPopular: nextVal });
+    loadAll();
+    showNotification(`Industry "${ind.name}" marked as ${nextVal ? "Popular (Top Priority)" : "Standard"}`);
+  };
+
+  const handleToggleTrending = async (ind: IndustryDoc) => {
+    const nextVal = !ind.isTrending;
+    await saveIndustryToFirestore({ ...ind, isTrending: nextVal });
+    loadAll();
+    showNotification(`Industry "${ind.name}" marked as ${nextVal ? "Trending (High Velocity)" : "Standard"}`);
   };
 
   const handleDelete = async (slugToDelete: string, indName: string) => {
@@ -369,6 +392,26 @@ export const AdminIndustries: React.FC = () => {
 
                   <div className="flex items-center gap-1.5">
                     <button
+                      onClick={() => handleTogglePopular(ind)}
+                      title={ind.isPopular ? "Remove from Popular placement" : "Enforce Popular placement in Explore"}
+                      className={`rounded-lg p-1.5 transition-colors ${
+                        ind.isPopular ? "bg-amber-100 text-amber-700 shadow-xs" : "text-zinc-400 hover:bg-zinc-100 hover:text-amber-600"
+                      }`}
+                    >
+                      <Flame className="h-4 w-4 fill-amber-500/20" />
+                    </button>
+
+                    <button
+                      onClick={() => handleToggleTrending(ind)}
+                      title={ind.isTrending ? "Remove from Trending placement" : "Enforce Trending placement in Explore"}
+                      className={`rounded-lg p-1.5 transition-colors ${
+                        ind.isTrending ? "bg-emerald-100 text-emerald-700 shadow-xs" : "text-zinc-400 hover:bg-zinc-100 hover:text-emerald-600"
+                      }`}
+                    >
+                      <TrendingUp className="h-4 w-4" />
+                    </button>
+
+                    <button
                       onClick={() => handleToggleVisibility(ind.slug)}
                       title={isHidden ? "Unhide industry" : "Hide from public view"}
                       className={`rounded-lg p-1.5 transition-colors ${
@@ -473,6 +516,20 @@ export const AdminIndustries: React.FC = () => {
                         className="rounded p-1 text-zinc-400 hover:bg-zinc-100 disabled:opacity-20"
                       >
                         <ArrowDown className="h-3.5 w-3.5" />
+                      </button>
+                      <button
+                        onClick={() => handleTogglePopular(ind)}
+                        title={ind.isPopular ? "Popular active" : "Mark Popular"}
+                        className={`rounded p-1 ${ind.isPopular ? "text-amber-600 bg-amber-50" : "text-zinc-400 hover:text-amber-600"}`}
+                      >
+                        <Flame className="h-3.5 w-3.5" />
+                      </button>
+                      <button
+                        onClick={() => handleToggleTrending(ind)}
+                        title={ind.isTrending ? "Trending active" : "Mark Trending"}
+                        className={`rounded p-1 ${ind.isTrending ? "text-emerald-600 bg-emerald-50" : "text-zinc-400 hover:text-emerald-600"}`}
+                      >
+                        <TrendingUp className="h-3.5 w-3.5" />
                       </button>
                       <button
                         onClick={() => handleToggleVisibility(ind.slug)}
@@ -680,6 +737,46 @@ export const AdminIndustries: React.FC = () => {
                       className="mt-1 w-full rounded-lg border border-zinc-200 bg-white p-2 text-xs font-bold text-rose-600"
                     />
                   </div>
+                </div>
+              </div>
+
+              {/* Explore Domains Placement Controls */}
+              <div className="rounded-2xl border border-amber-200 bg-amber-50/40 p-4 space-y-3">
+                <span className="text-[11px] font-bold text-amber-900 uppercase tracking-wider block">
+                  Explore Domains Popup Placement Controls
+                </span>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <label className="flex items-center gap-2.5 cursor-pointer bg-white p-3 rounded-xl border border-amber-100 hover:border-amber-300 transition-colors">
+                    <input
+                      type="checkbox"
+                      checked={isPopular}
+                      onChange={(e) => setIsPopular(e.target.checked)}
+                      className="rounded border-zinc-300 text-amber-600 focus:ring-amber-500 h-4 w-4"
+                    />
+                    <div>
+                      <span className="font-bold text-zinc-900 block flex items-center gap-1.5">
+                        <Flame className="w-3.5 h-3.5 text-amber-500 fill-amber-500/20" />
+                        Featured Popular
+                      </span>
+                      <span className="text-[10px] text-zinc-500">Enforce in Explore "Popular Domains" container</span>
+                    </div>
+                  </label>
+
+                  <label className="flex items-center gap-2.5 cursor-pointer bg-white p-3 rounded-xl border border-amber-100 hover:border-emerald-300 transition-colors">
+                    <input
+                      type="checkbox"
+                      checked={isTrending}
+                      onChange={(e) => setIsTrending(e.target.checked)}
+                      className="rounded border-zinc-300 text-emerald-600 focus:ring-emerald-500 h-4 w-4"
+                    />
+                    <div>
+                      <span className="font-bold text-zinc-900 block flex items-center gap-1.5">
+                        <TrendingUp className="w-3.5 h-3.5 text-emerald-500" />
+                        Featured Trending
+                      </span>
+                      <span className="text-[10px] text-zinc-500">Enforce in Explore "Trending Domains" container</span>
+                    </div>
+                  </label>
                 </div>
               </div>
 

@@ -16,6 +16,8 @@ import {
   reorderCreditsInFirestore,
 } from "@/lib/firebase/services/creditsService";
 import { CreditSourceDoc } from "@/types";
+import { StuckhereLogoMark } from "@/components/ui/StuckhereLogo";
+import { isOwnThinkingCredit } from "@/components/ui/CreditSourceBadge";
 import {
   Award,
   Plus,
@@ -314,8 +316,18 @@ export const AdminCredits: React.FC = () => {
                   </div>
 
                   <div>
-                    <h3 className="text-base font-bold text-gray-900 group-hover:text-primary transition-colors flex items-center gap-1.5">
+                    <h3 className="text-base font-bold text-gray-900 group-hover:text-primary transition-colors flex items-center gap-1.5 flex-wrap">
+                      {isOwnThinkingCredit(cred.name) && (
+                        <span className="w-5 h-5 rounded-md bg-primary text-white flex items-center justify-center shrink-0 shadow-2xs">
+                          <StuckhereLogoMark className="w-3 h-3 text-white stroke-[3]" />
+                        </span>
+                      )}
                       <span>{cred.name}</span>
+                      {isOwnThinkingCredit(cred.name) && (
+                        <span className="text-[10px] font-extrabold px-1.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
+                          Stuckhere Original
+                        </span>
+                      )}
                     </h3>
                     <p className="text-xs text-gray-500 line-clamp-2 mt-1 leading-relaxed">
                       {cred.description || "No description provided for this attribution source."}
@@ -395,7 +407,19 @@ export const AdminCredits: React.FC = () => {
                   return (
                     <tr key={cred.id} className="hover:bg-gray-50/60 transition-colors">
                       <td className="px-5 py-4 font-bold text-gray-900 whitespace-nowrap">
-                        {cred.name}
+                        <div className="flex items-center gap-2">
+                          {isOwnThinkingCredit(cred.name) && (
+                            <span className="w-5 h-5 rounded-md bg-primary text-white flex items-center justify-center shrink-0 shadow-2xs">
+                              <StuckhereLogoMark className="w-3 h-3 text-white stroke-[3]" />
+                            </span>
+                          )}
+                          <span>{cred.name}</span>
+                          {isOwnThinkingCredit(cred.name) && (
+                            <span className="text-[10px] font-extrabold px-1.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
+                              Stuckhere Original
+                            </span>
+                          )}
+                        </div>
                       </td>
                       <td className="px-4 py-4 whitespace-nowrap">
                         <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-primary/10 text-primary">

@@ -79,7 +79,7 @@ export const BadgePill: React.FC<BadgePillProps> = ({
       {(dot || variant === "status" || variant === "severity") && (
         <span className={`h-1.5 w-1.5 rounded-full ${dotColor}`} />
       )}
-      <span>{label}</span>
+      <span>{(label || "").includes("&") ? label.split("&")[0].trim() : label}</span>
     </span>
   );
 };

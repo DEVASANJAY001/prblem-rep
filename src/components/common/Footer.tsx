@@ -3,8 +3,8 @@ import { Link } from "react-router-dom";
 
 export const Footer: React.FC = () => {
   return (
-    <footer className="w-full bg-surface-container-lowest py-16 border-t border-outline-variant/20 font-body-md text-on-surface">
-      <div className="max-w-[1280px] mx-auto px-4 md:px-8 grid grid-cols-2 md:grid-cols-4 gap-12">
+    <footer className="w-full bg-surface-container-lowest py-12 sm:py-16 border-t border-outline-variant/20 font-body-md text-on-surface">
+      <div className="max-w-[1280px] mx-auto px-4 md:px-8 grid grid-cols-2 md:grid-cols-4 gap-8 sm:gap-12">
         {/* Product Column */}
         <div className="flex flex-col gap-4">
           <h4 className="text-label-sm font-semibold text-on-surface uppercase tracking-widest mb-2">

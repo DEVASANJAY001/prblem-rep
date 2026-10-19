@@ -42,7 +42,7 @@ export const Navbar: React.FC = () => {
     <header className="fixed top-0 w-full z-50 pointer-events-none transition-all duration-300">
       {/* iOS Progressive Glassmorphic Blur Mask - seamlessly feathers to 0 with zero cutoff lines */}
       <div
-        className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-surface/85 via-surface/40 to-transparent dark:from-zinc-950/85 dark:via-zinc-950/40 dark:to-transparent backdrop-blur-2xl pointer-events-none"
+        className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-surface/85 via-surface/40 to-transparent dark:from-zinc-950/85 dark:via-zinc-950/40 dark:to-transparent backdrop-blur-2xl pointer-events-none transform-gpu will-change-transform"
         style={{
           WebkitMaskImage:
             "linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.95) 40%, rgba(0,0,0,0.4) 75%, rgba(0,0,0,0) 100%)",
@@ -51,11 +51,11 @@ export const Navbar: React.FC = () => {
         }}
       />
 
-      <div className="h-16 max-w-[1280px] mx-auto px-4 md:px-8 flex items-center justify-between relative z-10 pointer-events-auto">
+      <div className="h-16 max-w-[1280px] mx-auto px-3 xs:px-4 md:px-8 flex items-center justify-between relative z-10 pointer-events-auto">
         {/* Left Brand and Navigation */}
-        <div className="flex items-center gap-8">
-          <Link to="/" className="flex items-center group">
-            <span className="font-headline-sm text-xl md:text-2xl tracking-tight text-on-surface font-extrabold flex items-center transition-transform group-hover:scale-[1.02]">
+        <div className="flex items-center gap-4 sm:gap-8 min-w-0">
+          <Link to="/" className="flex items-center group shrink-0">
+            <span className="font-headline-sm text-lg xs:text-xl md:text-2xl tracking-tight text-on-surface font-extrabold flex items-center transition-transform group-hover:scale-[1.02]">
               Stuck<span className="text-primary ml-0.5">here</span>
             </span>
           </Link>
@@ -81,8 +81,8 @@ export const Navbar: React.FC = () => {
         </div>
 
         {/* Right Actions & User Profile */}
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-4 shrink-0">
+          <div className="flex items-center gap-1.5 sm:gap-3">
             {user || userDoc ? (
               <Link
                 to="/dashboard"
@@ -93,14 +93,14 @@ export const Navbar: React.FC = () => {
             ) : location.pathname === "/login" ? (
               <Link
                 to="/register"
-                className="text-body-md font-body-md text-primary hover:text-primary-container transition-colors px-3 py-1.5 font-semibold"
+                className="text-body-md font-body-md text-primary hover:text-primary-container transition-colors px-2.5 py-1 sm:px-3 sm:py-1.5 text-xs sm:text-sm font-semibold whitespace-nowrap"
               >
                 Sign up
               </Link>
             ) : (
               <Link
                 to="/login"
-                className="text-body-md font-body-md text-on-surface-variant hover:text-on-surface transition-colors px-3 py-1.5 font-semibold"
+                className="text-body-md font-body-md text-on-surface-variant hover:text-on-surface transition-colors px-2.5 py-1 sm:px-3 sm:py-1.5 text-xs sm:text-sm font-semibold whitespace-nowrap"
               >
                 Log in
               </Link>
@@ -108,9 +108,10 @@ export const Navbar: React.FC = () => {
 
             <Link
               to="/submit"
-              className="bg-on-surface/90 backdrop-blur-md text-surface px-2.5 py-1.5 sm:px-4 sm:py-2 rounded-lg sm:rounded-xl text-[11px] sm:text-xs md:text-sm font-bold hover:bg-primary hover:text-white transition-all shadow-sm hover:shadow-lg hover:shadow-primary/20 hover:-translate-y-0.5 whitespace-nowrap border border-white/20"
+              className="bg-on-surface/90 backdrop-blur-md text-surface px-2.5 py-1.5 sm:px-4 sm:py-2 rounded-lg sm:rounded-xl text-[11px] sm:text-xs md:text-sm font-bold hover:bg-primary hover:text-white transition-all shadow-sm hover:shadow-lg hover:shadow-primary/20 hover:-translate-y-0.5 whitespace-nowrap border border-white/20 shrink-0"
             >
-              Submit Problem
+              <span className="hidden xs:inline">Submit Problem</span>
+              <span className="xs:hidden">Submit</span>
             </Link>
           </div>
 

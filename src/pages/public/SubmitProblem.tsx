@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { createProblem } from "@/lib/firebase/services/problemsService";
 import { subscribeCredits } from "@/lib/firebase/services/creditsService";
+import { recordUserSubmission } from "@/lib/storage";
 import { getProblemDetailUrl, getStartupModeUrl } from "@/lib/seoUrls";
 import { SEOHead } from "@/components/common/SEOHead";
 import { REAL_INDUSTRIES } from "@/data/realProductionData";
@@ -10,6 +11,7 @@ import { EvidenceDocument, ProblemSeverity, CreditSourceDoc } from "@/types";
 import confetti from "canvas-confetti";
 import { UserAvatar } from "@/components/ui/UserAvatar";
 import { HumanVerification } from "@/components/common/HumanVerification";
+import { CreditSourceBadge } from "@/components/ui/CreditSourceBadge";
 import {
   CheckCircle,
   ArrowRight,
@@ -59,7 +61,7 @@ export const SubmitProblem: React.FC = () => {
   // ── Tab 1: Core Overview & Operational Narrative ─────────────────────────
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [industry, setIndustry] = useState("Healthcare & Biotech");
+  const [industry, setIndustry] = useState("Healthcare");
   const [customIndustry, setCustomIndustry] = useState("");
   const [isCustomIndustry, setIsCustomIndustry] = useState(false);
   const [severity, setSeverity] = useState<ProblemSeverity>("major");
@@ -72,8 +74,16 @@ export const SubmitProblem: React.FC = () => {
 
   // Submitter Attribution
   const [isAnonymous, setIsAnonymous] = useState(false);
-  const [customSubmitterName, setCustomSubmitterName] = useState("");
+  const [customSubmitterName, setCustomSubmitterName] = useState(
+    userDoc?.displayName || userDoc?.name || user?.displayName || ""
+  );
   const [submitterRole, setSubmitterRole] = useState("");
+
+  useEffect(() => {
+    if (userDoc?.displayName || userDoc?.name || user?.displayName) {
+      setCustomSubmitterName((prev) => prev || userDoc?.displayName || userDoc?.name || user?.displayName || "");
+    }
+  }, [userDoc, user]);
 
   // Credits: (Origin / External 3rd Party Attribution Source)
   const [psFrom, setPsFrom] = useState<string[]>(["Own Thinking"]);
@@ -184,10 +194,10 @@ export const SubmitProblem: React.FC = () => {
   const DEMO_FEEDS = useMemo(() => [
     {
       id: "demo-healthcare",
-      badge: "Healthcare & Life Sciences",
+      badge: "Healthcare",
       title: "Data Interoperability Failure in Rural Clinics",
       description: "Rural healthcare providers lack a unified system to access patient records across different local specialists, causing delayed treatments and duplicate lab tests.",
-      industry: "Healthcare & Life Sciences",
+      industry: "Healthcare",
       severity: "critical" as ProblemSeverity,
       location: "Rural United States",
       whenItHappens: "During patient intake, emergency transfers, and multi-specialty referrals when records must cross independent EHR vendor silos.",
@@ -333,10 +343,10 @@ export const SubmitProblem: React.FC = () => {
     },
     {
       id: "demo-logistics",
-      badge: "Logistics & Supply Chain",
+      badge: "Logistics",
       title: "Cold Chain Temperature Excursions in Biologic Cargo",
       description: "Temperature-controlled pharmaceutical shipments experience unmonitored thermal spikes during intermodal airport tarmac handoffs, spoiling $35B in critical medicine annually without real-time alerts.",
-      industry: "Logistics & Supply Chain",
+      industry: "Logistics",
       severity: "critical" as ProblemSeverity,
       location: "International Air Cargo Corridors",
       whenItHappens: "During tarmac cargo transfers between cargo planes, customs inspection bays, and last-mile refrigerated transport vans.",
@@ -473,10 +483,10 @@ export const SubmitProblem: React.FC = () => {
     },
     {
       id: "demo-energy",
-      badge: "Clean Energy & Climate",
+      badge: "Clean Energy",
       title: "Transmission Curtailment & Queue Backlog in Distributed Solar",
       description: "Commercial solar and battery operators face 4-year interconnection study backlogs and up to 38% midday power curtailment because utilities rely on static thermal line rating models.",
-      industry: "Clean Energy & Climate",
+      industry: "Clean Energy",
       severity: "major" as ProblemSeverity,
       location: "North American & European Power Grids",
       whenItHappens: "During peak midday solar generation hours when local transmission lines reach static seasonal capacity limits.",
@@ -613,10 +623,10 @@ export const SubmitProblem: React.FC = () => {
     },
     {
       id: "demo-fintech",
-      badge: "FinTech & Banking",
+      badge: "FinTech",
       title: "T+2 Settlement Failure & Trapped Liquidity in Cross-Border B2B Remittance",
       description: "Mid-market global exporters lose 3.4% of invoice volume to correspondent banking markups, currency spreads, and 48-hour trapped liquidity in pre-funded Nostro accounts.",
-      industry: "FinTech & Banking",
+      industry: "FinTech",
       severity: "major" as ProblemSeverity,
       location: "Emerging Market Trade Corridors (US - LATAM / APAC)",
       whenItHappens: "During supplier invoice payouts, cross-border vendor disbursements, and trade finance reconciliations.",
@@ -770,7 +780,8 @@ export const SubmitProblem: React.FC = () => {
     setFrequency(feed.frequency);
     setCurrentSolution(feed.currentSolution);
     setIsAnonymous(false);
-    setCustomSubmitterName(feed.customSubmitterName);
+    const userRealName = userDoc?.displayName || userDoc?.name || user?.displayName;
+    setCustomSubmitterName(userRealName || feed.customSubmitterName);
     setSubmitterRole(feed.submitterRole);
     setPsFrom(feed.psFrom);
 
@@ -829,7 +840,7 @@ export const SubmitProblem: React.FC = () => {
     }
 
     if (!isHumanVerified) {
-      setError("Please complete the 'I am not a robot' human verification check before publishing.");
+      setError("Please complete the 'I am not a robot' human verification check before submitting.");
       setActiveTab(6);
       return;
     }
@@ -852,6 +863,7 @@ export const SubmitProblem: React.FC = () => {
         location: location.trim() || "Global",
         submittedByUid: userDoc?.uid || user?.uid || "member",
         submittedByName: authorName,
+        submitterUsername: isAnonymous ? undefined : (userDoc?.username || undefined),
         whenItHappens: whenItHappens.trim(),
         whoFacesIt: whoFacesIt.trim(),
         whyFrustrating: whyFrustrating.trim(),
@@ -907,6 +919,7 @@ export const SubmitProblem: React.FC = () => {
 
       if (res.success && res.problemId) {
         setSubmittedProblemId(res.problemId);
+        recordUserSubmission(res.problemId, userDoc?.uid || user?.uid || "guest");
         try {
           confetti({
             particleCount: 120,
@@ -1132,7 +1145,7 @@ export const SubmitProblem: React.FC = () => {
             className="bg-primary hover:bg-primary-container text-white px-3 sm:px-5 py-1.5 sm:py-2.5 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold shadow-xs transition-all cursor-pointer disabled:opacity-50 flex items-center gap-1.5"
           >
             <Zap className="w-3.5 h-3.5" />
-            <span>{submitting ? "Publishing..." : "Publish Problem"}</span>
+            <span>{submitting ? "Submitting..." : "Submit Problem"}</span>
           </button>
         </div>
       </div>
@@ -1149,7 +1162,7 @@ export const SubmitProblem: React.FC = () => {
                 {demoNotice}
               </p>
               <p className="text-[11px] text-amber-800 dark:text-amber-300">
-                All 6 modules & fields populated in real-time. Human check cleared. Review tabs below or publish now to test live Firestore sync!
+                All 6 modules & fields populated in real-time. Human check cleared. Review tabs below or submit directly to admin for verification!
               </p>
             </div>
           </div>
@@ -1168,7 +1181,7 @@ export const SubmitProblem: React.FC = () => {
               className="flex-1 sm:flex-none text-[11px] font-bold px-3.5 py-1.5 rounded-lg bg-primary hover:bg-primary-container text-white shadow-xs transition-all cursor-pointer flex items-center justify-center gap-1.5"
             >
               <Zap className="w-3.5 h-3.5" />
-              <span>{submitting ? "Publishing..." : "Publish & Test Live →"}</span>
+              <span>{submitting ? "Submitting..." : "Submit to Admin →"}</span>
             </button>
           </div>
         </div>
@@ -1390,20 +1403,12 @@ export const SubmitProblem: React.FC = () => {
                   {psFrom.length > 0 && (
                     <div className="flex flex-wrap gap-1.5 pt-1">
                       {psFrom.map((source) => (
-                        <span
+                        <CreditSourceBadge
                           key={source}
-                          className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-primary text-white shadow-2xs"
-                        >
-                          <span>{source}</span>
-                          <button
-                            type="button"
-                            onClick={() => setPsFrom(psFrom.filter((s) => s !== source))}
-                            className="hover:opacity-80 cursor-pointer p-0.5"
-                            title="Remove credit"
-                          >
-                            <X className="w-3 h-3" />
-                          </button>
-                        </span>
+                          source={source}
+                          size="sm"
+                          onRemove={() => setPsFrom(psFrom.filter((s) => s !== source))}
+                        />
                       ))}
                     </div>
                   )}
@@ -2841,11 +2846,11 @@ export const SubmitProblem: React.FC = () => {
                     {submitting ? (
                       <>
                         <span className="animate-spin">⏳</span>
-                        <span>Publishing Problem Dossier...</span>
+                        <span>Submitting to Admin...</span>
                       </>
                     ) : (
                       <>
-                        <span>Submit Verified Problem Statement</span>
+                        <span>Submit Problem Statement</span>
                         <Rocket className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                       </>
                     )}

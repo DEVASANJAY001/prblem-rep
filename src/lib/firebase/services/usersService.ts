@@ -1,4 +1,4 @@
-﻿import {
+import {
   collection,
   doc,
   getDoc,
@@ -10,7 +10,7 @@
 } from "firebase/firestore";
 import { db } from "../config";
 import { UserDoc, UserRole } from "@/types";
-import { getLeaderboard as getLocalLeaderboard } from "@/lib/storage";
+import { getLeaderboard as getLocalLeaderboard, saveLocalUser } from "@/lib/storage";
 
 const USERS_COLLECTION = "users";
 
@@ -61,6 +61,7 @@ export async function createUserDoc(userDoc: UserDoc): Promise<UserDoc> {
 // Update only mutable profile fields â€” deliberately excludes `role` to prevent
 // client-side self-elevation. Role changes must go through updateUserRole().
 export async function syncUserProfile(userDoc: UserDoc): Promise<UserDoc> {
+  saveLocalUser(userDoc);
   try {
     if (db && typeof doc === "function") {
       const userRef = doc(db, USERS_COLLECTION, userDoc.uid);
@@ -68,7 +69,9 @@ export async function syncUserProfile(userDoc: UserDoc): Promise<UserDoc> {
         userRef,
         {
           uid: userDoc.uid,
-          name: userDoc.name,
+          name: userDoc.displayName || userDoc.name,
+          displayName: userDoc.displayName || userDoc.name,
+          username: userDoc.username || "",
           email: userDoc.email,
           photoURL: userDoc.photoURL,
           headline: userDoc.headline || "Problem Explorer",

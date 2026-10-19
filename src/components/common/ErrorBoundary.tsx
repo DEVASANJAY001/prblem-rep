@@ -1,9 +1,11 @@
 import React, { Component, ErrorInfo, ReactNode } from "react";
 import { AlertTriangle, RefreshCw, Home, Copy, Check, Trash2, ChevronDown, ChevronUp, LifeBuoy } from "lucide-react";
+import { ErrorGlitchIllustration } from "@/components/common/VectorIllustrations";
 
 interface Props {
   children: ReactNode;
   fallback?: ReactNode;
+  resetKey?: string;
 }
 
 interface State {
@@ -30,6 +32,12 @@ export class ErrorBoundary extends Component<Props, State> {
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error("Uncaught application runtime error:", error, errorInfo);
     this.setState({ error, errorInfo });
+  }
+
+  public componentDidUpdate(prevProps: Props) {
+    if (this.state.hasError && this.props.resetKey !== prevProps.resetKey) {
+      this.setState({ hasError: false, error: null, errorInfo: null, copied: false, showDetails: false });
+    }
   }
 
   private handleReset = () => {
@@ -81,9 +89,9 @@ ${this.state.errorInfo?.componentStack || "No component stack"}
       return (
         <div className="min-h-[70vh] w-full flex items-center justify-center p-4 sm:p-6 font-['Poppins',sans-serif] text-on-surface">
           <div className="max-w-xl w-full bg-surface-container-lowest border border-outline-variant/30 rounded-3xl p-6 sm:p-8 shadow-xl text-center space-y-6 animate-fade-in">
-            {/* Error Icon */}
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-amber-500/10 text-amber-500 border border-amber-500/20 shadow-sm">
-              <AlertTriangle className="h-8 w-8" />
+            {/* Custom Vector Illustration */}
+            <div className="relative inline-block">
+              <ErrorGlitchIllustration className="w-56 h-40 sm:w-64 sm:h-44 mx-auto drop-shadow-sm" />
             </div>
 
             {/* Error Title & Explanations */}

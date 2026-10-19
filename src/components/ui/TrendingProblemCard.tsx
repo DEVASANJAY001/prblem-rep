@@ -7,6 +7,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { isProblemBookmarked, toggleBookmark, voteProblem } from "@/lib/storage";
 import { getProblemDetailUrl } from "@/lib/seoUrls";
 import { ThumbsUp, Bookmark, ShieldCheck, Eye, Hand, Hammer, MessageSquare } from "lucide-react";
+import { cleanIndustryName } from "@/lib/algorithms/domainIntelligence";
 
 interface TrendingProblemCardProps {
   problem: ProblemDoc;
@@ -14,7 +15,7 @@ interface TrendingProblemCardProps {
   variant?: "card" | "flat";
 }
 
-export const TrendingProblemCard: React.FC<TrendingProblemCardProps> = ({
+export const TrendingProblemCard: React.FC<TrendingProblemCardProps> = React.memo(({
   problem,
   className = "",
   variant = "card",
@@ -70,7 +71,7 @@ export const TrendingProblemCard: React.FC<TrendingProblemCardProps> = ({
   const circumference = 175.93;
   const strokeDashoffset = circumference - circumference * (painNormalized / 100);
 
-  const industry = problem.industry || "General Industry";
+  const industry = cleanIndustryName(problem.industry);
 
   // Real Companies Interested (Exact logic matching ProblemDetail.tsx)
   const attachedCompanies = useMemo(() => {
@@ -125,8 +126,8 @@ export const TrendingProblemCard: React.FC<TrendingProblemCardProps> = ({
       onClick={handleCardClick}
       className={
         variant === "flat"
-          ? `bg-transparent rounded-none shadow-none hover:shadow-none transition-all relative flex flex-col justify-between font-['Poppins',sans-serif] border-none group cursor-pointer ${className}`
-          : `bg-white rounded-3xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05),0_2px_8px_-2px_rgba(0,0,0,0.03)] hover:shadow-[0_14px_36px_-6px_rgba(0,0,0,0.1)] transition-all duration-300 overflow-hidden relative flex flex-col justify-between font-['Poppins',sans-serif] border border-gray-100/90 group cursor-pointer ${className}`
+          ? `bg-transparent rounded-none shadow-none hover:shadow-none transition-colors relative flex flex-col justify-between font-['Poppins',sans-serif] border-none group cursor-pointer ${className}`
+          : `bg-white rounded-3xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05),0_2px_8px_-2px_rgba(0,0,0,0.03)] hover:shadow-[0_14px_36px_-6px_rgba(0,0,0,0.1)] transition-[box-shadow,border-color] duration-300 overflow-hidden relative flex flex-col justify-between font-['Poppins',sans-serif] border border-gray-100/90 group cursor-pointer [transform:translateZ(0)] ${className}`
       }
     >
       <div className={variant === "flat" ? "py-3 px-0 flex flex-col gap-3 sm:gap-4 flex-1 justify-between" : "p-3.5 sm:p-5 md:p-8 flex flex-col gap-3 sm:gap-4 flex-1 justify-between"}>
@@ -425,4 +426,5 @@ export const TrendingProblemCard: React.FC<TrendingProblemCardProps> = ({
       </div>
     </article>
   );
-};
+});
+TrendingProblemCard.displayName = "TrendingProblemCard";

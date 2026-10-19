@@ -17,15 +17,17 @@ import {
 import { subscribeCompanies } from "@/lib/firebase/services/companiesService";
 import { REAL_COMPANIES } from "@/data/realProductionData";
 import { ProblemDoc, ProblemComment, CommentReply, CompanyDoc } from "@/types";
-import { toggleBookmark, isProblemBookmarked } from "@/lib/storage";
+import { toggleBookmark, isProblemBookmarked, resolveProblemAuthor } from "@/lib/storage";
 import { useAuth } from "@/contexts/AuthContext";
 import { LoadingContainer } from "@/components/common/LoadingContainer";
 import { SEOHead } from "@/components/common/SEOHead";
 import { SharePanel } from "@/components/common/SharePanel";
 import { extractProblemId, getProblemDetailUrl, getStartupModeUrl } from "@/lib/seoUrls";
+import { cleanIndustryName } from "@/lib/algorithms/domainIntelligence";
 import { UserAvatar } from "@/components/ui/UserAvatar";
 import { CompanyLogo } from "@/components/ui/CompanyLogo";
 import { TrendingProblemCard } from "@/components/ui/TrendingProblemCard";
+import { CreditSourceBadge } from "@/components/ui/CreditSourceBadge";
 import {
   Bookmark,
   Share2,
@@ -642,6 +644,16 @@ export const ProblemDetail: React.FC = () => {
     ? comments
     : (problem.comments || []);
 
+  const authorInfo = problem
+    ? currentUid && problem.submittedByUid === currentUid && (userDoc?.displayName || userDoc?.name)
+      ? {
+          displayName: userDoc.displayName || userDoc.name,
+          username: userDoc.username,
+          role: userDoc.headline,
+        }
+      : resolveProblemAuthor(problem)
+    : { displayName: "Anonymous Contributor" };
+
   // Companies attached by admin from PS Control (problem.attachedCompanyNames)
   const attachedCompanies: Array<{ name: string; logoUrl?: string; industry?: string }> = (
     Array.isArray(problem.attachedCompanyNames)
@@ -664,7 +676,7 @@ export const ProblemDetail: React.FC = () => {
     })
     .filter(Boolean) as Array<{ name: string; logoUrl?: string; industry?: string }>;
 
-  const industry = problem.industry || "Healthcare & Life Sciences";
+  const industry = cleanIndustryName(problem.industry || "Healthcare");
   const formattedViews = viewsCount >= 1000 ? `${(viewsCount / 1000).toFixed(1)}K` : `${viewsCount}`;
   const totalCommentsCount = effectiveComments.reduce((acc, c) => acc + 1 + (c.replies?.length || 0), 0);
   const isTrending = viewsCount >= 50 || rawPain >= 90 || (problem.votes?.upvotes || 0) > 100;
@@ -888,7 +900,7 @@ export const ProblemDetail: React.FC = () => {
                   className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-all shadow-sm flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
                 >
                   <CheckCircle className="w-4 h-4" />
-                  <span>{approving ? "Approving..." : "Approve Problem Now"}</span>
+                  <span>{approving ? "Publishing Live..." : "Verify & Publish Live"}</span>
                 </button>
               ) : null}
               <Link
@@ -935,9 +947,19 @@ export const ProblemDetail: React.FC = () => {
             <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-on-surface tracking-tight leading-snug">
               {problem.title}
             </h1>
-            <p className="text-[11px] sm:text-xs text-on-surface-variant font-medium">
-              Posted by {problem.submitterName || problem.submittedBy || "Anonymous"} · {relativePostTime}
-            </p>
+            <div className="flex items-center gap-1.5 flex-wrap text-[11px] sm:text-xs text-on-surface-variant font-medium">
+              <span>Posted by</span>
+              <span className="font-bold text-on-surface">
+                {authorInfo.displayName}
+              </span>
+              {authorInfo.username && (
+                <span className="text-primary font-semibold text-[11px] bg-primary/10 px-2 py-0.5 rounded-full">
+                  @{authorInfo.username}
+                </span>
+              )}
+              <span>·</span>
+              <span>{relativePostTime}</span>
+            </div>
 
             <p className="text-xs sm:text-sm text-on-surface-variant leading-relaxed font-normal">
               {problem.description}
@@ -2022,21 +2044,12 @@ export const ProblemDetail: React.FC = () => {
                 {problem.psFrom && problem.psFrom.length > 0 ? (
                   <div className="flex flex-wrap gap-1.5">
                     {problem.psFrom.map((source, idx) => (
-                      <span
-                        key={idx}
-                        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-surface-container/70 border border-outline-variant/30 text-on-surface text-[11px] font-semibold shadow-2xs hover:bg-surface-container transition-colors"
-                      >
-                        <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
-                        <span>{source}</span>
-                      </span>
+                      <CreditSourceBadge key={idx} source={source} size="sm" />
                     ))}
                   </div>
                 ) : (
                   <div className="flex flex-wrap gap-1.5">
-                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-surface-container/70 border border-outline-variant/30 text-on-surface text-[11px] font-semibold shadow-2xs">
-                      <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
-                      <span>Own Thinking</span>
-                    </span>
+                    <CreditSourceBadge source="Own Thinking" size="sm" />
                   </div>
                 )}
               </div>

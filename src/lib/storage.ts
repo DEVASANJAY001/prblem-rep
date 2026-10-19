@@ -28,9 +28,11 @@ import {
   REAL_USERS,
   REAL_BADGES,
 } from "@/data/realProductionData";
+import { cleanIndustryName } from "@/lib/algorithms/domainIntelligence";
 import { INITIAL_SITE_CONTENT } from "@/data/initialContent";
 import { scoreProblemSubmission } from "./aiScoring";
 import { slugify } from "./seoUrls";
+import { sanitizeAndSeparateIndustries } from "@/lib/algorithms/domainIntelligence";
 
 export const STORAGE_KEYS = {
   PROBLEMS: "prblms_problems_v2",
@@ -46,6 +48,7 @@ export const STORAGE_KEYS = {
   COMPANIES: "prblms_companies_v2",
   BADGES: "prblms_badges_v2",
   CREDITS: "prblms_credits_v2",
+  USER_SUBMISSIONS: "prblms_user_submissions_v2",
 };
 
 export const DEFAULT_CREDITS: CreditSourceDoc[] = [
@@ -193,6 +196,14 @@ export function getProblems(filter?: {
     }
   }
 
+  // Sanitize problem industries to guarantee zero ampersands
+  list = list.map((p) => {
+    if (p.industry && p.industry.includes("&")) {
+      return { ...p, industry: cleanIndustryName(p.industry) };
+    }
+    return p;
+  });
+
   if (filter) {
     if (filter.status && filter.status !== "all") {
       list = list.filter((p) => p.status === filter.status);
@@ -296,6 +307,9 @@ export function getProblemById(id: string): ProblemDoc | null {
         found.commentsCount = found.comments.length;
         save(STORAGE_KEYS.PROBLEMS, list);
       }
+    }
+    if (found && found.industry && found.industry.includes("&")) {
+      found = { ...found, industry: cleanIndustryName(found.industry) };
     }
     return found;
   }
@@ -604,6 +618,123 @@ export function getBookmarkedProblems(userUid: string = "guest"): ProblemDoc[] {
   return allProblems.filter((p) => bookmarks.includes(p.id));
 }
 
+export function recordUserSubmission(problemId: string, userUid: string = "guest"): void {
+  const globalKey = STORAGE_KEYS.USER_SUBMISSIONS;
+  const userKey = `${STORAGE_KEYS.USER_SUBMISSIONS}_${userUid}`;
+
+  const userSubs = load<string[]>(userKey, []);
+  if (!userSubs.includes(problemId)) {
+    save(userKey, [problemId, ...userSubs]);
+  }
+
+  const globalSubs = load<string[]>(globalKey, []);
+  if (!globalSubs.includes(problemId)) {
+    save(globalKey, [problemId, ...globalSubs]);
+  }
+}
+
+export function getUserSubmittedProblemIds(userUid: string = "guest"): string[] {
+  const userKey = `${STORAGE_KEYS.USER_SUBMISSIONS}_${userUid}`;
+  const globalKey = STORAGE_KEYS.USER_SUBMISSIONS;
+  const userSubs = load<string[]>(userKey, []);
+  const globalSubs = load<string[]>(globalKey, []);
+  return Array.from(new Set([...userSubs, ...globalSubs]));
+}
+
+/**
+ * Checks if a given handle/username is available (unique across all registered & seed users)
+ */
+export function checkUsernameAvailability(username: string, currentUid?: string): { available: boolean; error?: string } {
+  const clean = username.trim().toLowerCase().replace(/^@/, "");
+  if (!clean) {
+    return { available: false, error: "Username cannot be empty." };
+  }
+  if (!/^[a-z0-9_]{3,20}$/.test(clean)) {
+    return { available: false, error: "Username must be 3-20 characters and contain only lowercase letters, numbers, and underscores." };
+  }
+
+  const users = load<UserDoc[]>(STORAGE_KEYS.USERS, REAL_USERS);
+  const match = users.find((u) => u.username?.toLowerCase() === clean && u.uid !== currentUid);
+  if (match) {
+    return { available: false, error: `Username @${clean} is already claimed by another innovator.` };
+  }
+  return { available: true };
+}
+
+export function saveLocalUser(userDoc: UserDoc): void {
+  const users = load<UserDoc[]>(STORAGE_KEYS.USERS, REAL_USERS);
+  const idx = users.findIndex((u) => u.uid === userDoc.uid);
+  let updated: UserDoc[];
+  if (idx >= 0) {
+    updated = [...users];
+    updated[idx] = { ...updated[idx], ...userDoc };
+  } else {
+    updated = [...users, userDoc];
+  }
+  save(STORAGE_KEYS.USERS, updated);
+}
+
+/**
+ * Resolves a problem's human-readable author Display Name and optional @username handle.
+ * Prevents raw database IDs (e.g. "user_marcus_md") or random strings from displaying in "Posted by".
+ */
+export function resolveProblemAuthor(problem: ProblemDoc): { displayName: string; username?: string; role?: string } {
+  if (!problem) return { displayName: "Anonymous Contributor" };
+
+  // 1. Check if problem has explicit submitterName or author metadata
+  const candidateName = problem.submitterName || problem.submittedBy;
+  const candidateUsername = problem.submitterUsername || problem.authorUsername;
+
+  // 2. Look up in registered and seed users list by submittedByUid or submittedBy
+  const users = load<UserDoc[]>(STORAGE_KEYS.USERS, REAL_USERS);
+  const matchedUser = users.find(
+    (u) =>
+      (problem.submittedByUid && u.uid === problem.submittedByUid) ||
+      (problem.submittedBy && (u.uid === problem.submittedBy || u.username === problem.submittedBy || u.name === problem.submittedBy))
+  );
+
+  if (matchedUser) {
+    return {
+      displayName: matchedUser.displayName || matchedUser.name,
+      username: matchedUser.username,
+      role: matchedUser.headline,
+    };
+  }
+
+  // 3. Fallback map for legacy seed identifiers (prevents raw "user_xyz" appearing in UI)
+  const legacyMap: Record<string, { displayName: string; username: string }> = {
+    user_dr_elena: { displayName: "Dr. Elena Rostova", username: "elena_rostova" },
+    user_marcus_md: { displayName: "Dr. Marcus Vance, MD", username: "marcus_vance" },
+    user_energy_tech: { displayName: "Maya Lin, Grid Systems", username: "mayalin_grid" },
+    user_sarah_ai: { displayName: "Dr. Sarah Chen, PhD", username: "sarah_chen" },
+    user_fin_analyst: { displayName: "Vikram Malhotra, CFA", username: "vikram_fin" },
+    user_agro_david: { displayName: "David Kiprop, Agronomist", username: "david_kiprop" },
+    scout_elena: { displayName: "Dr. Elena Rostova", username: "elena_rostova" },
+    scout_kavita: { displayName: "Kavita Patel", username: "kavita_patel" },
+    member: { displayName: "Community Contributor", username: "" },
+    guest_user: { displayName: "Community Contributor", username: "" },
+  };
+
+  if (candidateName && legacyMap[candidateName]) {
+    return legacyMap[candidateName];
+  }
+
+  // If candidateName looks like a raw user ID (starts with "user_" or alphanumeric hash)
+  if (candidateName && candidateName.startsWith("user_")) {
+    const formatted = candidateName
+      .replace(/^user_/, "")
+      .split("_")
+      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+      .join(" ");
+    return { displayName: formatted, username: candidateName.replace(/^user_/, "") };
+  }
+
+  return {
+    displayName: candidateName && candidateName.trim() ? candidateName.trim() : "Community Contributor",
+    username: candidateUsername,
+  };
+}
+
 export function addComment(
   problemId: string,
   user: { uid: string; name: string; photoURL?: string | null; role?: string },
@@ -760,7 +891,8 @@ export function getFormResponses(formId: string): FormResponseDoc[] {
 // ─── Ecosystem Data Helpers & Industries Management ─────────────
 export function getIndustries(includeHidden: boolean = false): IndustryDoc[] {
   initializeStorage();
-  const list = load<IndustryDoc[]>(STORAGE_KEYS.INDUSTRIES, REAL_INDUSTRIES);
+  const raw = load<IndustryDoc[]>(STORAGE_KEYS.INDUSTRIES, REAL_INDUSTRIES);
+  const list = sanitizeAndSeparateIndustries(raw);
   const sorted = [...list].sort((a, b) => (a.order || 0) - (b.order || 0));
   if (!includeHidden) {
     return sorted.filter((i) => !i.hidden);
@@ -811,6 +943,11 @@ export function deleteIndustry(slug: string): boolean {
   } catch {}
 
   return true;
+}
+
+export function setLocalIndustries(industries: IndustryDoc[]): void {
+  initializeStorage();
+  save(STORAGE_KEYS.INDUSTRIES, industries);
 }
 
 export function toggleIndustryVisibility(slug: string): boolean {

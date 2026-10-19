@@ -6,6 +6,8 @@ export type UserRole = "user" | "moderator" | "admin";
 export interface UserDoc {
   uid: string;
   name: string;
+  displayName?: string;
+  username?: string;
   email: string;
   photoURL: string | null;
   role: UserRole;
@@ -198,7 +200,11 @@ export interface ProblemDoc {
   verified: boolean;
   submittedBy: string;
   submittedByUid?: string;
+  submittedByName?: string;
   submitterName?: string;
+  submitterUsername?: string;
+  authorUsername?: string;
+  authorDisplayName?: string;
   reviewedBy: string | null;
   reviewedByUid?: string | null;
   reviewNote: string | null;
@@ -346,6 +352,9 @@ export interface IndustryDoc {
   trendingCount?: number;
   avgPainScore?: number;
   marketSize?: string;
+  isPopular?: boolean;
+  isTrending?: boolean;
+  featuredInExplore?: boolean;
   subcategories?: Array<{ name: string; count: number }>;
 }
 

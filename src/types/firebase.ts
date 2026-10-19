@@ -11,6 +11,8 @@ export type UserRole = "user" | "moderator" | "admin";
 export interface UserDoc {
   uid: string;
   name: string;
+  displayName?: string;
+  username?: string;
   email: string;
   photoURL: string | null;
   role: UserRole;
@@ -126,6 +128,11 @@ export interface ProblemDoc {
   };
   verified: boolean;
   submittedBy: string;
+  submittedByName?: string;
+  submitterName?: string;
+  submitterUsername?: string;
+  authorUsername?: string;
+  authorDisplayName?: string;
   reviewedBy: string | null;
   reviewNote: string | null;
   // ISO string in client; Firestore Timestamp when read from Firestore

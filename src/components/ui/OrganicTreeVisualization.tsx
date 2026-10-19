@@ -27,9 +27,9 @@ export const OrganicTreeVisualization: React.FC = () => {
     camera.position.z = 11.5;
     camera.position.y = 0.5;
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
     renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
     container.appendChild(renderer.domElement);
 
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.95);
@@ -163,8 +163,17 @@ export const OrganicTreeVisualization: React.FC = () => {
 
     buildCurvedTree(treeGroup, 5, 2.3, 0.22, 0, 0, 0.15);
 
+    let isVisible = true;
+    let isRunning = false;
+    let intersectionObserver: IntersectionObserver | null = null;
+
     const animate = (t: number) => {
+      if (!isVisible || document.hidden) {
+        isRunning = false;
+        return;
+      }
       animId = requestAnimationFrame(animate);
+
       const time = t * 0.001;
 
       allBranches.forEach((data) => {
@@ -178,7 +187,32 @@ export const OrganicTreeVisualization: React.FC = () => {
       renderer.render(scene, camera);
     };
 
-    animId = requestAnimationFrame(animate);
+    const startAnimation = () => {
+      if (!isRunning && isVisible && !document.hidden) {
+        isRunning = true;
+        animId = requestAnimationFrame(animate);
+      }
+    };
+
+    if (typeof IntersectionObserver !== "undefined") {
+      intersectionObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            isVisible = entry.isIntersecting;
+            if (isVisible) startAnimation();
+          });
+        },
+        { threshold: 0.05 }
+      );
+      intersectionObserver.observe(container);
+    }
+
+    const handleVisibilityChange = () => {
+      if (!document.hidden && isVisible) startAnimation();
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    startAnimation();
 
     const handleResize = () => {
       if (!container) return;
@@ -197,6 +231,8 @@ export const OrganicTreeVisualization: React.FC = () => {
 
     return () => {
       cancelAnimationFrame(animId);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      if (intersectionObserver) intersectionObserver.disconnect();
       if (resizeObserver) resizeObserver.disconnect();
       window.removeEventListener("resize", handleResize);
       if (renderer.domElement && container.contains(renderer.domElement)) {

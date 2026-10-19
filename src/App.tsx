@@ -1,5 +1,5 @@
 import React, { Suspense, lazy } from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { PublicLayout } from "@/components/layouts/PublicLayout";
@@ -62,13 +62,22 @@ const PageLoader = () => (
   </div>
 );
 
+function RoutedErrorBoundary({ children }: { children: React.ReactNode }) {
+  const location = useLocation();
+  return (
+    <ErrorBoundary key={location.pathname} resetKey={location.pathname}>
+      {children}
+    </ErrorBoundary>
+  );
+}
+
 export default function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
         <BrowserRouter>
           <ScrollRestoration />
-          <ErrorBoundary>
+          <RoutedErrorBoundary>
             <Suspense fallback={<PageLoader />}>
               <Routes>
                 {/* ── Public Route Group ──────────────────────────────── */}
@@ -138,7 +147,7 @@ export default function App() {
                 />
               </Routes>
             </Suspense>
-          </ErrorBoundary>
+          </RoutedErrorBoundary>
         </BrowserRouter>
       </AuthProvider>
     </ThemeProvider>

@@ -79,7 +79,7 @@ export const AdminReviewQueue: React.FC = () => {
 
       setActionSuccess(
         decision === "approved"
-          ? "Problem approved and published live to ecosystem!"
+          ? "Problem verified and published live to ecosystem!"
           : decision === "needs_info"
           ? "Modification request sent to submitter."
           : "Problem rejected and archived."
@@ -509,7 +509,7 @@ export const AdminReviewQueue: React.FC = () => {
                       className="px-5 py-2 rounded-xl text-xs font-bold text-white bg-primary hover:bg-primary-hover transition-colors shadow-sm flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
                     >
                       <CheckCircle className="h-4 w-4" />
-                      <span>Approve & Publish Live</span>
+                      <span>{isActing ? "Publishing..." : "Verify & Publish Live"}</span>
                     </button>
                   </div>
                 </div>

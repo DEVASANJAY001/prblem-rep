@@ -13,12 +13,13 @@ import {
 import { subscribeCompanies } from "@/lib/firebase/services/companiesService";
 import { REAL_COMPANIES } from "@/data/realProductionData";
 import { ProblemDoc, UserStartupNotes, CompanyDoc } from "@/types";
-import { toggleBookmark, isProblemBookmarked } from "@/lib/storage";
+import { toggleBookmark, isProblemBookmarked, resolveProblemAuthor } from "@/lib/storage";
 import { LoadingContainer } from "@/components/common/LoadingContainer";
 import { SEOHead } from "@/components/common/SEOHead";
 import { extractProblemId, getProblemDetailUrl, getStartupModeUrl } from "@/lib/seoUrls";
 import { UserAvatar } from "@/components/ui/UserAvatar";
 import { CompanyLogo } from "@/components/ui/CompanyLogo";
+import { CreditSourceBadge } from "@/components/ui/CreditSourceBadge";
 import {
   ArrowLeft,
   ChevronRight,
@@ -525,9 +526,15 @@ export const StartupMode: React.FC = () => {
   }
 
   // Derived Values
-  const industry = problem.industry || "Healthcare & Life Sciences";
+  const industry = problem.industry || "Healthcare";
   const relativePostTime = formatRelativeTime(problem.publishedAt || problem.submittedAt);
   const formattedViews = viewsCount > 0 ? viewsCount.toLocaleString() : (problem.views || 342).toLocaleString();
+
+  const authorInfo = problem
+    ? currentUid && problem.submittedByUid === currentUid && (userDoc?.displayName || userDoc?.name)
+      ? { displayName: userDoc.displayName || userDoc.name, username: userDoc.username }
+      : resolveProblemAuthor(problem)
+    : { displayName: "Community Contributor" };
 
   const painScore = problem.painScore
     ? problem.painScore <= 10
@@ -895,13 +902,7 @@ Generated from Prblms Startup Canvas on ${new Date().toLocaleDateString()}`;
               {problem.psFrom && problem.psFrom.length > 0 && (
                 <div className="flex items-center gap-1.5 flex-wrap">
                   {problem.psFrom.map((src, idx) => (
-                    <span
-                      key={idx}
-                      className="bg-surface-container/70 text-on-surface-variant border border-outline-variant/30 px-2.5 py-0.5 rounded-full text-[10px] font-semibold flex items-center gap-1 shadow-2xs"
-                    >
-                      <span className="w-1.5 h-1.5 rounded-full bg-primary" />
-                      <span>{src}</span>
-                    </span>
+                    <CreditSourceBadge key={idx} source={src} size="xs" />
                   ))}
                 </div>
               )}
@@ -912,8 +913,13 @@ Generated from Prblms Startup Canvas on ${new Date().toLocaleDateString()}`;
             </h1>
             <p className="text-[11px] sm:text-xs text-on-surface-variant font-medium">
               Venture Modeling & ICP Workspace · Lead Researcher:{" "}
-              {problem.submitterName || problem.submittedBy || "Dr. Elena Rostova"} ·{" "}
-              {relativePostTime}
+              <span className="font-bold text-on-surface">{authorInfo.displayName}</span>
+              {authorInfo.username ? (
+                <span className="text-primary font-semibold ml-1 bg-primary/10 px-1.5 py-0.5 rounded-full text-[10px]">
+                  @{authorInfo.username}
+                </span>
+              ) : null}{" "}
+              · {relativePostTime}
             </p>
 
             <p className="text-xs sm:text-sm text-on-surface-variant leading-relaxed font-normal">

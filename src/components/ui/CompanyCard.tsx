@@ -11,7 +11,7 @@ interface CompanyCardProps {
   onClick?: () => void;
 }
 
-export const CompanyCard: React.FC<CompanyCardProps> = ({
+export const CompanyCard: React.FC<CompanyCardProps> = React.memo(({
   company,
   className = "",
   onClick,
@@ -62,4 +62,5 @@ export const CompanyCard: React.FC<CompanyCardProps> = ({
       {cardContent}
     </Link>
   );
-};
+});
+CompanyCard.displayName = "CompanyCard";

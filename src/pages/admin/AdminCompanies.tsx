@@ -37,7 +37,7 @@ export const AdminCompanies: React.FC = () => {
   const [createName, setCreateName] = useState("");
   const [createLogoUrl, setCreateLogoUrl] = useState("");
   const [createWebsite, setCreateWebsite] = useState("");
-  const [createIndustry, setCreateIndustry] = useState("Healthcare & Biotech");
+  const [createIndustry, setCreateIndustry] = useState("Healthcare");
   const [createDescription, setCreateDescription] = useState("");
   const [createVerified, setCreateVerified] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);

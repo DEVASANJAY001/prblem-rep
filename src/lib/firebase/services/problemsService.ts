@@ -36,6 +36,7 @@ import {
 import { REAL_PROBLEMS } from "@/data/realProductionData";
 import { swrCache } from "@/lib/swrCache";
 import { slugify } from "@/lib/seoUrls";
+import { cleanIndustryName } from "@/lib/algorithms/domainIntelligence";
 
 const PROBLEMS_COLLECTION = "problems";
 
@@ -133,6 +134,7 @@ export async function createProblem(
     severity: "minor" | "medium" | "major" | "critical";
     submittedByUid: string;
     submittedByName: string;
+    submitterUsername?: string;
     whenItHappens?: string;
     whoFacesIt?: string;
     whyFrustrating?: string;
@@ -223,6 +225,11 @@ export async function createProblem(
     comments: [],
     status: resolvedStatus,
     submittedBy: problemData.submittedByName,
+    submittedByName: problemData.submittedByName,
+    submitterName: problemData.submittedByName,
+    submitterUsername: problemData.submitterUsername || "",
+    authorDisplayName: problemData.submittedByName,
+    authorUsername: problemData.submitterUsername || "",
     submittedByUid: problemData.submittedByUid,
     whenItHappens: problemData.whenItHappens || "",
     whoFacesIt: problemData.whoFacesIt || "",
@@ -595,6 +602,9 @@ export function subscribeProblems(
           snapshot.forEach((d) => {
             const data = d.data() as ProblemDoc;
             if (data && data.id) {
+              if (data.industry && data.industry.includes("&")) {
+                data.industry = cleanIndustryName(data.industry);
+              }
               saveLocalProblem(data);
             }
           });

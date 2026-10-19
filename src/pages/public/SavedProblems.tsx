@@ -16,6 +16,7 @@ import {
   ArrowRight,
   Sparkles,
 } from "lucide-react";
+import { EmptyBookmarksIllustration } from "@/components/common/VectorIllustrations";
 
 // Industry Verticals for quick filtering
 const INDUSTRY_HUBS = [
@@ -115,12 +116,49 @@ export const SavedProblems: React.FC = () => {
         const scoreB = (b.votes?.upvotes || 0) * 2 + (b.views || 0);
         return scoreB - scoreA;
       }
-      // Default: Newest
+    // Default: Newest
       const timeA = a.publishedAt ? new Date(a.publishedAt).getTime() : 0;
       const timeB = b.publishedAt ? new Date(b.publishedAt).getTime() : 0;
       return timeB - timeA;
     });
   }, [savedProblems, search, selectedIndustries, selectedSeverity, verifiedOnly, sortBy]);
+
+  // Suggested problem statements randomly picked from different industries when 0 saved problems exist
+  const suggestedProblems = useMemo(() => {
+    if (savedProblems.length > 0 || allProblems.length === 0) return [];
+
+    // Group by industry to ensure diverse representation across different sectors
+    const industryGroups: Record<string, ProblemDoc[]> = {};
+    allProblems.forEach((p) => {
+      const ind = p.industry || "General";
+      if (!industryGroups[ind]) industryGroups[ind] = [];
+      industryGroups[ind].push(p);
+    });
+
+    const selected: ProblemDoc[] = [];
+    const industries = Object.keys(industryGroups).sort(() => 0.5 - Math.random());
+
+    for (const ind of industries) {
+      const probs = industryGroups[ind];
+      const randomProb = probs[Math.floor(Math.random() * probs.length)];
+      if (randomProb && !selected.some((s) => s.id === randomProb.id)) {
+        selected.push(randomProb);
+      }
+      if (selected.length >= 4) break;
+    }
+
+    // Fallback if less than 4
+    if (selected.length < 4) {
+      for (const p of allProblems) {
+        if (!selected.some((s) => s.id === p.id)) {
+          selected.push(p);
+        }
+        if (selected.length >= 4) break;
+      }
+    }
+
+    return selected;
+  }, [allProblems, savedProblems.length]);
 
   return (
     <div className="flex flex-col w-full min-h-screen font-['Poppins',sans-serif] text-on-surface bg-surface">
@@ -293,36 +331,73 @@ export const SavedProblems: React.FC = () => {
             ))}
           </div>
         ) : filteredSavedProblems.length === 0 ? (
-          <div className="text-center py-20 bg-white rounded-3xl border border-gray-100 shadow-sm space-y-4 max-w-2xl mx-auto p-8">
-            <div className="h-16 w-16 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mx-auto">
-              <Bookmark className="h-8 w-8 text-primary" />
+          <div className="space-y-6 sm:space-y-8 w-full animate-fade-in">
+            <div className="w-full max-w-md mx-auto text-center py-2 sm:py-4 space-y-3 bg-transparent">
+              {/* Fade-in Vector Illustration */}
+              <div className="animate-in fade-in duration-500 ease-out">
+                <EmptyBookmarksIllustration className="w-36 h-24 sm:w-44 sm:h-28 mx-auto" />
+              </div>
+
+              {/* Heading & Subtitle directly on page background */}
+              <div className="space-y-1">
+                <h3 className="text-base sm:text-lg font-bold text-on-surface tracking-tight">
+                  {savedProblems.length === 0
+                    ? "No saved problem statements yet"
+                    : "No matching saved problems"}
+                </h3>
+                <p className="text-[11px] sm:text-xs text-on-surface-variant max-w-xs mx-auto leading-relaxed font-normal">
+                  {savedProblems.length === 0
+                    ? "Click the bookmark icon on any problem statement across Explore, Trending, or Problem Details to save it to your library."
+                    : "Try adjusting your search terms or clearing active filters to view your saved items."}
+                </p>
+              </div>
+
+              {/* Action Button */}
+              <div className="pt-1">
+                {savedProblems.length === 0 ? (
+                  <Link
+                    to="/explore"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary text-white text-xs font-bold hover:bg-primary-hover transition-all cursor-pointer shadow-xs group"
+                  >
+                    <span>Explore Problems</span>
+                    <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" />
+                  </Link>
+                ) : (
+                  <button
+                    onClick={handleResetFilters}
+                    className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-primary text-white text-xs font-semibold hover:bg-primary-hover transition-all cursor-pointer shadow-xs"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5" />
+                    <span>Reset Filters</span>
+                  </button>
+                )}
+              </div>
             </div>
-            <h3 className="text-xl font-bold text-gray-900">
-              {savedProblems.length === 0 ? "No saved problem statements yet" : "No matching saved problems"}
-            </h3>
-            <p className="text-sm text-gray-500 font-normal max-w-md mx-auto">
-              {savedProblems.length === 0
-                ? "Click the bookmark icon on any problem statement across Explore, Trending, or Problem Details to save it to your library."
-                : "Try adjusting your search terms or clearing active filters to view your saved items."}
-            </p>
-            <div className="pt-2 flex items-center justify-center gap-3">
-              {savedProblems.length === 0 ? (
-                <Link
-                  to="/explore"
-                  className="px-6 py-2.5 rounded-xl bg-primary text-white text-xs font-bold hover:bg-primary-container transition-all cursor-pointer shadow-sm flex items-center gap-2"
-                >
-                  <span>Explore Problems</span>
-                  <ArrowRight className="w-4 h-4" />
-                </Link>
-              ) : (
-                <button
-                  onClick={handleResetFilters}
-                  className="px-5 py-2.5 rounded-xl bg-primary text-white text-xs font-semibold hover:bg-primary/90 transition-all cursor-pointer shadow-sm"
-                >
-                  Reset Filters
-                </button>
-              )}
-            </div>
+
+            {/* ── Suggested Problem Statements from Diverse Industries ──────── */}
+            {suggestedProblems.length > 0 && (
+              <div className="w-full space-y-4 pt-2">
+                <div className="flex flex-col sm:flex-row sm:items-end justify-between border-b border-outline-variant/20 pb-3 gap-1">
+                  <div>
+                    <h4 className="text-base sm:text-lg font-bold text-on-surface tracking-tight">
+                      Suggested Problem Statements
+                    </h4>
+                    <p className="text-xs text-on-surface-variant font-normal">
+                      Explore verified operational challenges trending across diverse industries
+                    </p>
+                  </div>
+                  <span className="text-[11px] font-semibold text-primary">
+                    Randomly curated from diverse industries
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full animate-fade-in">
+                  {suggestedProblems.map((prob) => (
+                    <TrendingProblemCard key={prob.id} problem={prob} variant="flat" />
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full animate-fade-in">

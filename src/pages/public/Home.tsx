@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Navbar } from "@/components/common/Navbar";
 import { usePageContent } from "@/hooks/usePageContent";
@@ -10,6 +10,7 @@ import { OrganicAtlasSection } from "@/components/ui/OrganicAtlasSection";
 import { TrendingProblemCard } from "@/components/ui/TrendingProblemCard";
 import { SEOHead } from "@/components/common/SEOHead";
 import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
+import { separateCompoundIndustry } from "@/lib/algorithms/domainIntelligence";
 
 export const Home: React.FC = () => {
   const navigate = useNavigate();
@@ -32,12 +33,17 @@ export const Home: React.FC = () => {
     }
   };
 
+  const scrollRaf = useRef<number | null>(null);
   const checkScroll = () => {
-    if (trendingScrollRef.current) {
-      const { scrollLeft, scrollWidth, clientWidth } = trendingScrollRef.current;
-      setCanScrollLeft(scrollLeft > 15);
-      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 15);
-    }
+    if (scrollRaf.current) return;
+    scrollRaf.current = requestAnimationFrame(() => {
+      scrollRaf.current = null;
+      if (trendingScrollRef.current) {
+        const { scrollLeft, scrollWidth, clientWidth } = trendingScrollRef.current;
+        setCanScrollLeft(scrollLeft > 15);
+        setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 15);
+      }
+    });
   };
 
   const scrollTrending = (direction: "left" | "right") => {
@@ -72,13 +78,33 @@ export const Home: React.FC = () => {
     "Search millions of verified problems..."
   );
   const searchBtnLabel = getField("hero", "search_button_label", "Search");
-  const popularTags = getField<string[]>("searches", "popular_tags", [
+  const UNIFIED_POPULAR_TAGS = [
     "Healthcare",
-    "Agriculture",
+    "Biotech",
     "AI",
-    "Construction",
-    "Education",
-  ]);
+    "Machine Learning",
+    "Clean Energy",
+    "CleanTech",
+    "FinTech",
+    "DeFi",
+    "Agriculture",
+    "Logistics",
+    "Supply Chain",
+  ];
+  const rawPopularTags = getField<string[]>("searches", "popular_tags", UNIFIED_POPULAR_TAGS);
+  const popularTags: string[] = useMemo(() => {
+    const list = Array.isArray(rawPopularTags) && rawPopularTags.length > 0 ? rawPopularTags : UNIFIED_POPULAR_TAGS;
+    const separated: string[] = [];
+    list.forEach((t: string) => {
+      const parts = separateCompoundIndustry(t);
+      parts.forEach((p) => {
+        if (!separated.includes(p) && !p.includes("&")) {
+          separated.push(p);
+        }
+      });
+    });
+    return separated.length > 0 ? separated : UNIFIED_POPULAR_TAGS;
+  }, [rawPopularTags]);
 
   const stat1Label = getField("stats", "stat_1_label", "Problems Today");
   const stat1Val = getField("stats", "stat_1_value", "14,208");
@@ -101,13 +127,43 @@ export const Home: React.FC = () => {
   const ctaSecondaryLink = getField("cta", "secondary_btn_link", "/submit");
 
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
+    let rafId: number | null = null;
+    let targetX = 0;
+    let targetY = 0;
+    let isHeroInView = true;
+
+    const updateGlow = () => {
       if (mouseGlowRef.current) {
-        mouseGlowRef.current.style.transform = `translate3d(${e.clientX - 300}px, ${e.clientY - 300}px, 0)`;
+        mouseGlowRef.current.style.transform = `translate3d(${targetX - 300}px, ${targetY - 300}px, 0)`;
+      }
+      rafId = null;
+    };
+
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isHeroInView) return;
+      targetX = e.clientX;
+      targetY = e.clientY;
+      if (!rafId) {
+        rafId = requestAnimationFrame(updateGlow);
       }
     };
+
+    let heroObserver: IntersectionObserver | null = null;
+    if (typeof IntersectionObserver !== "undefined" && mouseGlowRef.current?.parentElement) {
+      heroObserver = new IntersectionObserver((entries) => {
+        entries.forEach((e) => {
+          isHeroInView = e.isIntersecting;
+        });
+      }, { threshold: 0.05 });
+      heroObserver.observe(mouseGlowRef.current.parentElement);
+    }
+
     window.addEventListener("mousemove", handleMouseMove, { passive: true });
-    return () => window.removeEventListener("mousemove", handleMouseMove);
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      if (heroObserver) heroObserver.disconnect();
+      if (rafId) cancelAnimationFrame(rafId);
+    };
   }, []);
 
   // WebGL Background Shader Canvas Animation (ANIMATION_32)
@@ -115,7 +171,7 @@ export const Home: React.FC = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const gl = (canvas.getContext("webgl", { alpha: true, antialias: true }) ||
+    const gl = (canvas.getContext("webgl", { alpha: true, antialias: false, powerPreference: "high-performance" }) ||
       canvas.getContext("experimental-webgl", { alpha: true })) as WebGLRenderingContext | null;
     if (!gl) return;
 
@@ -211,12 +267,29 @@ export const Home: React.FC = () => {
     const uMouse = gl.getUniformLocation(prog, "u_mouse");
 
     let mouse = { x: canvas.width / 2, y: canvas.height / 2 };
+    let cachedRect = { left: 0, top: 0, width: window.innerWidth, height: window.innerHeight };
+    let isVisible = true;
+
+    const updateCachedRect = () => {
+      if (!canvas) return;
+      const r = canvas.getBoundingClientRect();
+      cachedRect = {
+        left: r.left + window.scrollX,
+        top: r.top + window.scrollY,
+        width: r.width || window.innerWidth,
+        height: r.height || window.innerHeight,
+      };
+    };
 
     const handleWindowMouseMove = (event: MouseEvent) => {
-      const rect = canvas.getBoundingClientRect();
-      if (rect.width && rect.height) {
-        const nx = (event.clientX - rect.left) / rect.width;
-        const ny = 1.0 - (event.clientY - rect.top) / rect.height;
+      // Fast path: avoid getBoundingClientRect layout thrashing
+      const currentScrollY = window.scrollY;
+      const currentScrollX = window.scrollX;
+      const relX = event.clientX + currentScrollX - cachedRect.left;
+      const relY = event.clientY + currentScrollY - cachedRect.top;
+      if (cachedRect.width && cachedRect.height) {
+        const nx = Math.max(0, Math.min(1, relX / cachedRect.width));
+        const ny = Math.max(0, Math.min(1, 1.0 - relY / cachedRect.height));
         mouse.x = nx * canvas.width;
         mouse.y = ny * canvas.height;
       }
@@ -226,9 +299,10 @@ export const Home: React.FC = () => {
 
     function syncSize() {
       if (!canvas || !gl) return;
-      const rect = canvas.getBoundingClientRect();
-      const w = Math.max(Math.floor(rect.width || window.innerWidth), 300);
-      const h = Math.max(Math.floor(rect.height || window.innerHeight), 300);
+      updateCachedRect();
+      const dpr = Math.min(window.devicePixelRatio || 1, 1);
+      const w = Math.max(Math.floor(cachedRect.width * dpr), 300);
+      const h = Math.max(Math.floor(cachedRect.height * dpr), 300);
       if (canvas.width !== w || canvas.height !== h) {
         canvas.width = w;
         canvas.height = h;
@@ -241,10 +315,13 @@ export const Home: React.FC = () => {
     resizeObserver.observe(canvas);
     syncSize();
 
-    const startTime = performance.now();
+    let isRunning = false;
 
     function render() {
-      if (!canvas || !gl) return;
+      if (!canvas || !gl || !isVisible || document.hidden) {
+        isRunning = false;
+        return;
+      }
       const t = performance.now() - startTime;
       gl.viewport(0, 0, canvas.width, canvas.height);
       if (uTime) gl.uniform1f(uTime, t * 0.001);
@@ -254,12 +331,41 @@ export const Home: React.FC = () => {
       animationFrameId = requestAnimationFrame(render);
     }
 
-    render();
+    const startRenderLoop = () => {
+      if (!isRunning && isVisible && !document.hidden) {
+        isRunning = true;
+        animationFrameId = requestAnimationFrame(render);
+      }
+    };
+
+    let intersectionObserver: IntersectionObserver | null = null;
+    if (typeof IntersectionObserver !== "undefined") {
+      intersectionObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            isVisible = entry.isIntersecting;
+            if (isVisible) startRenderLoop();
+          });
+        },
+        { threshold: 0.05 }
+      );
+      intersectionObserver.observe(canvas);
+    }
+
+    const handleVisibility = () => {
+      if (!document.hidden && isVisible) startRenderLoop();
+    };
+    document.addEventListener("visibilitychange", handleVisibility);
+
+    const startTime = performance.now();
+    startRenderLoop();
 
     return () => {
       cancelAnimationFrame(animationFrameId);
+      document.removeEventListener("visibilitychange", handleVisibility);
       window.removeEventListener("mousemove", handleWindowMouseMove);
       resizeObserver.disconnect();
+      if (intersectionObserver) intersectionObserver.disconnect();
       gl.deleteProgram(prog);
       gl.deleteShader(vertShader);
       gl.deleteShader(fragShader);
@@ -328,7 +434,7 @@ export const Home: React.FC = () => {
             <div className="absolute inset-0 bg-dot-pattern z-0 pointer-events-none" />
             {/* Smooth merging fade & blur transition at bottom of hero */}
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-surface/20 to-surface z-0 pointer-events-none" />
-            <div className="absolute bottom-0 inset-x-0 h-44 bg-gradient-to-t from-surface via-surface/80 to-transparent pointer-events-none z-10 backdrop-blur-[1px]" />
+            <div className="absolute bottom-0 inset-x-0 h-44 bg-gradient-to-t from-surface via-surface/80 to-transparent pointer-events-none z-10" />
 
             {/* Hero Content */}
             <div className="max-w-5xl w-full z-10 flex flex-col items-center gap-6 md:gap-7 relative my-auto">
@@ -367,9 +473,8 @@ export const Home: React.FC = () => {
 
               <form
                 onSubmit={handleHomeSearch}
-                className="w-full max-w-2xl relative shadow-2xl shadow-primary/10 rounded-2xl bg-surface-container-lowest/90 backdrop-blur-xl border border-outline-variant/30 hover:border-primary/50 focus-within:border-primary/80 focus-within:shadow-primary/20 transition-all duration-300 group"
+                className="w-full max-w-2xl relative rounded-2xl bg-surface-container-lowest border border-outline-variant/40 hover:border-primary/50 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary shadow-xs transition-colors group"
               >
-                <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-purple-500/20 blur-lg -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-3xl" />
                 <span className="material-symbols-outlined absolute left-3.5 sm:left-5 top-1/2 transform -translate-y-1/2 text-on-surface-variant group-focus-within:text-primary transition-colors text-[18px] sm:text-[24px]">
                   search
                 </span>
@@ -388,14 +493,14 @@ export const Home: React.FC = () => {
                 </button>
               </form>
 
-              <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2.5 mt-0.5 sm:mt-1 min-h-[30px] sm:min-h-[36px]">
-                <span className="font-label-sm text-[10px] sm:text-xs text-on-surface-variant uppercase tracking-wider mr-0.5 sm:mr-1 font-semibold">
+              <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 mt-1 min-h-[28px] sm:min-h-[32px] bg-transparent border-none">
+                <span className="font-label-sm text-[10px] sm:text-xs text-on-surface-variant uppercase tracking-wider mr-1 sm:mr-1.5 font-semibold">
                   Popular:
                 </span>
                 {contentLoading ? (
                   <div className="flex items-center gap-2 animate-pulse">
                     {Array.from({ length: 5 }).map((_, i) => (
-                      <div key={i} className="h-6 sm:h-7 w-16 sm:w-20 rounded-full bg-surface-container-high/80" />
+                      <div key={i} className="h-4 w-12 bg-surface-container-high/80 rounded" />
                     ))}
                   </div>
                 ) : (
@@ -403,7 +508,7 @@ export const Home: React.FC = () => {
                     <Link
                       key={cat}
                       to={`/explore?industry=${encodeURIComponent(cat)}`}
-                      className="animate-fade-in px-2.5 sm:px-4 py-1 sm:py-1.5 rounded-full bg-surface-container-lowest/80 backdrop-blur-sm border border-outline-variant/20 hover:border-primary/50 hover:bg-primary/10 hover:text-primary hover:-translate-y-0.5 hover:shadow-md hover:shadow-primary/10 text-on-surface font-label-md text-[11px] sm:text-xs transition-all duration-300 shadow-sm"
+                      className="text-on-surface-variant hover:text-primary text-[11px] sm:text-xs font-medium hover:underline underline-offset-4 transition-colors bg-transparent border-none p-0 cursor-pointer"
                     >
                       {cat}
                     </Link>
@@ -414,7 +519,7 @@ export const Home: React.FC = () => {
           </section>
 
           {/* Section 2: Stats Counter */}
-          <section className="w-full py-8 sm:py-16 border-y border-outline-variant/20 bg-surface-container-lowest/30 backdrop-blur-sm relative z-20">
+          <section className="w-full py-8 sm:py-16 border-y border-outline-variant/20 bg-surface-container-lowest/70 relative z-20">
             <div className="w-full max-w-[1280px] mx-auto px-4 md:px-8">
               {contentLoading ? (
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-4 divide-x-0 md:divide-x divide-outline-variant/20 animate-pulse">
@@ -579,15 +684,19 @@ export const Home: React.FC = () => {
 
             {/* Scroll Viewport Container with Dynamic Left & Right Gradient Blur */}
             <div className="relative w-full py-2">
-              {/* Left Edge Blur Overlay (Only mounted when scrolled past 1st card) */}
-              {canScrollLeft && (
-                <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-12 md:w-20 bg-gradient-to-r from-surface via-surface/90 to-transparent z-20 transition-opacity duration-300" />
-              )}
+              {/* Left Edge Blur Overlay */}
+              <div
+                className={`pointer-events-none absolute left-0 top-0 bottom-0 w-12 md:w-20 bg-gradient-to-r from-surface via-surface/90 to-transparent z-20 transition-opacity duration-300 ${
+                  canScrollLeft ? "opacity-100" : "opacity-0"
+                }`}
+              />
 
-              {/* Right Edge Blur Overlay (Only mounted when more cards available to the right) */}
-              {canScrollRight && (
-                <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-12 md:w-20 bg-gradient-to-l from-surface via-surface/90 to-transparent z-20 transition-opacity duration-300" />
-              )}
+              {/* Right Edge Blur Overlay */}
+              <div
+                className={`pointer-events-none absolute right-0 top-0 bottom-0 w-12 md:w-20 bg-gradient-to-l from-surface via-surface/90 to-transparent z-20 transition-opacity duration-300 ${
+                  canScrollRight ? "opacity-100" : "opacity-0"
+                }`}
+              />
 
               {/* Single Row Horizontal Scroll Feed */}
               <div
@@ -634,7 +743,7 @@ export const Home: React.FC = () => {
               {/* Desktop Accordion Grid */}
               <div className="w-full mx-auto px-2 pb-24 h-[600px] hidden md:flex gap-4 group/container overflow-hidden">
                 {/* Case 1: Problem Discovery */}
-                <div className="use-case-card relative flex-[1] hover:flex-[3] transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] h-full rounded-2xl overflow-hidden cursor-pointer group group-hover/container:opacity-100 bg-surface-container shadow-sm hover:shadow-xl">
+                <div className="use-case-card relative flex-[1] hover:flex-[3] transition-[flex-grow,box-shadow] duration-500 ease-out [transform:translateZ(0)] h-full rounded-2xl overflow-hidden cursor-pointer group group-hover/container:opacity-100 bg-surface-container shadow-sm hover:shadow-xl">
                   <div className="absolute inset-0 z-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                     <svg className="absolute inset-0 w-full h-full opacity-30 text-primary" preserveAspectRatio="none" viewBox="0 0 100 100">
                       <path d="M0,50 Q25,20 50,50 T100,50 L100,100 L0,100 Z" fill="currentColor"></path>
@@ -658,7 +767,7 @@ export const Home: React.FC = () => {
                 </div>
 
                 {/* Case 2: Market Validation */}
-                <div className="use-case-card relative flex-[1] hover:flex-[3] transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] h-full rounded-2xl overflow-hidden cursor-pointer group group-hover/container:opacity-100 bg-surface-container shadow-sm hover:shadow-xl">
+                <div className="use-case-card relative flex-[1] hover:flex-[3] transition-[flex-grow,box-shadow] duration-500 ease-out [transform:translateZ(0)] h-full rounded-2xl overflow-hidden cursor-pointer group group-hover/container:opacity-100 bg-surface-container shadow-sm hover:shadow-xl">
                   <div className="absolute inset-0 z-0 bg-error/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                     <svg className="absolute inset-0 w-full h-full opacity-30 text-error" preserveAspectRatio="none" viewBox="0 0 100 100">
                       <path d="M0,80 Q30,20 60,60 T100,40 L100,100 L0,100 Z" fill="currentColor"></path>
@@ -682,7 +791,7 @@ export const Home: React.FC = () => {
                 </div>
 
                 {/* Case 3: Startup Matching */}
-                <div className="use-case-card relative flex-[1] hover:flex-[3] transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] h-full rounded-2xl overflow-hidden cursor-pointer group group-hover/container:opacity-100 bg-surface-container shadow-sm hover:shadow-xl">
+                <div className="use-case-card relative flex-[1] hover:flex-[3] transition-[flex-grow,box-shadow] duration-500 ease-out [transform:translateZ(0)] h-full rounded-2xl overflow-hidden cursor-pointer group group-hover/container:opacity-100 bg-surface-container shadow-sm hover:shadow-xl">
                   <div className="absolute inset-0 z-0 bg-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                     <svg className="absolute inset-0 w-full h-full opacity-30 text-secondary" preserveAspectRatio="none" viewBox="0 0 100 100">
                       <path d="M0,20 Q40,80 80,30 T100,50 L100,100 L0,100 Z" fill="currentColor"></path>
@@ -706,7 +815,7 @@ export const Home: React.FC = () => {
                 </div>
 
                 {/* Case 4: Academic Research */}
-                <div className="use-case-card relative flex-[1] hover:flex-[3] transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] h-full rounded-2xl overflow-hidden cursor-pointer group group-hover/container:opacity-100 bg-surface-container shadow-sm hover:shadow-xl">
+                <div className="use-case-card relative flex-[1] hover:flex-[3] transition-[flex-grow,box-shadow] duration-500 ease-out [transform:translateZ(0)] h-full rounded-2xl overflow-hidden cursor-pointer group group-hover/container:opacity-100 bg-surface-container shadow-sm hover:shadow-xl">
                   <div className="absolute inset-0 z-0 bg-tertiary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                     <svg className="absolute inset-0 w-full h-full opacity-30 text-tertiary" preserveAspectRatio="none" viewBox="0 0 100 100">
                       <path d="M0,60 Q20,20 60,70 T100,30 L100,100 L0,100 Z" fill="currentColor"></path>
@@ -730,7 +839,7 @@ export const Home: React.FC = () => {
                 </div>
 
                 {/* Case 5: Talent Recruitment */}
-                <div className="use-case-card relative flex-[1] hover:flex-[3] transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] h-full rounded-2xl overflow-hidden cursor-pointer group group-hover/container:opacity-100 bg-surface-container shadow-sm hover:shadow-xl">
+                <div className="use-case-card relative flex-[1] hover:flex-[3] transition-[flex-grow,box-shadow] duration-500 ease-out [transform:translateZ(0)] h-full rounded-2xl overflow-hidden cursor-pointer group group-hover/container:opacity-100 bg-surface-container shadow-sm hover:shadow-xl">
                   <div className="absolute inset-0 z-0 bg-primary-container/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                     <svg className="absolute inset-0 w-full h-full opacity-30 text-primary-container" preserveAspectRatio="none" viewBox="0 0 100 100">
                       <path d="M0,30 Q50,90 90,40 T100,60 L100,100 L0,100 Z" fill="currentColor"></path>

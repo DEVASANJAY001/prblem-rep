@@ -22,7 +22,7 @@ interface ProblemCardProps {
   layout?: "grid" | "list";
 }
 
-export const ProblemCard: React.FC<ProblemCardProps> = ({
+export const ProblemCard: React.FC<ProblemCardProps> = React.memo(({
   problem,
   onVoteChange,
 }) => {
@@ -209,4 +209,5 @@ export const ProblemCard: React.FC<ProblemCardProps> = ({
       </div>
     </div>
   );
-};
+});
+ProblemCard.displayName = "ProblemCard";

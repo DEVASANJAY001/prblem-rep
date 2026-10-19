@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { SEOHead } from "@/components/common/SEOHead";
+import { NotFoundIllustration } from "@/components/common/VectorIllustrations";
 import {
   Search,
   ArrowRight,
@@ -24,30 +25,25 @@ export const NotFound: React.FC = () => {
   };
 
   const quickCategories = [
-    { name: "Healthcare & Biotech", slug: "healthcare-biotech" },
-    { name: "AI & Automation", slug: "artificial-intelligence-automation" },
-    { name: "Clean Energy", slug: "clean-energy-sustainability" },
-    { name: "FinTech & Banking", slug: "fintech-defi" },
-    { name: "Logistics & Supply Chain", slug: "logistics-supply-chain" },
+    { name: "Healthcare", slug: "healthcare" },
+    { name: "AI", slug: "ai" },
+    { name: "Clean Energy", slug: "clean-energy" },
+    { name: "FinTech", slug: "fintech" },
+    { name: "Logistics", slug: "logistics" },
   ];
 
   return (
-    <div className="min-h-[75vh] w-full flex items-center justify-center px-4 py-16 font-['Poppins',sans-serif] text-on-surface">
+    <div className="min-h-[75vh] w-full flex items-center justify-center px-4 py-12 sm:py-16 font-['Poppins',sans-serif] text-on-surface">
       <SEOHead
         title="404 — Page Not Found"
         description="The requested page or problem statement could not be found on Stuckhere."
         noindex
       />
 
-      <div className="max-w-2xl w-full text-center space-y-8 animate-fade-in">
-        {/* Visual Badge */}
+      <div className="max-w-2xl w-full text-center space-y-6 sm:space-y-8 animate-fade-in">
+        {/* Custom Vector Illustration */}
         <div className="relative inline-block">
-          <div className="w-20 h-20 rounded-3xl bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto text-primary shadow-lg shadow-primary/5">
-            <HelpCircle className="w-10 h-10 text-primary" />
-          </div>
-          <span className="absolute -bottom-2 -right-2 px-2.5 py-0.5 rounded-full bg-rose-500 text-white text-[11px] font-black tracking-widest uppercase shadow-sm">
-            404
-          </span>
+          <NotFoundIllustration className="w-56 h-40 sm:w-72 sm:h-52 mx-auto drop-shadow-sm" />
         </div>
 
         {/* Heading & Subtitle */}

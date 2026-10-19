@@ -57,7 +57,7 @@ export const INITIAL_SITE_CONTENT: PageContent[] = [
             fieldId: "popular_tags",
             label: "Popular Category Tags",
             type: "tag_list",
-            value: ["Healthcare", "Agriculture", "AI", "Construction", "Education"],
+            value: ["Healthcare", "AI", "Clean Energy", "FinTech", "Agriculture", "Logistics", "Manufacturing"],
             helpText: "These tags appear below the search bar to guide users.",
           },
         ],

@@ -6,7 +6,11 @@ import {
   subscribeBadges,
   evaluateAndAwardUserBadges,
 } from "@/lib/firebase/services/badgesService";
-import { getBookmarkedProblems } from "@/lib/storage";
+import {
+  getBookmarkedProblems,
+  getUserSubmittedProblemIds,
+  checkUsernameAvailability,
+} from "@/lib/storage";
 import { getProblemDetailUrl } from "@/lib/seoUrls";
 import { ProblemDoc, BadgeDoc } from "@/types";
 import { UserAvatar } from "@/components/ui/UserAvatar";
@@ -45,6 +49,7 @@ import {
   ChevronRight,
   TrendingUp,
   Zap,
+  AtSign,
 } from "lucide-react";
 
 export const Dashboard: React.FC = () => {
@@ -59,7 +64,11 @@ export const Dashboard: React.FC = () => {
 
   // Profile Edit Modal State
   const [isEditOpen, setIsEditOpen] = useState(false);
-  const [editName, setEditName] = useState(userDoc?.name || user?.displayName || "Innovator");
+  const [editDisplayName, setEditDisplayName] = useState(
+    userDoc?.displayName || userDoc?.name || user?.displayName || "Innovator"
+  );
+  const [editUsername, setEditUsername] = useState(userDoc?.username || "");
+  const [usernameError, setUsernameError] = useState<string | null>(null);
   const [editHeadline, setEditHeadline] = useState(userDoc?.headline || "Problem Explorer & Innovator");
   const [editBio, setEditBio] = useState(userDoc?.bio || "Researching verified real-world problems.");
   const [editPhotoURL, setEditPhotoURL] = useState(userDoc?.photoURL || user?.photoURL || "");
@@ -97,21 +106,27 @@ export const Dashboard: React.FC = () => {
   }, []);
 
   const currentUid = userDoc?.uid || user?.uid;
+  const userSubmittedIds = useMemo(() => {
+    return getUserSubmittedProblemIds(currentUid || "guest");
+  }, [currentUid]);
 
   // Real Submissions without any mock fallback
   const mySubmissions = useMemo(() => {
-    if (!currentUid && !userDoc?.name && !user?.displayName) return [];
     return allProblems.filter(
       (p) =>
+        userSubmittedIds.includes(p.id) ||
         (currentUid && (p.submittedByUid === currentUid || p.submittedBy === currentUid)) ||
+        (userDoc?.displayName && (p.submitterName === userDoc.displayName || p.submittedBy === userDoc.displayName || (p as any).submittedByName === userDoc.displayName)) ||
+        (userDoc?.username && (p.submitterUsername === userDoc.username || p.authorUsername === userDoc.username)) ||
         (userDoc?.name && ((p as any).submittedByName === userDoc.name || p.submittedBy === userDoc.name)) ||
         (user?.displayName && ((p as any).submittedByName === user.displayName || p.submittedBy === user.displayName))
     );
-  }, [allProblems, currentUid, userDoc?.name, user?.displayName]);
+  }, [allProblems, currentUid, userDoc?.displayName, userDoc?.username, userDoc?.name, user?.displayName, userSubmittedIds]);
 
   const bookmarkedProblems = getBookmarkedProblems(currentUid || "guest");
 
-  const displayName = userDoc?.name || user?.displayName || "Innovator";
+  const displayName = userDoc?.displayName || userDoc?.name || user?.displayName || "Innovator";
+  const userHandle = userDoc?.username;
   const userRole = userDoc?.role || "user";
   const earnedBadgesNames = userDoc?.badges || [];
 
@@ -170,7 +185,9 @@ export const Dashboard: React.FC = () => {
   }, [currentUid, realStats, earnedBadgesNames]);
 
   const handleOpenEdit = () => {
-    setEditName(userDoc?.name || user?.displayName || "Innovator");
+    setEditDisplayName(userDoc?.displayName || userDoc?.name || user?.displayName || "Innovator");
+    setEditUsername(userDoc?.username || "");
+    setUsernameError(null);
     setEditHeadline(userDoc?.headline || "Problem Explorer & Innovator");
     setEditBio(userDoc?.bio || "Researching verified real-world problems.");
     setEditPhotoURL(userDoc?.photoURL || user?.photoURL || "");
@@ -222,9 +239,23 @@ export const Dashboard: React.FC = () => {
   const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSaving(true);
+    setUsernameError(null);
+
+    const cleanUsername = editUsername.trim().toLowerCase().replace(/^@/, "");
+    if (cleanUsername) {
+      const check = checkUsernameAvailability(cleanUsername, currentUid);
+      if (!check.available) {
+        setUsernameError(check.error || "This username is already taken. Please choose another.");
+        setIsSaving(false);
+        return;
+      }
+    }
+
     try {
       await updateUserProfile({
-        name: editName.trim(),
+        name: editDisplayName.trim(),
+        displayName: editDisplayName.trim(),
+        username: cleanUsername,
         headline: editHeadline.trim(),
         bio: editBio.trim(),
       });
@@ -331,6 +362,12 @@ export const Dashboard: React.FC = () => {
                 <h1 className="text-2xl md:text-3xl font-extrabold text-on-surface tracking-tight">
                   {displayName}
                 </h1>
+                {userHandle && (
+                  <span className="font-mono text-xs font-semibold px-2.5 py-0.5 rounded-full bg-surface-container text-primary border border-outline-variant/40 flex items-center gap-0.5">
+                    <AtSign className="w-3 h-3 text-primary/70" />
+                    <span>{userHandle}</span>
+                  </span>
+                )}
                 <span className="capitalize px-2.5 py-0.5 rounded-full text-xs font-bold bg-primary-fixed text-on-primary-fixed border border-primary/20">
                   {userRole}
                 </span>
@@ -537,106 +574,181 @@ export const Dashboard: React.FC = () => {
 
         {/* ── TAB 1: MY SUBMISSIONS ────────────────────────────────────────── */}
         {activeTab === "problems" && (
-          <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 shadow-sm overflow-x-auto">
-            {mySubmissions.length === 0 ? (
-              <div className="p-12 text-center flex flex-col items-center gap-3 max-w-md mx-auto">
-                <FileText className="h-10 w-10 text-outline opacity-40" />
-                <h3 className="text-base font-bold text-on-surface">No submitted problem statements yet</h3>
-                <p className="text-xs text-on-surface-variant">
-                  Contribute real-world friction, diagnostic insights, and market pain points to the open registry.
-                </p>
-                <Link
-                  to="/submit"
-                  className="mt-2 inline-flex items-center gap-1.5 bg-primary text-white px-5 py-2.5 rounded-xl text-xs font-bold hover:bg-primary-container shadow-sm cursor-pointer"
-                >
-                  <Plus className="h-4 w-4" />
-                  <span>Submit Problem Statement</span>
-                </Link>
+          <div className="space-y-4">
+            {/* Submission Status & Verification Lifecycle Banner */}
+            <div className="w-full bg-gradient-to-r from-primary/5 via-amber-500/5 to-emerald-500/5 border border-outline-variant/30 rounded-2xl p-4 sm:p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-2xs">
+              <div className="flex items-start gap-3">
+                <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0 mt-0.5">
+                  <Shield className="w-5 h-5" />
+                </div>
+                <div className="space-y-1">
+                  <h4 className="text-xs sm:text-sm font-bold text-on-surface">
+                    Problem Submission & Verification Pipeline
+                  </h4>
+                  <p className="text-[11px] sm:text-xs text-on-surface-variant max-w-2xl leading-relaxed">
+                    When you submit a problem statement, it is queued for admin review. Once an administrator verifies the empirical data and clicks <span className="font-semibold text-primary">Publish</span>, your statement goes live in the public Explore directory with the Verified badge.
+                  </p>
+                </div>
               </div>
-            ) : (
-              <table className="w-full text-left border-collapse min-w-[800px]">
-                <thead>
-                  <tr className="border-b border-outline-variant/30 bg-surface-container-low/50">
-                    <th className="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider">
-                      Problem Title & Narrative
-                    </th>
-                    <th className="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider">
-                      Industry
-                    </th>
-                    <th className="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider">
-                      Status & Admin Review
-                    </th>
-                    <th className="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider text-right">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-outline-variant/20 text-xs">
-                  {mySubmissions.map((prob) => {
-                    const isPending = prob.status === "pending";
-                    const isNeedsInfo = prob.status === "needs_info";
-                    const isApproved = prob.status === "approved" || !prob.status;
-                    const isRejected = prob.status === "rejected";
 
-                    return (
-                      <tr
-                        key={prob.id}
-                        onClick={() => navigate(getProblemDetailUrl(prob))}
-                        className="hover:bg-surface-container-low/60 transition-colors cursor-pointer group"
-                      >
-                        <td className="px-6 py-4">
-                          <div className="flex flex-col gap-1 max-w-md">
-                            <span className="font-bold text-on-surface group-hover:text-primary transition-colors text-sm">
-                              {prob.title}
+              <div className="flex items-center gap-2 self-stretch md:self-auto shrink-0 text-[11px] font-semibold text-on-surface-variant bg-surface-container-low/80 px-3 py-2 rounded-xl border border-outline-variant/20">
+                <span className="flex items-center gap-1 text-amber-700">
+                  <Clock className="w-3.5 h-3.5 animate-pulse" /> 1. Submitted
+                </span>
+                <span>→</span>
+                <span className="flex items-center gap-1 text-primary">
+                  <Shield className="w-3.5 h-3.5" /> 2. Admin Verifies
+                </span>
+                <span>→</span>
+                <span className="flex items-center gap-1 text-emerald-700">
+                  <CheckCircle className="w-3.5 h-3.5" /> 3. Published Live
+                </span>
+              </div>
+            </div>
+
+            <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 shadow-sm overflow-x-auto">
+              {mySubmissions.length === 0 ? (
+                <div className="p-12 text-center flex flex-col items-center gap-3 max-w-md mx-auto">
+                  <FileText className="h-10 w-10 text-outline opacity-40" />
+                  <h3 className="text-base font-bold text-on-surface">No submitted problem statements yet</h3>
+                  <p className="text-xs text-on-surface-variant">
+                    Contribute real-world friction, diagnostic insights, and market pain points to the open registry.
+                  </p>
+                  <Link
+                    to="/submit"
+                    className="mt-2 inline-flex items-center gap-1.5 bg-primary text-white px-5 py-2.5 rounded-xl text-xs font-bold hover:bg-primary-container shadow-sm cursor-pointer"
+                  >
+                    <Plus className="h-4 w-4" />
+                    <span>Submit Problem Statement</span>
+                  </Link>
+                </div>
+              ) : (
+                <table className="w-full text-left border-collapse min-w-[800px]">
+                  <thead>
+                    <tr className="border-b border-outline-variant/30 bg-surface-container-low/50">
+                      <th className="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider">
+                        Problem Title & Narrative
+                      </th>
+                      <th className="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider">
+                        Industry
+                      </th>
+                      <th className="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider">
+                        Status & Admin Verification
+                      </th>
+                      <th className="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider text-right">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-outline-variant/20 text-xs">
+                    {mySubmissions.map((prob) => {
+                      const isPending = prob.status === "pending";
+                      const isNeedsInfo = prob.status === "needs_info";
+                      const isApproved = prob.status === "approved" || !prob.status;
+                      const isRejected = prob.status === "rejected";
+
+                      return (
+                        <tr
+                          key={prob.id}
+                          onClick={() => navigate(getProblemDetailUrl(prob))}
+                          className="hover:bg-surface-container-low/60 transition-colors cursor-pointer group"
+                        >
+                          <td className="px-6 py-4">
+                            <div className="flex flex-col gap-1 max-w-md">
+                              <span className="font-bold text-on-surface group-hover:text-primary transition-colors text-sm">
+                                {prob.title}
+                              </span>
+                              <span className="text-on-surface-variant line-clamp-1 text-xs">
+                                {prob.description}
+                              </span>
+                              {(prob.reviewNote || (prob as any).adminReviewNote) && (
+                                <div className="mt-1 inline-flex items-center gap-1.5 text-[11px] text-amber-900 bg-amber-500/10 px-2.5 py-1 rounded-lg border border-amber-500/20 max-w-fit">
+                                  <AlertCircle className="w-3 h-3 text-amber-600 shrink-0" />
+                                  <span>
+                                    <strong>Admin Note:</strong> {prob.reviewNote || (prob as any).adminReviewNote}
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="inline-flex px-2.5 py-1 rounded-full font-semibold bg-surface-container text-on-surface border border-outline-variant/30">
+                              {prob.industry}
                             </span>
-                            <span className="text-on-surface-variant line-clamp-1 text-xs">
-                              {prob.description}
-                            </span>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <span className="inline-flex px-2.5 py-1 rounded-full font-semibold bg-surface-container text-on-surface border border-outline-variant/30">
-                            {prob.industry}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4">
-                          {isPending && (
-                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-bold bg-amber-500/10 text-amber-600 border border-amber-500/20">
-                              <Clock className="w-3.5 h-3.5" /> Pending Review
-                            </span>
-                          )}
-                          {isApproved && (
-                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-bold bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">
-                              <CheckCircle className="w-3.5 h-3.5" /> Verified & Active
-                            </span>
-                          )}
-                          {isNeedsInfo && (
-                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-bold bg-blue-500/10 text-blue-600 border border-blue-500/20">
-                              <AlertCircle className="w-3.5 h-3.5" /> Needs Info
-                            </span>
-                          )}
-                          {isRejected && (
-                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-bold bg-rose-500/10 text-rose-600 border border-rose-500/20">
-                              <X className="w-3.5 h-3.5" /> Rejected
-                            </span>
-                          )}
-                        </td>
-                        <td className="px-6 py-4 text-right">
-                          <button
-                            type="button"
-                            onClick={(e) => handleOpenProblemEdit(prob, e)}
-                            className="p-2 rounded-xl hover:bg-surface-container text-on-surface-variant hover:text-primary transition-colors cursor-pointer"
-                            title="Edit Problem"
-                          >
-                            <Edit3 className="w-4 h-4" />
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            )}
+                          </td>
+                          <td className="px-6 py-4">
+                            {isPending && (
+                              <div className="flex flex-col gap-1">
+                                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full font-bold bg-amber-500/10 text-amber-700 border border-amber-500/30 w-fit">
+                                  <Clock className="w-3.5 h-3.5 text-amber-600 animate-pulse" />
+                                  <span>Pending Admin Review</span>
+                                </span>
+                                <span className="text-[10px] text-on-surface-variant">
+                                  Submitted · Awaiting admin verification
+                                </span>
+                              </div>
+                            )}
+                            {isApproved && (
+                              <div className="flex flex-col gap-1">
+                                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full font-bold bg-emerald-500/10 text-emerald-700 border border-emerald-500/30 w-fit">
+                                  <CheckCircle className="w-3.5 h-3.5 text-emerald-600" />
+                                  <span>Published & Live</span>
+                                </span>
+                                <span className="text-[10px] text-emerald-600 font-medium">
+                                  Verified by Admin · Active in Explore
+                                </span>
+                              </div>
+                            )}
+                            {isNeedsInfo && (
+                              <div className="flex flex-col gap-1">
+                                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full font-bold bg-blue-500/10 text-blue-700 border border-blue-500/30 w-fit">
+                                  <AlertCircle className="w-3.5 h-3.5 text-blue-600" />
+                                  <span>Modifications Requested</span>
+                                </span>
+                                <span className="text-[10px] text-blue-600 font-medium">
+                                  Review admin notes and update details
+                                </span>
+                              </div>
+                            )}
+                            {isRejected && (
+                              <div className="flex flex-col gap-1">
+                                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full font-bold bg-rose-500/10 text-rose-700 border border-rose-500/30 w-fit">
+                                  <X className="w-3.5 h-3.5 text-rose-600" />
+                                  <span>Rejected / Archived</span>
+                                </span>
+                                <span className="text-[10px] text-rose-600">
+                                  Did not meet verification standards
+                                </span>
+                              </div>
+                            )}
+                          </td>
+                          <td className="px-6 py-4 text-right">
+                            <div className="flex items-center justify-end gap-1.5">
+                              <Link
+                                to={getProblemDetailUrl(prob)}
+                                onClick={(e) => e.stopPropagation()}
+                                className="p-2 rounded-xl hover:bg-surface-container text-on-surface-variant hover:text-primary transition-colors cursor-pointer"
+                                title="View Problem Dossier"
+                              >
+                                <ExternalLink className="w-4 h-4" />
+                              </Link>
+                              <button
+                                type="button"
+                                onClick={(e) => handleOpenProblemEdit(prob, e)}
+                                className="p-2 rounded-xl hover:bg-surface-container text-on-surface-variant hover:text-primary transition-colors cursor-pointer"
+                                title="Edit Problem Details"
+                              >
+                                <Edit3 className="w-4 h-4" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              )}
+            </div>
           </div>
         )}
 
@@ -855,17 +967,58 @@ export const Dashboard: React.FC = () => {
 
             <form onSubmit={handleSaveProfile} className="flex flex-col gap-5">
 
-              {/* Name Input */}
+              {/* Display Name Input */}
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-bold text-on-surface">Full Name</label>
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-bold text-on-surface">Display Name (Public Author Name)</label>
+                  <span className="text-[11px] text-primary font-bold">Shown under "Posted by"</span>
+                </div>
                 <input
                   type="text"
                   required
-                  value={editName}
-                  onChange={(e) => setEditName(e.target.value)}
-                  placeholder="e.g. Dr. Jane Doe"
-                  className="w-full bg-surface-container/40 rounded-xl px-4 py-2.5 text-xs font-bold text-on-surface outline-none border border-outline-variant/30"
+                  value={editDisplayName}
+                  onChange={(e) => setEditDisplayName(e.target.value)}
+                  placeholder="e.g. Dr. Sarah Chen, MD"
+                  className="w-full bg-surface-container/40 rounded-xl px-4 py-2.5 text-xs font-bold text-on-surface outline-none border border-outline-variant/30 focus:border-primary/50 transition-colors"
                 />
+                <p className="text-[11px] text-on-surface-variant">
+                  This public name represents you as the author on all published problem statements and dossiers.
+                </p>
+              </div>
+
+              {/* Username Input (Unique @Handle) */}
+              <div className="flex flex-col gap-1.5">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-bold text-on-surface">Username (Unique Handle)</label>
+                  <span className="text-[11px] text-on-surface-variant font-medium">Identifier</span>
+                </div>
+                <div className="relative flex items-center">
+                  <span className="absolute left-3 text-outline font-mono text-xs font-bold pointer-events-none select-none">@</span>
+                  <input
+                    type="text"
+                    value={editUsername}
+                    onChange={(e) => {
+                      const val = e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, "");
+                      setEditUsername(val);
+                      if (usernameError) setUsernameError(null);
+                    }}
+                    placeholder="sarah_chen"
+                    maxLength={20}
+                    className={`w-full bg-surface-container/40 rounded-xl pl-8 pr-4 py-2.5 text-xs font-mono font-bold text-on-surface outline-none border transition-colors ${
+                      usernameError ? "border-red-500 focus:border-red-500" : "border-outline-variant/30 focus:border-primary/50"
+                    }`}
+                  />
+                </div>
+                {usernameError ? (
+                  <p className="text-[11px] font-bold text-red-500 flex items-center gap-1 mt-0.5">
+                    <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
+                    <span>{usernameError}</span>
+                  </p>
+                ) : (
+                  <p className="text-[11px] text-on-surface-variant">
+                    3-20 lowercase letters, numbers, or underscores. Must be unique across all innovators.
+                  </p>
+                )}
               </div>
 
               {/* Headline */}

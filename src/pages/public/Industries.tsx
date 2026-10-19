@@ -6,6 +6,7 @@ import { subscribeProblems } from "@/lib/firebase/services/problemsService";
 import { REAL_INDUSTRIES } from "@/data/realProductionData";
 import { IndustryDoc, ProblemDoc } from "@/types";
 import { SEOHead } from "@/components/common/SEOHead";
+import { sanitizeAndSeparateIndustries } from "@/lib/algorithms/domainIntelligence";
 import {
   Search,
   ArrowRight,
@@ -15,34 +16,50 @@ import {
 
 const getCanonicalIndustry = (industryStr: string): string => {
   const s = industryStr.toLowerCase().trim();
-  if (/\b(health|biotech|medical|clinical|life science|pharma)\b/i.test(s)) {
-    return "healthcare-biotech";
-  }
-  if (/\b(ai|machine learning|artificial intelligence|deep learning|nlp|computer vision)\b/i.test(s)) {
-    return "ai-machine-learning";
-  }
-  if (/\b(fintech|defi|finance|banking|payments|crypto)\b/i.test(s)) {
-    return "fintech-defi";
-  }
-  if (/\b(cyber|security|identity|zero-trust|infosec)\b/i.test(s)) {
-    return "cybersecurity-identity";
-  }
-  if (/\b(clean|cleantech|energy|climate|solar|hydrogen|battery|carbon)\b/i.test(s)) {
-    return "cleantech-energy";
-  }
-  if (/\b(logistics|supply chain|freight|transportation|shipping|warehouse)\b/i.test(s)) {
-    return "logistics-supply-chain";
-  }
-  if (/\b(space|aerospace|satellite|avionics|orbital)\b/i.test(s)) {
-    return "spacetech-aerospace";
-  }
-  if (/\b(agri|agritech|agriculture|farming|crop|soil)\b/i.test(s)) {
-    return "agritech-food";
-  }
-  if (/\b(defense|defence|military|warfare|national security)\b/i.test(s)) {
-    return "defense-national-security";
-  }
+  // Exact or direct matches first
+  if (s === "healthcare" || s === "health") return "healthcare";
+  if (s === "ai" || s === "artificial intelligence") return "ai";
+  if (s === "clean energy" || s === "clean-energy" || s === "energy") return "clean-energy";
+  if (s === "fintech") return "fintech";
+  if (s === "agriculture" || s === "agri") return "agriculture";
+  if (s === "logistics") return "logistics";
+  if (s === "manufacturing") return "manufacturing";
+  if (s === "biotech") return "biotech";
+  if (s === "supply chain" || s === "supply-chain") return "supply-chain";
+  if (s === "cybersecurity") return "cybersecurity";
+  if (s === "education") return "education";
+  if (s === "construction") return "construction";
+  if (s === "aerospace") return "aerospace";
+  if (s === "robotics") return "robotics";
+  if (s === "defense") return "defense";
+  if (s === "quantum computing" || s === "quantum-computing") return "quantum-computing";
+  if (s === "legaltech") return "legaltech";
+  if (s === "e-commerce" || s === "ecommerce") return "ecommerce";
+  if (s === "mobility") return "mobility";
+  if (s === "web3") return "web3";
+  if (s === "food security" || s === "food-security") return "food-security";
+  if (s === "cleantech") return "cleantech";
+
+  // Legacy compound mappings
+  if (/\b(biotech)\b/i.test(s) && !/\b(health)\b/i.test(s)) return "biotech";
+  if (/\b(health|medical|clinical|pharma)\b/i.test(s)) return "healthcare";
+  if (/\b(ai|machine learning|deep learning|nlp|computer vision)\b/i.test(s)) return "ai";
+  if (/\b(fintech|defi|finance|banking|payments|crypto)\b/i.test(s)) return "fintech";
+  if (/\b(cyber|security|identity|zero-trust|infosec)\b/i.test(s)) return "cybersecurity";
+  if (/\b(clean|cleantech|energy|climate|solar|hydrogen|battery|carbon)\b/i.test(s)) return "clean-energy";
+  if (/\b(supply chain)\b/i.test(s) && !/\b(logistics)\b/i.test(s)) return "supply-chain";
+  if (/\b(logistics|freight|transportation|shipping|warehouse)\b/i.test(s)) return "logistics";
+  if (/\b(space|aerospace|satellite|avionics|orbital)\b/i.test(s)) return "aerospace";
+  if (/\b(agri|agritech|agriculture|farming|crop|soil)\b/i.test(s)) return "agriculture";
+  if (/\b(defense|defence|military|warfare)\b/i.test(s)) return "defense";
+  if (/\b(manufactur|factory|industrial)\b/i.test(s)) return "manufacturing";
+  if (/\b(construct|building|infrastructure)\b/i.test(s)) return "construction";
+
   return s.replace(/[^a-z0-9]+/g, "-");
+};
+
+const sanitizeAndMergeIndustries = (firestoreList: IndustryDoc[]): IndustryDoc[] => {
+  return sanitizeAndSeparateIndustries(firestoreList);
 };
 
 export const Industries: React.FC = () => {
@@ -68,7 +85,7 @@ export const Industries: React.FC = () => {
             if (!snapshot.empty) {
               const list: IndustryDoc[] = [];
               snapshot.forEach((d) => list.push(d.data() as IndustryDoc));
-              setIndustriesList(list);
+              setIndustriesList(sanitizeAndMergeIndustries(list));
             }
             setLoading(false);
           },
@@ -169,14 +186,6 @@ export const Industries: React.FC = () => {
                 Discover verified real-world operational bottlenecks, clinical friction, and enterprise demand signals categorized by domain sector.
               </p>
             </div>
-
-            <Link
-              to="/submit"
-              className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-5 py-1.5 sm:py-2.5 rounded-lg sm:rounded-xl bg-[#1657FF] text-white text-[11px] sm:text-xs font-bold hover:bg-[#0E47E6] shadow-sm transition-all shrink-0"
-            >
-              <span>Submit Problem</span>
-              <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-            </Link>
           </div>
 
           {/* Search Bar with Integrated Action */}

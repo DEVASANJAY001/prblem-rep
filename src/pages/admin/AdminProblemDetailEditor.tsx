@@ -10,6 +10,7 @@ import {
 import { subscribeCompanies } from "@/lib/firebase/services/companiesService";
 import { subscribeCredits } from "@/lib/firebase/services/creditsService";
 import { CompanyLogo } from "@/components/ui/CompanyLogo";
+import { CreditSourceBadge } from "@/components/ui/CreditSourceBadge";
 import { useAuth } from "@/contexts/AuthContext";
 import { ProblemDoc, ProblemComment, CompanyDoc, ProblemStatus, EvidenceDocument, CreditSourceDoc } from "@/types";
 import { REAL_INDUSTRIES, REAL_COMPANIES } from "@/data/realProductionData";
@@ -87,7 +88,7 @@ export const AdminProblemDetailEditor: React.FC<AdminProblemDetailEditorProps> =
   // Local Form States
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [industry, setIndustry] = useState("Healthcare & Biotech");
+  const [industry, setIndustry] = useState("Healthcare");
   const [status, setStatus] = useState<ProblemStatus>("approved");
   const [verified, setVerified] = useState(true);
   const [severity, setSeverity] = useState<"minor" | "medium" | "major" | "critical">("major");
@@ -257,7 +258,7 @@ export const AdminProblemDetailEditor: React.FC<AdminProblemDetailEditorProps> =
         setProblem(prob);
         setTitle(prob.title || "");
         setDescription(prob.description || "");
-        setIndustry(prob.industry || "Healthcare & Biotech");
+        setIndustry(prob.industry || "Healthcare");
         setStatus(prob.status || "approved");
         setVerified(prob.verified ?? true);
         setSeverity(prob.severity || "major");
@@ -892,20 +893,12 @@ export const AdminProblemDetailEditor: React.FC<AdminProblemDetailEditorProps> =
               {psFrom.length > 0 && (
                 <div className="flex flex-wrap gap-1.5 pt-1">
                   {psFrom.map((source) => (
-                    <span
+                    <CreditSourceBadge
                       key={source}
-                      className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-primary text-white shadow-2xs"
-                    >
-                      <span>{source}</span>
-                      <button
-                        type="button"
-                        onClick={() => setPsFrom(psFrom.filter((s) => s !== source))}
-                        className="hover:opacity-80 cursor-pointer p-0.5"
-                        title="Remove credit"
-                      >
-                        <X className="w-3 h-3" />
-                      </button>
-                    </span>
+                      source={source}
+                      size="sm"
+                      onRemove={() => setPsFrom(psFrom.filter((s) => s !== source))}
+                    />
                   ))}
                 </div>
               )}

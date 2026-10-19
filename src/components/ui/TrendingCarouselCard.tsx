@@ -7,13 +7,14 @@ import { useAuth } from "@/contexts/AuthContext";
 import { isProblemBookmarked, toggleBookmark, voteProblem } from "@/lib/storage";
 import { getProblemDetailUrl } from "@/lib/seoUrls";
 import { Eye, ShieldCheck, ThumbsUp, Bookmark } from "lucide-react";
+import { cleanIndustryName } from "@/lib/algorithms/domainIntelligence";
 
 interface TrendingCarouselCardProps {
   problem: ProblemDoc;
   className?: string;
 }
 
-export const TrendingCarouselCard: React.FC<TrendingCarouselCardProps> = ({
+export const TrendingCarouselCard: React.FC<TrendingCarouselCardProps> = React.memo(({
   problem,
   className = "",
 }) => {
@@ -68,7 +69,7 @@ export const TrendingCarouselCard: React.FC<TrendingCarouselCardProps> = ({
   const circumference = 175.93;
   const strokeDashoffset = circumference - circumference * (painNormalized / 100);
 
-  const industry = problem.industry || "General Industry";
+  const industry = cleanIndustryName(problem.industry);
 
   // Real Companies Interested (Exact logic matching ProblemDetail.tsx)
   const attachedCompanies = useMemo(() => {
@@ -110,7 +111,7 @@ export const TrendingCarouselCard: React.FC<TrendingCarouselCardProps> = ({
   return (
     <article
       onClick={handleCardClick}
-      className={`bg-white rounded-3xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05),0_2px_8px_-2px_rgba(0,0,0,0.03)] hover:shadow-[0_14px_36px_-6px_rgba(244,63,94,0.12)] transition-all duration-300 overflow-hidden relative flex flex-col justify-between font-['Poppins',sans-serif] border border-gray-100/90 group shrink-0 cursor-pointer ${className}`}
+      className={`bg-white rounded-3xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05),0_2px_8px_-2px_rgba(0,0,0,0.03)] hover:shadow-[0_14px_36px_-6px_rgba(244,63,94,0.12)] transition-[box-shadow,border-color] duration-300 overflow-hidden relative flex flex-col justify-between font-['Poppins',sans-serif] border border-gray-100/90 group shrink-0 cursor-pointer [transform:translateZ(0)] ${className}`}
     >
       {/* 1.5px Curved Corner Red Gradient Stroke directly tracing rounded border */}
       <div className="absolute top-0 right-0 w-32 h-32 pointer-events-none z-20 overflow-hidden">
@@ -300,4 +301,5 @@ export const TrendingCarouselCard: React.FC<TrendingCarouselCardProps> = ({
       </div>
     </article>
   );
-};
+});
+TrendingCarouselCard.displayName = "TrendingCarouselCard";

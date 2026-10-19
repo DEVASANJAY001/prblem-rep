@@ -58,7 +58,7 @@ export const AdminProblems: React.FC = () => {
   // New Problem Modal
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [newTitle, setNewTitle] = useState("");
-  const [newIndustry, setNewIndustry] = useState("Healthcare & Biotech");
+  const [newIndustry, setNewIndustry] = useState("Healthcare");
   const [newSeverity, setNewSeverity] = useState<"minor" | "medium" | "major" | "critical">("major");
   const [newDesc, setNewDesc] = useState("");
   const [creating, setCreating] = useState(false);
@@ -583,6 +583,17 @@ export const AdminProblems: React.FC = () => {
 
                   {/* Action Buttons: Manage / Edit Control, Live Preview, Delete */}
                   <div className="flex items-center justify-end gap-1.5">
+                    {isPending && (
+                      <button
+                        onClick={() => handleQuickStatus(prob.id, "approved")}
+                        className="px-2.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-all flex items-center gap-1 cursor-pointer shadow-xs"
+                        title="Verify & Publish Problem Live"
+                      >
+                        <Check className="w-3.5 h-3.5" />
+                        <span>Publish</span>
+                      </button>
+                    )}
+
                     {/* Primary Manage & Control Button */}
                     <button
                       onClick={() => setEditingProblemId(prob.id)}

@@ -115,41 +115,63 @@ export const ShaderBackground: React.FC<ShaderBackgroundProps> = ({ className = 
 
     const uTime = gl.getUniformLocation(prog, "u_time");
     const uRes = gl.getUniformLocation(prog, "u_resolution");
-    const uMouse = gl.getUniformLocation(prog, "u_mouse");
 
-    const mouse = { x: canvas.width / 2, y: canvas.height / 2 };
-
-    const handleMouseMove = (event: MouseEvent) => {
-      if (!canvas) return;
-      const rect = canvas.getBoundingClientRect();
-      if (rect.width && rect.height) {
-        const nx = (event.clientX - rect.left) / rect.width;
-        const ny = 1.0 - (event.clientY - rect.top) / rect.height;
-        mouse.x = nx * canvas.width;
-        mouse.y = ny * canvas.height;
-      }
-    };
-
-    window.addEventListener("mousemove", handleMouseMove, { passive: true });
+    let isVisible = true;
+    let isRunning = false;
 
     const render = (t: number) => {
-      if (!canvas || !gl) return;
+      if (!canvas || !gl || !isVisible || document.hidden) {
+        isRunning = false;
+        return;
+      }
       gl.viewport(0, 0, canvas.width, canvas.height);
       if (uTime) gl.uniform1f(uTime, t * 0.001);
       if (uRes) gl.uniform2f(uRes, canvas.width, canvas.height);
-      if (uMouse) gl.uniform2f(uMouse, mouse.x, mouse.y);
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
       animId = requestAnimationFrame(render);
     };
 
-    animId = requestAnimationFrame(render);
+    const startLoop = () => {
+      if (!isRunning && isVisible && !document.hidden) {
+        isRunning = true;
+        animId = requestAnimationFrame(render);
+      }
+    };
+
+    let intersectionObserver: IntersectionObserver | null = null;
+    if (typeof IntersectionObserver !== "undefined") {
+      intersectionObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            isVisible = entry.isIntersecting;
+            if (isVisible) startLoop();
+          });
+        },
+        { threshold: 0.05 }
+      );
+      intersectionObserver.observe(canvas);
+    }
+
+    const handleVisibility = () => {
+      if (!document.hidden && isVisible) startLoop();
+    };
+    document.addEventListener("visibilitychange", handleVisibility);
+
+    startLoop();
 
     return () => {
       cancelAnimationFrame(animId);
+      document.removeEventListener("visibilitychange", handleVisibility);
       if (resizeObserver) {
         resizeObserver.disconnect();
       }
-      window.removeEventListener("mousemove", handleMouseMove);
+      if (intersectionObserver) {
+        intersectionObserver.disconnect();
+      }
+      gl.deleteProgram(prog);
+      gl.deleteShader(vertShader);
+      gl.deleteShader(fragShader);
+      gl.deleteBuffer(buf);
     };
   }, []);
 

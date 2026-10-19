@@ -12,11 +12,15 @@ import { db } from "../config";
 import { IndustryDoc } from "@/types";
 import {
   getIndustries as getLocalIndustries,
+  setLocalIndustries,
   saveIndustry as saveLocalIndustry,
   deleteIndustry as deleteLocalIndustry,
   toggleIndustryVisibility as toggleLocalVisibility,
   reorderIndustries as reorderLocalIndustries,
 } from "@/lib/storage";
+import { REAL_INDUSTRIES } from "@/data/realProductionData";
+
+import { sanitizeAndSeparateIndustries } from "@/lib/algorithms/domainIntelligence";
 
 const COLLECTION_NAME = "industries";
 
@@ -29,8 +33,8 @@ let industriesStream: {
 export function subscribeIndustries(
   callback: (industries: IndustryDoc[]) => void
 ): () => void {
-  // Emit local instantly
-  const local = getLocalIndustries();
+  // Emit local instantly (sanitized)
+  const local = sanitizeAndSeparateIndustries(getLocalIndustries());
   callback(local);
 
   if (!db || typeof collection !== "function") {
@@ -48,11 +52,21 @@ export function subscribeIndustries(
         if (!snapshot.empty) {
           const list: IndustryDoc[] = [];
           snapshot.forEach((d) => list.push(d.data() as IndustryDoc));
-          list.forEach((i) => saveLocalIndustry(i));
+          const sanitized = sanitizeAndSeparateIndustries(list);
+          setLocalIndustries(sanitized);
           if (industriesStream) {
-            industriesStream.latestData = list;
-            industriesStream.listeners.forEach((cb) => cb(list));
+            industriesStream.latestData = sanitized;
+            industriesStream.listeners.forEach((cb) => cb(sanitized));
           }
+        } else {
+          // If Firestore is empty, seed with initial clean standalone industries
+          const seedList = sanitizeAndSeparateIndustries(REAL_INDUSTRIES);
+          seedList.forEach(async (ind) => {
+            try {
+              const docId = ind.id || `ind-${ind.slug}`;
+              await setDoc(doc(db, COLLECTION_NAME, docId), ind, { merge: true });
+            } catch {}
+          });
         }
       },
       (err) => {
@@ -84,7 +98,7 @@ export function subscribeIndustries(
 }
 
 export async function getIndustries(): Promise<IndustryDoc[]> {
-  const local = getLocalIndustries();
+  const local = sanitizeAndSeparateIndustries(getLocalIndustries());
   try {
     if (db && typeof collection === "function") {
       const colRef = collection(db, COLLECTION_NAME);
@@ -92,8 +106,9 @@ export async function getIndustries(): Promise<IndustryDoc[]> {
       if (!snap.empty) {
         const list: IndustryDoc[] = [];
         snap.forEach((d) => list.push(d.data() as IndustryDoc));
-        list.forEach((i) => saveLocalIndustry(i));
-        return list;
+        const sanitized = sanitizeAndSeparateIndustries(list);
+        sanitized.forEach((i) => saveLocalIndustry(i));
+        return sanitized;
       }
     }
   } catch (err) {
@@ -127,8 +142,12 @@ export async function deleteIndustryFromFirestore(slug: string): Promise<boolean
   const local = deleteLocalIndustry(slug);
   try {
     if (db && typeof doc === "function") {
-      const indRef = doc(db, COLLECTION_NAME, slug);
-      await deleteDoc(indRef);
+      const candidates = [slug, `ind-${slug}`, slug.replace(/^ind-/, "")];
+      for (const id of candidates) {
+        try {
+          await deleteDoc(doc(db, COLLECTION_NAME, id));
+        } catch {}
+      }
     }
   } catch (error) {
     console.warn("Firestore deleteIndustry deferred:", error);
@@ -140,11 +159,16 @@ export async function toggleIndustryVisibilityInFirestore(slug: string): Promise
   const newHidden = toggleLocalVisibility(slug);
   try {
     if (db && typeof doc === "function") {
-      const indRef = doc(db, COLLECTION_NAME, slug);
-      await updateDoc(indRef, {
-        hidden: newHidden,
-        updatedAt: new Date().toISOString(),
-      });
+      const candidates = [slug, `ind-${slug}`, slug.replace(/^ind-/, "")];
+      for (const id of candidates) {
+        try {
+          await updateDoc(doc(db, COLLECTION_NAME, id), {
+            hidden: newHidden,
+            updatedAt: new Date().toISOString(),
+          });
+          break;
+        } catch {}
+      }
     }
   } catch (error) {
     console.warn("Firestore toggleIndustryVisibility deferred:", error);
