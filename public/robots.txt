@@ -1,10 +1,10 @@
 # ─────────────────────────────────────────────────────────────
-# ProblemAtlas Robots Manifest (GEO & SEO Optimized)
+# Stuckhere Robots Manifest (GEO & SEO Optimized)
 # Updated: Oct 2026
 # ─────────────────────────────────────────────────────────────
 
 # 1. ALLOW AI Search & Citation Engines (Perplexity AI & ChatGPT Search)
-# Enables AI search engines to discover, link, and cite ProblemAtlas in answers
+# Enables AI search engines to discover, link, and cite Stuckhere in answers
 User-agent: PerplexityBot
 User-agent: ChatGPT-User
 User-agent: Claude-Web
@@ -49,5 +49,5 @@ Disallow: /submit
 Disallow: /startup-mode/
 Disallow: /f/*/responses
 
-# 4. XML Sitemap Reference (now dynamic — served by Express backend)
-Sitemap: https://problematlas.com/sitemap.xml
+# 4. XML Sitemap Reference
+Sitemap: https://stuckhere.davns.com/sitemap.xml
