@@ -4,7 +4,8 @@ import { ProblemDoc } from "@/types";
 import { REAL_COMPANIES } from "@/data/realProductionData";
 import { CompanyLogo } from "@/components/ui/CompanyLogo";
 import { useAuth } from "@/contexts/AuthContext";
-import { isProblemBookmarked, toggleBookmark, voteProblem } from "@/lib/storage";
+import { isProblemBookmarked, toggleBookmark } from "@/lib/storage";
+import { voteProblem } from "@/lib/firebase/services/problemsService";
 import { getProblemDetailUrl } from "@/lib/seoUrls";
 import { ThumbsUp, Bookmark, ShieldCheck, Eye, Hand, Hammer, MessageSquare } from "lucide-react";
 import { cleanIndustryName } from "@/lib/algorithms/domainIntelligence";
@@ -41,12 +42,12 @@ export const TrendingProblemCard: React.FC<TrendingProblemCardProps> = React.mem
     navigate(getProblemDetailUrl(problem));
   };
 
-  const handleLike = (e: React.MouseEvent) => {
+  const handleLike = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     setLikeAnimating(true);
     setTimeout(() => setLikeAnimating(false), 500);
-    const res = voteProblem(problem.id, "up", currentUid);
+    const res = await voteProblem(problem.id, "up", currentUid);
     setLikesCount(res.upvotes);
     setIsLiked(res.userVote === "up");
   };

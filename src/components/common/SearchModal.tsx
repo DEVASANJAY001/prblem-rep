@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { getProblems } from "@/lib/storage";
+import { subscribeProblems } from "@/lib/firebase/services/problemsService";
 import { getProblemDetailUrl } from "@/lib/seoUrls";
 import { ProblemDoc } from "@/types";
 import {
@@ -27,7 +27,10 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => 
 
   useEffect(() => {
     if (isOpen) {
-      setAllProblems(getProblems({ status: "approved" }));
+      const unsub = subscribeProblems({ status: "approved" }, (list) => {
+        setAllProblems(list);
+      });
+      return () => unsub();
     }
   }, [isOpen]);
 

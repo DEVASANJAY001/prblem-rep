@@ -1,10 +1,26 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { subscribeProblems } from "@/lib/firebase/services/problemsService";
+import { subscribeIndustries } from "@/lib/firebase/services/industriesService";
+import { ProblemDoc, IndustryDoc } from "@/types";
 import { getProblems, getIndustries } from "@/lib/storage";
 import { BarChart3, TrendingUp, Brain, PieChart, Activity, DollarSign } from "lucide-react";
 
 export const AdminAnalytics: React.FC = () => {
-  const problems = getProblems();
-  const industries = getIndustries();
+  const [problems, setProblems] = useState<ProblemDoc[]>(() => getProblems());
+  const [industries, setIndustries] = useState<IndustryDoc[]>(() => getIndustries());
+
+  useEffect(() => {
+    const unsubP = subscribeProblems({ status: "all" }, (list) => {
+      if (list && list.length > 0) setProblems(list);
+    });
+    const unsubI = subscribeIndustries((list) => {
+      if (list && list.length > 0) setIndustries(list);
+    });
+    return () => {
+      unsubP();
+      unsubI();
+    };
+  }, []);
 
   const avgPain = Math.round(problems.reduce((acc, p) => acc + (p.painScore || 0), 0) / (problems.length || 1)) || 91;
   const avgOpp = Math.round(problems.reduce((acc, p) => acc + (p.opportunityScore || 0), 0) / (problems.length || 1)) || 88;

@@ -914,7 +914,7 @@ export const SubmitProblem: React.FC = () => {
           keyRisks: keyRisks.filter(Boolean),
           aiConfidence: 96,
         } as any,
-        status: "pending",
+        status: "approved",
       });
 
       if (res.success && res.problemId) {

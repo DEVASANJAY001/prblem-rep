@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ProblemDoc } from "@/types";
 import { BadgePill } from "@/components/ui/BadgePill";
-import { voteProblem, toggleBookmark, isProblemBookmarked } from "@/lib/storage";
+import { toggleBookmark, isProblemBookmarked } from "@/lib/storage";
+import { voteProblem } from "@/lib/firebase/services/problemsService";
 import { useAuth } from "@/contexts/AuthContext";
 import { getProblemDetailUrl, getStartupModeUrl } from "@/lib/seoUrls";
 import {
@@ -36,10 +37,10 @@ export const ProblemCard: React.FC<ProblemCardProps> = React.memo(({
   );
   const [copied, setCopied] = useState(false);
 
-  const handleVote = (e: React.MouseEvent, type: "up" | "down") => {
+  const handleVote = async (e: React.MouseEvent, type: "up" | "down") => {
     e.preventDefault();
     e.stopPropagation();
-    const result = voteProblem(problem.id, type, user?.uid || "guest");
+    const result = await voteProblem(problem.id, type, user?.uid || "guest");
     setUpvotes(result.upvotes);
     setDownvotes(result.downvotes);
     setUserVote(result.userVote);

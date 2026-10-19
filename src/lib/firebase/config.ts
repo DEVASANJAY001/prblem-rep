@@ -17,14 +17,18 @@ import { getStorage, FirebaseStorage } from "firebase/storage";
 // Local dev:  set values in .env (already in .gitignore — never commit .env)
 // Vercel:     set via Project Settings → Environment Variables dashboard
 // ─────────────────────────────────────────────────────────────────────────────
+const env = (typeof import.meta !== "undefined" && import.meta.env)
+  ? (import.meta.env as Record<string, string>)
+  : ((typeof globalThis !== "undefined" && (globalThis as any).process?.env) || {}) as Record<string, string>;
+
 const firebaseConfig = {
-  apiKey:            import.meta.env.VITE_FIREBASE_API_KEY            as string,
-  authDomain:        import.meta.env.VITE_FIREBASE_AUTH_DOMAIN        as string,
-  projectId:         import.meta.env.VITE_FIREBASE_PROJECT_ID         as string,
-  storageBucket:     import.meta.env.VITE_FIREBASE_STORAGE_BUCKET     as string,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID as string,
-  appId:             import.meta.env.VITE_FIREBASE_APP_ID             as string,
-  measurementId:     import.meta.env.VITE_FIREBASE_MEASUREMENT_ID     as string,
+  apiKey:            env.VITE_FIREBASE_API_KEY            || "AIzaSyB_u3gqJtkIogv7iZrJBTNLW3glo-PpgTs",
+  authDomain:        env.VITE_FIREBASE_AUTH_DOMAIN        || "prblms-881bb.firebaseapp.com",
+  projectId:         env.VITE_FIREBASE_PROJECT_ID         || "prblms-881bb",
+  storageBucket:     env.VITE_FIREBASE_STORAGE_BUCKET     || "prblms-881bb.firebasestorage.app",
+  messagingSenderId: env.VITE_FIREBASE_MESSAGING_SENDER_ID || "313159629487",
+  appId:             env.VITE_FIREBASE_APP_ID             || "1:313159629487:web:8bea75fe7ca079f78f325a",
+  measurementId:     env.VITE_FIREBASE_MEASUREMENT_ID     || "G-0LVYDXFFTT",
 };
 
 let app: FirebaseApp;

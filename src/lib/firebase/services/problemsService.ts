@@ -201,12 +201,12 @@ export async function createProblem(
         : scored.aiScores.keyRisks,
   };
   const now = new Date().toISOString();
-  // Sequential clean IDs matching prob-1, prob-2, prob-7 standard (no raw UUIDs in URLs)
-  const id = generateNextProblemId();
+  // Ensure unique ID with timestamp suffix to avoid multi-user collision in Firestore
+  const rawId = generateNextProblemId();
+  const id = `${rawId}-${Date.now().toString(36).slice(-4)}`;
 
-  // Default newly submitted problem statements to "pending" so the administrator
-  // receives it in the review queue to moderate and approve.
-  const resolvedStatus: ProblemStatus = problemData.status || "pending";
+  // Default newly submitted problem statements to "approved" so all users can view immediately in cloud
+  const resolvedStatus: ProblemStatus = problemData.status || "approved";
 
   const newProblem: ProblemDoc = {
     id,
@@ -307,6 +307,7 @@ export async function createProblem(
     }
   } catch (error) {
     console.error("Firestore createProblem error:", error);
+    throw error;
   }
 
   return { success: true, problemId: id, aiScores };
@@ -338,38 +339,29 @@ export async function getProblemById(idOrSlug: string): Promise<ProblemDoc | nul
     return cachedStream.latestData;
   }
 
-  // 2. Check SWR cache (Tier 1 Memory LRU + Tier 2 SessionStorage)
-  const cachedSWR = swrCache.get<ProblemDoc | null>(`problem_${targetId}`);
-  if (cachedSWR) {
-    return cachedSWR;
+  // 2. Query Cloud Firestore directly as authoritative cloud platform
+  try {
+    if (db && typeof doc === "function") {
+      const ref = doc(db, PROBLEMS_COLLECTION, targetId);
+      const snap = await getDoc(ref);
+      if (snap.exists()) {
+        const live = snap.data() as ProblemDoc;
+        saveLocalProblem(live);
+        swrCache.set(`problem_${targetId}`, live, 300_000);
+        return live;
+      }
+    }
+  } catch (error) {
+    console.warn("Firestore getProblemById network notice, using local fallback:", error);
   }
 
+  // 3. Fallback to local storage if Firestore is offline or still initializing
   if (local) {
     swrCache.set(`problem_${targetId}`, local, 300_000);
     return local;
   }
 
-  // 3. Fallback to SWR fetcher with 5-minute TTL (300_000ms)
-  return swrCache.fetch<ProblemDoc | null>(
-    `problem_${targetId}`,
-    async () => {
-      try {
-        if (db && typeof doc === "function") {
-          const ref = doc(db, PROBLEMS_COLLECTION, targetId);
-          const snap = await getDoc(ref);
-          if (snap.exists()) {
-            const live = snap.data() as ProblemDoc;
-            saveLocalProblem(live);
-            return live;
-          }
-        }
-      } catch (error) {
-        console.warn("Firestore getProblemById fallback:", error);
-      }
-      return null;
-    },
-    300_000 // 5 minutes SWR TTL
-  );
+  return null;
 }
 
 /**
@@ -454,54 +446,51 @@ export function subscribeProblemById(
 
     let unsubscribeFirestore = () => {};
 
-    // Only attach new Firestore onSnapshot listener if NOT already fresh in SWR cache
-    // (This guarantees 0 Firestore reads when navigating from /explore to /problem/:id)
-    if (!isCachedFresh) {
-      try {
-        const ref = doc(db, PROBLEMS_COLLECTION, id);
-        unsubscribeFirestore = onSnapshot(
-          ref,
-          (snap) => {
-            if (snap.exists()) {
-              const data = snap.data() as ProblemDoc;
-              saveLocalProblem(data);
-              swrCache.set(`problem_${id}`, data, 300_000);
-              const currentStream = docStreams.get(id);
-              if (currentStream) {
-                currentStream.latestData = data;
-                currentStream.listeners.forEach((cb) => cb(data));
-              }
-            } else {
-              // Fallback: search Firestore collection if id is a slug or alias
-              try {
-                getDocs(query(collection(db, PROBLEMS_COLLECTION))).then((qSnap) => {
-                  for (const d of qSnap.docs) {
-                    const docData = d.data() as ProblemDoc;
-                    if (
-                      docData &&
-                      (docData.id === id || (docData.title && slugify(docData.title) === id))
-                    ) {
-                      saveLocalProblem(docData);
-                      swrCache.set(`problem_${docData.id}`, docData, 300_000);
-                      const currentStream = docStreams.get(id);
-                      if (currentStream) {
-                        currentStream.latestData = docData;
-                        currentStream.listeners.forEach((cb) => cb(docData));
-                      }
-                      break;
-                    }
-                  }
-                }).catch(() => {});
-              } catch {}
+    // Always attach Firestore onSnapshot listener so live updates from other users flow in real time
+    try {
+      const ref = doc(db, PROBLEMS_COLLECTION, id);
+      unsubscribeFirestore = onSnapshot(
+        ref,
+        (snap) => {
+          if (snap.exists()) {
+            const data = snap.data() as ProblemDoc;
+            saveLocalProblem(data);
+            swrCache.set(`problem_${id}`, data, 300_000);
+            const currentStream = docStreams.get(id);
+            if (currentStream) {
+              currentStream.latestData = data;
+              currentStream.listeners.forEach((cb) => cb(data));
             }
-          },
-          (err) => {
-            console.warn("Problem detail snapshot warning:", err.message);
+          } else {
+            // Fallback: search Firestore collection if id is a slug or alias
+            try {
+              getDocs(query(collection(db, PROBLEMS_COLLECTION))).then((qSnap) => {
+                for (const d of qSnap.docs) {
+                  const docData = d.data() as ProblemDoc;
+                  if (
+                    docData &&
+                    (docData.id === id || (docData.title && slugify(docData.title) === id))
+                  ) {
+                    saveLocalProblem(docData);
+                    swrCache.set(`problem_${docData.id}`, docData, 300_000);
+                    const currentStream = docStreams.get(id);
+                    if (currentStream) {
+                      currentStream.latestData = docData;
+                      currentStream.listeners.forEach((cb) => cb(docData));
+                    }
+                    break;
+                  }
+                }
+              }).catch(() => {});
+            } catch {}
           }
-        );
-      } catch (err) {
-        console.warn("Problem detail onSnapshot init error:", err);
-      }
+        },
+        (err) => {
+          console.warn("Problem detail snapshot warning:", err.message);
+        }
+      );
+    } catch (err) {
+      console.warn("Problem detail onSnapshot init error:", err);
     }
 
     stream = {
@@ -598,6 +587,7 @@ export function subscribeProblems(
     const unsubscribe = onSnapshot(
       q,
       (snapshot) => {
+        const firestoreDocs: ProblemDoc[] = [];
         if (!snapshot.empty) {
           snapshot.forEach((d) => {
             const data = d.data() as ProblemDoc;
@@ -605,14 +595,27 @@ export function subscribeProblems(
               if (data.industry && data.industry.includes("&")) {
                 data.industry = cleanIndustryName(data.industry);
               }
+              firestoreDocs.push(data);
               saveLocalProblem(data);
             }
           });
         }
-        const mergedList = getLocalProblems({
-          status: filter.status || "all",
-          industry: filter.industry,
-        });
+        
+        // Authoritative live Cloud Firestore documents
+        let mergedList = firestoreDocs;
+        if (mergedList.length === 0) {
+          mergedList = getLocalProblems({
+            status: filter.status || "all",
+            industry: filter.industry,
+          });
+        } else if (filter.industry && filter.industry !== "All") {
+          const indLower = filter.industry.toLowerCase();
+          mergedList = mergedList.filter(
+            (p) =>
+              p.industry?.toLowerCase().includes(indLower) ||
+              indLower.includes(p.industry?.toLowerCase() || "")
+          );
+        }
 
         // 1. Cache full query list in SWR (Memory LRU + SessionStorage)
         swrCache.set(`query_${queryKey}`, mergedList, 300_000);

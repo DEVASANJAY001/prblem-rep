@@ -15,7 +15,8 @@ import {
   subscribeCredits,
   reorderCreditsInFirestore,
 } from "@/lib/firebase/services/creditsService";
-import { CreditSourceDoc } from "@/types";
+import { subscribeProblems } from "@/lib/firebase/services/problemsService";
+import { CreditSourceDoc, ProblemDoc } from "@/types";
 import { StuckhereLogoMark } from "@/components/ui/StuckhereLogo";
 import { isOwnThinkingCredit } from "@/components/ui/CreditSourceBadge";
 import {
@@ -58,8 +59,16 @@ export const AdminCredits: React.FC = () => {
   const [logoUrl, setLogoUrl] = useState("");
   const [isActive, setIsActive] = useState(true);
 
-  // Real problem count per credit
-  const problems = useMemo(() => getProblems({}), [credits]);
+  // Real problem count per credit from live Cloud Firestore
+  const [problems, setProblems] = useState<ProblemDoc[]>(() => getProblems({}));
+
+  useEffect(() => {
+    const unsub = subscribeProblems({ status: "all" }, (list) => {
+      if (list && list.length > 0) setProblems(list);
+    });
+    return () => unsub();
+  }, []);
+
   const creditUsageCounts = useMemo(() => {
     const counts: Record<string, number> = {};
     problems.forEach((p) => {

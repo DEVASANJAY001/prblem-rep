@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { getProblems } from "@/lib/storage";
+import { subscribeProblems } from "@/lib/firebase/services/problemsService";
 import {
   LayoutDashboard,
   Inbox,
@@ -43,8 +43,14 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
   const { user, userDoc, logout } = useAuth();
   const [copiedToken, setCopiedToken] = useState<string | null>(null);
   const [generatingToken, setGeneratingToken] = useState(false);
+  const [pendingCount, setPendingCount] = useState(0);
 
-  const pendingCount = getProblems({ status: "pending" }).length;
+  useEffect(() => {
+    const unsub = subscribeProblems({ status: "pending" }, (list) => {
+      setPendingCount(list.length);
+    });
+    return () => unsub();
+  }, []);
 
   const handleGenerateToken = async () => {
     if (!user || generatingToken) return;
