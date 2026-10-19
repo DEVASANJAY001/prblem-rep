@@ -171,6 +171,12 @@ export const Home: React.FC = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
+    // Mobile optimization: Skip heavy WebGL hero shader on mobile phones
+    const isMobile =
+      typeof window !== "undefined" &&
+      (window.innerWidth < 768 || (navigator.maxTouchPoints > 1 && window.innerWidth < 1024));
+    if (isMobile) return;
+
     const gl = (canvas.getContext("webgl", { alpha: true, antialias: false, powerPreference: "high-performance" }) ||
       canvas.getContext("experimental-webgl", { alpha: true })) as WebGLRenderingContext | null;
     if (!gl) return;

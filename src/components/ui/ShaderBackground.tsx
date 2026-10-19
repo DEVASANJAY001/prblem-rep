@@ -11,6 +11,11 @@ export const ShaderBackground: React.FC<ShaderBackgroundProps> = ({ className = 
     const canvas = canvasRef.current;
     if (!canvas) return;
 
+    // Mobile optimization: Skip background shader loop on phones
+    if (typeof window !== "undefined" && window.innerWidth < 768) {
+      return;
+    }
+
     let animId: number;
     let resizeObserver: ResizeObserver | null = null;
 

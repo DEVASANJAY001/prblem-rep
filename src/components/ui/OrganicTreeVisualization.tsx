@@ -16,6 +16,12 @@ export const OrganicTreeVisualization: React.FC = () => {
     const container = containerRef.current;
     if (!container) return;
 
+    // Mobile optimization: Skip Three.js rendering on phones (< 768px) to guarantee 60fps lag-free performance
+    const isMobile =
+      typeof window !== "undefined" &&
+      (window.innerWidth < 768 || (navigator.maxTouchPoints > 1 && window.innerWidth < 1024));
+    if (isMobile) return;
+
     let animId: number;
     let resizeObserver: ResizeObserver | null = null;
 

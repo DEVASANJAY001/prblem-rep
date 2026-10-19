@@ -34,15 +34,45 @@ export const Navbar: React.FC = () => {
     { label: "Community", path: "/community" },
   ];
 
+  const preloadRoute = (path: string) => {
+    switch (path) {
+      case "/explore":
+        import("@/pages/public/Explore");
+        break;
+      case "/industries":
+        import("@/pages/public/Industries");
+        break;
+      case "/community":
+        import("@/pages/public/Community");
+        break;
+      case "/dashboard":
+        import("@/pages/public/Dashboard");
+        break;
+      case "/submit":
+        import("@/pages/public/SubmitProblem");
+        break;
+      case "/about":
+        import("@/pages/public/About");
+        break;
+      case "/login":
+      case "/register":
+        import("@/pages/public/AuthPage");
+        break;
+    }
+  };
+
   const isActive = (path: string) => {
     return location.pathname === path || (path !== "/" && location.pathname.startsWith(path));
   };
 
   return (
     <header className="fixed top-0 inset-x-0 z-50 pointer-events-none transition-all duration-300">
-      {/* iOS Progressive Glassmorphic Blur Mask - seamlessly feathers to 0 with zero cutoff lines */}
+      {/* Mobile-optimized Header Background (Lightweight, 60fps smooth scrolling) */}
+      <div className="absolute inset-x-0 top-0 h-14 bg-surface/92 dark:bg-zinc-950/92 backdrop-blur-md border-b border-border/40 pointer-events-none sm:hidden" />
+
+      {/* Desktop Progressive Glassmorphic Blur Mask */}
       <div
-        className="absolute inset-x-0 top-0 h-20 sm:h-24 md:h-28 bg-gradient-to-b from-surface/85 via-surface/40 to-transparent dark:from-zinc-950/85 dark:via-zinc-950/40 dark:to-transparent backdrop-blur-2xl pointer-events-none transform-gpu will-change-transform"
+        className="hidden sm:block absolute inset-x-0 top-0 h-20 sm:h-24 md:h-28 bg-gradient-to-b from-surface/85 via-surface/40 to-transparent dark:from-zinc-950/85 dark:via-zinc-950/40 dark:to-transparent backdrop-blur-2xl pointer-events-none transform-gpu will-change-transform"
         style={{
           WebkitMaskImage:
             "linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.95) 40%, rgba(0,0,0,0.4) 75%, rgba(0,0,0,0) 100%)",
@@ -54,7 +84,12 @@ export const Navbar: React.FC = () => {
       <div className="h-14 sm:h-16 max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-10 flex items-center justify-between relative z-10 pointer-events-auto">
         {/* Left Brand and Navigation */}
         <div className="flex items-center gap-3 sm:gap-6 md:gap-8 min-w-0">
-          <Link to="/" className="flex items-center group shrink-0">
+          <Link
+            to="/"
+            onMouseEnter={() => import("@/pages/public/Home")}
+            onTouchStart={() => import("@/pages/public/Home")}
+            className="flex items-center group shrink-0"
+          >
             <span className="font-headline-sm text-lg sm:text-xl md:text-2xl tracking-tight text-on-surface font-extrabold flex items-center transition-transform group-hover:scale-[1.02]">
               Stuck<span className="text-primary ml-0.5">here</span>
             </span>
@@ -67,6 +102,8 @@ export const Navbar: React.FC = () => {
                 <Link
                   key={item.label}
                   to={item.path}
+                  onMouseEnter={() => preloadRoute(item.path)}
+                  onTouchStart={() => preloadRoute(item.path)}
                   className={`transition-all duration-200 font-body-md text-sm px-3.5 py-1.5 rounded-full ${
                     active
                       ? "bg-primary/10 text-primary font-bold shadow-sm"
