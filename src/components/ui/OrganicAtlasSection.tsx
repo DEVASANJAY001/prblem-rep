@@ -7,11 +7,12 @@ export const OrganicAtlasSection: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <section className="w-full py-16 md:py-20 bg-surface-container-low/30 border-b border-outline-variant/20 relative overflow-hidden">
-      {/* Subtle background ambient glows */}
+    <section className="w-full py-14 sm:py-16 md:py-20 bg-gradient-to-b from-surface via-surface-container-low/50 to-surface border-b border-outline-variant/20 relative overflow-hidden">
+      {/* Rich organic background ambient glows - clearly visible on mobile & desktop */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute -top-24 right-1/4 w-[500px] h-[500px] bg-primary/5 blur-[120px] rounded-full" />
-        <div className="absolute -bottom-24 right-10 w-[400px] h-[400px] bg-secondary/5 blur-[100px] rounded-full" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[320px] sm:w-[500px] md:w-[600px] h-[320px] sm:h-[500px] md:h-[600px] bg-gradient-to-tr from-emerald-500/15 via-teal-500/10 to-primary/15 blur-[70px] sm:blur-[120px] rounded-full pointer-events-none" />
+        <div className="absolute -top-24 right-0 sm:right-1/4 w-[260px] sm:w-[450px] h-[260px] sm:h-[450px] bg-primary/10 blur-[80px] rounded-full pointer-events-none" />
+        <div className="absolute -bottom-24 left-0 sm:left-10 w-[240px] sm:w-[400px] h-[240px] sm:h-[400px] bg-emerald-500/15 blur-[80px] rounded-full pointer-events-none" />
       </div>
 
       <div className="max-w-[1280px] mx-auto px-4 md:px-8 relative z-10">
@@ -48,28 +49,28 @@ export const OrganicAtlasSection: React.FC = () => {
 
           {/* Right Column: Seamless 3D Tree with Curved Branches & Exact Brand Logos */}
           <div className="lg:col-span-7">
-            <div className="relative w-full h-[300px] xs:h-[340px] sm:h-[360px] md:h-[400px] flex items-center justify-center overflow-hidden sm:overflow-visible">
+            <div className="relative w-full h-[320px] xs:h-[350px] sm:h-[380px] md:h-[400px] flex items-center justify-center overflow-visible">
               {/* Central 3D Asset */}
               <div className="absolute inset-0 flex items-center justify-center z-10 w-full h-full">
                 <OrganicTreeVisualization />
               </div>
 
               {/* Orbiting Innovation Node Badges with Curved Connecting Lines */}
-              <div className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none scale-75 xs:scale-90 sm:scale-100">
+              <div className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none scale-[0.85] xs:scale-95 sm:scale-100">
                 {/* Node 1: Google (Top Left) */}
                 <div className="absolute top-[14%] left-[14%] -translate-x-1/2 -translate-y-1/2 pointer-events-none">
                   <div className="animate-float">
                     <div className="relative group/node pointer-events-auto flex flex-col items-center">
                       {/* Curved connecting line */}
                       <svg
-                        className="absolute top-1/2 left-full w-28 h-20 -z-10 text-primary/30 stroke-current hidden sm:block pointer-events-none"
+                        className="absolute top-1/2 left-full w-20 sm:w-28 h-14 sm:h-20 -z-10 text-primary/35 stroke-current block pointer-events-none"
                         style={{ strokeDasharray: 3, strokeWidth: 1.5, fill: "none" }}
                       >
                         <path d="M0,0 C30,15 60,35 90,50" />
                       </svg>
-                      {/* Official Google Vector Logo */}
+                      {/* Official Google Vector Logo with Glassmorphism */}
                       <div
-                        className="w-11 h-11 md:w-13 md:h-13 bg-white rounded-2xl shadow-md p-2.5 border border-outline-variant/30 flex items-center justify-center transition-all duration-300 group-hover/node:scale-115 group-hover/node:shadow-lg group-hover/node:border-primary/40 shadow-primary/10 cursor-pointer"
+                        className="w-11 h-11 md:w-13 md:h-13 bg-white/90 dark:bg-zinc-800/90 backdrop-blur-md rounded-2xl shadow-md p-2.5 border border-white/60 dark:border-zinc-700/60 flex items-center justify-center transition-all duration-300 group-hover/node:scale-115 group-hover/node:shadow-lg group-hover/node:border-primary/40 shadow-primary/10 cursor-pointer pointer-events-auto"
                         title="Google"
                       >
                         <svg viewBox="0 0 24 24" className="w-6 h-6 shrink-0">
@@ -104,14 +105,14 @@ export const OrganicAtlasSection: React.FC = () => {
                     <div className="relative group/node pointer-events-auto flex flex-col items-center">
                       {/* Curved connecting line */}
                       <svg
-                        className="absolute top-1/2 right-full w-28 h-20 -z-10 text-primary/30 stroke-current hidden sm:block pointer-events-none"
+                        className="absolute top-1/2 right-full w-20 sm:w-28 h-14 sm:h-20 -z-10 text-primary/35 stroke-current block pointer-events-none"
                         style={{ strokeDasharray: 3, strokeWidth: 1.5, fill: "none" }}
                       >
                         <path d="M90,0 C60,15 30,35 0,50" />
                       </svg>
-                      {/* Official Meta Infinity Vector Logo */}
+                      {/* Official Meta Infinity Vector Logo with Glassmorphism */}
                       <div
-                        className="w-11 h-11 md:w-13 md:h-13 bg-white rounded-2xl shadow-md p-2.5 border border-outline-variant/30 flex items-center justify-center transition-all duration-300 group-hover/node:scale-115 group-hover/node:shadow-lg group-hover/node:border-primary/40 shadow-primary/10 cursor-pointer"
+                        className="w-11 h-11 md:w-13 md:h-13 bg-white/90 dark:bg-zinc-800/90 backdrop-blur-md rounded-2xl shadow-md p-2.5 border border-white/60 dark:border-zinc-700/60 flex items-center justify-center transition-all duration-300 group-hover/node:scale-115 group-hover/node:shadow-lg group-hover/node:border-primary/40 shadow-primary/10 cursor-pointer pointer-events-auto"
                         title="Meta"
                       >
                         <svg viewBox="0 0 24 24" className="w-6 h-6 shrink-0" fill="#0081FB">
@@ -131,14 +132,14 @@ export const OrganicAtlasSection: React.FC = () => {
                   <div className="relative group/node pointer-events-auto flex flex-col items-center">
                     {/* Curved connecting line */}
                     <svg
-                      className="absolute top-1/2 left-full w-28 h-14 -z-10 text-primary/30 stroke-current hidden sm:block pointer-events-none"
+                      className="absolute top-1/2 left-full w-20 sm:w-28 h-10 sm:h-14 -z-10 text-primary/35 stroke-current block pointer-events-none"
                       style={{ strokeDasharray: 3, strokeWidth: 1.5, fill: "none" }}
                     >
                       <path d="M0,0 C30,15 60,-10 90,5" />
                     </svg>
-                    {/* Official Amazon Vector Logo with Smile */}
+                    {/* Official Amazon Vector Logo with Smile & Glassmorphism */}
                     <div
-                      className="w-11 h-11 md:w-13 md:h-13 bg-white rounded-2xl shadow-md p-2.5 border border-outline-variant/30 flex items-center justify-center transition-all duration-300 group-hover/node:scale-115 group-hover/node:shadow-lg group-hover/node:border-primary/40 shadow-primary/10 cursor-pointer"
+                      className="w-11 h-11 md:w-13 md:h-13 bg-white/90 dark:bg-zinc-800/90 backdrop-blur-md rounded-2xl shadow-md p-2.5 border border-white/60 dark:border-zinc-700/60 flex items-center justify-center transition-all duration-300 group-hover/node:scale-115 group-hover/node:shadow-lg group-hover/node:border-primary/40 shadow-primary/10 cursor-pointer pointer-events-auto"
                       title="Amazon"
                     >
                       <svg viewBox="0 0 24 24" className="w-6 h-6 shrink-0" fill="#131921">
@@ -158,14 +159,14 @@ export const OrganicAtlasSection: React.FC = () => {
                     <div className="relative group/node pointer-events-auto flex flex-col items-center">
                       {/* Curved connecting line */}
                       <svg
-                        className="absolute top-1/2 right-full w-28 h-14 -z-10 text-primary/30 stroke-current hidden sm:block pointer-events-none"
+                        className="absolute top-1/2 right-full w-20 sm:w-28 h-10 sm:h-14 -z-10 text-primary/35 stroke-current block pointer-events-none"
                         style={{ strokeDasharray: 3, strokeWidth: 1.5, fill: "none" }}
                       >
                         <path d="M90,0 C60,15 30,-10 0,5" />
                       </svg>
-                      {/* Official Microsoft 4-Color Vector Tiles */}
+                      {/* Official Microsoft 4-Color Vector Tiles with Glassmorphism */}
                       <div
-                        className="w-11 h-11 md:w-13 md:h-13 bg-white rounded-2xl shadow-md p-2.5 border border-outline-variant/30 flex items-center justify-center transition-all duration-300 group-hover/node:scale-115 group-hover/node:shadow-lg group-hover/node:border-primary/40 shadow-primary/10 cursor-pointer"
+                        className="w-11 h-11 md:w-13 md:h-13 bg-white/90 dark:bg-zinc-800/90 backdrop-blur-md rounded-2xl shadow-md p-2.5 border border-white/60 dark:border-zinc-700/60 flex items-center justify-center transition-all duration-300 group-hover/node:scale-115 group-hover/node:shadow-lg group-hover/node:border-primary/40 shadow-primary/10 cursor-pointer pointer-events-auto"
                         title="Microsoft"
                       >
                         <svg viewBox="0 0 23 23" className="w-5.5 h-5.5 shrink-0">
@@ -188,14 +189,14 @@ export const OrganicAtlasSection: React.FC = () => {
                     <div className="relative group/node pointer-events-auto flex flex-col items-center">
                       {/* Curved connecting line */}
                       <svg
-                        className="absolute bottom-1/2 left-full w-26 h-24 -z-10 text-primary/30 stroke-current hidden sm:block pointer-events-none"
+                        className="absolute bottom-1/2 left-full w-18 sm:w-26 h-16 sm:h-24 -z-10 text-primary/35 stroke-current block pointer-events-none"
                         style={{ strokeDasharray: 3, strokeWidth: 1.5, fill: "none" }}
                       >
                         <path d="M0,80 C25,50 50,30 80,0" />
                       </svg>
-                      {/* Official Apple Vector Logo */}
+                      {/* Official Apple Vector Logo with Glassmorphism */}
                       <div
-                        className="w-11 h-11 md:w-13 md:h-13 bg-white rounded-2xl shadow-md p-2.5 border border-outline-variant/30 flex items-center justify-center transition-all duration-300 group-hover/node:scale-115 group-hover/node:shadow-lg group-hover/node:border-primary/40 shadow-primary/10 cursor-pointer"
+                        className="w-11 h-11 md:w-13 md:h-13 bg-white/90 dark:bg-zinc-800/90 backdrop-blur-md rounded-2xl shadow-md p-2.5 border border-white/60 dark:border-zinc-700/60 flex items-center justify-center transition-all duration-300 group-hover/node:scale-115 group-hover/node:shadow-lg group-hover/node:border-primary/40 shadow-primary/10 cursor-pointer pointer-events-auto"
                         title="Apple"
                       >
                         <svg viewBox="0 0 24 24" className="w-5.5 h-5.5 shrink-0" fill="#1D1D1F">
@@ -215,14 +216,14 @@ export const OrganicAtlasSection: React.FC = () => {
                   <div className="relative group/node pointer-events-auto flex flex-col items-center">
                     {/* Curved connecting line */}
                     <svg
-                      className="absolute bottom-1/2 right-full w-26 h-24 -z-10 text-primary/30 stroke-current hidden sm:block pointer-events-none"
+                      className="absolute bottom-1/2 right-full w-18 sm:w-26 h-16 sm:h-24 -z-10 text-primary/35 stroke-current block pointer-events-none"
                       style={{ strokeDasharray: 3, strokeWidth: 1.5, fill: "none" }}
                     >
                       <path d="M80,80 C55,50 30,30 0,0" />
                     </svg>
-                    {/* Official IBM 8-Bar Blue Vector Logo */}
+                    {/* Official IBM 8-Bar Blue Vector Logo with Glassmorphism */}
                     <div
-                      className="w-11 h-11 md:w-13 md:h-13 bg-white rounded-2xl shadow-md p-2.5 border border-outline-variant/30 flex items-center justify-center transition-all duration-300 group-hover/node:scale-115 group-hover/node:shadow-lg group-hover/node:border-primary/40 shadow-primary/10 cursor-pointer"
+                      className="w-11 h-11 md:w-13 md:h-13 bg-white/90 dark:bg-zinc-800/90 backdrop-blur-md rounded-2xl shadow-md p-2.5 border border-white/60 dark:border-zinc-700/60 flex items-center justify-center transition-all duration-300 group-hover/node:scale-115 group-hover/node:shadow-lg group-hover/node:border-primary/40 shadow-primary/10 cursor-pointer pointer-events-auto"
                       title="IBM"
                     >
                       <svg viewBox="0 0 1000 401.15" className="w-8 h-3.5 shrink-0" fill="#0F62FE">

@@ -11,27 +11,25 @@ export const ShaderBackground: React.FC<ShaderBackgroundProps> = ({ className = 
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    // Mobile optimization: Skip background shader loop on phones
-    if (typeof window !== "undefined" && window.innerWidth < 768) {
-      return;
-    }
-
+    const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
     let animId: number;
     let resizeObserver: ResizeObserver | null = null;
 
     const gl =
-      canvas.getContext("webgl") ||
-      (canvas.getContext("experimental-webgl") as WebGLRenderingContext | null);
+      canvas.getContext("webgl", { alpha: true, antialias: false, powerPreference: "high-performance" }) ||
+      (canvas.getContext("experimental-webgl", { alpha: true }) as WebGLRenderingContext | null);
 
     if (!gl) return;
 
     const syncSize = () => {
       if (!canvas) return;
-      const w = canvas.clientWidth || 1280;
-      const h = canvas.clientHeight || 720;
+      const dpr = Math.min(window.devicePixelRatio || 1, isMobile ? 0.6 : 1);
+      const w = Math.floor((canvas.clientWidth || 1280) * dpr);
+      const h = Math.floor((canvas.clientHeight || 720) * dpr);
       if (canvas.width !== w || canvas.height !== h) {
         canvas.width = w;
         canvas.height = h;
+        if (gl) gl.viewport(0, 0, w, h);
       }
     };
 
@@ -124,16 +122,24 @@ export const ShaderBackground: React.FC<ShaderBackgroundProps> = ({ className = 
     let isVisible = true;
     let isRunning = false;
 
+    let lastT = 0;
     const render = (t: number) => {
       if (!canvas || !gl || !isVisible || document.hidden) {
         isRunning = false;
         return;
       }
+      animId = requestAnimationFrame(render);
+
+      // Mobile frame pacing (~35fps) to save battery and keep scrolling 60fps
+      if (isMobile && t - lastT < 28) {
+        return;
+      }
+      lastT = t;
+
       gl.viewport(0, 0, canvas.width, canvas.height);
       if (uTime) gl.uniform1f(uTime, t * 0.001);
       if (uRes) gl.uniform2f(uRes, canvas.width, canvas.height);
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-      animId = requestAnimationFrame(render);
     };
 
     const startLoop = () => {

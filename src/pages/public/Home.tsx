@@ -171,11 +171,9 @@ export const Home: React.FC = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    // Mobile optimization: Skip heavy WebGL hero shader on mobile phones
     const isMobile =
       typeof window !== "undefined" &&
       (window.innerWidth < 768 || (navigator.maxTouchPoints > 1 && window.innerWidth < 1024));
-    if (isMobile) return;
 
     const gl = (canvas.getContext("webgl", { alpha: true, antialias: false, powerPreference: "high-performance" }) ||
       canvas.getContext("experimental-webgl", { alpha: true })) as WebGLRenderingContext | null;
@@ -301,12 +299,27 @@ export const Home: React.FC = () => {
       }
     };
 
+    const handleWindowTouchMove = (event: TouchEvent) => {
+      if (event.touches && event.touches[0]) {
+        const touch = event.touches[0];
+        const relX = touch.clientX + window.scrollX - cachedRect.left;
+        const relY = touch.clientY + window.scrollY - cachedRect.top;
+        if (cachedRect.width && cachedRect.height) {
+          const nx = Math.max(0, Math.min(1, relX / cachedRect.width));
+          const ny = Math.max(0, Math.min(1, 1.0 - relY / cachedRect.height));
+          mouse.x = nx * canvas.width;
+          mouse.y = ny * canvas.height;
+        }
+      }
+    };
+
     window.addEventListener("mousemove", handleWindowMouseMove, { passive: true });
+    window.addEventListener("touchmove", handleWindowTouchMove, { passive: true });
 
     function syncSize() {
       if (!canvas || !gl) return;
       updateCachedRect();
-      const dpr = Math.min(window.devicePixelRatio || 1, 1);
+      const dpr = Math.min(window.devicePixelRatio || 1, isMobile ? 0.75 : 1);
       const w = Math.max(Math.floor(cachedRect.width * dpr), 300);
       const h = Math.max(Math.floor(cachedRect.height * dpr), 300);
       if (canvas.width !== w || canvas.height !== h) {
@@ -322,19 +335,27 @@ export const Home: React.FC = () => {
     syncSize();
 
     let isRunning = false;
+    let lastRender = 0;
 
-    function render() {
+    function render(now: number) {
       if (!canvas || !gl || !isVisible || document.hidden) {
         isRunning = false;
         return;
       }
+      animationFrameId = requestAnimationFrame(render);
+
+      // Smooth frame pacing on mobile to save battery and preserve 60fps scrolling
+      if (isMobile && now - lastRender < 24) {
+        return;
+      }
+      lastRender = now;
+
       const t = performance.now() - startTime;
       gl.viewport(0, 0, canvas.width, canvas.height);
       if (uTime) gl.uniform1f(uTime, t * 0.001);
       if (uRes) gl.uniform2f(uRes, canvas.width, canvas.height);
       if (uMouse) gl.uniform2f(uMouse, mouse.x, mouse.y);
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-      animationFrameId = requestAnimationFrame(render);
     }
 
     const startRenderLoop = () => {
@@ -370,6 +391,7 @@ export const Home: React.FC = () => {
       cancelAnimationFrame(animationFrameId);
       document.removeEventListener("visibilitychange", handleVisibility);
       window.removeEventListener("mousemove", handleWindowMouseMove);
+      window.removeEventListener("touchmove", handleWindowTouchMove);
       resizeObserver.disconnect();
       if (intersectionObserver) intersectionObserver.disconnect();
       gl.deleteProgram(prog);
@@ -437,6 +459,12 @@ export const Home: React.FC = () => {
               ref={canvasRef}
               className="absolute inset-0 w-full h-full pointer-events-none z-0 opacity-80"
             />
+            {/* Ambient Vibrant Mesh Background (Provides rich glowing color foundation on mobile & desktop) */}
+            <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+              <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-[340px] xs:w-[480px] sm:w-[700px] md:w-[900px] h-[320px] xs:h-[440px] sm:h-[520px] bg-gradient-to-tr from-primary/20 via-sky-400/20 to-purple-400/20 blur-[60px] sm:blur-[100px] rounded-full opacity-80" />
+              <div className="absolute top-1/4 -left-16 w-56 sm:w-80 h-56 sm:h-80 bg-primary/15 blur-[60px] sm:blur-[80px] rounded-full" />
+              <div className="absolute top-1/3 -right-16 w-56 sm:w-80 h-56 sm:h-80 bg-secondary/15 blur-[60px] sm:blur-[80px] rounded-full" />
+            </div>
             <div className="absolute inset-0 bg-dot-pattern z-0 pointer-events-none" />
             {/* Smooth merging fade & blur transition at bottom of hero */}
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-surface/20 to-surface z-0 pointer-events-none" />
@@ -479,7 +507,7 @@ export const Home: React.FC = () => {
 
               <form
                 onSubmit={handleHomeSearch}
-                className="w-full max-w-2xl relative rounded-2xl bg-surface-container-lowest border border-outline-variant/40 hover:border-primary/50 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary shadow-xs transition-colors group"
+                className="w-full max-w-2xl relative rounded-2xl bg-surface-container-lowest/80 dark:bg-zinc-900/80 backdrop-blur-xl border border-white/60 dark:border-zinc-700/60 shadow-lg shadow-primary/5 hover:border-primary/50 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 transition-all group"
               >
                 <span className="material-symbols-outlined absolute left-3.5 sm:left-5 top-1/2 transform -translate-y-1/2 text-on-surface-variant group-focus-within:text-primary transition-colors text-[18px] sm:text-[24px]">
                   search
@@ -499,14 +527,14 @@ export const Home: React.FC = () => {
                 </button>
               </form>
 
-              <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 mt-1 min-h-[28px] sm:min-h-[32px] bg-transparent border-none">
+              <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 mt-1 min-h-[28px] sm:min-h-[32px]">
                 <span className="font-label-sm text-[10px] sm:text-xs text-on-surface-variant uppercase tracking-wider mr-1 sm:mr-1.5 font-semibold">
                   Popular:
                 </span>
                 {contentLoading ? (
                   <div className="flex items-center gap-2 animate-pulse">
                     {Array.from({ length: 5 }).map((_, i) => (
-                      <div key={i} className="h-4 w-12 bg-surface-container-high/80 rounded" />
+                      <div key={i} className="h-6 w-14 bg-surface-container-high/80 rounded-full" />
                     ))}
                   </div>
                 ) : (
@@ -514,7 +542,7 @@ export const Home: React.FC = () => {
                     <Link
                       key={cat}
                       to={`/explore?industry=${encodeURIComponent(cat)}`}
-                      className="text-on-surface-variant hover:text-primary text-[11px] sm:text-xs font-medium hover:underline underline-offset-4 transition-colors bg-transparent border-none p-0 cursor-pointer"
+                      className="text-on-surface-variant hover:text-primary text-[11px] sm:text-xs font-medium transition-all px-2.5 py-1 rounded-full bg-surface-container-lowest/70 dark:bg-zinc-900/70 backdrop-blur-md border border-outline-variant/30 hover:border-primary/40 shadow-2xs hover:shadow-xs cursor-pointer"
                     >
                       {cat}
                     </Link>
@@ -525,7 +553,7 @@ export const Home: React.FC = () => {
           </section>
 
           {/* Section 2: Stats Counter */}
-          <section className="w-full py-8 sm:py-16 border-y border-outline-variant/20 bg-surface-container-lowest/70 relative z-20">
+          <section className="w-full py-8 sm:py-16 border-y border-outline-variant/20 bg-surface-container-lowest/80 backdrop-blur-md relative z-20">
             <div className="w-full max-w-[1280px] mx-auto px-4 md:px-8">
               {contentLoading ? (
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-4 divide-x-0 md:divide-x divide-outline-variant/20 animate-pulse">

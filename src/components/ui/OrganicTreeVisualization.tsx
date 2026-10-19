@@ -16,11 +16,9 @@ export const OrganicTreeVisualization: React.FC = () => {
     const container = containerRef.current;
     if (!container) return;
 
-    // Mobile optimization: Skip Three.js rendering on phones (< 768px) to guarantee 60fps lag-free performance
     const isMobile =
       typeof window !== "undefined" &&
       (window.innerWidth < 768 || (navigator.maxTouchPoints > 1 && window.innerWidth < 1024));
-    if (isMobile) return;
 
     let animId: number;
     let resizeObserver: ResizeObserver | null = null;
@@ -30,12 +28,12 @@ export const OrganicTreeVisualization: React.FC = () => {
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
-    camera.position.z = 11.5;
-    camera.position.y = 0.5;
+    camera.position.z = isMobile ? 12.5 : 11.5;
+    camera.position.y = isMobile ? 0.2 : 0.5;
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
     renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isMobile ? 1.0 : 1.5));
     container.appendChild(renderer.domElement);
 
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.95);
@@ -97,13 +95,15 @@ export const OrganicTreeVisualization: React.FC = () => {
       );
 
       const curve = new THREE.QuadraticBezierCurve3(start, mid, end);
-      const geometry = new THREE.TubeGeometry(curve, 8, radius, 6, false);
+      const tubularSegs = isMobile ? 6 : 8;
+      const radialSegs = isMobile ? 5 : 6;
+      const geometry = new THREE.TubeGeometry(curve, tubularSegs, radius, radialSegs, false);
       const branchMesh = new THREE.Mesh(geometry, branchMaterial);
       pivot.add(branchMesh);
 
       // Terminal leaf / glowing node
       if (depth === 1) {
-        const leafGeom = new THREE.SphereGeometry(radius * 2.2, 8, 8);
+        const leafGeom = new THREE.SphereGeometry(radius * 2.2, isMobile ? 6 : 8, isMobile ? 6 : 8);
         const leaf = new THREE.Mesh(leafGeom, leafMaterial);
         leaf.position.copy(end);
         pivot.add(leaf);
@@ -167,11 +167,13 @@ export const OrganicTreeVisualization: React.FC = () => {
       }
     }
 
-    buildCurvedTree(treeGroup, 5, 2.3, 0.22, 0, 0, 0.15);
+    const treeDepth = isMobile ? 4 : 5;
+    buildCurvedTree(treeGroup, treeDepth, 2.3, 0.22, 0, 0, 0.15);
 
     let isVisible = true;
     let isRunning = false;
     let intersectionObserver: IntersectionObserver | null = null;
+    let lastTime = 0;
 
     const animate = (t: number) => {
       if (!isVisible || document.hidden) {
@@ -179,6 +181,12 @@ export const OrganicTreeVisualization: React.FC = () => {
         return;
       }
       animId = requestAnimationFrame(animate);
+
+      // Smooth frame-pacing on mobile to save battery and maintain fluid responsiveness
+      if (isMobile && t - lastTime < 24) {
+        return;
+      }
+      lastTime = t;
 
       const time = t * 0.001;
 
@@ -225,6 +233,8 @@ export const OrganicTreeVisualization: React.FC = () => {
       const w = container.clientWidth || 500;
       const h = container.clientHeight || 350;
       camera.aspect = w / h;
+      camera.position.z = w < 768 ? 12.5 : 11.5;
+      camera.position.y = w < 768 ? 0.2 : 0.5;
       camera.updateProjectionMatrix();
       renderer.setSize(w, h);
     };

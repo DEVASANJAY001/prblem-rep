@@ -67,19 +67,18 @@ export const Navbar: React.FC = () => {
 
   return (
     <header className="fixed top-0 inset-x-0 z-50 pointer-events-none transition-all duration-300">
-      {/* Mobile-optimized Header Background (Lightweight, 60fps smooth scrolling) */}
-      <div className="absolute inset-x-0 top-0 h-14 bg-surface/92 dark:bg-zinc-950/92 backdrop-blur-md border-b border-border/40 pointer-events-none sm:hidden" />
-
-      {/* Desktop Progressive Glassmorphic Blur Mask */}
+      {/* Universal Progressive Glassmorphic Blur Mask - seamlessly feathers downward with zero hard cutoffs */}
       <div
-        className="hidden sm:block absolute inset-x-0 top-0 h-20 sm:h-24 md:h-28 bg-gradient-to-b from-surface/85 via-surface/40 to-transparent dark:from-zinc-950/85 dark:via-zinc-950/40 dark:to-transparent backdrop-blur-2xl pointer-events-none transform-gpu will-change-transform"
+        className="absolute inset-x-0 top-0 h-16 sm:h-24 md:h-28 bg-gradient-to-b from-surface/85 via-surface/45 to-transparent dark:from-zinc-950/85 dark:via-zinc-950/45 dark:to-transparent backdrop-blur-xl sm:backdrop-blur-2xl pointer-events-none transform-gpu will-change-transform"
         style={{
           WebkitMaskImage:
-            "linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.95) 40%, rgba(0,0,0,0.4) 75%, rgba(0,0,0,0) 100%)",
+            "linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.95) 45%, rgba(0,0,0,0.3) 80%, rgba(0,0,0,0) 100%)",
           maskImage:
-            "linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.95) 40%, rgba(0,0,0,0.4) 75%, rgba(0,0,0,0) 100%)",
+            "linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.95) 45%, rgba(0,0,0,0.3) 80%, rgba(0,0,0,0) 100%)",
         }}
       />
+      {/* Mobile Subtle Frosted Sheen */}
+      <div className="absolute inset-x-0 top-0 h-14 bg-surface/35 dark:bg-zinc-950/35 backdrop-blur-md border-b border-outline-variant/15 pointer-events-none sm:hidden" />
 
       <div className="h-14 sm:h-16 max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-10 flex items-center justify-between relative z-10 pointer-events-auto">
         {/* Left Brand and Navigation */}
