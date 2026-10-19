@@ -10,7 +10,8 @@ import {
 } from "firebase/firestore";
 import { db } from "../config";
 import { UserDoc, UserRole } from "@/types";
-import { getLeaderboard as getLocalLeaderboard, saveLocalUser } from "@/lib/storage";
+import { getLeaderboard as getLocalLeaderboard, saveLocalUser, load, STORAGE_KEYS } from "@/lib/storage";
+import { REAL_USERS } from "@/data/realProductionData";
 
 const USERS_COLLECTION = "users";
 
@@ -20,20 +21,26 @@ let leaderboardStream: {
   latestData: UserDoc[] | null;
 } | null = null;
 
-// Read a single user doc from Firestore (includes role â€” source of truth)
+// Read a single user doc from Firestore (includes role — source of truth)
 export async function getUserDoc(uid: string): Promise<UserDoc | null> {
   try {
     if (db && typeof doc === "function") {
       const userRef = doc(db, USERS_COLLECTION, uid);
       const snap = await getDoc(userRef);
       if (snap.exists()) {
-        return snap.data() as UserDoc;
+        const data = snap.data() as UserDoc;
+        saveLocalUser(data);
+        return data;
       }
     }
   } catch (error) {
     console.warn("Firestore getUserDoc error:", error);
   }
-  return null;
+
+  // Resilient fallback to local storage if Firestore network/quota throttles
+  const localUsers = load<UserDoc[]>(STORAGE_KEYS.USERS, REAL_USERS);
+  const found = localUsers.find((u) => u.uid === uid);
+  return found || null;
 }
 
 // Create or fully overwrite a user doc â€” writes the ROLE field.

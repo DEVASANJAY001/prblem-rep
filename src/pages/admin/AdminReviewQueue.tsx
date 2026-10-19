@@ -81,6 +81,9 @@ export const AdminReviewQueue: React.FC = () => {
 
   const handleDecision = async (problemId: string, decision: ProblemStatus, note?: string) => {
     setActionLoadingId(problemId);
+    setAllQueueProblems((prev) =>
+      prev.map((p) => (p.id === problemId ? { ...p, status: decision } : p))
+    );
     try {
       await updateProblemStatus(
         problemId,

@@ -146,6 +146,7 @@ export const AdminProblems: React.FC = () => {
   };
 
   const handleQuickStatus = async (id: string, newStatus: ProblemStatus) => {
+    setProblems((prev) => prev.map((p) => (p.id === id ? { ...p, status: newStatus } : p)));
     await updateProblemStatus(
       id,
       newStatus,
@@ -156,6 +157,8 @@ export const AdminProblems: React.FC = () => {
 
   const handleDeleteSingle = async (problem: ProblemDoc) => {
     if (window.confirm(`Permanently delete "${problem.title}"? This cannot be undone.`)) {
+      setProblems((prev) => prev.filter((p) => p.id !== problem.id));
+      setSelectedIds((prev) => prev.filter((id) => id !== problem.id));
       await deleteProblem(problem.id);
     }
   };

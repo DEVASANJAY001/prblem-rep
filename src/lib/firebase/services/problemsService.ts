@@ -32,6 +32,7 @@ import {
   toggleLocalValidation,
   recordLocalInterest,
   generateNextProblemId,
+  getDeletedProblemIds,
 } from "@/lib/storage";
 import { REAL_PROBLEMS } from "@/data/realProductionData";
 import { swrCache } from "@/lib/swrCache";
@@ -39,6 +40,38 @@ import { slugify } from "@/lib/seoUrls";
 import { cleanIndustryName } from "@/lib/algorithms/domainIntelligence";
 
 const PROBLEMS_COLLECTION = "problems";
+
+// Multi-tab real-time synchronization
+const syncChannel =
+  typeof window !== "undefined" && typeof BroadcastChannel !== "undefined"
+    ? new BroadcastChannel("prblms_sync_channel")
+    : null;
+
+if (syncChannel) {
+  syncChannel.onmessage = (event) => {
+    if (event.data?.type?.startsWith("PROBLEM_")) {
+      notifyQueryStreams();
+    }
+  };
+}
+
+export function broadcastSyncEvent(payload: { type: string; problemId?: string; status?: string }) {
+  try {
+    syncChannel?.postMessage(payload);
+  } catch {}
+}
+
+if (typeof window !== "undefined") {
+  window.addEventListener("storage", (e) => {
+    if (
+      e.key === "prblms_problems_v2" ||
+      e.key === "prblms_deleted_problems_v2" ||
+      e.key?.startsWith("prblms_user_submissions")
+    ) {
+      notifyQueryStreams();
+    }
+  });
+}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Shared Multiplexed Listener Registry (Prevents Duplicate Firestore Reads)
@@ -103,6 +136,75 @@ export function sanitizeForFirestore<T>(data: T): T {
   return data;
 }
 
+// In-memory cache of latest Firestore documents for instant merging
+let latestFirestoreDocs: ProblemDoc[] = [];
+
+/**
+ * Robustly merges authoritative Cloud Firestore documents with local problems.
+ * Ensures newly submitted problems (pending review) and offline mutations
+ * are NEVER dropped when Firestore returns documents.
+ */
+export function computeMergedProblems(
+  filter: { status?: "approved" | "pending" | "rejected" | "all"; industry?: string } = {},
+  firestoreDocs: ProblemDoc[] = latestFirestoreDocs
+): ProblemDoc[] {
+  const deletedIds = getDeletedProblemIds();
+  const localList = getLocalProblems({
+    status: "all",
+    industry: filter.industry,
+  });
+
+  const map = new Map<string, ProblemDoc>();
+
+  // 1. Seed with local problems (includes pending user submissions and local creations)
+  for (const lp of localList) {
+    if (lp && lp.id && !deletedIds.has(lp.id)) {
+      map.set(lp.id, lp);
+    }
+  }
+
+  // 2. Merge Firestore documents (authoritative cloud state)
+  for (const fd of firestoreDocs) {
+    if (fd && fd.id && !deletedIds.has(fd.id)) {
+      const local = map.get(fd.id);
+      if (!local) {
+        map.set(fd.id, fd);
+        saveLocalProblem(fd);
+      } else {
+        const localTs = new Date(local.updatedAt || local.createdAt || 0).getTime();
+        const firestoreTs = new Date(fd.updatedAt || fd.createdAt || 0).getTime();
+        // If Firestore is newer or equal, take Firestore data merged with local fields
+        if (firestoreTs >= localTs) {
+          map.set(fd.id, { ...local, ...fd });
+          saveLocalProblem({ ...local, ...fd });
+        } else {
+          // Local update is newer (e.g. status transition just made by admin)
+          map.set(fd.id, { ...fd, ...local });
+        }
+      }
+    }
+  }
+
+  let merged = Array.from(map.values());
+
+  // 3. Apply status filter
+  if (filter.status && filter.status !== "all") {
+    merged = merged.filter((p) => p.status === filter.status);
+  }
+
+  // 4. Apply industry filter
+  if (filter.industry && filter.industry !== "All" && filter.industry !== "all") {
+    const indLower = filter.industry.toLowerCase();
+    merged = merged.filter(
+      (p) =>
+        p.industry?.toLowerCase().includes(indLower) ||
+        indLower.includes(p.industry?.toLowerCase() || "")
+    );
+  }
+
+  return merged;
+}
+
 /**
  * Broadcasts data changes across all active multiplexed query streams (Admin review queue, Explore, Dashboard)
  */
@@ -110,10 +212,7 @@ export function notifyQueryStreams(): void {
   for (const [key, stream] of queryStreams.entries()) {
     try {
       const filter = JSON.parse(key);
-      const updatedList = getLocalProblems({
-        status: filter.status || "all",
-        industry: filter.industry,
-      });
+      const updatedList = computeMergedProblems(filter, latestFirestoreDocs);
       stream.latestData = updatedList;
       swrCache.set(`query_${key}`, updatedList, 300_000);
       stream.listeners.forEach((cb) => cb(updatedList));
@@ -304,7 +403,7 @@ export async function createProblem(
         ...newProblem,
         createdAtServer: serverTimestamp(),
       });
-      const writePromise = setDoc(problemRef, firestorePayload)
+      const writePromise = setDoc(problemRef, firestorePayload, { merge: true })
         .then(() => {
           console.log(`[Firebase Firestore] Problem ${id} saved with status '${resolvedStatus}'`);
         })
@@ -312,13 +411,14 @@ export async function createProblem(
           console.warn("[Firebase Firestore] Write queued/deferred by SDK:", err.message);
         });
 
-      const timeoutPromise = new Promise((resolve) => setTimeout(resolve, 2000));
+      const timeoutPromise = new Promise((resolve) => setTimeout(resolve, 1500));
       await Promise.race([writePromise, timeoutPromise]);
     } catch (error) {
       console.warn("Firestore createProblem async notice:", error);
     }
   }
 
+  broadcastSyncEvent({ type: "PROBLEM_CREATED", problemId: id });
   return { success: true, problemId: id, aiScores };
 }
 
@@ -390,15 +490,26 @@ export async function updateProblemModule<K extends keyof ProblemDoc>(
     swrCache.invalidate(`problem_${problemId}`);
   }
 
+  notifyQueryStreams();
+  broadcastSyncEvent({ type: "PROBLEM_UPDATED", problemId });
+
   // 2. Direct field-level atomic write to Firestore (0 duplicate field writes)
   try {
     if (db && typeof doc === "function") {
       const problemRef = doc(db, PROBLEMS_COLLECTION, problemId);
-      await updateDoc(problemRef, {
-        [moduleKey]: moduleData,
-        updatedAt: new Date().toISOString(),
-        updatedAtServer: serverTimestamp(),
+      const writePromise = setDoc(
+        problemRef,
+        sanitizeForFirestore({
+          [moduleKey]: moduleData,
+          updatedAt: new Date().toISOString(),
+          updatedAtServer: serverTimestamp(),
+        }),
+        { merge: true }
+      ).catch((err) => {
+        console.warn(`[Firebase Firestore] updateProblemModule(${moduleKey}) queued/deferred:`, err.message);
       });
+      const timeoutPromise = new Promise((resolve) => setTimeout(resolve, 1500));
+      await Promise.race([writePromise, timeoutPromise]);
       return true;
     }
   } catch (error) {
@@ -548,20 +659,10 @@ export function subscribeProblems(
     limit: filter.pageLimit || 100,
   });
 
-  // 1. Immediately emit from in-flight stream, SWR cache, or local storage
+  // 1. Immediately emit authoritative merged state with 0ms latency
   const streamData = queryStreams.get(queryKey)?.latestData;
-  const swrQueryData = swrCache.get<ProblemDoc[]>(`query_${queryKey}`);
-  const local = getLocalProblems({
-    status: filter.status || "all",
-    industry: filter.industry,
-  });
-
-  const initial = streamData || swrQueryData || (local.length > 0 ? local : []);
-  if (initial && initial.length > 0) {
-    callback(initial);
-  } else {
-    callback(local);
-  }
+  const initial = streamData || computeMergedProblems(filter, latestFirestoreDocs);
+  callback(initial);
 
   if (!db || typeof collection !== "function") {
     return () => {};
@@ -576,11 +677,7 @@ export function subscribeProblems(
       stream.teardownTimer = undefined;
     }
     stream.listeners.add(callback);
-    if (stream.latestData) {
-      callback(stream.latestData);
-    } else {
-      callback(initial.length > 0 ? initial : local);
-    }
+    callback(stream.latestData || initial);
   } else {
     const colRef = collection(db, PROBLEMS_COLLECTION);
     const listeners = new Set<(problems: ProblemDoc[]) => void>();
@@ -607,26 +704,12 @@ export function subscribeProblems(
                 data.industry = cleanIndustryName(data.industry);
               }
               firestoreDocs.push(data);
-              saveLocalProblem(data);
             }
           });
         }
         
-        // Authoritative live Cloud Firestore documents
-        let mergedList = firestoreDocs;
-        if (mergedList.length === 0) {
-          mergedList = getLocalProblems({
-            status: filter.status || "all",
-            industry: filter.industry,
-          });
-        } else if (filter.industry && filter.industry !== "All") {
-          const indLower = filter.industry.toLowerCase();
-          mergedList = mergedList.filter(
-            (p) =>
-              p.industry?.toLowerCase().includes(indLower) ||
-              indLower.includes(p.industry?.toLowerCase() || "")
-          );
-        }
+        latestFirestoreDocs = firestoreDocs;
+        const mergedList = computeMergedProblems(filter, firestoreDocs);
 
         // 1. Cache full query list in SWR (Memory LRU + SessionStorage)
         swrCache.set(`query_${queryKey}`, mergedList, 300_000);
@@ -642,12 +725,9 @@ export function subscribeProblems(
         }
       },
       (err) => {
-        console.warn("Problems Firestore snapshot notice:", err.message);
+        console.warn("Problems Firestore snapshot notice (using local-first fallback):", err.message);
         // Resilient fallback on error (e.g. quota limit reached): emit local cache so UI is never stuck!
-        const fallback = getLocalProblems({
-          status: filter.status || "all",
-          industry: filter.industry,
-        });
+        const fallback = computeMergedProblems(filter, latestFirestoreDocs);
         const currentStream = queryStreams.get(queryKey);
         if (currentStream) {
           currentStream.latestData = fallback;
@@ -754,6 +834,7 @@ export async function updateProblemStatus(
     try {
       const problemRef = doc(db, PROBLEMS_COLLECTION, problemId);
       const updatePayload: Record<string, any> = {
+        ...(updatedProb ? sanitizeForFirestore(updatedProb) : {}),
         status: newStatus,
         reviewedBy: adminUser.name,
         reviewedByUid: adminUser.uid,
@@ -765,7 +846,7 @@ export async function updateProblemStatus(
       if (newStatus === "approved") {
         updatePayload.publishedAt = publishedAt;
       }
-      const updatePromise = updateDoc(problemRef, sanitizeForFirestore(updatePayload))
+      const updatePromise = setDoc(problemRef, sanitizeForFirestore(updatePayload), { merge: true })
         .then(() => {
           console.log(`[Firebase Firestore] Problem ${problemId} status updated to '${newStatus}' by admin ${adminUser.name}`);
         })
@@ -773,14 +854,16 @@ export async function updateProblemStatus(
           console.warn("[Firebase Firestore] Status update queued/deferred by SDK:", err.message);
         });
 
-      const timeoutPromise = new Promise((resolve) => setTimeout(resolve, 2000));
+      const timeoutPromise = new Promise((resolve) => setTimeout(resolve, 1500));
       await Promise.race([updatePromise, timeoutPromise]);
+      broadcastSyncEvent({ type: "PROBLEM_STATUS_CHANGED", problemId, status: newStatus });
       return true;
     } catch (error) {
       console.warn("Firestore updateProblemStatus async notice:", error);
     }
   }
 
+  broadcastSyncEvent({ type: "PROBLEM_STATUS_CHANGED", problemId, status: newStatus });
   return true;
 }
 
@@ -1142,6 +1225,9 @@ export async function updateFullProblemDetails(
     swrCache.invalidate(`problem_${problemId}`);
   }
 
+  notifyQueryStreams();
+  broadcastSyncEvent({ type: "PROBLEM_UPDATED", problemId });
+
   // 2. Clean delta payload to write only specific updated fields
   const cleanPayload = cleanDeltaPayload({
     ...deltaProblemData,
@@ -1152,7 +1238,11 @@ export async function updateFullProblemDetails(
   try {
     if (db && typeof doc === "function") {
       const problemRef = doc(db, PROBLEMS_COLLECTION, problemId);
-      await updateDoc(problemRef, cleanPayload);
+      const writePromise = setDoc(problemRef, sanitizeForFirestore(cleanPayload), { merge: true }).catch((err) => {
+        console.warn("[Firebase Firestore] Problem update queued/deferred by SDK:", err.message);
+      });
+      const timeoutPromise = new Promise((resolve) => setTimeout(resolve, 1500));
+      await Promise.race([writePromise, timeoutPromise]);
       return true;
     }
   } catch (error) {
@@ -1166,16 +1256,30 @@ export async function deleteProblem(problemId: string): Promise<boolean> {
   deleteProblemFromStorage(problemId);
   swrCache.invalidate(`problem_${problemId}`);
 
+  const stream = docStreams.get(problemId);
+  if (stream) {
+    try {
+      stream.unsubscribe();
+    } catch {}
+    docStreams.delete(problemId);
+  }
+
+  notifyQueryStreams();
+  broadcastSyncEvent({ type: "PROBLEM_DELETED", problemId });
+
   try {
     if (db && typeof doc === "function") {
       const problemRef = doc(db, PROBLEMS_COLLECTION, problemId);
-      await deleteDoc(problemRef);
+      const deletePromise = deleteDoc(problemRef).catch((err) => {
+        console.warn("[Firebase Firestore] Delete queued/deferred by SDK:", err.message);
+      });
+      const timeoutPromise = new Promise((resolve) => setTimeout(resolve, 1500));
+      await Promise.race([deletePromise, timeoutPromise]);
     }
   } catch (error) {
     console.warn("Firestore deleteProblem error:", error);
   }
 
-  notifyQueryStreams();
   return true;
 }
 

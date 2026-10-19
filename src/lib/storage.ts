@@ -191,6 +191,10 @@ export function initializeStorage() {
 }
 
 // ─── Problems Service ──────────────────────────────────────────
+export function getDeletedProblemIds(): Set<string> {
+  return new Set(load<string[]>(STORAGE_KEYS.DELETED_PROBLEMS, []));
+}
+
 export function getProblems(filter?: {
   status?: ProblemStatus | "all";
   industry?: string;
@@ -200,7 +204,7 @@ export function getProblems(filter?: {
   submittedBy?: string;
 }): ProblemDoc[] {
   initializeStorage();
-  const deletedIds = new Set(load<string[]>(STORAGE_KEYS.DELETED_PROBLEMS, []));
+  const deletedIds = getDeletedProblemIds();
   let list = load<ProblemDoc[]>(STORAGE_KEYS.PROBLEMS, REAL_PROBLEMS);
 
   // Exclude deleted items and obsolete fake seed items from list
@@ -506,14 +510,6 @@ export function saveProblem(incoming: ProblemDoc): void {
     list.unshift(incoming);
   }
   save(STORAGE_KEYS.PROBLEMS, list);
-
-  // Sync to Cloud Firestore
-  try {
-    if (db && typeof doc === "function") {
-      const cleanIncoming = JSON.parse(JSON.stringify(incoming));
-      setDoc(doc(db, "problems", incoming.id), cleanIncoming, { merge: true }).catch(() => {});
-    }
-  } catch {}
 }
 
 export function updateProblemStatus(
@@ -540,24 +536,6 @@ export function updateProblemStatus(
   }
 
   save(STORAGE_KEYS.PROBLEMS, list);
-
-  // Sync to Cloud Firestore
-  try {
-    if (db && typeof doc === "function") {
-      setDoc(
-        doc(db, "problems", problemId),
-        {
-          status: newStatus,
-          reviewedBy: adminUser.uid,
-          reviewedAt: now,
-          reviewNote: reviewNote,
-          updatedAt: now,
-          ...(newStatus === "approved" ? { publishedAt: now, verified: true } : {}),
-        },
-        { merge: true }
-      ).catch(() => {});
-    }
-  } catch {}
 
   // Log action to audit log
   addAuditLog({

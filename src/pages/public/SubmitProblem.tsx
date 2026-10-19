@@ -55,6 +55,7 @@ export const SubmitProblem: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [submittedProblemId, setSubmittedProblemId] = useState<string | null>(null);
   const [isHumanVerified, setIsHumanVerified] = useState(false);
+  const [adminDirectPublish, setAdminDirectPublish] = useState(false);
   const [demoIndex, setDemoIndex] = useState(0);
   const [demoNotice, setDemoNotice] = useState<string | null>(null);
 
@@ -914,7 +915,7 @@ export const SubmitProblem: React.FC = () => {
           keyRisks: keyRisks.filter(Boolean),
           aiConfidence: 96,
         } as any,
-        status: isAdmin ? "approved" : "pending",
+        status: (isAdmin && adminDirectPublish) ? "approved" : "pending",
       });
 
       if (res.success && res.problemId) {
@@ -2815,6 +2816,30 @@ export const SubmitProblem: React.FC = () => {
                     >
                       Enable Startup Mode
                     </button>
+                  </div>
+                )}
+
+                {/* ── Admin Direct Publishing Option ──────────────────── */}
+                {isAdmin && (
+                  <div className="p-3.5 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+                    <div className="flex flex-col gap-0.5">
+                      <span className="font-bold text-on-surface flex items-center gap-1.5">
+                        <ShieldCheck className="w-4 h-4 text-primary" />
+                        Admin Publishing Control
+                      </span>
+                      <span className="text-[11px] text-on-surface-variant">
+                        Leave unchecked to submit as Pending to test the administrative review queue.
+                      </span>
+                    </div>
+                    <label className="flex items-center gap-2 cursor-pointer font-bold text-on-surface bg-surface-container px-3 py-1.5 rounded-xl border border-outline-variant/30 select-none">
+                      <input
+                        type="checkbox"
+                        checked={adminDirectPublish}
+                        onChange={(e) => setAdminDirectPublish(e.target.checked)}
+                        className="w-4 h-4 rounded text-primary accent-primary cursor-pointer"
+                      />
+                      <span>Directly Publish Live</span>
+                    </label>
                   </div>
                 )}
 
