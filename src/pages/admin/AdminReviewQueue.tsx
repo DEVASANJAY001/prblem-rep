@@ -52,19 +52,31 @@ export const AdminReviewQueue: React.FC = () => {
       setIndustriesList(list);
     });
 
+    // 3. Safety fallback timer so loading state never hangs
+    const safetyTimer = setTimeout(() => {
+      setLoading(false);
+    }, 1200);
+
     return () => {
       unsubProblems();
       unsubIndustries();
+      clearTimeout(safetyTimer);
     };
   }, []);
 
-  const pendingList = useMemo(
-    () => allQueueProblems.filter((p) => p.status === "pending"),
+  // Only include real incoming problem submissions, excluding obsolete fake seed placeholders
+  const realQueueProblems = useMemo(
+    () => allQueueProblems.filter((p) => p && p.id !== "prob-pending-seed" && p.id !== "prob-needs-info-seed"),
     [allQueueProblems]
   );
+
+  const pendingList = useMemo(
+    () => realQueueProblems.filter((p) => p.status === "pending"),
+    [realQueueProblems]
+  );
   const needsInfoList = useMemo(
-    () => allQueueProblems.filter((p) => p.status === "needs_info"),
-    [allQueueProblems]
+    () => realQueueProblems.filter((p) => p.status === "needs_info"),
+    [realQueueProblems]
   );
 
   const handleDecision = async (problemId: string, decision: ProblemStatus, note?: string) => {
@@ -105,7 +117,7 @@ export const AdminReviewQueue: React.FC = () => {
   };
 
   const filtered = useMemo(() => {
-    let list = allQueueProblems;
+    let list = realQueueProblems;
     if (statusTab === "pending") {
       list = list.filter((p) => p.status === "pending");
     } else if (statusTab === "needs_info") {
@@ -144,7 +156,7 @@ export const AdminReviewQueue: React.FC = () => {
       const timeB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
       return timeB - timeA;
     });
-  }, [allQueueProblems, statusTab, industryFilter, searchQuery, sortBy]);
+  }, [realQueueProblems, statusTab, industryFilter, searchQuery, sortBy]);
 
   return (
     <div className="flex flex-col w-full font-['Poppins',sans-serif] text-on-surface pb-12 gap-6 max-w-5xl mx-auto">

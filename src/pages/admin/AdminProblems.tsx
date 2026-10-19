@@ -68,7 +68,11 @@ export const AdminProblems: React.FC = () => {
       setProblems(list);
       setLoading(false);
     });
-    return () => unsubscribe();
+    const safetyTimer = setTimeout(() => setLoading(false), 1200);
+    return () => {
+      unsubscribe();
+      clearTimeout(safetyTimer);
+    };
   }, []);
 
   const handleManualSync = async () => {

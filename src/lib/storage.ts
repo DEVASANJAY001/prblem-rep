@@ -143,6 +143,18 @@ export function cleanupStorage(): void {
         localStorage.removeItem(k);
       } catch {}
     });
+
+    // Purge obsolete fake seed items from problems list
+    const storedProbs = localStorage.getItem(STORAGE_KEYS.PROBLEMS);
+    if (storedProbs && (storedProbs.includes("prob-pending-seed") || storedProbs.includes("prob-needs-info-seed"))) {
+      try {
+        const parsed = JSON.parse(storedProbs);
+        if (Array.isArray(parsed)) {
+          const cleaned = parsed.filter((p: any) => p && p.id !== "prob-pending-seed" && p.id !== "prob-needs-info-seed");
+          localStorage.setItem(STORAGE_KEYS.PROBLEMS, JSON.stringify(cleaned));
+        }
+      } catch {}
+    }
   } catch (e) {
     console.warn("Storage cleanup notice:", e);
   }
@@ -191,8 +203,8 @@ export function getProblems(filter?: {
   const deletedIds = new Set(load<string[]>(STORAGE_KEYS.DELETED_PROBLEMS, []));
   let list = load<ProblemDoc[]>(STORAGE_KEYS.PROBLEMS, REAL_PROBLEMS);
 
-  // Exclude deleted items from list
-  list = list.filter((p) => !deletedIds.has(p.id));
+  // Exclude deleted items and obsolete fake seed items from list
+  list = list.filter((p) => !deletedIds.has(p.id) && p.id !== "prob-pending-seed" && p.id !== "prob-needs-info-seed");
 
   // Ensure any baseline problems from REAL_PROBLEMS are present UNLESS explicitly deleted
   for (const seed of REAL_PROBLEMS) {
