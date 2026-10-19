@@ -34,13 +34,13 @@ export const Terms: React.FC = () => {
       />
 
       {/* ── Top Hero Banner ──────────────────────────────────────────────── */}
-      <div className="w-full bg-gradient-to-b from-surface via-surface-container-lowest to-surface pt-12 pb-6 border-b border-outline-variant/20 relative overflow-hidden">
+      <div className="w-full bg-gradient-to-b from-surface via-surface-container-lowest to-surface pt-6 sm:pt-10 md:pt-12 pb-6 border-b border-outline-variant/20 relative overflow-hidden">
         <div className="absolute top-0 right-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute -bottom-20 left-1/4 w-80 h-80 bg-blue-500/5 rounded-full blur-3xl pointer-events-none" />
 
-        <div className="max-w-5xl mx-auto px-4 md:px-8 relative z-10 space-y-4">
+        <div className="max-w-5xl mx-auto px-3.5 sm:px-6 md:px-8 relative z-10 space-y-3.5 sm:space-y-4">
           {/* Breadcrumbs */}
-          <div className="flex items-center gap-2 text-xs font-semibold text-on-surface-variant">
+          <div className="flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs font-semibold text-on-surface-variant flex-wrap">
             <Link to="/" className="hover:text-primary transition-colors">Home</Link>
             <span>/</span>
             <span className="text-on-surface font-bold">Legal</span>
@@ -48,35 +48,35 @@ export const Terms: React.FC = () => {
             <span className="text-primary font-bold">Terms of Service</span>
           </div>
 
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold uppercase tracking-wider">
-            <Scale className="h-3.5 w-3.5" />
+          <div className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] sm:text-xs font-bold uppercase tracking-wider">
+            <Scale className="h-3 w-3 sm:h-3.5 sm:w-3.5 shrink-0" />
             <span>Binding User Agreement</span>
           </div>
 
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
             <div>
-              <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-on-surface">
+              <h1 className="text-2xl sm:text-3xl md:text-5xl font-extrabold tracking-tight text-on-surface">
                 Terms of Service
               </h1>
-              <p className="text-on-surface-variant text-xs sm:text-sm mt-2">
+              <p className="text-on-surface-variant text-[11px] sm:text-xs md:text-sm mt-1 sm:mt-2">
                 Last Updated: October 08, 2026 • Effective Date: January 01, 2026 • Version 2.4
               </p>
             </div>
 
             {/* Quick Switcher Tabs */}
-            <div className="flex items-center gap-1.5 p-1 bg-surface-container-low rounded-xl border border-outline-variant/30 text-xs font-semibold">
+            <div className="flex items-center gap-1 p-1 bg-surface-container-low rounded-xl border border-outline-variant/30 text-xs font-semibold w-full sm:w-auto">
               <Link
                 to="/privacy"
-                className="px-3 py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface transition-colors"
+                className="flex-1 sm:flex-initial text-center px-3 py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface transition-colors"
               >
                 Privacy
               </Link>
-              <span className="px-3 py-1.5 rounded-lg bg-surface text-primary shadow-2xs">
+              <span className="flex-1 sm:flex-initial text-center px-3 py-1.5 rounded-lg bg-surface text-primary shadow-2xs font-bold">
                 Terms
               </span>
               <Link
                 to="/cookies"
-                className="px-3 py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface transition-colors"
+                className="flex-1 sm:flex-initial text-center px-3 py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface transition-colors"
               >
                 Cookies
               </Link>
@@ -84,42 +84,42 @@ export const Terms: React.FC = () => {
           </div>
 
           {/* Key Terms at a Glance Highlights Card */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-4">
-            <div className="p-3.5 rounded-2xl bg-surface-container-lowest border border-outline-variant/30 shadow-2xs flex items-start gap-3">
-              <Award className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3 pt-2 sm:pt-4">
+            <div className="p-3 sm:p-3.5 rounded-xl sm:rounded-2xl bg-surface-container-lowest border border-outline-variant/30 shadow-2xs flex items-start gap-2.5 sm:gap-3">
+              <Award className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600 shrink-0 mt-0.5" />
               <div>
                 <p className="text-xs font-bold text-on-surface">100% Solver IP Rights</p>
-                <p className="text-[11px] text-on-surface-variant leading-snug">
+                <p className="text-[11px] text-on-surface-variant leading-snug mt-0.5">
                   Founders building solutions retain total ownership of their code & startups.
                 </p>
               </div>
             </div>
 
-            <div className="p-3.5 rounded-2xl bg-surface-container-lowest border border-outline-variant/30 shadow-2xs flex items-start gap-3">
-              <FileCheck className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+            <div className="p-3 sm:p-3.5 rounded-xl sm:rounded-2xl bg-surface-container-lowest border border-outline-variant/30 shadow-2xs flex items-start gap-2.5 sm:gap-3">
+              <FileCheck className="w-4 h-4 sm:w-5 sm:h-5 text-primary shrink-0 mt-0.5" />
               <div>
                 <p className="text-xs font-bold text-on-surface">Verified Standards</p>
-                <p className="text-[11px] text-on-surface-variant leading-snug">
+                <p className="text-[11px] text-on-surface-variant leading-snug mt-0.5">
                   Submitted problems must cite public, non-confidential evidence.
                 </p>
               </div>
             </div>
 
-            <div className="p-3.5 rounded-2xl bg-surface-container-lowest border border-outline-variant/30 shadow-2xs flex items-start gap-3">
-              <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+            <div className="p-3 sm:p-3.5 rounded-xl sm:rounded-2xl bg-surface-container-lowest border border-outline-variant/30 shadow-2xs flex items-start gap-2.5 sm:gap-3">
+              <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 text-amber-600 shrink-0 mt-0.5" />
               <div>
                 <p className="text-xs font-bold text-on-surface">Research Estimates</p>
-                <p className="text-[11px] text-on-surface-variant leading-snug">
+                <p className="text-[11px] text-on-surface-variant leading-snug mt-0.5">
                   Market TAM and opportunity metrics are informational research models.
                 </p>
               </div>
             </div>
 
-            <div className="p-3.5 rounded-2xl bg-surface-container-lowest border border-outline-variant/30 shadow-2xs flex items-start gap-3">
-              <Lock className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
+            <div className="p-3 sm:p-3.5 rounded-xl sm:rounded-2xl bg-surface-container-lowest border border-outline-variant/30 shadow-2xs flex items-start gap-2.5 sm:gap-3">
+              <Lock className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 shrink-0 mt-0.5" />
               <div>
                 <p className="text-xs font-bold text-on-surface">Zero Trade Secrets</p>
-                <p className="text-[11px] text-on-surface-variant leading-snug">
+                <p className="text-[11px] text-on-surface-variant leading-snug mt-0.5">
                   Never post proprietary data under NDA or non-public patient records.
                 </p>
               </div>
@@ -129,12 +129,12 @@ export const Terms: React.FC = () => {
       </div>
 
       {/* ── Content Body ─────────────────────────────────────────────────── */}
-      <div className="max-w-5xl mx-auto px-4 md:px-8 py-12 space-y-10 text-sm leading-relaxed text-on-surface-variant">
+      <div className="w-full max-w-5xl mx-auto px-3.5 sm:px-6 md:px-8 py-6 sm:py-10 md:py-12 space-y-5 sm:space-y-8 md:space-y-10 text-xs sm:text-sm leading-relaxed text-on-surface-variant overflow-x-hidden">
         {/* Section 1 */}
-        <section className="rounded-3xl border border-outline-variant/30 bg-surface-container-lowest p-6 sm:p-8 space-y-4 shadow-xs">
-          <h2 className="text-base sm:text-lg font-bold text-on-surface flex items-center gap-2.5">
-            <Scale className="w-5 h-5 text-primary" />
-            1. Acceptance of Terms & Eligibility
+        <section className="rounded-2xl sm:rounded-3xl border border-outline-variant/30 bg-surface-container-lowest p-4 sm:p-6 md:p-8 space-y-3 sm:space-y-4 shadow-xs">
+          <h2 className="text-sm sm:text-base md:text-lg font-bold text-on-surface flex items-start sm:items-center gap-2 sm:gap-2.5">
+            <Scale className="w-4 h-4 sm:w-5 sm:h-5 text-primary shrink-0 mt-0.5 sm:mt-0" />
+            <span>1. Acceptance of Terms & Eligibility</span>
           </h2>
           <p>
             These Terms of Service (<strong>"Terms"</strong>) constitute a legally binding agreement between you
@@ -155,10 +155,10 @@ export const Terms: React.FC = () => {
         </section>
 
         {/* Section 2 */}
-        <section className="rounded-3xl border border-outline-variant/30 bg-surface-container-lowest p-6 sm:p-8 space-y-4 shadow-xs">
-          <h2 className="text-base sm:text-lg font-bold text-on-surface flex items-center gap-2.5">
-            <ShieldCheck className="w-5 h-5 text-primary" />
-            2. User Accounts, Security & Credentials
+        <section className="rounded-2xl sm:rounded-3xl border border-outline-variant/30 bg-surface-container-lowest p-4 sm:p-6 md:p-8 space-y-3 sm:space-y-4 shadow-xs">
+          <h2 className="text-sm sm:text-base md:text-lg font-bold text-on-surface flex items-start sm:items-center gap-2 sm:gap-2.5">
+            <ShieldCheck className="w-4 h-4 sm:w-5 sm:h-5 text-primary shrink-0 mt-0.5 sm:mt-0" />
+            <span>2. User Accounts, Security & Credentials</span>
           </h2>
           <p>
             Certain features (e.g., submitting problems, validating pain signals, accessing Startup Mode canvas tools,
@@ -167,44 +167,44 @@ export const Terms: React.FC = () => {
           <ul className="space-y-1.5 text-xs sm:text-sm pl-4 list-disc marker:text-primary">
             <li>You agree to provide true, current, and complete registration information.</li>
             <li>You are responsible for safeguarding your credentials and for all activities conducted under your account.</li>
-            <li>You must notify us immediately at <a href="mailto:security@stuckhere.com" className="text-primary font-bold hover:underline">security@stuckhere.com</a> upon discovering any unauthorized account breach or compromise.</li>
+            <li>You must notify us immediately at <a href="mailto:security@stuckhere.com" className="text-primary font-bold hover:underline break-all sm:break-normal">security@stuckhere.com</a> upon discovering any unauthorized account breach or compromise.</li>
             <li>Stuckhere reserves the right to suspend or terminate accounts that violate security protocols or impersonate other individuals or brands.</li>
           </ul>
         </section>
 
         {/* Section 3 */}
-        <section className="rounded-3xl border border-outline-variant/30 bg-surface-container-lowest p-6 sm:p-8 space-y-4 shadow-xs">
-          <h2 className="text-base sm:text-lg font-bold text-on-surface flex items-center gap-2.5">
-            <FileCheck className="w-5 h-5 text-primary" />
-            3. Problem Submission Standards & Diagnostic Verification
+        <section className="rounded-2xl sm:rounded-3xl border border-outline-variant/30 bg-surface-container-lowest p-4 sm:p-6 md:p-8 space-y-3 sm:space-y-4 shadow-xs">
+          <h2 className="text-sm sm:text-base md:text-lg font-bold text-on-surface flex items-start sm:items-center gap-2 sm:gap-2.5">
+            <FileCheck className="w-4 h-4 sm:w-5 sm:h-5 text-primary shrink-0 mt-0.5 sm:mt-0" />
+            <span>3. Problem Submission Standards & Diagnostic Verification</span>
           </h2>
           <p>
             Stuckhere is committed to cultivating a high-signal registry of verified human friction. To maintain
             editorial integrity, contributors submitting problem statements must adhere to our <strong>10-Point Diagnostic Verification Standard</strong>:
           </p>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 pt-1">
-            <div className="p-3.5 rounded-2xl bg-surface-container-low border border-outline-variant/30 space-y-1">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 sm:gap-3.5 pt-1">
+            <div className="p-3 sm:p-3.5 rounded-xl sm:rounded-2xl bg-surface-container-low border border-outline-variant/30 space-y-1">
               <strong className="text-xs font-bold text-on-surface">1. Specificity Over Generalities</strong>
-              <p className="text-[11px] text-on-surface-variant">Identify the precise operational, technical, or clinical bottleneck rather than vague aspirational complaints.</p>
+              <p className="text-[11px] text-on-surface-variant leading-relaxed">Identify the precise operational, technical, or clinical bottleneck rather than vague aspirational complaints.</p>
             </div>
-            <div className="p-3.5 rounded-2xl bg-surface-container-low border border-outline-variant/30 space-y-1">
+            <div className="p-3 sm:p-3.5 rounded-xl sm:rounded-2xl bg-surface-container-low border border-outline-variant/30 space-y-1">
               <strong className="text-xs font-bold text-on-surface">2. Concrete Trigger Events</strong>
-              <p className="text-[11px] text-on-surface-variant">Describe the specific workflow scenario or moment in time where the breakdown or friction occurs.</p>
+              <p className="text-[11px] text-on-surface-variant leading-relaxed">Describe the specific workflow scenario or moment in time where the breakdown or friction occurs.</p>
             </div>
-            <div className="p-3.5 rounded-2xl bg-surface-container-low border border-outline-variant/30 space-y-1">
+            <div className="p-3 sm:p-3.5 rounded-xl sm:rounded-2xl bg-surface-container-low border border-outline-variant/30 space-y-1">
               <strong className="text-xs font-bold text-on-surface">3. Stakeholder Identification</strong>
-              <p className="text-[11px] text-on-surface-variant">Clearly define the exact roles, practitioners, or demographic groups directly experiencing the pain.</p>
+              <p className="text-[11px] text-on-surface-variant leading-relaxed">Clearly define the exact roles, practitioners, or demographic groups directly experiencing the pain.</p>
             </div>
-            <div className="p-3.5 rounded-2xl bg-surface-container-low border border-outline-variant/30 space-y-1">
+            <div className="p-3 sm:p-3.5 rounded-xl sm:rounded-2xl bg-surface-container-low border border-outline-variant/30 space-y-1">
               <strong className="text-xs font-bold text-on-surface">4. Primary Evidence & Non-Confidentiality</strong>
-              <p className="text-[11px] text-on-surface-variant">Submissions must cite publicly accessible research, clinical trials, industry audits, or government datasets.</p>
+              <p className="text-[11px] text-on-surface-variant leading-relaxed">Submissions must cite publicly accessible research, clinical trials, industry audits, or government datasets.</p>
             </div>
           </div>
 
-          <div className="p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-xs text-rose-950 dark:text-rose-200 flex items-start gap-2.5">
+          <div className="p-3 sm:p-3.5 rounded-xl sm:rounded-2xl bg-rose-500/10 border border-rose-500/20 text-xs text-rose-950 dark:text-rose-200 flex items-start gap-2.5">
             <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
-            <span>
+            <span className="leading-relaxed">
               <strong>Strict Prohibition on Proprietary Information:</strong> You warrant that you will NEVER submit
               confidential trade secrets under an active Non-Disclosure Agreement (NDA), protected health information (PHI/HIPAA),
               classified government data, or defamatory statements targeting specific individuals.
@@ -213,28 +213,28 @@ export const Terms: React.FC = () => {
         </section>
 
         {/* Section 4 - CRITICAL SOLVER PROTECTION */}
-        <section className="rounded-3xl border border-primary/30 bg-primary/5 p-6 sm:p-8 space-y-5 shadow-xs">
-          <h2 className="text-base sm:text-lg font-bold text-on-surface flex items-center gap-2.5">
-            <Award className="w-5 h-5 text-primary" />
-            4. Intellectual Property & Contributor vs. Solver Rights
+        <section className="rounded-2xl sm:rounded-3xl border border-primary/30 bg-primary/5 p-4 sm:p-6 md:p-8 space-y-3.5 sm:space-y-5 shadow-xs">
+          <h2 className="text-sm sm:text-base md:text-lg font-bold text-on-surface flex items-start sm:items-center gap-2 sm:gap-2.5">
+            <Award className="w-4 h-4 sm:w-5 sm:h-5 text-primary shrink-0 mt-0.5 sm:mt-0" />
+            <span>4. Intellectual Property & Contributor vs. Solver Rights</span>
           </h2>
 
           <div className="space-y-3">
-            <div className="p-4 rounded-2xl bg-surface-container-lowest border border-outline-variant/30 space-y-2">
+            <div className="p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-surface-container-lowest border border-outline-variant/30 space-y-2">
               <h3 className="font-bold text-xs uppercase tracking-wider text-primary">A. Solver & Founder Protection (Our Core Principle)</h3>
               <p className="text-xs text-on-surface-variant leading-relaxed">
                 Stuckhere exists to ignite venture creation. If you develop a solution, software application,
                 hardware prototype, machine learning model, pharmaceutical formulation, patentable invention, or
                 commercial business inspired by or addressing a public problem dossier on Stuckhere:
               </p>
-              <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-950 dark:text-emerald-200 font-medium">
+              <div className="p-2.5 sm:p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-950 dark:text-emerald-200 font-medium leading-relaxed">
                 <strong>You retain 100% full, exclusive, and unencumbered intellectual property ownership</strong> of all
                 code, designs, patents, trademarks, corporate equity, and revenue generated by your solution. Stuckhere
                 makes ZERO claim to your intellectual property, equity, or commercial proceeds.
               </div>
             </div>
 
-            <div className="p-4 rounded-2xl bg-surface-container-lowest border border-outline-variant/30 space-y-2">
+            <div className="p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-surface-container-lowest border border-outline-variant/30 space-y-2">
               <h3 className="font-bold text-xs uppercase tracking-wider text-primary">B. Contributor License Grant</h3>
               <p className="text-xs text-on-surface-variant leading-relaxed">
                 By submitting a problem statement, dossier, or empirical citation to Stuckhere, you grant Stuckhere
@@ -244,7 +244,7 @@ export const Terms: React.FC = () => {
               </p>
             </div>
 
-            <div className="p-4 rounded-2xl bg-surface-container-lowest border border-outline-variant/30 space-y-2">
+            <div className="p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-surface-container-lowest border border-outline-variant/30 space-y-2">
               <h3 className="font-bold text-xs uppercase tracking-wider text-primary">C. Platform Proprietary Rights</h3>
               <p className="text-xs text-on-surface-variant leading-relaxed">
                 The Stuckhere platform, including its brand marks, custom logos, visual designs, UI component tokens,
@@ -257,10 +257,10 @@ export const Terms: React.FC = () => {
         </section>
 
         {/* Section 5 */}
-        <section className="rounded-3xl border border-outline-variant/30 bg-surface-container-lowest p-6 sm:p-8 space-y-4 shadow-xs">
-          <h2 className="text-base sm:text-lg font-bold text-on-surface flex items-center gap-2.5">
-            <UserX className="w-5 h-5 text-rose-600" />
-            5. Acceptable Use & Prohibited Conduct
+        <section className="rounded-2xl sm:rounded-3xl border border-outline-variant/30 bg-surface-container-lowest p-4 sm:p-6 md:p-8 space-y-3 sm:space-y-4 shadow-xs">
+          <h2 className="text-sm sm:text-base md:text-lg font-bold text-on-surface flex items-start sm:items-center gap-2 sm:gap-2.5">
+            <UserX className="w-4 h-4 sm:w-5 sm:h-5 text-rose-600 shrink-0 mt-0.5 sm:mt-0" />
+            <span>5. Acceptable Use & Prohibited Conduct</span>
           </h2>
           <p>You agree not to engage in any of the following restricted activities:</p>
           <ul className="space-y-1.5 text-xs sm:text-sm pl-4 list-disc marker:text-rose-600">
@@ -273,20 +273,20 @@ export const Terms: React.FC = () => {
         </section>
 
         {/* Section 6 */}
-        <section className="rounded-3xl border border-outline-variant/30 bg-surface-container-lowest p-6 sm:p-8 space-y-4 shadow-xs">
-          <h2 className="text-base sm:text-lg font-bold text-on-surface flex items-center gap-2.5">
-            <FileText className="w-5 h-5 text-primary" />
-            6. Digital Millennium Copyright Act (DMCA) Notice & Takedown
+        <section className="rounded-2xl sm:rounded-3xl border border-outline-variant/30 bg-surface-container-lowest p-4 sm:p-6 md:p-8 space-y-3 sm:space-y-4 shadow-xs">
+          <h2 className="text-sm sm:text-base md:text-lg font-bold text-on-surface flex items-start sm:items-center gap-2 sm:gap-2.5">
+            <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-primary shrink-0 mt-0.5 sm:mt-0" />
+            <span>6. Digital Millennium Copyright Act (DMCA) Notice & Takedown</span>
           </h2>
           <p>
             We respect the intellectual property rights of others. If you believe that content hosted on Stuckhere
             infringes your copyright, submit a written notification to our Designated Copyright Agent at{" "}
-            <a href="mailto:legal@stuckhere.com" className="text-primary font-bold hover:underline">
+            <a href="mailto:legal@stuckhere.com" className="text-primary font-bold hover:underline break-all sm:break-normal">
               legal@stuckhere.com
             </a>{" "}
             containing:
           </p>
-          <ul className="space-y-1 text-xs pl-4 list-disc marker:text-primary">
+          <ul className="space-y-1 text-xs pl-4 list-disc marker:text-primary leading-relaxed">
             <li>Identification of the copyrighted work claimed to have been infringed.</li>
             <li>Exact URL or path to the allegedly infringing material on Stuckhere.</li>
             <li>Your physical or electronic signature and direct contact information (email, phone, address).</li>
@@ -296,12 +296,12 @@ export const Terms: React.FC = () => {
         </section>
 
         {/* Section 7 */}
-        <section className="rounded-3xl border border-outline-variant/30 bg-surface-container-lowest p-6 sm:p-8 space-y-4 shadow-xs">
-          <h2 className="text-base sm:text-lg font-bold text-on-surface flex items-center gap-2.5">
-            <AlertCircle className="w-5 h-5 text-amber-600" />
-            7. Research Estimations & Non-Reliance Disclaimers
+        <section className="rounded-2xl sm:rounded-3xl border border-outline-variant/30 bg-surface-container-lowest p-4 sm:p-6 md:p-8 space-y-3 sm:space-y-4 shadow-xs">
+          <h2 className="text-sm sm:text-base md:text-lg font-bold text-on-surface flex items-start sm:items-center gap-2 sm:gap-2.5">
+            <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 text-amber-600 shrink-0 mt-0.5 sm:mt-0" />
+            <span>7. Research Estimations & Non-Reliance Disclaimers</span>
           </h2>
-          <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-xs space-y-2 text-amber-950 dark:text-amber-200">
+          <div className="p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-amber-500/10 border border-amber-500/20 text-xs space-y-2 text-amber-950 dark:text-amber-200 leading-relaxed">
             <p className="font-bold">Informational & Exploratory Research Only:</p>
             <p>
               All quantitative metrics displayed on Stuckhere—including Total Addressable Market (TAM) estimates,
@@ -317,20 +317,20 @@ export const Terms: React.FC = () => {
         </section>
 
         {/* Section 8 */}
-        <section className="rounded-3xl border border-outline-variant/30 bg-surface-container-lowest p-6 sm:p-8 space-y-4 shadow-xs">
-          <h2 className="text-base sm:text-lg font-bold text-on-surface flex items-center gap-2.5">
-            <Scale className="w-5 h-5 text-primary" />
-            8. Disclaimer of Warranties & Limitation of Liability
+        <section className="rounded-2xl sm:rounded-3xl border border-outline-variant/30 bg-surface-container-lowest p-4 sm:p-6 md:p-8 space-y-3 sm:space-y-4 shadow-xs">
+          <h2 className="text-sm sm:text-base md:text-lg font-bold text-on-surface flex items-start sm:items-center gap-2 sm:gap-2.5">
+            <Scale className="w-4 h-4 sm:w-5 sm:h-5 text-primary shrink-0 mt-0.5 sm:mt-0" />
+            <span>8. Disclaimer of Warranties & Limitation of Liability</span>
           </h2>
           <p className="uppercase font-bold text-xs text-on-surface">
             The platform is provided on an "as is" and "as available" basis without warranties of any kind.
           </p>
-          <p className="text-xs">
+          <p className="text-xs leading-relaxed">
             To the maximum extent permitted by applicable law, Stuckhere and its officers, directors, employees,
             and partners disclaim all express or implied warranties, including merchantability, fitness for a particular
             purpose, non-infringement, and accuracy of user-submitted problem statements.
           </p>
-          <p className="text-xs">
+          <p className="text-xs leading-relaxed">
             In no event shall Stuckhere be liable for indirect, incidental, special, consequential, or punitive damages
             (including loss of profits, data, goodwill, or business opportunity) arising out of or related to your use of
             the platform. In jurisdictions where limitations of liability are restricted, our aggregate liability shall not
@@ -340,10 +340,10 @@ export const Terms: React.FC = () => {
         </section>
 
         {/* Section 9 */}
-        <section className="rounded-3xl border border-outline-variant/30 bg-surface-container-lowest p-6 sm:p-8 space-y-4 shadow-xs">
-          <h2 className="text-base sm:text-lg font-bold text-on-surface flex items-center gap-2.5">
-            <Lock className="w-5 h-5 text-primary" />
-            9. Indemnification & Dispute Resolution
+        <section className="rounded-2xl sm:rounded-3xl border border-outline-variant/30 bg-surface-container-lowest p-4 sm:p-6 md:p-8 space-y-3 sm:space-y-4 shadow-xs">
+          <h2 className="text-sm sm:text-base md:text-lg font-bold text-on-surface flex items-start sm:items-center gap-2 sm:gap-2.5">
+            <Lock className="w-4 h-4 sm:w-5 sm:h-5 text-primary shrink-0 mt-0.5 sm:mt-0" />
+            <span>9. Indemnification & Dispute Resolution</span>
           </h2>
           <p>
             You agree to defend, indemnify, and hold harmless Stuckhere against any claims, liabilities, damages,
@@ -353,15 +353,15 @@ export const Terms: React.FC = () => {
           <p>
             <strong>Mandatory Informal Negotiation:</strong> Prior to initiating arbitration or legal proceedings, both
             parties agree to engage in good-faith informal negotiations for at least 30 calendar days by providing written
-            notice to <a href="mailto:legal@stuckhere.com" className="text-primary font-bold hover:underline">legal@stuckhere.com</a>.
+            notice to <a href="mailto:legal@stuckhere.com" className="text-primary font-bold hover:underline break-all sm:break-normal">legal@stuckhere.com</a>.
           </p>
         </section>
 
         {/* Section 10 */}
-        <section className="rounded-3xl border border-outline-variant/30 bg-surface-container-lowest p-6 sm:p-8 space-y-4 shadow-xs">
-          <h2 className="text-base sm:text-lg font-bold text-on-surface flex items-center gap-2.5">
-            <FileText className="w-5 h-5 text-primary" />
-            10. Termination & Modifications
+        <section className="rounded-2xl sm:rounded-3xl border border-outline-variant/30 bg-surface-container-lowest p-4 sm:p-6 md:p-8 space-y-3 sm:space-y-4 shadow-xs">
+          <h2 className="text-sm sm:text-base md:text-lg font-bold text-on-surface flex items-start sm:items-center gap-2 sm:gap-2.5">
+            <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-primary shrink-0 mt-0.5 sm:mt-0" />
+            <span>10. Termination & Modifications</span>
           </h2>
           <p>
             We reserve the right to suspend or terminate your access to the Platform at our sole discretion, without prior
@@ -374,14 +374,14 @@ export const Terms: React.FC = () => {
         </section>
 
         {/* Bottom CTA Card */}
-        <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-primary/10 via-primary/5 to-transparent border border-primary/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl bg-gradient-to-r from-primary/10 via-primary/5 to-transparent border border-primary/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="space-y-1">
-            <h3 className="font-bold text-on-surface text-base">Questions About Our Terms or IP Policies?</h3>
+            <h3 className="font-bold text-on-surface text-sm sm:text-base">Questions About Our Terms or IP Policies?</h3>
             <p className="text-xs text-on-surface-variant">Our legal team is available to assist enterprise partners and founders.</p>
           </div>
           <a
             href="mailto:legal@stuckhere.com"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary text-white text-xs font-bold hover:bg-primary/90 transition-all shadow-xs shrink-0"
+            className="w-full sm:w-auto justify-center inline-flex items-center gap-2 px-5 py-2.5 rounded-xl sm:rounded-full bg-primary text-white text-xs font-bold hover:bg-primary/90 transition-all shadow-xs shrink-0 text-center"
           >
             <span>Contact Legal Team</span>
             <ArrowRight className="w-4 h-4" />
