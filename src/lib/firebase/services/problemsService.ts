@@ -394,8 +394,9 @@ export async function createProblem(
   notifyQueryStreams();
 
   // 2. Persist directly to Cloud Firestore collection 'problems'
-  // Resilient non-blocking write: if Firestore network/quota throttles or hangs,
-  // the app completes without freezing the user's submit button.
+  let storedInFirestore = false;
+  let firestoreError: string | null = null;
+
   if (db && typeof doc === "function") {
     try {
       const problemRef = doc(db, PROBLEMS_COLLECTION, id);
@@ -405,21 +406,24 @@ export async function createProblem(
       });
       const writePromise = setDoc(problemRef, firestorePayload, { merge: true })
         .then(() => {
-          console.log(`[Firebase Firestore] Problem ${id} saved with status '${resolvedStatus}'`);
+          storedInFirestore = true;
+          console.log(`[Firebase Firestore] Problem ${id} saved with status '${resolvedStatus}' to Cloud Firestore collection 'problems'`);
         })
         .catch((err) => {
-          console.warn("[Firebase Firestore] Write queued/deferred by SDK:", err.message);
+          firestoreError = err?.message || String(err);
+          console.warn("[Firebase Firestore] Write rejected by Cloud:", firestoreError);
         });
 
-      const timeoutPromise = new Promise((resolve) => setTimeout(resolve, 1500));
+      const timeoutPromise = new Promise((resolve) => setTimeout(resolve, 3500));
       await Promise.race([writePromise, timeoutPromise]);
-    } catch (error) {
+    } catch (error: any) {
+      firestoreError = error?.message || String(error);
       console.warn("Firestore createProblem async notice:", error);
     }
   }
 
   broadcastSyncEvent({ type: "PROBLEM_CREATED", problemId: id });
-  return { success: true, problemId: id, aiScores };
+  return { success: true, problemId: id, aiScores, storedInFirestore, firestoreError };
 }
 
 // Helper to synchronously sync storage, SWR cache (memory & sessionStorage), and notify multiplexed stream listeners
@@ -767,7 +771,7 @@ export function subscribeProblems(
 /**
  * Pushes all baseline and locally created problem statements directly to Firestore
  */
-export async function syncAllProblemsToFirebase(): Promise<{ success: boolean; count: number }> {
+export async function syncAllProblemsToFirebase(): Promise<{ success: boolean; count: number; error?: string }> {
   const { writeBatch } = await import("firebase/firestore");
   const problems = getLocalProblems({ status: "all" });
   if (!db || typeof doc !== "function") {
@@ -778,6 +782,7 @@ export async function syncAllProblemsToFirebase(): Promise<{ success: boolean; c
   // Split into chunks and commit in parallel for maximum throughput.
   const BATCH_SIZE = 400;
   let count = 0;
+  let errorMsg: string | undefined;
 
   for (let i = 0; i < problems.length; i += BATCH_SIZE) {
     const chunk = problems.slice(i, i + BATCH_SIZE);
@@ -786,19 +791,20 @@ export async function syncAllProblemsToFirebase(): Promise<{ success: boolean; c
       const probRef = doc(db, PROBLEMS_COLLECTION, prob.id);
       batch.set(
         probRef,
-        { ...prob, updatedAtServer: serverTimestamp() },
+        sanitizeForFirestore({ ...prob, updatedAtServer: serverTimestamp() }),
         { merge: true }
       );
       count++;
     }
     try {
       await batch.commit();
-    } catch (err) {
+    } catch (err: any) {
       console.warn(`Error committing sync batch (offset ${i}):`, err);
+      errorMsg = err?.message || String(err);
     }
   }
 
-  return { success: true, count };
+  return { success: !errorMsg, count, error: errorMsg };
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

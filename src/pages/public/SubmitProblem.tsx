@@ -54,6 +54,8 @@ export const SubmitProblem: React.FC = () => {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [submittedProblemId, setSubmittedProblemId] = useState<string | null>(null);
+  const [storedInFirestore, setStoredInFirestore] = useState<boolean>(false);
+  const [firestoreNotice, setFirestoreNotice] = useState<string | null>(null);
   const [isHumanVerified, setIsHumanVerified] = useState(false);
   const [adminDirectPublish, setAdminDirectPublish] = useState(false);
   const [demoIndex, setDemoIndex] = useState(0);
@@ -920,6 +922,8 @@ export const SubmitProblem: React.FC = () => {
 
       if (res.success && res.problemId) {
         setSubmittedProblemId(res.problemId);
+        setStoredInFirestore(!!res.storedInFirestore);
+        setFirestoreNotice(res.firestoreError || null);
         recordUserSubmission(res.problemId, userDoc?.uid || user?.uid || "guest");
         try {
           confetti({
@@ -953,13 +957,13 @@ export const SubmitProblem: React.FC = () => {
           <div className="flex flex-col gap-2">
             <div className="inline-flex items-center gap-2 self-center bg-amber-500/10 border border-amber-500/20 px-3.5 py-1 rounded-full text-xs font-extrabold text-amber-700">
               <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
-              <span>Stored in Firebase · Queued for Admin Review</span>
+              <span>{storedInFirestore ? "Stored in Firebase · Queued for Admin Review" : "Saved Locally · Pending Firebase Cloud Sync"}</span>
             </div>
             <h2 className="text-2xl md:text-3xl font-black text-on-surface">
               Problem Statement Sent for Admin Review!
             </h2>
             <p className="text-sm text-on-surface-variant max-w-lg mx-auto">
-              Your empirical problem dossier has been stored in Firebase Firestore under the <code className="bg-surface-container px-1.5 py-0.5 rounded text-xs font-mono text-primary font-bold">problems</code> collection. It is now awaiting review and approval by an administrator.
+              Your empirical problem dossier is registered with ID <code className="bg-surface-container px-1.5 py-0.5 rounded text-xs font-mono text-primary font-bold">{submittedProblemId}</code> under the <code className="bg-surface-container px-1.5 py-0.5 rounded text-xs font-mono text-primary font-bold">problems</code> collection. It is now awaiting review and approval by an administrator.
             </p>
           </div>
 
@@ -967,11 +971,25 @@ export const SubmitProblem: React.FC = () => {
           <div className="w-full flex flex-col gap-2.5 p-4 bg-surface-container/40 rounded-2xl border border-outline-variant/20 text-left">
             <div className="flex items-center justify-between text-xs py-1 border-b border-outline-variant/15">
               <span className="text-on-surface-variant font-medium flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                Firebase Firestore Storage
+                <span className={`w-2 h-2 rounded-full ${storedInFirestore ? "bg-emerald-500" : "bg-amber-500"}`} />
+                Firebase Cloud Firestore
               </span>
-              <span className="font-mono text-emerald-600 font-bold">Stored (ID: {submittedProblemId})</span>
+              <span className={`font-mono font-bold ${storedInFirestore ? "text-emerald-600" : "text-amber-600"}`}>
+                {storedInFirestore ? `✓ Stored in Cloud (ID: ${submittedProblemId})` : "Cloud Quota Exceeded (Saved Locally)"}
+              </span>
             </div>
+            {firestoreNotice && (
+              <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-xl text-xs text-amber-800 font-medium flex flex-col gap-1">
+                <div className="font-bold flex items-center gap-1.5 text-amber-900">
+                  <span>⚠️ Firebase Cloud Notice</span>
+                </div>
+                <span>
+                  {firestoreNotice.includes("Quota exceeded")
+                    ? "Google Cloud Firestore daily write quota limit (20,000 writes/day on Spark plan) has been reached. Your submission is safely stored in your browser and will automatically sync to Firebase Cloud when the daily quota resets at midnight Pacific Time."
+                    : firestoreNotice}
+                </span>
+              </div>
+            )}
             <div className="flex items-center justify-between text-xs py-1 border-b border-outline-variant/15">
               <span className="text-on-surface-variant font-medium flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
