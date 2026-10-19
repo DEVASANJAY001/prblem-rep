@@ -103,7 +103,8 @@ export const SEOHead: React.FC<SEOHeadProps> = ({
         scriptTag.setAttribute("type", "application/ld+json");
         document.head.appendChild(scriptTag);
       }
-      scriptTag.textContent = JSON.stringify(jsonLd);
+      const serialized = JSON.stringify(jsonLd).replace(/https:\/\/stuckhere\.com/g, activeOrigin);
+      scriptTag.textContent = serialized;
     } else if (scriptTag) {
       scriptTag.remove();
     }
