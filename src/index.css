@@ -2,6 +2,13 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+html,
+body {
+  overflow-x: hidden;
+  max-width: 100vw;
+  width: 100%;
+}
+
 @theme {
   --color-surface-variant: #e2e2e8;
   --color-secondary: #006d3c;

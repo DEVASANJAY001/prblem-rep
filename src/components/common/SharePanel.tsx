@@ -45,8 +45,8 @@ export const SharePanel: React.FC<SharePanelProps> = ({ url, title, industry, cl
   };
 
   return (
-    <div className={`flex items-center gap-2 flex-wrap ${className}`}>
-      <span className="text-xs font-semibold text-on-surface-variant uppercase tracking-widest mr-1">
+    <div className={`flex items-center gap-1.5 sm:gap-2 flex-wrap max-w-full ${className}`}>
+      <span className="text-[11px] sm:text-xs font-semibold text-on-surface-variant uppercase tracking-wider mr-0.5 shrink-0">
         Share
       </span>
 

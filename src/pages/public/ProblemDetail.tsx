@@ -832,26 +832,26 @@ export const ProblemDetail: React.FC = () => {
         ]}
       />
 
-      <main className="w-full max-w-[1280px] mx-auto px-4 md:px-12 py-8 flex flex-col gap-6">
+      <main className="w-full max-w-[1280px] mx-auto px-4 md:px-12 py-6 sm:py-8 flex flex-col gap-6 overflow-x-hidden">
         {/* ── Top Breadcrumb & Action Toolbar (Seamless Flow) ─────────────── */}
-        <div className="flex items-center justify-between gap-4 flex-wrap pb-3">
-          <div className="text-xs text-on-surface-variant font-medium flex items-center gap-1.5 flex-wrap">
-            <Link to="/explore" className="hover:underline text-on-surface-variant">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 pb-3">
+          <div className="text-xs text-on-surface-variant font-medium flex items-center gap-1.5 flex-wrap min-w-0">
+            <Link to="/explore" className="hover:underline text-on-surface-variant shrink-0">
               Explore
             </Link>
-            <span>&gt;</span>
-            <span className="text-on-surface-variant">{industry}</span>
-            <span>&gt;</span>
-            <span className="text-on-surface font-semibold truncate max-w-[280px]">
+            <span className="shrink-0">&gt;</span>
+            <span className="text-on-surface-variant shrink-0">{industry}</span>
+            <span className="shrink-0">&gt;</span>
+            <span className="text-on-surface font-semibold truncate max-w-[200px] sm:max-w-[280px]">
               {problem.title}
             </span>
           </div>
 
           {/* Bookmark + Share Bar */}
-          <div className="flex items-center gap-3 shrink-0 flex-wrap">
+          <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
             <button
               onClick={handleBookmark}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${bookmarked
+              className={`px-3 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer shrink-0 ${bookmarked
                 ? "bg-primary/10 text-primary shadow-2xs font-bold"
                 : "bg-surface-container/60 text-on-surface-variant hover:bg-surface-container"
                 }`}

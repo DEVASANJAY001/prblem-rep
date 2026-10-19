@@ -39,7 +39,7 @@ export const Navbar: React.FC = () => {
   };
 
   return (
-    <header className="fixed top-0 w-full z-50 pointer-events-none transition-all duration-300">
+    <header className="fixed top-0 inset-x-0 z-50 pointer-events-none transition-all duration-300">
       {/* iOS Progressive Glassmorphic Blur Mask - seamlessly feathers to 0 with zero cutoff lines */}
       <div
         className="absolute inset-x-0 top-0 h-20 sm:h-24 md:h-28 bg-gradient-to-b from-surface/85 via-surface/40 to-transparent dark:from-zinc-950/85 dark:via-zinc-950/40 dark:to-transparent backdrop-blur-2xl pointer-events-none transform-gpu will-change-transform"
@@ -51,7 +51,7 @@ export const Navbar: React.FC = () => {
         }}
       />
 
-      <div className="h-14 sm:h-16 max-w-[1280px] mx-auto px-2.5 sm:px-6 md:px-8 flex items-center justify-between relative z-10 pointer-events-auto">
+      <div className="h-14 sm:h-16 max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-10 flex items-center justify-between relative z-10 pointer-events-auto">
         {/* Left Brand and Navigation */}
         <div className="flex items-center gap-3 sm:gap-6 md:gap-8 min-w-0">
           <Link to="/" className="flex items-center group shrink-0">
@@ -81,26 +81,26 @@ export const Navbar: React.FC = () => {
         </div>
 
         {/* Right Actions & User Profile */}
-        <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
-          <div className="flex items-center gap-1.5 sm:gap-2.5">
+        <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0 pr-0.5 sm:pr-1">
+          <div className="flex items-center gap-1.5 sm:gap-2">
             {user || userDoc ? (
               <Link
                 to="/dashboard"
-                className="text-body-md font-body-md text-on-surface-variant hover:text-primary transition-colors hidden sm:block px-2.5 py-1 text-xs sm:text-sm font-semibold"
+                className="text-body-md font-body-md text-on-surface-variant hover:text-primary transition-colors hidden sm:block px-2 sm:px-2.5 py-1 text-xs sm:text-sm font-semibold"
               >
                 Dashboard
               </Link>
             ) : location.pathname === "/login" ? (
               <Link
                 to="/register"
-                className="text-body-md font-body-md text-primary hover:text-primary-container transition-colors hidden sm:inline-block px-2.5 py-1 sm:px-3 sm:py-1.5 text-xs sm:text-sm font-semibold whitespace-nowrap"
+                className="text-body-md font-body-md text-primary hover:text-primary-container transition-colors px-2 sm:px-2.5 py-1 sm:py-1.5 text-xs sm:text-sm font-semibold whitespace-nowrap"
               >
                 Sign up
               </Link>
             ) : (
               <Link
                 to="/login"
-                className="text-body-md font-body-md text-on-surface-variant hover:text-on-surface transition-colors hidden sm:inline-block px-2.5 py-1 sm:px-3 sm:py-1.5 text-xs sm:text-sm font-semibold whitespace-nowrap"
+                className="text-body-md font-body-md text-on-surface-variant hover:text-on-surface transition-colors px-2 sm:px-2.5 py-1 sm:py-1.5 text-xs sm:text-sm font-semibold whitespace-nowrap"
               >
                 Log in
               </Link>
@@ -217,7 +217,9 @@ export const Navbar: React.FC = () => {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="rounded-lg p-1.5 text-on-surface-variant hover:bg-surface-container md:hidden"
+            className="rounded-lg p-1.5 text-on-surface-variant hover:text-on-surface hover:bg-surface-container active:scale-95 transition-all md:hidden flex items-center justify-center shrink-0 cursor-pointer"
+            aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+            title="Menu"
           >
             {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
