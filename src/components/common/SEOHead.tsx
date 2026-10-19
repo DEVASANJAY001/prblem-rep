@@ -51,35 +51,48 @@ export const SEOHead: React.FC<SEOHeadProps> = ({
       setMetaTag("name", "keywords", keywords.join(", "));
     }
 
+    const activeOrigin =
+      typeof window !== "undefined" && window.location.origin && !window.location.origin.includes("localhost")
+        ? window.location.origin
+        : "https://stuckhere.davns.com";
+
+    const resolveUrl = (url?: string) => {
+      if (!url) return typeof window !== "undefined" ? `${activeOrigin}${window.location.pathname}` : `${activeOrigin}/`;
+      if (url.startsWith("/")) return `${activeOrigin}${url}`;
+      try {
+        const parsed = new URL(url);
+        return `${activeOrigin}${parsed.pathname}${parsed.search}`;
+      } catch {
+        return url;
+      }
+    };
+
+    const resolvedCanonical = resolveUrl(canonicalUrl);
+    const resolvedOgImage = ogImage
+      ? (ogImage.startsWith("/") ? `${activeOrigin}${ogImage}` : ogImage)
+      : `${activeOrigin}/og-image.png`;
+
     // 4. Open Graph Tags (LinkedIn, WhatsApp, Facebook)
     setMetaTag("property", "og:title", formattedTitle);
     setMetaTag("property", "og:description", description);
     setMetaTag("property", "og:type", ogType);
-    if (canonicalUrl) {
-      setMetaTag("property", "og:url", canonicalUrl);
-    }
-    if (ogImage) {
-      setMetaTag("property", "og:image", ogImage);
-    }
+    setMetaTag("property", "og:url", resolvedCanonical);
+    setMetaTag("property", "og:image", resolvedOgImage);
 
     // 5. Twitter / X Card
     setMetaTag("name", "twitter:card", "summary_large_image");
     setMetaTag("name", "twitter:title", formattedTitle);
     setMetaTag("name", "twitter:description", description);
-    if (ogImage) {
-      setMetaTag("name", "twitter:image", ogImage);
-    }
+    setMetaTag("name", "twitter:image", resolvedOgImage);
 
     // 6. Canonical Link
-    if (canonicalUrl) {
-      let link = document.querySelector('link[rel="canonical"]');
-      if (!link) {
-        link = document.createElement("link");
-        link.setAttribute("rel", "canonical");
-        document.head.appendChild(link);
-      }
-      link.setAttribute("href", canonicalUrl);
+    let link = document.querySelector('link[rel="canonical"]');
+    if (!link) {
+      link = document.createElement("link");
+      link.setAttribute("rel", "canonical");
+      document.head.appendChild(link);
     }
+    link.setAttribute("href", resolvedCanonical);
 
     // 7. JSON-LD Structured Data for Google Rich Snippets
     let scriptTag = document.getElementById("json-ld-structured-data");
