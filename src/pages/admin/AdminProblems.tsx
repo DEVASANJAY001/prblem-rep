@@ -80,11 +80,15 @@ export const AdminProblems: React.FC = () => {
     try {
       const res = await syncAllProblemsToFirebase();
       if (res.success) {
-        setSyncNotice(`Successfully synced ${res.count} problem statement dossiers directly to Firebase Firestore!`);
+        if (res.count === 0) {
+          setSyncNotice(`All ${res.skipped ?? 0} problems are already in Firestore — nothing new to sync.`);
+        } else {
+          setSyncNotice(`Synced ${res.count} new problem(s) to Firestore. ${res.skipped ?? 0} already existed and were skipped.`);
+        }
       } else {
-        setSyncNotice(`Firebase Cloud Notice: ${res.error?.includes("Quota exceeded") ? "Daily write quota limit (20k/day) reached. Will sync to Firestore once the daily quota resets at midnight Pacific Time." : res.error}`);
+        setSyncNotice(`Firebase Notice: ${res.error?.includes("Quota exceeded") ? "Daily write quota (20k/day) reached. Resets at midnight Pacific Time." : res.error}`);
       }
-      setTimeout(() => setSyncNotice(null), 5000);
+      setTimeout(() => setSyncNotice(null), 6000);
     } catch (e: any) {
       setSyncNotice(`Sync notice: ${e?.message || "Sync paused."}`);
       setTimeout(() => setSyncNotice(null), 4000);

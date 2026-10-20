@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate, useLocation } from "react-router-dom";
 import {
   getProblemById,
   subscribeProblemById,
-  subscribeProblems,
+  getApprovedProblemsSnapshot,
   voteProblem,
   addComment,
   recordProblemView,
@@ -327,14 +327,16 @@ export const ProblemDetail: React.FC = () => {
     return () => unsub();
   }, []);
 
-  // Subscribe to approved problems for Related Problems internal link section
-  const [allApprovedProblems, setAllApprovedProblems] = useState<ProblemDoc[]>([]);
+  // Related Problems: read from in-memory cache (no new Firestore subscription needed)
+  // getApprovedProblemsSnapshot() checks queryStreams → SWR → localStorage, 0 network reads
+  const [allApprovedProblems, setAllApprovedProblems] = useState<ProblemDoc[]>(() =>
+    getApprovedProblemsSnapshot()
+  );
   useEffect(() => {
-    const unsub = subscribeProblems({ status: "approved" }, (list) => {
-      setAllApprovedProblems(list);
-    });
-    return () => unsub();
-  }, []);
+    // Refresh once after mount in case the stream populated while component was loading
+    const snapshot = getApprovedProblemsSnapshot();
+    if (snapshot.length > 0) setAllApprovedProblems(snapshot);
+  }, [problem?.id]);
 
   const relatedProblems = useMemo(() => {
     if (!problem) return [];

@@ -13,8 +13,9 @@ service cloud.firestore {
       return isAuthenticated() && request.auth.uid == userId;
     }
 
+    // Role is stored on the user doc AND optionally as a custom claim
     function getUserRole() {
-      return request.auth != null && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+      return isAuthenticated() && exists(/databases/$(database)/documents/users/$(request.auth.uid))
         ? get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role
         : 'guest';
     }
@@ -40,115 +41,165 @@ service cloud.firestore {
     }
 
     // ─────────────────────────────────────────────────────────────────────────
-    // 1. Users Collection & Private Startup Notes Subcollection
+    // 1. Users Collection
+    //    - Anyone can read public user profiles (leaderboard, author names)
+    //    - Users can only create/update their own doc
+    //    - Only admins can delete users
+    //    - Subcollections (startupNotes, etc.) are private to the owner
     // ─────────────────────────────────────────────────────────────────────────
     match /users/{userId} {
       allow read: if true;
-      allow create, update: if true;
+      allow create: if isOwner(userId);
+      allow update: if isOwner(userId) || isAdmin();
       allow delete: if isAdmin();
 
+      // Private subcollections — only the owning user or admin can access
       match /{allUserSubcollections=**} {
-        allow read, write: if true;
+        allow read, write: if isOwner(userId) || isAdmin();
       }
     }
 
     // ─────────────────────────────────────────────────────────────────────────
-    // 2. Problems Collection & Subcollections (Comments, Validations, etc.)
+    // 2. Problems Collection
+    //    - Public read (approved problems are the product)
+    //    - Authenticated users can create (submit new problems)
+    //    - Authenticated users can update community fields (votes, comments, views)
+    //      but CANNOT change status, reviewedBy, publishedAt (admin-only fields)
+    //    - Only admins/moderators can update status/moderation fields
+    //    - Only admins/moderators or the problem author can delete
     // ─────────────────────────────────────────────────────────────────────────
     match /problems/{problemId} {
-      // Publicly readable by all visitors and users
       allow read: if true;
-      
-      // Anyone can submit new problems (both authenticated users & community scouts)
-      allow create: if true;
-      
-      // Community updates (votes, views, validations, comments, status transitions)
-      allow update: if true;
-      
-      // Admins, moderators, and authors can delete
-      allow delete: if true;
 
-      // All subcollections (comments, validations, startupNotes)
+      // Any authenticated user can submit a new problem
+      allow create: if isAuthenticated();
+
+      // Community updates (votes, views, comments, validations, interest)
+      // Authenticated users can update BUT cannot change moderation fields
+      allow update: if isAuthenticated() && (
+        // Admin/mod can update anything
+        isAdminOrModerator() ||
+        // Regular users can update community interaction fields only
+        (
+          !('status' in request.resource.data.diff(resource.data).affectedKeys()) &&
+          !('reviewedBy' in request.resource.data.diff(resource.data).affectedKeys()) &&
+          !('reviewedByUid' in request.resource.data.diff(resource.data).affectedKeys()) &&
+          !('publishedAt' in request.resource.data.diff(resource.data).affectedKeys()) &&
+          !('verified' in request.resource.data.diff(resource.data).affectedKeys())
+        )
+      );
+
+      // Only admins/mods or the original author can delete
+      allow delete: if isAdminOrModerator() ||
+        (isAuthenticated() && resource.data.submittedByUid == request.auth.uid);
+
+      // Subcollections follow the same pattern as the parent
       match /{allProblemSubcollections=**} {
-        allow read, write: if true;
+        allow read: if true;
+        allow write: if isAuthenticated();
       }
     }
 
     // ─────────────────────────────────────────────────────────────────────────
-    // 3. Site Content CMS (App Settings & Content Controller)
+    // 3. Site Content CMS
+    //    - Public read, admin-only write
     // ─────────────────────────────────────────────────────────────────────────
     match /site_content/{pageId} {
       allow read: if true;
-      allow write: if true;
+      allow write: if isAdmin();
     }
 
     // ─────────────────────────────────────────────────────────────────────────
-    // 4. Dynamic Forms & Form Responses
+    // 4. Dynamic Forms & Responses
+    //    - Forms are public read (so anyone can fill them)
+    //    - Only admins can create/update/delete forms
+    //    - Anyone can submit a response (create only)
+    //    - Only admins can read/delete responses
     // ─────────────────────────────────────────────────────────────────────────
     match /forms/{formId} {
-      allow read, write: if true;
+      allow read: if true;
+      allow write: if isAdmin();
     }
 
     match /form_responses/{responseId} {
-      allow read, write: if true;
+      allow create: if true; // Anyone can submit a form response
+      allow read, update, delete: if isAdminOrModerator();
     }
 
     // ─────────────────────────────────────────────────────────────────────────
     // 5. Reference Taxonomies (Industries, Competitions, Companies, Research)
+    //    - Public read, admin-only write
     // ─────────────────────────────────────────────────────────────────────────
     match /industries/{industryId} {
-      allow read, write: if true;
+      allow read: if true;
+      allow write: if isAdmin();
     }
 
     match /competitions/{competitionId} {
-      allow read, write: if true;
+      allow read: if true;
+      allow write: if isAdmin();
     }
 
     match /companies/{companyId} {
-      allow read, write: if true;
+      allow read: if true;
+      allow write: if isAdmin();
     }
 
     match /research/{researchId} {
-      allow read, write: if true;
+      allow read: if true;
+      allow write: if isAdminOrModerator();
     }
 
     // ─────────────────────────────────────────────────────────────────────────
     // 6. User Interactions (Votes, Bookmarks)
+    //    - Authenticated users manage their own interactions
     // ─────────────────────────────────────────────────────────────────────────
     match /user_votes/{voteId} {
-      allow read, write: if true;
+      allow read: if isAuthenticated();
+      allow create, update: if isAuthenticated();
+      allow delete: if isAuthenticated();
     }
 
     match /bookmarks/{bookmarkId} {
-      allow read, write: if true;
+      allow read: if isAuthenticated();
+      allow create, update, delete: if isAuthenticated();
     }
 
     // ─────────────────────────────────────────────────────────────────────────
     // 7. Admin Invites & Audit Logs
+    //    - Invites: admin write, anyone can read (to validate tokens)
+    //    - Audit logs: anyone can create (immutable append), admin can read/delete
     // ─────────────────────────────────────────────────────────────────────────
     match /admin_invites/{token} {
-      allow read, write: if true;
+      allow read: if true; // Token validation on signup page
+      allow write: if isAdmin();
     }
 
     match /audit_logs/{logId} {
-      allow read, create: if true;
-      allow update, delete: if isAdminOrModerator();
+      allow read: if isAdminOrModerator();
+      allow create: if isAuthenticated();
+      allow update, delete: if isAdmin();
     }
 
     // ─────────────────────────────────────────────────────────────────────────
     // 8. Credits & Badges System
+    //    - Public read, admin-only write
     // ─────────────────────────────────────────────────────────────────────────
     match /credits/{creditId} {
-      allow read, write: if true;
+      allow read: if true;
+      allow write: if isAdmin();
     }
 
     match /badges/{badgeId} {
-      allow read, write: if true;
+      allow read: if true;
+      allow write: if isAdmin();
     }
 
-    // Fallback rule for any top-level or nested collections
+    // ─────────────────────────────────────────────────────────────────────────
+    // Fallback: Deny everything not explicitly covered above
+    // ─────────────────────────────────────────────────────────────────────────
     match /{document=**} {
-      allow read, write: if true;
+      allow read, write: if false;
     }
   }
 }

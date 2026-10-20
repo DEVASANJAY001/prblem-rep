@@ -61,7 +61,7 @@ export const SubmitProblem: React.FC = () => {
   const [demoIndex, setDemoIndex] = useState(0);
   const [demoNotice, setDemoNotice] = useState<string | null>(null);
 
-  // ── Tab 1: Core Overview & Operational Narrative ─────────────────────────
+  // â”€â”€ Tab 1: Core Overview & Operational Narrative â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [industry, setIndustry] = useState("Healthcare");
@@ -101,7 +101,7 @@ export const SubmitProblem: React.FC = () => {
     return () => unsub();
   }, []);
 
-  // ── Tab 2: Evidence & Statistical Data Points ─────────────────────────────
+  // â”€â”€ Tab 2: Evidence & Statistical Data Points â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const [dataPoints, setDataPoints] = useState<Array<{ metric: string; label: string }>>([]);
   const [newMetric, setNewMetric] = useState("");
   const [newMetricLabel, setNewMetricLabel] = useState("");
@@ -116,7 +116,7 @@ export const SubmitProblem: React.FC = () => {
   const [evidenceUrls, setEvidenceUrls] = useState<string[]>([]);
   const [newEvidenceUrl, setNewEvidenceUrl] = useState("");
 
-  // ── Tab 3: Market Telemetry & Impact ──────────────────────────────────────
+  // â”€â”€ Tab 3: Market Telemetry & Impact â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const [tam, setTam] = useState("");
   const [currentPenetration, setCurrentPenetration] = useState(0);
   const [wastedCost, setWastedCost] = useState("");
@@ -124,7 +124,7 @@ export const SubmitProblem: React.FC = () => {
   const [audienceSize, setAudienceSize] = useState("");
   const [willingnessToPay, setWillingnessToPay] = useState("");
 
-  // ── Tab 4: Research & Competitors ─────────────────────────────────────────
+  // â”€â”€ Tab 4: Research & Competitors â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const [keyFindings, setKeyFindings] = useState<string[]>([]);
   const [newFinding, setNewFinding] = useState("");
 
@@ -138,13 +138,13 @@ export const SubmitProblem: React.FC = () => {
   const [newCompPros, setNewCompPros] = useState("");
   const [newCompCons, setNewCompCons] = useState("");
 
-  // ── Tab 5: Suggested MVP & Tech Specs ─────────────────────────────────────
+  // â”€â”€ Tab 5: Suggested MVP & Tech Specs â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const [mvpFeatures, setMvpFeatures] = useState<string[]>([]);
   const [newMvpFeature, setNewMvpFeature] = useState("");
 
   const [technicalRequirements, setTechnicalRequirements] = useState("");
 
-  // ── Tab 6: Startup Mode & Venture Blueprint ───────────────────────────────
+  // â”€â”€ Tab 6: Startup Mode & Venture Blueprint â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const [hasStartupMode, setHasStartupMode] = useState(false);
   const [startupThesis, setStartupThesis] = useState("");
   const [startupTargetSegments, setStartupTargetSegments] = useState<string[]>([]);
@@ -193,7 +193,7 @@ export const SubmitProblem: React.FC = () => {
   const [keyRisks, setKeyRisks] = useState<string[]>([]);
   const [newKeyRisk, setNewKeyRisk] = useState("");
 
-  // ── Multi-Industry Demo Feed Engine (For Real-Time Testing Across All Modules) ──
+  // â”€â”€ Multi-Industry Demo Feed Engine (For Real-Time Testing Across All Modules) â”€â”€
   const DEMO_FEEDS = useMemo(() => [
     {
       id: "demo-healthcare",
@@ -833,7 +833,7 @@ export const SubmitProblem: React.FC = () => {
 
   };
 
-  // ── Form Submission Handler ───────────────────────────────────────────────
+  // â”€â”€ Form Submission Handler â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim() || !description.trim()) {
@@ -920,19 +920,16 @@ export const SubmitProblem: React.FC = () => {
         status: (isAdmin && adminDirectPublish) ? "approved" : "pending",
       });
 
+
       if (res.success && res.problemId) {
         setSubmittedProblemId(res.problemId);
         setStoredInFirestore(!!res.storedInFirestore);
         setFirestoreNotice(res.firestoreError || null);
         recordUserSubmission(res.problemId, userDoc?.uid || user?.uid || "guest");
         try {
-          confetti({
-            particleCount: 120,
-            spread: 80,
-            origin: { y: 0.6 },
-          });
+          confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
         } catch {
-          // ignore canvas confetti errors
+          // ignore confetti errors
         }
       } else {
         setError("Failed to create problem statement. Please check required fields and try again.");
@@ -945,153 +942,69 @@ export const SubmitProblem: React.FC = () => {
     }
   };
 
-  // ── Success State Modal / Overlay (Live Firestore Storage & Moderation Connectivity) ──
+  // Success / Acknowledgement Screen
   if (submittedProblemId) {
     return (
-      <div className="w-full min-h-screen bg-surface py-16 px-4 md:px-8 font-['Poppins',sans-serif] text-on-surface flex items-center justify-center animate-fade-in">
-        <div className="w-full max-w-2xl bg-surface-container-lowest rounded-3xl p-8 md:p-12 shadow-xl border border-outline-variant/30 text-center flex flex-col items-center gap-6">
-          <div className="w-18 h-18 rounded-full bg-emerald-50 text-emerald-600 border-2 border-emerald-200 flex items-center justify-center shadow-lg">
-            <CheckCircle className="w-10 h-10 stroke-[2.5]" />
+      <div className="w-full min-h-screen bg-surface flex items-center justify-center py-16 px-4 font-['Poppins',sans-serif] text-on-surface animate-fade-in">
+        <div className="w-full max-w-md bg-surface-container-lowest rounded-3xl p-8 md:p-10 shadow-xl border border-outline-variant/30 flex flex-col items-center gap-7 text-center">
+          <div className="w-20 h-20 rounded-full bg-emerald-50 dark:bg-emerald-950/30 border-2 border-emerald-200 dark:border-emerald-800 flex items-center justify-center shadow-md">
+            <CheckCircle className="w-10 h-10 text-emerald-600 stroke-[2]" />
           </div>
-
           <div className="flex flex-col gap-2">
-            <div className="inline-flex items-center gap-2 self-center bg-amber-500/10 border border-amber-500/20 px-3.5 py-1 rounded-full text-xs font-extrabold text-amber-700">
-              <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
-              <span>{storedInFirestore ? "Stored in Firebase · Queued for Admin Review" : "Saved Locally · Pending Firebase Cloud Sync"}</span>
-            </div>
-            <h2 className="text-2xl md:text-3xl font-black text-on-surface">
-              Problem Statement Sent for Admin Review!
-            </h2>
-            <p className="text-sm text-on-surface-variant max-w-lg mx-auto">
-              Your empirical problem dossier is registered with ID <code className="bg-surface-container px-1.5 py-0.5 rounded text-xs font-mono text-primary font-bold">{submittedProblemId}</code> under the <code className="bg-surface-container px-1.5 py-0.5 rounded text-xs font-mono text-primary font-bold">problems</code> collection. It is now awaiting review and approval by an administrator.
+            <h2 className="text-2xl font-black text-on-surface">Problem Submitted!</h2>
+            <p className="text-sm text-on-surface-variant leading-relaxed">
+              Thank you for your contribution. Your problem has been received and is now under review.
             </p>
           </div>
-
-          {/* Database & Moderation Pipeline Status */}
-          <div className="w-full flex flex-col gap-2.5 p-4 bg-surface-container/40 rounded-2xl border border-outline-variant/20 text-left">
-            <div className="flex items-center justify-between text-xs py-1 border-b border-outline-variant/15">
-              <span className="text-on-surface-variant font-medium flex items-center gap-1.5">
-                <span className={`w-2 h-2 rounded-full ${storedInFirestore ? "bg-emerald-500" : "bg-amber-500"}`} />
-                Firebase Cloud Firestore
-              </span>
-              <span className={`font-mono font-bold ${storedInFirestore ? "text-emerald-600" : "text-amber-600"}`}>
-                {storedInFirestore ? `✓ Stored in Cloud (ID: ${submittedProblemId})` : "Cloud Quota Exceeded (Saved Locally)"}
+          <div className="w-full bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800/40 rounded-2xl px-5 py-4 flex flex-col gap-3">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-on-surface-variant">Status</span>
+              <span className="inline-flex items-center gap-1.5 bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400 text-[11px] font-bold px-3 py-1 rounded-full">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+                Pending Review
               </span>
             </div>
-            {firestoreNotice && (
-              <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-xl text-xs text-amber-800 font-medium flex flex-col gap-1">
-                <div className="font-bold flex items-center gap-1.5 text-amber-900">
-                  <span>⚠️ Firebase Cloud Notice</span>
-                </div>
-                <span>
-                  {firestoreNotice.includes("Quota exceeded")
-                    ? "Google Cloud Firestore daily write quota limit (20,000 writes/day on Spark plan) has been reached. Your submission is safely stored in your browser and will automatically sync to Firebase Cloud when the daily quota resets at midnight Pacific Time."
-                    : firestoreNotice}
-                </span>
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-on-surface-variant">Visibility</span>
+              <span className="text-xs font-semibold text-on-surface-variant">Private until approved</span>
+            </div>
+            {isAdmin && (
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-on-surface-variant">Next step</span>
+                <span className="text-xs font-semibold text-on-surface-variant">Admin review &amp; approval</span>
               </div>
             )}
-            <div className="flex items-center justify-between text-xs py-1 border-b border-outline-variant/15">
-              <span className="text-on-surface-variant font-medium flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
-                Moderation Status
-              </span>
-              <span className="inline-flex items-center gap-1 font-bold text-amber-700 bg-amber-100/60 px-2 py-0.5 rounded-full text-[11px]">
-                Pending Admin Review
-              </span>
-            </div>
-            <div className="flex items-center justify-between text-xs py-1">
-              <span className="text-on-surface-variant font-medium flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-blue-500" />
-                Public Directory Status
-              </span>
-              <span className="font-semibold text-on-surface-variant">Publishes instantly upon approval</span>
-            </div>
           </div>
-
-          {/* Quick Metrics Bar */}
-          <div className="w-full grid grid-cols-2 sm:grid-cols-3 gap-3 p-4 bg-surface-container/40 rounded-2xl border border-outline-variant/20 text-left">
-            <div>
-              <span className="text-[10px] uppercase font-bold text-outline">Pain Score</span>
-              <p className="text-lg font-black text-orange-600">{severity === "critical" ? "9.4" : severity === "major" ? "8.6" : "7.2"}/10</p>
-            </div>
-            <div>
-              <span className="text-[10px] uppercase font-bold text-outline">Opportunity</span>
-              <p className="text-lg font-black text-emerald-600">8.0/10</p>
-            </div>
-            <div className="col-span-2 sm:col-span-1">
-              <span className="text-[10px] uppercase font-bold text-outline">Market TAM</span>
-              <p className="text-lg font-black text-primary">{tam || "$1.0B"}</p>
-            </div>
-          </div>
-
-          {/* Navigation Action Buttons */}
-          <div className="flex flex-col sm:flex-row items-center gap-3 w-full pt-2">
+          <div className="flex flex-col sm:flex-row gap-3 w-full pt-1">
             {isAdmin ? (
-              <>
-                <button
-                  onClick={() => navigate("/admin/review-queue")}
-                  className="w-full sm:flex-1 bg-primary text-white py-3.5 px-6 rounded-xl text-xs md:text-sm font-bold shadow-md hover:bg-primary-container transition-all cursor-pointer flex items-center justify-center gap-2"
-                >
-                  <span>Review & Approve Live (Admin)</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={() =>
-                    navigate(
-                      getProblemDetailUrl({ id: submittedProblemId || "prob-1", title })
-                    )
-                  }
-                  className="w-full sm:flex-1 bg-surface-container hover:bg-surface-container-high text-on-surface border border-outline-variant/40 py-3.5 px-6 rounded-xl text-xs md:text-sm font-bold transition-all cursor-pointer flex items-center justify-center gap-2"
-                >
-                  <Eye className="w-4 h-4" />
-                  <span>Admin Preview Dossier</span>
-                </button>
-              </>
-            ) : (
-              <>
-                <button
-                  onClick={() => navigate("/dashboard")}
-                  className="w-full sm:flex-1 bg-primary text-white py-3.5 px-6 rounded-xl text-xs md:text-sm font-bold shadow-md hover:bg-primary-container transition-all cursor-pointer flex items-center justify-center gap-2"
-                >
-                  <span>Track Status in Dashboard</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={() => {
-                    setSubmittedProblemId(null);
-                    setActiveTab(1);
-                    setTitle("");
-                    setDescription("");
-                  }}
-                  className="w-full sm:flex-1 bg-surface-container hover:bg-surface-container-high text-on-surface border border-outline-variant/40 py-3.5 px-6 rounded-xl text-xs md:text-sm font-bold transition-all cursor-pointer flex items-center justify-center gap-2"
-                >
-                  <span>+ Submit Another Problem</span>
-                </button>
-              </>
-            )}
-          </div>
-
-          {!isAdmin && (
-            <p className="text-[11px] text-on-surface-variant text-center max-w-md pt-1">
-              🔒 <strong>Publishing Policy:</strong> Public canonical URLs are activated only after administrator verification and approval.
-            </p>
-          )}
-
-          {isAdmin && (
-            <div className="flex items-center gap-4 text-xs font-bold text-on-surface-variant pt-1">
               <button
-                onClick={() => {
-                  setSubmittedProblemId(null);
-                  setActiveTab(1);
-                  setTitle("");
-                  setDescription("");
-                }}
-                className="hover:text-primary transition-colors cursor-pointer"
+                onClick={() => navigate("/admin/review-queue")}
+                className="w-full bg-primary text-white py-3 px-6 rounded-xl text-sm font-bold shadow hover:opacity-90 transition-all flex items-center justify-center gap-2 cursor-pointer"
               >
-                + Submit Another Problem
+                <span>Review Queue</span>
+                <ArrowRight className="w-4 h-4" />
               </button>
-            </div>
-          )}
+            ) : (
+              <button
+                onClick={() => navigate("/dashboard")}
+                className="w-full bg-primary text-white py-3 px-6 rounded-xl text-sm font-bold shadow hover:opacity-90 transition-all flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <span>Go to Dashboard</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            )}
+            <button
+              onClick={() => {
+                setSubmittedProblemId(null);
+                setActiveTab(1);
+                setTitle("");
+                setDescription("");
+              }}
+              className="w-full bg-surface-container hover:bg-surface-container-high text-on-surface border border-outline-variant/40 py-3 px-6 rounded-xl text-sm font-bold transition-all cursor-pointer"
+            >
+              Submit Another
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -1099,13 +1012,13 @@ export const SubmitProblem: React.FC = () => {
 
   return (
     <div className="w-full min-h-screen bg-surface py-4 sm:py-8 md:py-10 px-3 sm:px-6 md:px-8 lg:px-12 font-['Poppins',sans-serif] text-on-surface">
-      {/* noindex: form page — not content for search engines */}
+      {/* noindex: form page â€” not content for search engines */}
       <SEOHead
         title="Submit a Verified Problem Statement"
         description="Submit a verified real-world problem statement to Stuckhere. Help the community discover startup opportunities and innovation challenges."
         noindex
       />
-      {/* ── TOP HERO HEADER & BREADCRUMBS ─────────────────────────────────── */}
+      {/* â”€â”€ TOP HERO HEADER & BREADCRUMBS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
 
       <div className="w-full flex flex-col md:flex-row md:items-center justify-between gap-3 sm:gap-4 pb-4 sm:pb-6 border-b border-gray-200/60 mb-5 sm:mb-8">
         <div className="flex flex-col gap-1 sm:gap-1.5">
@@ -1135,7 +1048,7 @@ export const SubmitProblem: React.FC = () => {
               title="Click to populate all 6 modules with comprehensive empirical test data. Automatically clears captcha."
             >
               <Sparkles className="w-3.5 h-3.5 text-amber-200 animate-pulse" />
-              <span>⚡ Demo Feed</span>
+              <span>âš¡ Demo Feed</span>
               <span className="bg-black/20 text-white text-[10px] px-1.5 py-0.5 rounded-full font-mono">
                 {demoIndex + 1}/{DEMO_FEEDS.length}
               </span>
@@ -1169,7 +1082,7 @@ export const SubmitProblem: React.FC = () => {
         </div>
       </div>
 
-      {/* ── REALTIME DEMO FEED NOTICE BANNER ────────────────────── */}
+      {/* â”€â”€ REALTIME DEMO FEED NOTICE BANNER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       {demoNotice && (
         <div className="w-full mb-4 p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-amber-500/10 dark:bg-amber-500/15 border border-amber-500/30 text-amber-950 dark:text-amber-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs animate-in fade-in slide-in-from-top-2 duration-200 shadow-2xs">
           <div className="flex items-center gap-2.5">
@@ -1191,7 +1104,7 @@ export const SubmitProblem: React.FC = () => {
               onClick={() => loadDemoFeed()}
               className="flex-1 sm:flex-none text-[11px] font-bold px-3 py-1.5 rounded-lg border border-amber-500/30 hover:bg-amber-500/20 text-amber-900 dark:text-amber-100 transition-colors cursor-pointer"
             >
-              Cycle Next Preset ↻
+              Cycle Next Preset â†»
             </button>
             <button
               type="button"
@@ -1200,13 +1113,13 @@ export const SubmitProblem: React.FC = () => {
               className="flex-1 sm:flex-none text-[11px] font-bold px-3.5 py-1.5 rounded-lg bg-primary hover:bg-primary-container text-white shadow-xs transition-all cursor-pointer flex items-center justify-center gap-1.5"
             >
               <Zap className="w-3.5 h-3.5" />
-              <span>{submitting ? "Submitting..." : "Submit to Admin →"}</span>
+              <span>{submitting ? "Submitting..." : "Submit to Admin â†’"}</span>
             </button>
           </div>
         </div>
       )}
 
-      {/* ── MAIN FULL-PAGE STUDIO ───────────────────────────────── */}
+      {/* â”€â”€ MAIN FULL-PAGE STUDIO â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <div className="w-full flex flex-col gap-4 sm:gap-6">
         {/* Section Navigation Tab Bar */}
         <div className="w-full bg-surface-container-lowest p-1 sm:p-1.5 rounded-xl sm:rounded-2xl border border-outline-variant/30 shadow-2xs flex items-center gap-1 overflow-x-auto no-scrollbar scrollbar-none">
@@ -1243,7 +1156,7 @@ export const SubmitProblem: React.FC = () => {
 
           {/* Form Content */}
           <form onSubmit={handleSubmit} className="w-full flex flex-col gap-6">
-            {/* ── TAB 1: CORE PROBLEM & OPERATIONAL NARRATIVE ───────────────── */}
+            {/* â”€â”€ TAB 1: CORE PROBLEM & OPERATIONAL NARRATIVE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
             {activeTab === 1 && (
               <div className="bg-surface-container-lowest p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl border border-outline-variant/30 shadow-2xs flex flex-col gap-4 sm:gap-6 animate-fade-in">
                 <div className="flex flex-col gap-1 border-b border-gray-200/60 pb-3 sm:pb-4">
@@ -1567,7 +1480,7 @@ export const SubmitProblem: React.FC = () => {
               </div>
             )}
 
-            {/* ── TAB 2: EVIDENCE & STATISTICAL DATA POINTS ─────────────────── */}
+            {/* â”€â”€ TAB 2: EVIDENCE & STATISTICAL DATA POINTS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
             {activeTab === 2 && (
               <div className="bg-surface-container-lowest p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl border border-outline-variant/30 shadow-2xs flex flex-col gap-4 sm:gap-6 animate-fade-in">
                 <div className="flex flex-col gap-1 border-b border-gray-200/60 pb-3 sm:pb-4">
@@ -1674,9 +1587,9 @@ export const SubmitProblem: React.FC = () => {
                               <span className="text-[11px] text-on-surface-variant line-clamp-1">{doc.description}</span>
                               <div className="flex items-center gap-2 text-[10px] text-outline mt-1 font-mono">
                                 <span>{doc.size || "1.5 MB"}</span>
-                                <span>·</span>
+                                <span>Â·</span>
                                 <span>{doc.pages || "8 pages"}</span>
-                                <span>·</span>
+                                <span>Â·</span>
                                 <span className="text-primary truncate">{doc.url}</span>
                               </div>
                             </div>
@@ -1829,7 +1742,7 @@ export const SubmitProblem: React.FC = () => {
               </div>
             )}
 
-            {/* ── TAB 3: MARKET TELEMETRY & FINANCIAL IMPACT ─────────────────── */}
+            {/* â”€â”€ TAB 3: MARKET TELEMETRY & FINANCIAL IMPACT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
             {activeTab === 3 && (
               <div className="bg-surface-container-lowest p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl border border-outline-variant/30 shadow-2xs flex flex-col gap-4 sm:gap-6 animate-fade-in">
                 <div className="flex flex-col gap-1 border-b border-gray-200/60 pb-3 sm:pb-4">
@@ -1941,7 +1854,7 @@ export const SubmitProblem: React.FC = () => {
               </div>
             )}
 
-            {/* ── TAB 4: RESEARCH & COMPETITOR MATRIX ────────────────────────── */}
+            {/* â”€â”€ TAB 4: RESEARCH & COMPETITOR MATRIX â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
             {activeTab === 4 && (
               <div className="bg-surface-container-lowest p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl border border-outline-variant/30 shadow-2xs flex flex-col gap-4 sm:gap-6 animate-fade-in">
                 <div className="flex flex-col gap-1 border-b border-gray-200/60 pb-3 sm:pb-4">
@@ -2128,7 +2041,7 @@ export const SubmitProblem: React.FC = () => {
               </div>
             )}
 
-            {/* ── TAB 5: SUGGESTED MVP & TECHNICAL SPECS ─────────────────────── */}
+            {/* â”€â”€ TAB 5: SUGGESTED MVP & TECHNICAL SPECS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
             {activeTab === 5 && (
               <div className="bg-surface-container-lowest p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl border border-outline-variant/30 shadow-2xs flex flex-col gap-4 sm:gap-6 animate-fade-in">
                 <div className="flex flex-col gap-1 border-b border-gray-200/60 pb-3 sm:pb-4">
@@ -2228,13 +2141,13 @@ export const SubmitProblem: React.FC = () => {
               </div>
             )}
 
-            {/* ── TAB 6: STARTUP MODE & VENTURE WORKSPACE ────────────────────── */}
+            {/* â”€â”€ TAB 6: STARTUP MODE & VENTURE WORKSPACE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
             {activeTab === 6 && (
               <div className="bg-surface-container-lowest p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl border border-outline-variant/30 shadow-2xs flex flex-col gap-4 sm:gap-6 animate-fade-in">
                 <div className="flex flex-col gap-1 border-b border-gray-200/60 pb-3 sm:pb-4">
                   <div className="flex items-center justify-between flex-wrap gap-2">
                     <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-widest text-primary">
-                      Module 6 · Venture Studio
+                      Module 6 Â· Venture Studio
                     </span>
                     {/* Startup Mode Master Switch */}
                     <button
@@ -2837,7 +2750,7 @@ export const SubmitProblem: React.FC = () => {
                   </div>
                 )}
 
-                {/* ── Admin Direct Publishing Option ──────────────────── */}
+                {/* â”€â”€ Admin Direct Publishing Option â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
                 {isAdmin && (
                   <div className="p-3.5 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
                     <div className="flex flex-col gap-0.5">
@@ -2861,7 +2774,7 @@ export const SubmitProblem: React.FC = () => {
                   </div>
                 )}
 
-                {/* ── Human Anti-Bot Verification Check ───────────────── */}
+                {/* â”€â”€ Human Anti-Bot Verification Check â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
                 <div className="pt-2">
                   <HumanVerification
                     onVerify={() => {
@@ -2888,7 +2801,7 @@ export const SubmitProblem: React.FC = () => {
                   >
                     {submitting ? (
                       <>
-                        <span className="animate-spin">⏳</span>
+                        <span className="animate-spin">â³</span>
                         <span>Submitting to Admin...</span>
                       </>
                     ) : (

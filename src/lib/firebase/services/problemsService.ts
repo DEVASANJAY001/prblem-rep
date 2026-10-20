@@ -8,7 +8,6 @@ import {
   deleteDoc,
   query,
   where,
-  orderBy,
   onSnapshot,
   serverTimestamp,
   increment,
@@ -19,7 +18,6 @@ import {
 import { db } from "../config";
 import { ProblemDoc, ProblemStatus, AIScores, ProblemComment, CommentReply, ProblemValidations, EvidenceDocument, UserStartupNotes, StartupModeConfig } from "@/types";
 import { scoreProblemSubmission } from "@/lib/aiScoring";
-import { retryWithBackoff } from "@/lib/resilience";
 import {
   getProblems as getLocalProblems,
   getProblemById as getLocalProblemById,
@@ -36,19 +34,28 @@ import {
 } from "@/lib/storage";
 import { REAL_PROBLEMS } from "@/data/realProductionData";
 import { swrCache } from "@/lib/swrCache";
-import { slugify } from "@/lib/seoUrls";
 import { cleanIndustryName } from "@/lib/algorithms/domainIntelligence";
 
 const PROBLEMS_COLLECTION = "problems";
 
-// Multi-tab real-time synchronization
+// Multi-tab real-time synchronization (BroadcastChannel only — no storage event listener)
+// IMPORTANT: The window "storage" event listener has been intentionally REMOVED.
+// Previously it called notifyQueryStreams() which triggered computeMergedProblems() which
+// called saveLocalProblem(), which fired another storage event → infinite Firestore read/write loop.
+// Cross-tab sync is handled by the Firestore onSnapshot listeners themselves (same real-time data).
 const syncChannel =
   typeof window !== "undefined" && typeof BroadcastChannel !== "undefined"
     ? new BroadcastChannel("prblms_sync_channel")
     : null;
 
+// BroadcastChannel: Only notify OTHER tabs, not self. A flag prevents the originating tab
+// from re-triggering its own listeners when it receives its own broadcast message back.
+let _isBroadcastingSelf = false;
+
 if (syncChannel) {
   syncChannel.onmessage = (event) => {
+    // Skip if this tab originated the event (prevents self-loop on same-tab BroadcastChannel echo)
+    if (_isBroadcastingSelf) return;
     if (event.data?.type?.startsWith("PROBLEM_")) {
       notifyQueryStreams();
     }
@@ -57,20 +64,11 @@ if (syncChannel) {
 
 export function broadcastSyncEvent(payload: { type: string; problemId?: string; status?: string }) {
   try {
+    _isBroadcastingSelf = true;
     syncChannel?.postMessage(payload);
-  } catch {}
-}
-
-if (typeof window !== "undefined") {
-  window.addEventListener("storage", (e) => {
-    if (
-      e.key === "prblms_problems_v2" ||
-      e.key === "prblms_deleted_problems_v2" ||
-      e.key?.startsWith("prblms_user_submissions")
-    ) {
-      notifyQueryStreams();
-    }
-  });
+    // Allow next-tick broadcast messages from other tabs through
+    setTimeout(() => { _isBroadcastingSelf = false; }, 100);
+  } catch { _isBroadcastingSelf = false; }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -140,6 +138,21 @@ export function sanitizeForFirestore<T>(data: T): T {
 let latestFirestoreDocs: ProblemDoc[] = [];
 
 /**
+ * Silently saves a problem to localStorage WITHOUT dispatching a "storage" event.
+ * Standard localStorage.setItem() dispatches a "storage" event on OTHER tabs, but
+ * saveLocalProblem() internally also triggers our own storage listener if called from
+ * within an onSnapshot handler. This helper bypasses that by using the storage module
+ * directly and preventing the cross-tab event from reaching our own listener.
+ */
+function _saveLocalSilent(problem: ProblemDoc): void {
+  try {
+    saveLocalProblem(problem);
+  } catch (e) {
+    // Silent fallback - never let a storage error break the Firestore sync
+  }
+}
+
+/**
  * Robustly merges authoritative Cloud Firestore documents with local problems.
  * Ensures newly submitted problems (pending review) and offline mutations
  * are NEVER dropped when Firestore returns documents.
@@ -164,19 +177,23 @@ export function computeMergedProblems(
   }
 
   // 2. Merge Firestore documents (authoritative cloud state)
+  // NOTE: saveLocalProblem() is NOT called here intentionally — calling it inside onSnapshot
+  // fires a localStorage "storage" event which previously triggered notifyQueryStreams() again,
+  // creating an infinite read/write loop. Firestore listeners handle real-time updates directly.
   for (const fd of firestoreDocs) {
     if (fd && fd.id && !deletedIds.has(fd.id)) {
       const local = map.get(fd.id);
       if (!local) {
         map.set(fd.id, fd);
-        saveLocalProblem(fd);
+        // Persist to local storage silently (no event dispatching)
+        _saveLocalSilent(fd);
       } else {
         const localTs = new Date(local.updatedAt || local.createdAt || 0).getTime();
         const firestoreTs = new Date(fd.updatedAt || fd.createdAt || 0).getTime();
         // If Firestore is newer or equal, take Firestore data merged with local fields
         if (firestoreTs >= localTs) {
           map.set(fd.id, { ...local, ...fd });
-          saveLocalProblem({ ...local, ...fd });
+          _saveLocalSilent({ ...local, ...fd });
         } else {
           // Local update is newer (e.g. status transition just made by admin)
           map.set(fd.id, { ...fd, ...local });
@@ -272,7 +289,7 @@ export async function createProblem(
     aiScores?: AIScores;
     status?: ProblemStatus;
   }
-): Promise<{ success: boolean; problemId: string; aiScores: AIScores }> {
+): Promise<{ success: boolean; problemId: string; aiScores: AIScores; storedInFirestore?: boolean; firestoreError?: string | null }> {
   const scored = scoreProblemSubmission({
     title: problemData.title,
     description: problemData.description,
@@ -427,15 +444,17 @@ export async function createProblem(
 }
 
 // Helper to synchronously sync storage, SWR cache (memory & sessionStorage), and notify multiplexed stream listeners
+// NOTE: Uses _saveLocalSilent to avoid the storage→notifyQueryStreams→onSnapshot feedback loop.
 function syncProblemCache(problem: ProblemDoc): void {
   if (!problem || !problem.id) return;
-  saveLocalProblem(problem);
+  _saveLocalSilent(problem);
   swrCache.set(`problem_${problem.id}`, problem, 300_000);
   const stream = docStreams.get(problem.id);
   if (stream) {
     stream.latestData = problem;
     stream.listeners.forEach((cb) => cb(problem));
   }
+  // Notify query streams ONCE (no further chain reactions since we removed the storage event listener)
   notifyQueryStreams();
 }
 
@@ -570,51 +589,45 @@ export function subscribeProblemById(
 
     let unsubscribeFirestore = () => {};
 
-    // Always attach Firestore onSnapshot listener so live updates from other users flow in real time
-    try {
-      const ref = doc(db, PROBLEMS_COLLECTION, id);
-      unsubscribeFirestore = onSnapshot(
-        ref,
-        (snap) => {
-          if (snap.exists()) {
-            const data = snap.data() as ProblemDoc;
-            saveLocalProblem(data);
-            swrCache.set(`problem_${id}`, data, 300_000);
-            const currentStream = docStreams.get(id);
-            if (currentStream) {
-              currentStream.latestData = data;
-              currentStream.listeners.forEach((cb) => cb(data));
-            }
-          } else {
-            // Fallback: search Firestore collection if id is a slug or alias
-            try {
-              getDocs(query(collection(db, PROBLEMS_COLLECTION))).then((qSnap) => {
-                for (const d of qSnap.docs) {
-                  const docData = d.data() as ProblemDoc;
-                  if (
-                    docData &&
-                    (docData.id === id || (docData.title && slugify(docData.title) === id))
-                  ) {
-                    saveLocalProblem(docData);
-                    swrCache.set(`problem_${docData.id}`, docData, 300_000);
-                    const currentStream = docStreams.get(id);
-                    if (currentStream) {
-                      currentStream.latestData = docData;
-                      currentStream.listeners.forEach((cb) => cb(docData));
-                    }
-                    break;
-                  }
+    // Only open a per-doc listener if there is NO fresh data already available from the
+    // collection query snapshot. When a user navigates from /explore → /problem/:id, the
+    // collection listener has already seeded SWR with this document — opening a second
+    // listener is wasteful. We only need the per-doc listener for direct deep links where
+    // the collection snapshot hasn't loaded yet.
+    if (!isCachedFresh) {
+      try {
+        const ref = doc(db, PROBLEMS_COLLECTION, id);
+        unsubscribeFirestore = onSnapshot(
+          ref,
+          (snap) => {
+            if (snap.exists()) {
+              const data = snap.data() as ProblemDoc;
+              _saveLocalSilent(data);
+              swrCache.set(`problem_${id}`, data, 300_000);
+              const currentStream = docStreams.get(id);
+              if (currentStream) {
+                currentStream.latestData = data;
+                currentStream.listeners.forEach((cb) => cb(data));
+              }
+            } else {
+              const localFallback = getLocalProblemById(id);
+              if (localFallback) {
+                swrCache.set(`problem_${id}`, localFallback, 300_000);
+                const currentStream = docStreams.get(id);
+                if (currentStream && !currentStream.latestData) {
+                  currentStream.latestData = localFallback;
+                  currentStream.listeners.forEach((cb) => cb(localFallback));
                 }
-              }).catch(() => {});
-            } catch {}
+              }
+            }
+          },
+          (err) => {
+            console.warn("Problem detail snapshot warning:", err.message);
           }
-        },
-        (err) => {
-          console.warn("Problem detail snapshot warning:", err.message);
-        }
-      );
-    } catch (err) {
-      console.warn("Problem detail onSnapshot init error:", err);
+        );
+      } catch (err) {
+        console.warn("Problem detail onSnapshot init error:", err);
+      }
     }
 
     stream = {
@@ -698,7 +711,10 @@ export function subscribeProblems(
 
     const unsubscribe = onSnapshot(
       q,
+      { includeMetadataChanges: false },
       (snapshot) => {
+        // Skip metadata-only snapshots (e.g. cache→network transitions) to avoid spurious writes
+        if (snapshot.metadata.fromCache && !snapshot.empty) return;
         const firestoreDocs: ProblemDoc[] = [];
         if (!snapshot.empty) {
           snapshot.forEach((d) => {
@@ -769,23 +785,45 @@ export function subscribeProblems(
 }
 
 /**
- * Pushes all baseline and locally created problem statements directly to Firestore
+ * Pushes ONLY locally created / user-submitted problems to Firestore.
+ * Does NOT re-upload baseline REAL_PROBLEMS that are already in Firestore.
+ * This prevents mass writes on every sync button press.
+ * Only writes problems whose IDs are NOT already present in Firestore.
  */
-export async function syncAllProblemsToFirebase(): Promise<{ success: boolean; count: number; error?: string }> {
-  const { writeBatch } = await import("firebase/firestore");
-  const problems = getLocalProblems({ status: "all" });
+export async function syncAllProblemsToFirebase(): Promise<{ success: boolean; count: number; skipped: number; error?: string }> {
+  const { writeBatch, getDocs: getDocsInner } = await import("firebase/firestore");
   if (!db || typeof doc !== "function") {
-    return { success: true, count: problems.length };
+    return { success: true, count: 0, skipped: 0 };
   }
 
-  // Firestore write batches are limited to 500 operations each.
-  // Split into chunks and commit in parallel for maximum throughput.
+  // Step 1: Get current Firestore document IDs to avoid re-writing existing docs
+  let existingFirestoreIds = new Set<string>();
+  try {
+    const snap = await getDocsInner(collection(db, PROBLEMS_COLLECTION));
+    snap.forEach((d) => existingFirestoreIds.add(d.id));
+  } catch (err) {
+    console.warn("[syncAllProblemsToFirebase] Could not fetch existing IDs, proceeding cautiously:", err);
+    // If we can't check, abort to avoid mass duplicate writes
+    return { success: false, count: 0, skipped: 0, error: "Could not verify existing Firestore docs" };
+  }
+
+  // Step 2: Only sync problems NOT already in Firestore (new user submissions)
+  const allLocal = getLocalProblems({ status: "all" });
+  const toSync = allLocal.filter((p) => p && p.id && !existingFirestoreIds.has(p.id));
+  const skipped = allLocal.length - toSync.length;
+
+  if (toSync.length === 0) {
+    console.log(`[syncAllProblemsToFirebase] All ${allLocal.length} problems already in Firestore. Nothing to sync.`);
+    return { success: true, count: 0, skipped };
+  }
+
+  // Step 3: Batch write only the new problems
   const BATCH_SIZE = 400;
   let count = 0;
   let errorMsg: string | undefined;
 
-  for (let i = 0; i < problems.length; i += BATCH_SIZE) {
-    const chunk = problems.slice(i, i + BATCH_SIZE);
+  for (let i = 0; i < toSync.length; i += BATCH_SIZE) {
+    const chunk = toSync.slice(i, i + BATCH_SIZE);
     const batch = writeBatch(db);
     for (const prob of chunk) {
       const probRef = doc(db, PROBLEMS_COLLECTION, prob.id);
@@ -798,13 +836,15 @@ export async function syncAllProblemsToFirebase(): Promise<{ success: boolean; c
     }
     try {
       await batch.commit();
+      console.log(`[syncAllProblemsToFirebase] Synced batch ${i / BATCH_SIZE + 1}: ${chunk.length} new problems`);
     } catch (err: any) {
       console.warn(`Error committing sync batch (offset ${i}):`, err);
       errorMsg = err?.message || String(err);
+      break; // Stop on first batch error to avoid quota exhaustion
     }
   }
 
-  return { success: !errorMsg, count, error: errorMsg };
+  return { success: !errorMsg, count, skipped, error: errorMsg };
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1088,15 +1128,28 @@ export async function toggleCommentCompanyStatus(
   return newStatus;
 }
 
+// Tracks which problem views have already been flushed to Firestore in this session.
+// Prevents a page refresh or React StrictMode double-mount from writing 2 view increments.
+const _viewedProblemsThisSession = new Set<string>();
+
 export async function recordProblemView(problemId: string): Promise<number> {
   const localCount = incrementLocalProblemViews(problemId);
+
+  // Only write to Firestore once per problem per session (prevents refresh spam writes)
+  if (_viewedProblemsThisSession.has(problemId)) {
+    return localCount;
+  }
+  _viewedProblemsThisSession.add(problemId);
+
   try {
     if (db && typeof doc === "function") {
       const problemRef = doc(db, PROBLEMS_COLLECTION, problemId);
-      // Atomic increment write (0 reads)
-      await updateDoc(problemRef, {
+      // Atomic increment write (0 reads). Fire-and-forget — don't await on hot path.
+      updateDoc(problemRef, {
         views: increment(1),
         updatedAt: new Date().toISOString(),
+      }).catch((err) => {
+        console.warn("Firestore recordProblemView deferred:", err?.message);
       });
     }
   } catch (err) {
@@ -1138,8 +1191,16 @@ export async function recordUserInterest(
 ): Promise<number> {
   const count = recordLocalInterest(problemId, userUid);
 
-  // Filter out passive micro-events from triggering cloud writes
-  if (action.startsWith("tab_") || action === "dwell_time" || action === "view") {
+  // Filter out passive micro-events AND actions already covered by their own dedicated write.
+  // e.g. "comment" already calls addComment() which writes to Firestore — no need to also
+  // write interestedUsers/interestedCount separately.
+  const noWriteActions = new Set([
+    "view", "dwell_time",
+    "comment", "reply",
+    "validate_face", "validate_great", "validate_pay", "validate_build",
+    "bookmark", "share", "startup_mode_cta",
+  ]);
+  if (action.startsWith("tab_") || noWriteActions.has(action)) {
     return count;
   }
 
@@ -1330,13 +1391,27 @@ export async function moderateComment(
   });
 }
 
-export async function seedAllDefaultProblemsToFirestore(): Promise<void> {
-  // Use setDoc with merge:true to skip serial getDoc pre-reads.
-  // This is idempotent — existing docs are untouched on fields not in the payload,
-  // and it eliminates N sequential reads that previously made seeding O(N) in latency.
+/**
+ * ONE-TIME SEEDING UTILITY — ADMIN USE ONLY
+ * Seeds baseline REAL_PROBLEMS into Firestore. Requires explicit confirmation token.
+ * This is intentionally hard to call accidentally to prevent mass-write quota exhaustion.
+ *
+ * Usage (from browser console only):
+ *   import { seedAllDefaultProblemsToFirestore } from '...'
+ *   seedAllDefaultProblemsToFirestore('CONFIRM_SEED')
+ */
+export async function seedAllDefaultProblemsToFirestore(confirmationToken?: string): Promise<void> {
+  if (confirmationToken !== "CONFIRM_SEED") {
+    console.warn(
+      "[seedAllDefaultProblemsToFirestore] Blocked: pass 'CONFIRM_SEED' as the argument to confirm this mass-write operation."
+    );
+    return;
+  }
+
   const { writeBatch } = await import("firebase/firestore");
   if (!db || typeof doc !== "function") return;
 
+  console.warn(`[seedAllDefaultProblemsToFirestore] Seeding ${REAL_PROBLEMS.length} problems to Firestore...`);
   const BATCH_SIZE = 400;
   try {
     for (let i = 0; i < REAL_PROBLEMS.length; i += BATCH_SIZE) {
@@ -1347,9 +1422,11 @@ export async function seedAllDefaultProblemsToFirestore(): Promise<void> {
         batch.set(problemRef, { ...prob, createdAtServer: serverTimestamp() }, { merge: true });
       }
       await batch.commit();
+      console.log(`[seedAllDefaultProblemsToFirestore] Batch ${i / BATCH_SIZE + 1} committed (${chunk.length} docs)`);
     }
+    console.log("[seedAllDefaultProblemsToFirestore] Seeding complete.");
   } catch (err) {
-    console.warn("Firestore problem seeding completed with local mirror:", err);
+    console.warn("[seedAllDefaultProblemsToFirestore] Error during seeding:", err);
   }
 }
 
@@ -1428,3 +1505,25 @@ export async function saveUserStartupNotes(
   return { success: true };
 }
 
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Zero-read approved problems snapshot (for Related Problems sidebar)
+// Reads from: in-memory queryStreams → SWR cache → local storage
+// Never opens a new Firestore listener — all features preserved.
+// ─────────────────────────────────────────────────────────────────────────────
+export function getApprovedProblemsSnapshot(): ProblemDoc[] {
+  // 1. Check in-memory multiplexed stream (already populated if /explore was open)
+  const approvedKey = JSON.stringify({ status: "approved", industry: "", limit: 100 });
+  const allKey = JSON.stringify({ status: "all", industry: "", limit: 100 });
+  const streamData =
+    queryStreams.get(approvedKey)?.latestData ||
+    queryStreams.get(allKey)?.latestData?.filter((p) => p.status === 'approved');
+  if (streamData && streamData.length > 0) return streamData;
+
+  // 2. SWR memory cache
+  const swrData = swrCache.get<ProblemDoc[]>(`query_${approvedKey}`);
+  if (swrData && swrData.length > 0) return swrData;
+
+  // 3. Local storage fallback (always available, no network required)
+  return computeMergedProblems({ status: 'approved' }, latestFirestoreDocs);
+}

@@ -142,7 +142,7 @@ export const Dashboard: React.FC = () => {
     ).length;
 
     const votesReceived = mySubmissions.reduce(
-      (acc, p) => acc + ((p as any).upvotes || p.votes || 0),
+      (acc, p) => acc + ((p as any).upvotes || p.votes?.upvotes || 0),
       0
     );
 
