@@ -66,6 +66,8 @@ export const Explore: React.FC = () => {
   const [industriesList, setIndustriesList] = useState<IndustryDoc[]>([]);
   const [showDomainsModal, setShowDomainsModal] = useState<boolean>(false);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 20;
 
   // Admin CMS custom overrides for explore domains
   const popularSlugsOverride = getField<string[]>("domains_config", "popular_domains", []);
@@ -171,7 +173,13 @@ export const Explore: React.FC = () => {
     setVerifiedOnly(false);
     setSearch("");
     setSearchParams({});
+    setCurrentPage(1);
   };
+
+  // Reset to page 1 whenever any filter or sort changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, selectedIndustries, selectedSeverity, verifiedOnly, sortBy]);
 
   const isSearching = search.trim().length > 0;
   const isDomainSelected = selectedIndustries.length > 0;
@@ -234,23 +242,14 @@ export const Explore: React.FC = () => {
     });
   }, [allProblems, search, selectedIndustries, selectedSeverity, verifiedOnly, sortBy]);
 
-  // Trending Problems Calculation (Highest traction / High pain / Most views)
+  // Trending Problems — top 5 by traction (views + pain + votes)
   const trendingProblems = useMemo(() => {
-    const trending = allProblems.filter((p) => {
-      const rawPain = Number(p.painScore ?? p.aiScores?.painLevel ?? 87);
-      const views = p.views ?? 0;
-      const votes = typeof p.votes === "object" ? p.votes?.upvotes || 0 : Number(p.votes || 0);
-      return views >= 30 || rawPain >= 88 || votes >= 10 || (p as any).isTrending;
+    const scored = [...allProblems].sort((a, b) => {
+      const scoreA = (a.views || 0) * 1.5 + (a.votes?.upvotes || 0) * 2 + Number(a.painScore || a.aiScores?.painLevel || 80);
+      const scoreB = (b.views || 0) * 1.5 + (b.votes?.upvotes || 0) * 2 + Number(b.painScore || b.aiScores?.painLevel || 80);
+      return scoreB - scoreA;
     });
-
-    if (trending.length >= 3) return trending;
-
-    // Fallback: top problems sorted by pain score and views
-    return [...allProblems].sort((a, b) => {
-      const painA = Number(a.painScore || a.aiScores?.painLevel || 80);
-      const painB = Number(b.painScore || b.aiScores?.painLevel || 80);
-      return painB - painA;
-    }).slice(0, 6);
+    return scored.slice(0, 5);
   }, [allProblems]);
 
   // Suggested problem statements randomly picked from different industries when 0 results match
@@ -661,8 +660,9 @@ export const Explore: React.FC = () => {
           </div>
 
           {loading ? (
+            // Skeleton grid matching real card layout — 10 placeholders (2 cols × 5 rows)
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
-              {Array.from({ length: 4 }).map((_, i) => (
+              {Array.from({ length: 10 }).map((_, i) => (
                 <div key={i} className="w-full">
                   <ProblemCardSkeleton />
                 </div>
@@ -724,13 +724,80 @@ export const Explore: React.FC = () => {
                 </div>
               )}
             </div>
-          ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full animate-fade-in">
-              {filteredProblems.map((prob) => (
-                <TrendingProblemCard key={prob.id} problem={prob} className="w-full h-full" />
-              ))}
-            </div>
-          )}
+          ) : (() => {
+            const totalPages = Math.ceil(filteredProblems.length / ITEMS_PER_PAGE);
+            const safePage = Math.min(currentPage, totalPages);
+            const pageStart = (safePage - 1) * ITEMS_PER_PAGE;
+            const pageItems = filteredProblems.slice(pageStart, pageStart + ITEMS_PER_PAGE);
+
+            // Build page number array with ellipsis (always show first, last, and ±1 around current)
+            const getPageNumbers = () => {
+              if (totalPages <= 7) return Array.from({ length: totalPages }, (_, i) => i + 1);
+              const pages: (number | "...")[] = [1];
+              if (safePage > 3) pages.push("...");
+              for (let p = Math.max(2, safePage - 1); p <= Math.min(totalPages - 1, safePage + 1); p++) {
+                pages.push(p);
+              }
+              if (safePage < totalPages - 2) pages.push("...");
+              pages.push(totalPages);
+              return pages;
+            };
+
+            return (
+              <div className="flex flex-col gap-6">
+                {/* Cards grid */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full animate-fade-in">
+                  {pageItems.map((prob) => (
+                    <TrendingProblemCard key={prob.id} problem={prob} className="w-full h-full" />
+                  ))}
+                </div>
+
+                {/* Pagination controls — only shown when more than 1 page */}
+                {totalPages > 1 && (
+                  <div className="flex items-center justify-center gap-1.5 pt-2 pb-4">
+                    {/* Prev */}
+                    <button
+                      onClick={() => { setCurrentPage((p) => Math.max(1, p - 1)); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+                      disabled={safePage === 1}
+                      className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-semibold border border-outline-variant/40 text-on-surface-variant hover:text-primary hover:border-primary/40 disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer"
+                    >
+                      <ChevronLeft className="w-3.5 h-3.5" />
+                      <span>Prev</span>
+                    </button>
+
+                    {/* Page numbers */}
+                    {getPageNumbers().map((pg, idx) =>
+                      pg === "..." ? (
+                        <span key={`ellipsis-${idx}`} className="px-1.5 text-xs text-on-surface-variant select-none">…</span>
+                      ) : (
+                        <button
+                          key={pg}
+                          onClick={() => { setCurrentPage(pg as number); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+                          className={`min-w-[32px] h-8 flex items-center justify-center rounded-xl text-xs font-bold transition-all cursor-pointer border ${
+                            safePage === pg
+                              ? "bg-primary text-white border-primary shadow-sm"
+                              : "border-outline-variant/30 text-on-surface-variant hover:text-primary hover:border-primary/40 hover:bg-primary/5"
+                          }`}
+                        >
+                          {pg}
+                        </button>
+                      )
+                    )}
+
+                    {/* Next */}
+                    <button
+                      onClick={() => { setCurrentPage((p) => Math.min(totalPages, p + 1)); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+                      disabled={safePage === totalPages}
+                      className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-semibold border border-outline-variant/40 text-on-surface-variant hover:text-primary hover:border-primary/40 disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer"
+                    >
+                      <span>Next</span>
+                      <ChevronRight className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                )}
+              </div>
+            );
+          })()}
         </section>
       </main>
 
