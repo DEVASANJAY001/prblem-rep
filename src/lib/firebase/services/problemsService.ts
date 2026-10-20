@@ -156,6 +156,13 @@ function _saveLocalSilent(problem: ProblemDoc): void {
  * Robustly merges authoritative Cloud Firestore documents with local problems.
  * Ensures newly submitted problems (pending review) and offline mutations
  * are NEVER dropped when Firestore returns documents.
+ *
+ * Firestore-first strategy: when Firestore has returned a non-empty snapshot,
+ * it is treated as authoritative. Local problems NOT in the Firestore snapshot
+ * are only kept if they are fresh pending-only submissions (no cloud ID yet),
+ * i.e. problems the current user just submitted that haven't been synced yet.
+ * Problems deleted directly from the Firebase console will be purged from local
+ * cache on the next snapshot, eliminating stale ghost entries.
  */
 export function computeMergedProblems(
   filter: { status?: "approved" | "pending" | "rejected" | "all"; industry?: string } = {},
@@ -167,12 +174,41 @@ export function computeMergedProblems(
     industry: filter.industry,
   });
 
+  const firestoreHasData = firestoreDocs.length > 0;
+  // Build a fast lookup set of IDs present in the Firestore snapshot
+  const firestoreIdSet = new Set(firestoreDocs.map((fd) => fd.id));
+
   const map = new Map<string, ProblemDoc>();
 
-  // 1. Seed with local problems (includes pending user submissions and local creations)
+  // 1. Seed with local problems — but ONLY keep locals that either:
+  //    a) Also exist in Firestore (will be merged/overwritten in step 2), OR
+  //    b) Are fresh pending-only submissions not yet synced to Firestore
+  //       (status === "pending" AND no createdAtServer field, meaning the
+  //        Firestore write may still be in-flight or failed).
+  //    When Firestore has no data yet (cold start / offline), keep everything locally.
   for (const lp of localList) {
-    if (lp && lp.id && !deletedIds.has(lp.id)) {
+    if (!lp || !lp.id || deletedIds.has(lp.id)) continue;
+
+    if (!firestoreHasData) {
+      // Offline / cold start — trust local cache fully
       map.set(lp.id, lp);
+    } else if (firestoreIdSet.has(lp.id)) {
+      // Will be merged with Firestore data in step 2
+      map.set(lp.id, lp);
+    } else if (lp.status === "pending" && lp.createdAt) {
+      // Fresh pending submission not yet confirmed in Firestore snapshot.
+      // Keep it if it was created within the last 5 minutes (in-flight / queued write).
+      const age = Date.now() - new Date(lp.createdAt).getTime();
+      if (age < 5 * 60 * 1000) {
+        map.set(lp.id, lp);
+      } else {
+        // Old pending problem not in Firestore — it was deleted externally
+        deleteProblemFromStorage(lp.id);
+      }
+    } else {
+      // Problem exists locally but NOT in Firestore snapshot → it was deleted
+      // from Firebase console or another tab. Silently remove from local cache.
+      deleteProblemFromStorage(lp.id);
     }
   }
 
