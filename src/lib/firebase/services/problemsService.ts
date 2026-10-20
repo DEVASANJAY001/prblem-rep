@@ -1333,8 +1333,29 @@ export async function updateFullProblemDetails(
   problemId: string,
   deltaProblemData: Partial<ProblemDoc>
 ): Promise<boolean> {
-  // 1. Update in local storage
-  updateFullProblemInStorage(problemId, deltaProblemData);
+  // Enrich the delta with Firestore-authoritative aggregate counters BEFORE writing to
+  // localStorage. The admin delta only contains fields the admin changed (title, description,
+  // etc.). If we write it directly to local storage, the local problem still has whatever
+  // stale views/validation counts were cached — and notifyQueryStreams() then fans those
+  // stale counts out to every card on the Explore and Admin pages.
+  //
+  // Solution: pull the live counts from the in-memory Firestore snapshot if available,
+  // and merge them into the delta so local storage always ends up with the real counts.
+  const firestoreLive = latestFirestoreDocs.find((fd) => fd.id === problemId)
+    || (docStreams.get(problemId)?.latestData as ProblemDoc | null | undefined);
+
+  const countersFromFirestore: Partial<ProblemDoc> = firestoreLive
+    ? {
+        views:           firestoreLive.views           ?? deltaProblemData.views,
+        bookmarksCount:  firestoreLive.bookmarksCount  ?? deltaProblemData.bookmarksCount,
+        interestedCount: firestoreLive.interestedCount ?? deltaProblemData.interestedCount,
+        commentsCount:   firestoreLive.commentsCount   ?? deltaProblemData.commentsCount,
+        validations:     firestoreLive.validations     ?? deltaProblemData.validations,
+      }
+    : {};
+
+  // 1. Update in local storage (counters from Firestore take precedence over stale local values)
+  updateFullProblemInStorage(problemId, { ...countersFromFirestore, ...deltaProblemData });
   const updatedProb = getLocalProblemById(problemId);
   if (updatedProb) {
     syncProblemCache(updatedProb);
