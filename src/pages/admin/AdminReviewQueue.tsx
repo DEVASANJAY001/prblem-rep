@@ -34,6 +34,7 @@ export const AdminReviewQueue: React.FC = () => {
   const [sortBy, setSortBy] = useState<"newest" | "pain" | "severity">("newest");
   const [searchQuery, setSearchQuery] = useState("");
   const [actionSuccess, setActionSuccess] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
   const [actionLoadingId, setActionLoadingId] = useState<string | null>(null);
 
   // Modification Request Note Modal State
@@ -81,6 +82,9 @@ export const AdminReviewQueue: React.FC = () => {
 
   const handleDecision = async (problemId: string, decision: ProblemStatus, note?: string) => {
     setActionLoadingId(problemId);
+    setActionError(null);
+    // Optimistic update — revert if write fails
+    const prevProblems = [...allQueueProblems];
     setAllQueueProblems((prev) =>
       prev.map((p) => (p.id === problemId ? { ...p, status: decision } : p))
     );
@@ -91,7 +95,6 @@ export const AdminReviewQueue: React.FC = () => {
         userDoc ? { uid: userDoc.uid, name: userDoc.name } : { uid: "admin_moderator", name: "Lead Moderator" },
         note || `Reviewed in Admin Review Queue: ${decision}`
       );
-
       setActionSuccess(
         decision === "approved"
           ? "Problem verified and published live to ecosystem!"
@@ -101,6 +104,10 @@ export const AdminReviewQueue: React.FC = () => {
       );
       setTimeout(() => setActionSuccess(null), 3500);
     } catch (err) {
+      // Revert optimistic update so the card reappears in the queue
+      setAllQueueProblems(prevProblems);
+      setActionError("Failed to update status. Please check your connection and try again.");
+      setTimeout(() => setActionError(null), 4000);
       console.error("Decision update failed:", err);
     } finally {
       setActionLoadingId(null);
@@ -274,6 +281,13 @@ export const AdminReviewQueue: React.FC = () => {
         <div className="rounded-xl bg-emerald-50 border border-emerald-200/80 p-3.5 text-xs font-bold text-emerald-800 flex items-center gap-2 shadow-2xs animate-fade-in">
           <Check className="h-4 w-4 text-emerald-600" />
           <span>{actionSuccess}</span>
+        </div>
+      )}
+
+      {actionError && (
+        <div className="rounded-xl bg-red-50 border border-red-200/80 p-3.5 text-xs font-bold text-red-800 flex items-center gap-2 shadow-2xs animate-fade-in">
+          <span>⚠️</span>
+          <span>{actionError}</span>
         </div>
       )}
 
