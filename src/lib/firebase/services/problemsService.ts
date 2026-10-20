@@ -31,6 +31,8 @@ import {
   recordLocalInterest,
   generateNextProblemId,
   getDeletedProblemIds,
+  markFirestoreSynced,
+  STORAGE_KEYS,
 } from "@/lib/storage";
 import { REAL_PROBLEMS } from "@/data/realProductionData";
 import { swrCache } from "@/lib/swrCache";
@@ -216,6 +218,20 @@ export function computeMergedProblems(
   // NOTE: saveLocalProblem() is NOT called here intentionally — calling it inside onSnapshot
   // fires a localStorage "storage" event which previously triggered notifyQueryStreams() again,
   // creating an infinite read/write loop. Firestore listeners handle real-time updates directly.
+
+  // Defense-in-depth: if a doc is in Firestore, it was never actually deleted — clear it
+  // from the stale deleted-IDs list so it shows correctly in every browser session.
+  const staleDeletesToClear = Array.from(firestoreIdSet).filter(id => deletedIds.has(id));
+  if (staleDeletesToClear.length > 0) {
+    try {
+      const current = JSON.parse(localStorage.getItem(STORAGE_KEYS.DELETED_PROBLEMS) || "[]") as string[];
+      const cleaned = current.filter(id => !staleDeletesToClear.includes(id));
+      localStorage.setItem(STORAGE_KEYS.DELETED_PROBLEMS, JSON.stringify(cleaned));
+      // Remove from in-memory set so the loop below is unaffected
+      staleDeletesToClear.forEach(id => deletedIds.delete(id));
+    } catch {}
+  }
+
   for (const fd of firestoreDocs) {
     if (fd && fd.id && !deletedIds.has(fd.id)) {
       const local = map.get(fd.id);
@@ -765,6 +781,13 @@ export function subscribeProblems(
         }
         
         latestFirestoreDocs = firestoreDocs;
+
+        // Mark that Firestore has delivered at least one real snapshot.
+        // After this point, REAL_PROBLEMS seed data will NEVER be re-injected into
+        // localStorage — preventing phantom hardcoded problems appearing in browsers
+        // that haven't received this session's snapshot yet.
+        markFirestoreSynced();
+
         const mergedList = computeMergedProblems(filter, firestoreDocs);
 
         // 1. Cache full query list in SWR (Memory LRU + SessionStorage)

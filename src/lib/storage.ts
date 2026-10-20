@@ -50,7 +50,24 @@ export const STORAGE_KEYS = {
   CREDITS: "prblms_credits_v2",
   USER_SUBMISSIONS: "prblms_user_submissions_v2",
   DELETED_PROBLEMS: "prblms_deleted_problems_v2",
+  // Set to "1" once Firestore has delivered at least one real snapshot.
+  // When this flag is set, REAL_PROBLEMS seeds are never re-injected.
+  FIRESTORE_SYNCED: "prblms_firestore_synced_v2",
 };
+
+/**
+ * Call this once after the first successful Firestore snapshot arrives.
+ * It sets a localStorage flag that stops the offline REAL_PROBLEMS seeds
+ * from being injected back, preventing phantom hardcoded problems from
+ * appearing in browsers that still have stale storage.
+ */
+export function markFirestoreSynced(): void {
+  try { localStorage.setItem(STORAGE_KEYS.FIRESTORE_SYNCED, "1"); } catch {}
+}
+
+export function isFirestoreSynced(): boolean {
+  try { return localStorage.getItem(STORAGE_KEYS.FIRESTORE_SYNCED) === "1"; } catch { return false; }
+}
 
 export const DEFAULT_CREDITS: CreditSourceDoc[] = [
   {
@@ -210,10 +227,14 @@ export function getProblems(filter?: {
   // Exclude deleted items and obsolete fake seed items from list
   list = list.filter((p) => !deletedIds.has(p.id) && p.id !== "prob-pending-seed" && p.id !== "prob-needs-info-seed");
 
-  // Ensure any baseline problems from REAL_PROBLEMS are present UNLESS explicitly deleted
-  for (const seed of REAL_PROBLEMS) {
-    if (!deletedIds.has(seed.id) && !list.some((p) => p.id === seed.id)) {
-      list.push(seed);
+  // Only re-inject REAL_PROBLEMS seeds when Firestore has NEVER provided a snapshot
+  // (cold start / offline). Once Firestore has synced, it is the only source of truth —
+  // injecting hardcoded seeds would create phantom problems in browsers with stale storage.
+  if (!isFirestoreSynced()) {
+    for (const seed of REAL_PROBLEMS) {
+      if (!deletedIds.has(seed.id) && !list.some((p) => p.id === seed.id)) {
+        list.push(seed);
+      }
     }
   }
 
