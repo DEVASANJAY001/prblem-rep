@@ -738,6 +738,20 @@ export function subscribeProblems(
         // Enables instant 0ms, 0-read opening of /problem/:id and /startup-mode/:id!
         swrCache.setMany(mergedList, "problem_", 300_000);
 
+        // 3. Fan out updates to any active per-doc stream (docStreams).
+        // When a user is on /problem/:id without an active per-doc Firestore listener
+        // (because SWR was fresh at load time), they still receive real-time updates
+        // pushed from admin edits, other users' actions, etc. via this collection stream.
+        firestoreDocs.forEach((updatedDoc) => {
+          const docStream = docStreams.get(updatedDoc.id);
+          if (docStream && docStream.listeners.size > 0) {
+            _saveLocalSilent(updatedDoc);
+            swrCache.set(`problem_${updatedDoc.id}`, updatedDoc, 300_000);
+            docStream.latestData = updatedDoc;
+            docStream.listeners.forEach((cb) => cb(updatedDoc));
+          }
+        });
+
         const currentStream = queryStreams.get(queryKey);
         if (currentStream) {
           currentStream.latestData = mergedList;

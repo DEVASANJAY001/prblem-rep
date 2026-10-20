@@ -13,17 +13,13 @@ service cloud.firestore {
       return isAuthenticated() && request.auth.uid == userId;
     }
 
-    // Role is stored on the user doc AND optionally as a custom claim
-    function getUserRole() {
-      return isAuthenticated() && exists(/databases/$(database)/documents/users/$(request.auth.uid))
-        ? get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role
-        : 'guest';
-    }
-
+    // Role is stored as a Firebase Auth custom claim set by the backend.
+    // Do NOT use get() on user docs inside rules — it adds latency and can fail
+    // silently, causing legitimate admin writes to be rejected.
     function isAdmin() {
       return isAuthenticated() && (
         request.auth.token.role == 'admin' ||
-        getUserRole() == 'admin'
+        request.auth.token.admin == true
       );
     }
 
@@ -31,8 +27,7 @@ service cloud.firestore {
       return isAuthenticated() && (
         request.auth.token.role == 'moderator' ||
         request.auth.token.role == 'admin' ||
-        getUserRole() == 'moderator' ||
-        getUserRole() == 'admin'
+        request.auth.token.admin == true
       );
     }
 
