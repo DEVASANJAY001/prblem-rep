@@ -217,6 +217,10 @@ export const ProblemDetail: React.FC = () => {
     }
   };
 
+  // Tracks the last recorded problem ID — survives StrictMode unmount/remount.
+  // Using the ID (not a boolean) means navigating away and back re-records correctly.
+  const lastRecordedViewId = useRef<string | null>(null);
+
   useEffect(() => {
     if (!id) {
       setLoading(false);
@@ -225,7 +229,6 @@ export const ProblemDetail: React.FC = () => {
 
     setLoading(true);
     setProblem(null);
-    hasRecordedView.current = false;
     if (typeof window !== "undefined") {
       window.scrollTo({ top: 0, behavior: "instant" });
     }
@@ -295,9 +298,11 @@ export const ProblemDetail: React.FC = () => {
       }
     });
 
-    // Record Realtime Page View once per session
-    if (!hasRecordedView.current) {
-      hasRecordedView.current = true;
+    // Record page view only once per unique problem ID.
+    // lastRecordedViewId ref survives StrictMode's unmount/remount cycle,
+    // so the second effect invocation sees the ID already recorded and skips.
+    if (lastRecordedViewId.current !== cleanId) {
+      lastRecordedViewId.current = cleanId;
       recordProblemView(cleanId).then((newViews) => {
         if (newViews) setViewsCount(newViews);
       });
