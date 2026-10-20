@@ -1355,15 +1355,32 @@ export async function updateFullProblemDetails(
   try {
     if (db && typeof doc === "function") {
       const problemRef = doc(db, PROBLEMS_COLLECTION, problemId);
-      const writePromise = setDoc(problemRef, sanitizeForFirestore(cleanPayload), { merge: true }).catch((err) => {
-        console.warn("[Firebase Firestore] Problem update queued/deferred by SDK:", err.message);
-      });
-      const timeoutPromise = new Promise((resolve) => setTimeout(resolve, 1500));
+      let writeError: Error | null = null;
+
+      // Await the write with a 3s timeout — capture actual write errors (e.g. permission denied)
+      // so callers can show a real error instead of a false success toast.
+      const writePromise = setDoc(problemRef, sanitizeForFirestore(cleanPayload), { merge: true })
+        .catch((err) => {
+          writeError = err;
+          // If permission-denied, force an ID token refresh so the next attempt picks up
+          // any recently-granted admin custom claims without requiring a re-login.
+          if (err?.code === "permission-denied" || err?.message?.includes("permission")) {
+            import("firebase/auth").then(({ getAuth }) => {
+              getAuth().currentUser?.getIdToken(true).catch(() => {});
+            });
+          }
+          console.warn("[Firestore] updateFullProblemDetails write rejected:", err?.message);
+        });
+
+      const timeoutPromise = new Promise<void>((resolve) => setTimeout(resolve, 3000));
       await Promise.race([writePromise, timeoutPromise]);
+
+      if (writeError) return false;
       return true;
     }
   } catch (error) {
     console.warn("Firestore updateFullProblemDetails error:", error);
+    return false;
   }
 
   return true;

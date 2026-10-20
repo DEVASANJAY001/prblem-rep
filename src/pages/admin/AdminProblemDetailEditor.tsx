@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import {
   getProblemById,
@@ -68,6 +68,11 @@ export const AdminProblemDetailEditor: React.FC<AdminProblemDetailEditorProps> =
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
+
+  // Track whether the form has been seeded from Firestore for the first time.
+  // Subsequent Firestore pushes (e.g. the echo back after a save) update `problem`
+  // for delta comparison but must NOT reset the admin's active editing controls.
+  const formInitialized = useRef(false);
 
   const [activeTab, setActiveTab] = useState<
     | "header_scores"
@@ -244,6 +249,10 @@ export const AdminProblemDetailEditor: React.FC<AdminProblemDetailEditorProps> =
   useEffect(() => {
     if (!problemId) return;
 
+    // Reset so we re-seed form controls for the new problem
+    formInitialized.current = false;
+    setLoading(true);
+
     // Load available companies & credits
     const unsubCompanies = subscribeCompanies((list) => {
       setAvailableCompanies(list);
@@ -255,7 +264,16 @@ export const AdminProblemDetailEditor: React.FC<AdminProblemDetailEditorProps> =
 
     const unsubscribe = subscribeProblemById(problemId, (prob) => {
       if (prob) {
+        // Always keep the authoritative `problem` reference up-to-date so the
+        // delta comparison in handleSaveAll uses the latest Firestore values.
         setProblem(prob);
+
+        // Only seed form controls on the FIRST load. After that, Firestore echoes
+        // (including the ones triggered by the admin's own saves) must NOT clobber
+        // the admin's active edits.
+        if (formInitialized.current) return;
+        formInitialized.current = true;
+
         setTitle(prob.title || "");
         setDescription(prob.description || "");
         setIndustry(prob.industry || "Healthcare");
@@ -467,8 +485,6 @@ export const AdminProblemDetailEditor: React.FC<AdminProblemDetailEditorProps> =
       tags: Array.from(new Set([...selectedCompanyNames, ...customSolverTags])),
       reviewNote: adminReviewNote,
       adminReviewNote: adminReviewNote,
-      reviewedBy: userDoc?.name || user?.displayName || "Admin Moderator",
-      reviewedAt: new Date().toISOString(),
       hasStartupMode: startupModeEnabled,
       startupModeEnabled: startupModeEnabled,
       startupModeConfig: {
@@ -494,6 +510,16 @@ export const AdminProblemDetailEditor: React.FC<AdminProblemDetailEditorProps> =
       }
     }
 
+    // Only add reviewedBy/reviewedAt when the admin explicitly changed the status or
+    // review note — these are protected fields in Firestore rules (admin-only) and
+    // including them unconditionally causes permission errors when the token is stale.
+    const statusChanged = delta.status !== undefined && delta.status !== problem.status;
+    const reviewNoteChanged = delta.reviewNote !== undefined && delta.reviewNote !== problem.reviewNote;
+    if (statusChanged || reviewNoteChanged) {
+      delta.reviewedBy = userDoc?.name || user?.displayName || "Admin Moderator";
+      delta.reviewedAt = new Date().toISOString();
+    }
+
     if (Object.keys(delta).length === 0) {
       setSaving(false);
       showToast("No changes detected. Everything is up to date!", "success");
@@ -507,7 +533,7 @@ export const AdminProblemDetailEditor: React.FC<AdminProblemDetailEditorProps> =
       showToast(`Updated ${Object.keys(delta).length} modified module(s) live!`, "success");
       if (onSaved) onSaved();
     } else {
-      showToast("Failed to save changes. Check connection.", "error");
+      showToast("Failed to save to Firestore. Check your connection or permissions — try signing out and back in.", "error");
     }
   };
 
