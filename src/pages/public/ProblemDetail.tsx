@@ -59,74 +59,7 @@ import {
   ChevronDown,
 } from "lucide-react";
 
-interface SolverCompany {
-  name: string;
-  icon: React.ReactNode;
-}
 
-const getIndustrySolvers = (industry: string): { companies: SolverCompany[]; totalCount: number } => {
-  const ind = industry.toLowerCase();
-
-  const googleIcon = (
-    <svg viewBox="0 0 24 24" className="w-3 h-3">
-      <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-      <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-      <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
-      <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
-    </svg>
-  );
-
-  const msftIcon = (
-    <div className="grid grid-cols-2 gap-0.5 w-2.5 h-2.5">
-      <div className="bg-[#F25022] rounded-[0.5px]" />
-      <div className="bg-[#7FBA00] rounded-[0.5px]" />
-      <div className="bg-[#00A4EF] rounded-[0.5px]" />
-      <div className="bg-[#FFB900] rounded-[0.5px]" />
-    </div>
-  );
-
-  const amazonIcon = (
-    <span className="font-black text-[8.5px] text-[#FF9900] leading-none font-sans">a</span>
-  );
-
-  const metaIcon = (
-    <svg viewBox="0 0 24 24" className="w-3 h-3 text-[#0081FB]" fill="currentColor">
-      <path d="M12 6.5C8.41 6.5 5.5 9.41 5.5 13c0 2.21 1.1 4.16 2.78 5.34l1.24-1.66C8.25 15.74 7.5 14.47 7.5 13c0-2.48 2.02-4.5 4.5-4.5s4.5 2.02 4.5 4.5c0 1.47-.75 2.74-2.02 3.68l1.24 1.66C17.4 17.16 18.5 15.21 18.5 13c0-3.59-2.91-6.5-6.5-6.5z" />
-    </svg>
-  );
-
-  const ibmIcon = (
-    <span className="font-black text-[7px] text-[#0530AD] font-mono leading-none">IBM</span>
-  );
-
-  const healthIcon = (
-    <span className="font-bold text-[7.5px] text-[#E11D48] font-sans">Rx</span>
-  );
-
-  if (ind.includes("health") || ind.includes("bio") || ind.includes("medical")) {
-    return {
-      companies: [
-        { name: "Pfizer", icon: healthIcon },
-        { name: "Google Health", icon: googleIcon },
-        { name: "Microsoft Health", icon: msftIcon },
-        { name: "IBM Watson", icon: ibmIcon },
-        { name: "Amazon Health", icon: amazonIcon },
-      ],
-      totalCount: 26,
-    };
-  }
-
-  return {
-    companies: [
-      { name: "Google", icon: googleIcon },
-      { name: "Microsoft", icon: msftIcon },
-      { name: "Amazon", icon: amazonIcon },
-      { name: "Meta", icon: metaIcon },
-      { name: "IBM", icon: ibmIcon },
-    ],
-    totalCount: 38,
-  };
-};
 
 function formatRelativeTime(dateString?: string): string {
   if (!dateString) return "3 days ago";
@@ -220,6 +153,7 @@ export const ProblemDetail: React.FC = () => {
   // Tracks the last recorded problem ID — survives StrictMode unmount/remount.
   // Using the ID (not a boolean) means navigating away and back re-records correctly.
   const lastRecordedViewId = useRef<string | null>(null);
+  const currentProblemIdRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (!id) {
@@ -227,13 +161,17 @@ export const ProblemDetail: React.FC = () => {
       return;
     }
 
-    setLoading(true);
-    setProblem(null);
-    if (typeof window !== "undefined") {
-      window.scrollTo({ top: 0, behavior: "instant" });
-    }
-
     const cleanId = extractProblemId(id);
+
+    // Only clear problem state if we are truly loading a DIFFERENT problem
+    if (currentProblemIdRef.current !== cleanId) {
+      currentProblemIdRef.current = cleanId;
+      setLoading(true);
+      setProblem(null);
+      if (typeof window !== "undefined") {
+        window.scrollTo({ top: 0, behavior: "instant" });
+      }
+    }
 
     const unsubscribe = subscribeProblemById(cleanId, (p) => {
       if (p) {
@@ -246,24 +184,35 @@ export const ProblemDetail: React.FC = () => {
           }
         }
         setViewsCount((prev) => Math.max(prev, p.views || 0));
-        setInterestedCount((prev) =>
-          Math.max(prev, p.interestedCount || 0, p.interestedUsers?.length || 0)
-        );
-        if (p.interestedUsers?.includes(currentUid)) {
-          setUserInterested(true);
+
+        // Read exact interest count & state from Firestore
+        const userVals = p.validations?.userValidations?.[currentUid] || [];
+        const isInterested = Boolean(p.interestedUsers?.includes(currentUid) || userVals.length > 0);
+        setUserInterested(isInterested);
+
+        const allInterestedUids = new Set<string>(p.interestedUsers || []);
+        if (p.validations?.userValidations) {
+          Object.entries(p.validations.userValidations).forEach(([uid, vals]) => {
+            if (Array.isArray(vals) && vals.length > 0) {
+              allInterestedUids.add(uid);
+            }
+          });
         }
+        const effectiveCount = Math.max(
+          p.interestedCount ?? 0,
+          p.interestedUsers?.length ?? 0,
+          allInterestedUids.size
+        );
+        setInterestedCount(effectiveCount);
 
         if (p.validations) {
-          setFaceCount((prev) => Math.max(prev, p.validations?.faceCount || 0));
-          setGreatCount((prev) => Math.max(prev, p.validations?.greatCount || 0));
-          setPayCount((prev) => Math.max(prev, p.validations?.payCount || 0));
-          setBuildCount((prev) => Math.max(prev, p.validations?.buildCount || 0));
+          setFaceCount(p.validations.faceCount || 0);
+          setGreatCount(p.validations.greatCount || 0);
+          setBuildCount(p.validations.buildCount || 0);
 
-          const userVals = p.validations.userValidations?.[currentUid] || [];
-          if (userVals.includes("face")) setFaced(true);
-          if (userVals.includes("great")) setVotedGreat(true);
-          if (userVals.includes("pay")) setPaid(true);
-          if (userVals.includes("build")) setBuilt(true);
+          setFaced(userVals.includes("face"));
+          setVotedGreat(userVals.includes("great"));
+          setBuilt(userVals.includes("build"));
         }
 
         setComments((prevComments) => {
@@ -361,9 +310,47 @@ export const ProblemDetail: React.FC = () => {
   const handleInterestToggle = async () => {
     if (!requireAuth()) return;
     if (!problem) return;
-    const res = await toggleUserInterest(problem.id, currentUid);
-    setUserInterested(res.interested);
-    setInterestedCount(res.count);
+
+    // 1. Instantaneous optimistic state update (0ms delay)
+    const nextInterested = !userInterested;
+    setUserInterested(nextInterested);
+    setInterestedCount((prev) => (nextInterested ? prev + 1 : Math.max(0, prev - 1)));
+
+    // If un-toggling interest, clear validations optimistically too
+    if (!nextInterested) {
+      if (faced) {
+        setFaced(false);
+        setFaceCount((prev) => Math.max(0, prev - 1));
+      }
+      if (votedGreat) {
+        setVotedGreat(false);
+        setGreatCount((prev) => Math.max(0, prev - 1));
+      }
+      if (built) {
+        setBuilt(false);
+        setBuildCount((prev) => Math.max(0, prev - 1));
+      }
+    }
+
+    try {
+      const res = await toggleUserInterest(problem.id, currentUid);
+      setUserInterested(res.interested);
+      setInterestedCount(res.count);
+      if (res.validations) {
+        setFaceCount(res.validations.faceCount || 0);
+        setGreatCount(res.validations.greatCount || 0);
+        setBuildCount(res.validations.buildCount || 0);
+        const uVals = res.validations.userValidations?.[currentUid] || [];
+        setFaced(uVals.includes("face"));
+        setVotedGreat(uVals.includes("great"));
+        setBuilt(uVals.includes("build"));
+      }
+    } catch (err) {
+      console.error("Failed to toggle user interest:", err);
+      // Revert optimistic state on error
+      setUserInterested(!nextInterested);
+      setInterestedCount((prev) => (!nextInterested ? prev + 1 : Math.max(0, prev - 1)));
+    }
   };
 
   const handleTabClick = (tabId: typeof activeTab) => {
@@ -397,45 +384,115 @@ export const ProblemDetail: React.FC = () => {
   const handleFaceToggle = async () => {
     if (!requireAuth()) return;
     if (!problem) return;
-    const res = await toggleCommunityValidation(problem.id, "face", user?.uid || "user");
-    setFaced(res.userHasValidated);
-    setFaceCount(res.validations.faceCount);
-    recordUserInterest(problem.id, user?.uid || "user", "validate_face").then((c) => {
-      if (c) setInterestedCount(c);
-    });
+
+    // 1. Instantaneous optimistic state update (0ms delay)
+    const nextFaced = !faced;
+    setFaced(nextFaced);
+    setFaceCount((prev) => (nextFaced ? prev + 1 : Math.max(0, prev - 1)));
+
+    // Synchronize interest count & status
+    const hadOtherInterest = votedGreat || built;
+    if (nextFaced) {
+      if (!userInterested) {
+        setUserInterested(true);
+        setInterestedCount((prev) => prev + 1);
+      }
+    } else {
+      if (!hadOtherInterest && userInterested) {
+        setUserInterested(false);
+        setInterestedCount((prev) => Math.max(0, prev - 1));
+      }
+    }
+
+    try {
+      const res = await toggleCommunityValidation(problem.id, "face", currentUid);
+      setFaced(res.userHasValidated);
+      setFaceCount(res.validations.faceCount);
+      if (typeof res.interested === "boolean") setUserInterested(res.interested);
+      if (typeof res.interestedCount === "number") setInterestedCount(res.interestedCount);
+    } catch (err) {
+      console.error("Failed to toggle face validation:", err);
+      setFaced(!nextFaced);
+      setFaceCount((prev) => (!nextFaced ? prev + 1 : Math.max(0, prev - 1)));
+      setUserInterested(userInterested);
+      setInterestedCount(interestedCount);
+    }
   };
 
   const handleGreatToggle = async () => {
     if (!requireAuth()) return;
     if (!problem) return;
-    const res = await toggleCommunityValidation(problem.id, "great", user?.uid || "user");
-    setVotedGreat(res.userHasValidated);
-    setGreatCount(res.validations.greatCount);
-    recordUserInterest(problem.id, user?.uid || "user", "validate_great").then((c) => {
-      if (c) setInterestedCount(c);
-    });
-  };
 
-  const handlePayToggle = async () => {
-    if (!requireAuth()) return;
-    if (!problem) return;
-    const res = await toggleCommunityValidation(problem.id, "pay", user?.uid || "user");
-    setPaid(res.userHasValidated);
-    setPayCount(res.validations.payCount);
-    recordUserInterest(problem.id, user?.uid || "user", "validate_pay").then((c) => {
-      if (c) setInterestedCount(c);
-    });
+    // 1. Instantaneous optimistic state update (0ms delay)
+    const nextGreat = !votedGreat;
+    setVotedGreat(nextGreat);
+    setGreatCount((prev) => (nextGreat ? prev + 1 : Math.max(0, prev - 1)));
+
+    // Synchronize interest count & status
+    const hadOtherInterest = faced || built;
+    if (nextGreat) {
+      if (!userInterested) {
+        setUserInterested(true);
+        setInterestedCount((prev) => prev + 1);
+      }
+    } else {
+      if (!hadOtherInterest && userInterested) {
+        setUserInterested(false);
+        setInterestedCount((prev) => Math.max(0, prev - 1));
+      }
+    }
+
+    try {
+      const res = await toggleCommunityValidation(problem.id, "great", currentUid);
+      setVotedGreat(res.userHasValidated);
+      setGreatCount(res.validations.greatCount);
+      if (typeof res.interested === "boolean") setUserInterested(res.interested);
+      if (typeof res.interestedCount === "number") setInterestedCount(res.interestedCount);
+    } catch (err) {
+      console.error("Failed to toggle great validation:", err);
+      setVotedGreat(!nextGreat);
+      setGreatCount((prev) => (!nextGreat ? prev + 1 : Math.max(0, prev - 1)));
+      setUserInterested(userInterested);
+      setInterestedCount(interestedCount);
+    }
   };
 
   const handleBuildToggle = async () => {
     if (!requireAuth()) return;
     if (!problem) return;
-    const res = await toggleCommunityValidation(problem.id, "build", user?.uid || "user");
-    setBuilt(res.userHasValidated);
-    setBuildCount(res.validations.buildCount);
-    recordUserInterest(problem.id, user?.uid || "user", "validate_build").then((c) => {
-      if (c) setInterestedCount(c);
-    });
+
+    // 1. Instantaneous optimistic state update (0ms delay)
+    const nextBuilt = !built;
+    setBuilt(nextBuilt);
+    setBuildCount((prev) => (nextBuilt ? prev + 1 : Math.max(0, prev - 1)));
+
+    // Synchronize interest count & status
+    const hadOtherInterest = faced || votedGreat;
+    if (nextBuilt) {
+      if (!userInterested) {
+        setUserInterested(true);
+        setInterestedCount((prev) => prev + 1);
+      }
+    } else {
+      if (!hadOtherInterest && userInterested) {
+        setUserInterested(false);
+        setInterestedCount((prev) => Math.max(0, prev - 1));
+      }
+    }
+
+    try {
+      const res = await toggleCommunityValidation(problem.id, "build", currentUid);
+      setBuilt(res.userHasValidated);
+      setBuildCount(res.validations.buildCount);
+      if (typeof res.interested === "boolean") setUserInterested(res.interested);
+      if (typeof res.interestedCount === "number") setInterestedCount(res.interestedCount);
+    } catch (err) {
+      console.error("Failed to toggle build validation:", err);
+      setBuilt(!nextBuilt);
+      setBuildCount((prev) => (!nextBuilt ? prev + 1 : Math.max(0, prev - 1)));
+      setUserInterested(userInterested);
+      setInterestedCount(interestedCount);
+    }
   };
 
   const handleLikeComment = async (commentId: string, replyId?: string) => {
@@ -689,22 +746,23 @@ export const ProblemDetail: React.FC = () => {
   const isTrending = viewsCount >= 50 || rawPain >= 90 || (problem.votes?.upvotes || 0) > 100;
   const relativePostTime = formatRelativeTime(problem.submittedAt || problem.createdAt);
 
-  const effectiveInterestedCount = Math.max(
-    interestedCount || 0,
-    problem.interestedCount || 0,
-    problem.interestedUsers?.length || 0,
-    userInterested ? 1 : 0
-  );
+  const effectiveInterestedCount = Math.max(0, interestedCount);
 
-  const interestedProfiles: Array<{ name: string; photoURL?: string }> = [
-    ...(userInterested
-      ? [{ name: userDoc?.name || user?.displayName || "You", photoURL: userDoc?.photoURL || user?.photoURL || undefined }]
-      : []),
-    { name: "Dr. Elena Rostova" },
-    { name: "Dr. Marcus Vance" },
-    { name: "Dev Patel" },
-    { name: "Dr. Sarah Jenkins" },
-  ].slice(0, 4);
+  const interestedProfiles: Array<{ name: string; photoURL?: string }> = (() => {
+    if (effectiveInterestedCount === 0) return [];
+    const list: Array<{ name: string; photoURL?: string }> = [];
+    if (userInterested) {
+      list.push({
+        name: userDoc?.name || user?.displayName || "You",
+        photoURL: userDoc?.photoURL || user?.photoURL || undefined,
+      });
+    }
+    const remaining = effectiveInterestedCount - list.length;
+    for (let i = 0; i < Math.min(remaining, 4 - list.length); i++) {
+      list.push({ name: `Innovator ${i + 1}` });
+    }
+    return list;
+  })();
 
   const allDocs = (problem.evidenceDocuments && problem.evidenceDocuments.length > 0)
     ? problem.evidenceDocuments
@@ -712,24 +770,18 @@ export const ProblemDetail: React.FC = () => {
         {
           title: "CMS Interoperability Standards & Policy Guidelines",
           description: "Official empirical survey and benchmark dataset detailing technical and logistical friction across 4,500+ rural community clinics.",
-          size: "2.4 MB",
-          pages: "12 pages",
           url: "https://www.healthit.gov",
           type: "pdf",
         },
         {
           title: "Rural Health Info Hub Benchmark Survey",
           description: "Comprehensive multi-state survey evaluating EHR adoption barriers and technical debt.",
-          size: "1.8 MB",
-          pages: "8 pages",
           url: "https://www.ruralhealthinfo.org",
           type: "pdf",
         },
         {
           title: "CMS ONC Interoperability Rule Guidelines",
           description: "Federal compliance mandates for FHIR API readiness and anti-information blocking directives.",
-          size: "3.8 MB",
-          pages: "28 pages",
           url: "https://www.healthit.gov/topic/interoperability",
           type: "pdf",
         },
@@ -1079,31 +1131,31 @@ export const ProblemDetail: React.FC = () => {
                 <span>Comments</span>
               </div>
 
-              {/* Interested Companies */}
-              <span className="text-gray-300 hidden sm:inline">·</span>
-              <div className="flex items-center gap-1.5">
-                <span className="text-gray-500 font-medium">Interested:</span>
-                {attachedCompanies.length > 0 ? (
-                  <div className="flex items-center -space-x-1.5">
-                    {attachedCompanies.slice(0, 4).map((comp, idx) => (
-                      <CompanyLogo
-                        key={idx}
-                        name={comp.name}
-                        logoUrl={comp.logoUrl}
-                        size="xs"
-                        className="w-5 h-5 shadow-2xs ring-1 ring-white"
-                      />
-                    ))}
-                    {attachedCompanies.length > 4 && (
-                      <div className="w-5 h-5 rounded-full bg-surface-container border border-gray-200/80 shadow-2xs flex items-center justify-center text-[8px] font-bold text-primary shrink-0">
-                        +{attachedCompanies.length - 4}
-                      </div>
-                    )}
+              {/* Interested Companies (show ONLY if mentioned) */}
+              {attachedCompanies.length > 0 && (
+                <>
+                  <span className="text-gray-300 hidden sm:inline">·</span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-gray-500 font-medium">Interested:</span>
+                    <div className="flex items-center -space-x-1.5">
+                      {attachedCompanies.slice(0, 4).map((comp, idx) => (
+                        <CompanyLogo
+                          key={idx}
+                          name={comp.name}
+                          logoUrl={comp.logoUrl}
+                          size="xs"
+                          className="w-5 h-5 shadow-2xs ring-1 ring-white"
+                        />
+                      ))}
+                      {attachedCompanies.length > 4 && (
+                        <div className="w-5 h-5 rounded-full bg-surface-container border border-gray-200/80 shadow-2xs flex items-center justify-center text-[8px] font-bold text-primary shrink-0">
+                          +{attachedCompanies.length - 4}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                ) : (
-                  <span className="text-[11px] text-on-surface-variant/70 font-normal">Open</span>
-                )}
-              </div>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -1920,24 +1972,7 @@ export const ProblemDetail: React.FC = () => {
                 </span>
               </button>
 
-              {/* 3. I'd pay */}
-              <button
-                onClick={handlePayToggle}
-                className={`w-full flex items-center justify-between p-3 rounded-xl transition-all cursor-pointer ${paid
-                  ? "bg-amber-50 text-amber-800 font-bold shadow-2xs"
-                  : "bg-surface-container/50 hover:bg-surface-container text-on-surface"
-                  }`}
-              >
-                <div className="flex items-center gap-2.5">
-                  <span className="material-symbols-outlined text-[20px]">payments</span>
-                  <span className="text-xs font-semibold">I'd pay</span>
-                </div>
-                <span className="bg-[#ffdbd0] text-[#8e2a00] px-2.5 py-0.5 rounded-full text-[11px] font-bold">
-                  {payCount}
-                </span>
-              </button>
-
-              {/* 4. I'd build this */}
+              {/* 3. I'd build this */}
               <button
                 onClick={handleBuildToggle}
                 className={`w-full flex items-center justify-between p-3 rounded-xl transition-all cursor-pointer ${built
@@ -1971,22 +2006,26 @@ export const ProblemDetail: React.FC = () => {
                   </button>
                 </div>
 
-                <div className="flex items-center -space-x-1.5 mt-1">
-                  {interestedProfiles.slice(0, 4).map((p, idx) => (
-                    <div
-                      key={idx}
-                      title={p.name}
-                      className="w-8 h-8 rounded-full bg-surface-container border-2 border-surface shadow-2xs flex items-center justify-center overflow-hidden font-bold text-xs text-primary shrink-0"
-                    >
-                      <UserAvatar name={p.name} size="sm" src={p.photoURL} />
-                    </div>
-                  ))}
-                  {effectiveInterestedCount > 4 && (
-                    <div className="inline-flex h-8 w-8 items-center justify-center rounded-full border-2 border-surface bg-surface-container text-on-surface-variant text-xs font-bold shadow-2xs shrink-0">
-                      +{effectiveInterestedCount - 4}
-                    </div>
-                  )}
-                </div>
+                {effectiveInterestedCount > 0 ? (
+                  <div className="flex items-center -space-x-1.5 mt-1">
+                    {interestedProfiles.slice(0, 4).map((p, idx) => (
+                      <div
+                        key={idx}
+                        title={p.name}
+                        className="w-8 h-8 rounded-full bg-surface-container border-2 border-surface shadow-2xs flex items-center justify-center overflow-hidden font-bold text-xs text-primary shrink-0"
+                      >
+                        <UserAvatar name={p.name} size="sm" src={p.photoURL} />
+                      </div>
+                    ))}
+                    {effectiveInterestedCount > 4 && (
+                      <div className="inline-flex h-8 w-8 items-center justify-center rounded-full border-2 border-surface bg-surface-container text-on-surface-variant text-xs font-bold shadow-2xs shrink-0">
+                        +{effectiveInterestedCount - 4}
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <p className="text-[11px] text-gray-400 italic mt-0.5">Be the first to express interest</p>
+                )}
               </div>
 
               {/* Companies interested attached by admin in PS Control */}
@@ -2056,7 +2095,7 @@ export const ProblemDetail: React.FC = () => {
                   </div>
                 ) : (
                   <div className="flex flex-wrap gap-1.5">
-                    <CreditSourceBadge source="Own Thinking" size="sm" />
+                    <CreditSourceBadge source="Stuckhere" size="sm" />
                   </div>
                 )}
               </div>

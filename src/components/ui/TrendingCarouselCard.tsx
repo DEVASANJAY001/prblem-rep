@@ -72,7 +72,7 @@ export const TrendingCarouselCard: React.FC<TrendingCarouselCardProps> = React.m
 
   const industry = cleanIndustryName(problem.industry);
 
-  // Real Companies Interested (Exact logic matching ProblemDetail.tsx)
+  // Real Companies Interested (show ONLY if explicitly mentioned / attached)
   const attachedCompanies = useMemo(() => {
     const fromAttached = Array.isArray(problem.attachedCompanyNames) && problem.attachedCompanyNames.length > 0
       ? problem.attachedCompanyNames
@@ -90,15 +90,8 @@ export const TrendingCarouselCard: React.FC<TrendingCarouselCardProps> = React.m
       })
       .filter(Boolean) as Array<{ name: string; logoUrl?: string }>;
 
-    if (matchedList.length > 0) return matchedList;
-
-    // Sector matching fallback using real company logos
-    const indLower = industry.toLowerCase();
-    return REAL_COMPANIES.filter((c) =>
-      (c.industry && indLower.includes(c.industry.toLowerCase().slice(0, 4))) ||
-      (c.name && ["Google", "Microsoft", "OpenAI", "Amazon"].includes(c.name))
-    ).slice(0, 3).map((c) => ({ name: c.name, logoUrl: c.logoUrl }));
-  }, [problem, industry]);
+    return matchedList;
+  }, [problem.attachedCompanyNames, problem.tags]);
 
   // Views text (only eye and count)
   const rawViews = problem.views ?? 0;

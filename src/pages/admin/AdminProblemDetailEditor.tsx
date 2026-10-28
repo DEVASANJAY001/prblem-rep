@@ -465,7 +465,12 @@ export const AdminProblemDetailEditor: React.FC<AdminProblemDetailEditorProps> =
         wastedCost,
         citizensAffected,
       },
-      evidenceDocuments,
+      evidenceDocuments: evidenceDocuments.map((doc) => ({
+        title: doc.title,
+        description: doc.description || "",
+        url: doc.url,
+        type: doc.type || "pdf",
+      })),
       evidenceUrls,
       dataPoints,
       researchData: {
@@ -1228,8 +1233,6 @@ export const AdminProblemDetailEditor: React.FC<AdminProblemDetailEditorProps> =
                       {
                         title: "New Supporting Report",
                         description: "Key findings, regulatory guidelines, or empirical data from this document.",
-                        size: "1.5 MB",
-                        pages: "10 pages",
                         url: "https://",
                         type: "pdf",
                       },
@@ -1332,38 +1335,8 @@ export const AdminProblemDetailEditor: React.FC<AdminProblemDetailEditorProps> =
                       />
                     </div>
 
-                    {/* Size, Pages/Source, Type */}
-                    <div className="sm:col-span-4">
-                      <label className="text-[10px] font-bold text-gray-500 uppercase">Size</label>
-                      <input
-                        type="text"
-                        value={doc.size || ""}
-                        onChange={(e) => {
-                          const copy = [...evidenceDocuments];
-                          copy[idx].size = e.target.value;
-                          setEvidenceDocuments(copy);
-                        }}
-                        placeholder="e.g. 2.4 MB"
-                        className="w-full bg-surface-container rounded-lg px-3 py-1.5 text-xs text-on-surface outline-none focus:ring-1 focus:ring-primary"
-                      />
-                    </div>
-
-                    <div className="sm:col-span-4">
-                      <label className="text-[10px] font-bold text-gray-500 uppercase">Pages / Source</label>
-                      <input
-                        type="text"
-                        value={doc.pages || ""}
-                        onChange={(e) => {
-                          const copy = [...evidenceDocuments];
-                          copy[idx].pages = e.target.value;
-                          setEvidenceDocuments(copy);
-                        }}
-                        placeholder="e.g. 12 pages or HealthIT.gov"
-                        className="w-full bg-surface-container rounded-lg px-3 py-1.5 text-xs text-on-surface outline-none focus:ring-1 focus:ring-primary"
-                      />
-                    </div>
-
-                    <div className="sm:col-span-4">
+                    {/* Document Type */}
+                    <div className="sm:col-span-12">
                       <label className="text-[10px] font-bold text-gray-500 uppercase">Type</label>
                       <select
                         value={doc.type || "pdf"}

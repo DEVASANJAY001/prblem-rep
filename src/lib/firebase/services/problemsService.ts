@@ -128,7 +128,16 @@ export function sanitizeForFirestore<T>(data: T): T {
     const cleanObj: Record<string, any> = {};
     for (const [key, val] of Object.entries(data)) {
       if (val !== undefined) {
-        cleanObj[key] = sanitizeForFirestore(val);
+        if (key === "evidenceDocuments" && Array.isArray(val)) {
+          cleanObj[key] = val.map((doc: any) => ({
+            title: doc?.title || "",
+            description: doc?.description || "",
+            url: doc?.url || "",
+            type: doc?.type || "pdf",
+          }));
+        } else {
+          cleanObj[key] = sanitizeForFirestore(val);
+        }
       }
     }
     return cleanObj as any;
@@ -414,7 +423,12 @@ export async function createProblem(
       wastedCost: problemData.marketData?.wastedCost || "$250M",
       citizensAffected: problemData.marketData?.citizensAffected || "5M+",
     },
-    evidenceDocuments: problemData.evidenceDocuments || [],
+    evidenceDocuments: (problemData.evidenceDocuments || []).map((doc) => ({
+      title: doc?.title || "",
+      description: doc?.description || "",
+      url: doc?.url || "",
+      type: doc?.type || "pdf",
+    })),
     evidenceUrls: problemData.evidenceUrls || problemData.evidenceLinks || [],
     dataPoints: problemData.dataPoints || [],
     researchData: {
@@ -556,8 +570,18 @@ export async function updateProblemModule<K extends keyof ProblemDoc>(
   moduleKey: K,
   moduleData: ProblemDoc[K]
 ): Promise<boolean> {
+  let finalModuleData = moduleData;
+  if (moduleKey === "evidenceDocuments" && Array.isArray(moduleData)) {
+    finalModuleData = moduleData.map((doc: any) => ({
+      title: doc?.title || "",
+      description: doc?.description || "",
+      url: doc?.url || "",
+      type: doc?.type || "pdf",
+    })) as any;
+  }
+
   // 1. Optimistically update local storage
-  updateFullProblemInStorage(problemId, { [moduleKey]: moduleData });
+  updateFullProblemInStorage(problemId, { [moduleKey]: finalModuleData });
   const updated = getLocalProblemById(problemId);
   if (updated) {
     syncProblemCache(updated);
@@ -575,7 +599,7 @@ export async function updateProblemModule<K extends keyof ProblemDoc>(
       const writePromise = setDoc(
         problemRef,
         sanitizeForFirestore({
-          [moduleKey]: moduleData,
+          [moduleKey]: finalModuleData,
           updatedAt: new Date().toISOString(),
           updatedAtServer: serverTimestamp(),
         }),
@@ -1235,7 +1259,13 @@ export async function toggleCommunityValidation(
   problemId: string,
   type: "face" | "great" | "pay" | "build",
   userUid: string = "guest"
-): Promise<{ validations: ProblemValidations; userHasValidated: boolean }> {
+): Promise<{
+  validations: ProblemValidations;
+  userHasValidated: boolean;
+  isInterested: boolean;
+  interestedCount: number;
+  interestedUsers: string[];
+}> {
   const result = toggleLocalValidation(problemId, type, userUid);
   const updatedProb = getLocalProblemById(problemId);
   if (updatedProb) syncProblemCache(updatedProb);
@@ -1243,9 +1273,11 @@ export async function toggleCommunityValidation(
   try {
     if (db && typeof doc === "function") {
       const problemRef = doc(db, PROBLEMS_COLLECTION, problemId);
-      // Direct validations field update (0 getDoc reads)
+      // Direct validations and interested sync
       await updateDoc(problemRef, {
         validations: result.validations,
+        interestedUsers: result.interestedUsers,
+        interestedCount: result.interestedCount,
         updatedAt: new Date().toISOString(),
       });
     }
@@ -1303,50 +1335,79 @@ export async function recordUserInterest(
 export async function toggleUserInterest(
   problemId: string,
   userUid: string = "guest"
-): Promise<{ interested: boolean; count: number }> {
+): Promise<{ interested: boolean; count: number; validations?: ProblemValidations }> {
   let isInterested = false;
   let count = 0;
+  let updatedValidations: ProblemValidations | undefined;
 
   // Local update
   const local = getLocalProblemById(problemId);
   if (local) {
     if (!local.interestedUsers) local.interestedUsers = [];
-    if (local.interestedUsers.includes(userUid)) {
+    if (!local.validations) {
+      local.validations = { faceCount: 0, greatCount: 0, payCount: 0, buildCount: 0, userValidations: {} };
+    }
+    if (!local.validations.userValidations) {
+      local.validations.userValidations = {};
+    }
+
+    const userVals = local.validations.userValidations[userUid] || [];
+    const currentlyInterested = local.interestedUsers.includes(userUid) || userVals.length > 0;
+
+    if (currentlyInterested) {
+      // Untoggle: remove from interestedUsers AND clear validations for this user
       local.interestedUsers = local.interestedUsers.filter((u) => u !== userUid);
-      local.interestedCount = Math.max(0, (local.interestedCount || 1) - 1);
+      if (userVals.includes("face")) local.validations.faceCount = Math.max(0, (local.validations.faceCount || 1) - 1);
+      if (userVals.includes("great")) {
+        local.validations.greatCount = Math.max(0, (local.validations.greatCount || 1) - 1);
+        if (local.votes) local.votes.upvotes = Math.max(0, (local.votes.upvotes || 1) - 1);
+      }
+      if (userVals.includes("build")) local.validations.buildCount = Math.max(0, (local.validations.buildCount || 1) - 1);
+      local.validations.userValidations[userUid] = [];
+
       isInterested = false;
     } else {
-      local.interestedUsers.push(userUid);
-      local.interestedCount = (local.interestedCount || 0) + 1;
+      // Toggle on
+      if (!local.interestedUsers.includes(userUid)) {
+        local.interestedUsers.push(userUid);
+      }
       isInterested = true;
     }
+
+    const uniqueUids = new Set<string>([
+      ...local.interestedUsers,
+      ...Object.keys(local.validations.userValidations).filter(
+        (uid) => (local.validations.userValidations![uid] || []).length > 0
+      ),
+    ]);
+    local.interestedUsers = Array.from(uniqueUids);
+    local.interestedCount = uniqueUids.size;
     count = local.interestedCount;
+    updatedValidations = local.validations;
+
+    saveLocalProblem(local);
     syncProblemCache(local);
   }
 
-  // Atomic Cloud Firestore update with 0 getDoc reads!
+  // Atomic Cloud Firestore update
   try {
     if (db && typeof doc === "function") {
       const problemRef = doc(db, PROBLEMS_COLLECTION, problemId);
-      if (isInterested) {
-        await updateDoc(problemRef, {
-          interestedUsers: arrayUnion(userUid),
-          interestedCount: increment(1),
-          updatedAt: new Date().toISOString(),
-        });
-      } else {
-        await updateDoc(problemRef, {
-          interestedUsers: arrayRemove(userUid),
-          interestedCount: increment(-1),
-          updatedAt: new Date().toISOString(),
-        });
+      const updatePayload: Record<string, any> = {
+        interestedUsers: isInterested ? arrayUnion(userUid) : arrayRemove(userUid),
+        interestedCount: count,
+        updatedAt: new Date().toISOString(),
+      };
+      if (updatedValidations) {
+        updatePayload.validations = updatedValidations;
       }
+      await updateDoc(problemRef, updatePayload);
     }
   } catch (err) {
     console.warn("Firestore toggleUserInterest error:", err);
   }
 
-  return { interested: isInterested, count };
+  return { interested: isInterested, count, validations: updatedValidations };
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1378,7 +1439,17 @@ export async function updateFullProblemDetails(
     : {};
 
   // 1. Update in local storage (counters from Firestore take precedence over stale local values)
-  updateFullProblemInStorage(problemId, { ...countersFromFirestore, ...deltaProblemData });
+  const cleanedDelta = { ...deltaProblemData };
+  if (cleanedDelta.evidenceDocuments && Array.isArray(cleanedDelta.evidenceDocuments)) {
+    cleanedDelta.evidenceDocuments = cleanedDelta.evidenceDocuments.map((doc: any) => ({
+      title: doc?.title || "",
+      description: doc?.description || "",
+      url: doc?.url || "",
+      type: doc?.type || "pdf",
+    }));
+  }
+
+  updateFullProblemInStorage(problemId, { ...countersFromFirestore, ...cleanedDelta });
   const updatedProb = getLocalProblemById(problemId);
   if (updatedProb) {
     syncProblemCache(updatedProb);
@@ -1391,7 +1462,7 @@ export async function updateFullProblemDetails(
 
   // 2. Clean delta payload to write only specific updated fields
   const cleanPayload = cleanDeltaPayload({
-    ...deltaProblemData,
+    ...cleanedDelta,
     updatedAt: new Date().toISOString(),
     updatedAtServer: serverTimestamp(),
   });

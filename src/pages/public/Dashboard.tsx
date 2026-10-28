@@ -127,8 +127,12 @@ export const Dashboard: React.FC = () => {
 
   const displayName = userDoc?.displayName || userDoc?.name || user?.displayName || "Innovator";
   const userHandle = userDoc?.username;
-  const userRole = userDoc?.role || "user";
-  const earnedBadgesNames = userDoc?.badges || [];
+  const earnedBadgesNames = (userDoc?.badges || []).filter(
+    (b) =>
+      !b.toLowerCase().includes("google verified") &&
+      !b.toLowerCase().includes("new member") &&
+      !b.toLowerCase().includes("early member")
+  );
 
   // Real-time dynamic stats calculation
   const realStats = useMemo(() => {

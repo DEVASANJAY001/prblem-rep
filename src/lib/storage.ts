@@ -414,7 +414,12 @@ export function submitProblem(data: any, user: { uid: string; name: string } | n
     commentsCount: 0,
     bookmarksCount: 0,
     tags: [data.industry?.split(" ")[0] || "General", data.severity?.toUpperCase() || "MEDIUM"],
-    evidenceDocuments: data.evidenceDocuments || [],
+    evidenceDocuments: (data.evidenceDocuments || []).map((doc) => ({
+      title: doc.title,
+      description: doc.description || "",
+      url: doc.url,
+      type: doc.type || "pdf",
+    })),
     marketData: data.marketData || { tam: data.estimatedValue || "$1.0B", currentPenetration: 25, wastedCost: "$500M", citizensAffected: "10M+" },
     dataPoints: data.dataPoints || [],
     researchData: data.researchData,
@@ -1212,7 +1217,13 @@ export function toggleLocalValidation(
   problemId: string,
   type: "face" | "great" | "pay" | "build",
   userUid: string = "guest"
-): { validations: ProblemValidations; userHasValidated: boolean } {
+): {
+  validations: ProblemValidations;
+  userHasValidated: boolean;
+  isInterested: boolean;
+  interestedCount: number;
+  interestedUsers: string[];
+} {
   initializeStorage();
   const list = load<ProblemDoc[]>(STORAGE_KEYS.PROBLEMS, REAL_PROBLEMS);
   const problem = list.find((p) => p.id === problemId);
@@ -1220,6 +1231,9 @@ export function toggleLocalValidation(
     return {
       validations: { faceCount: 0, greatCount: 0, payCount: 0, buildCount: 0, userValidations: {} },
       userHasValidated: false,
+      isInterested: false,
+      interestedCount: 0,
+      interestedUsers: [],
     };
   }
 
@@ -1229,12 +1243,16 @@ export function toggleLocalValidation(
   if (!problem.validations.userValidations) {
     problem.validations.userValidations = {};
   }
+  if (!problem.interestedUsers) {
+    problem.interestedUsers = [];
+  }
 
   const userVals = problem.validations.userValidations[userUid] || [];
   const alreadyValidated = userVals.includes(type);
 
   if (alreadyValidated) {
-    problem.validations.userValidations[userUid] = userVals.filter((t) => t !== type);
+    const updatedVals = userVals.filter((t) => t !== type);
+    problem.validations.userValidations[userUid] = updatedVals;
     if (type === "face") problem.validations.faceCount = Math.max(0, (problem.validations.faceCount || 1) - 1);
     if (type === "great") {
       problem.validations.greatCount = Math.max(0, (problem.validations.greatCount || 1) - 1);
@@ -1242,8 +1260,14 @@ export function toggleLocalValidation(
     }
     if (type === "pay") problem.validations.payCount = Math.max(0, (problem.validations.payCount || 1) - 1);
     if (type === "build") problem.validations.buildCount = Math.max(0, (problem.validations.buildCount || 1) - 1);
+
+    // If user has NO active validations left, remove from interestedUsers
+    if (updatedVals.length === 0) {
+      problem.interestedUsers = problem.interestedUsers.filter((u) => u !== userUid);
+    }
   } else {
-    problem.validations.userValidations[userUid] = [...userVals, type];
+    const updatedVals = [...userVals, type];
+    problem.validations.userValidations[userUid] = updatedVals;
     if (type === "face") problem.validations.faceCount = (problem.validations.faceCount || 0) + 1;
     if (type === "great") {
       problem.validations.greatCount = (problem.validations.greatCount || 0) + 1;
@@ -1251,10 +1275,31 @@ export function toggleLocalValidation(
     }
     if (type === "pay") problem.validations.payCount = (problem.validations.payCount || 0) + 1;
     if (type === "build") problem.validations.buildCount = (problem.validations.buildCount || 0) + 1;
+
+    // User validated -> automatically mark as interested
+    if (!problem.interestedUsers.includes(userUid)) {
+      problem.interestedUsers.push(userUid);
+    }
   }
 
+  // Calculate unique interested users
+  const uniqueUids = new Set<string>([
+    ...problem.interestedUsers,
+    ...Object.keys(problem.validations.userValidations).filter(
+      (uid) => (problem.validations.userValidations![uid] || []).length > 0
+    ),
+  ]);
+  problem.interestedUsers = Array.from(uniqueUids);
+  problem.interestedCount = uniqueUids.size;
+
   save(STORAGE_KEYS.PROBLEMS, list);
-  return { validations: problem.validations, userHasValidated: !alreadyValidated };
+  return {
+    validations: problem.validations,
+    userHasValidated: !alreadyValidated,
+    isInterested: uniqueUids.has(userUid),
+    interestedCount: problem.interestedCount,
+    interestedUsers: problem.interestedUsers,
+  };
 }
 
 export function recordLocalInterest(problemId: string, userUid: string): number {

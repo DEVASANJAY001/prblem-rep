@@ -44,18 +44,24 @@ export const CreditSourceBadge: React.FC<CreditSourceBadgeProps> = ({
   if (isOwn) {
     return (
       <span
-        className={`inline-flex items-center rounded-lg font-bold border transition-all ${sizeClasses} bg-primary/10 text-primary border-primary/25 shadow-2xs hover:bg-primary/15 ${className}`}
-        title="Stuckhere Original — Formulated through independent researcher discovery & empirical thinking"
+        className={`inline-flex items-center rounded-md font-bold border transition-all ${sizeClasses} bg-surface-container-low text-on-surface border-primary/30 shadow-2xs hover:border-primary/50 ${className}`}
+        title="Stuckhere Original Problem Statement"
       >
         {showIcon && (
-          <span className="w-4 h-4 rounded-md bg-primary text-white flex items-center justify-center shrink-0 shadow-2xs">
-            <StuckhereLogoMark className="w-2.5 h-2.5 text-white stroke-[3]" />
+          <span className="flex items-center justify-center w-4 h-4 rounded bg-primary/10 overflow-hidden shrink-0 border border-primary/20 p-0.5 shadow-2xs">
+            <img
+              src="/logo.png"
+              alt="Stuckhere"
+              className="w-full h-full object-contain"
+              onError={(e) => {
+                // If png fails, fallback gracefully to StuckhereLogoMark
+                (e.currentTarget as HTMLElement).style.display = "none";
+              }}
+            />
           </span>
         )}
-        <span className="tracking-tight flex items-center gap-1">
-          <span className="font-extrabold">Stuckhere</span>
-          <span className="text-primary/60 font-normal">·</span>
-          <span>Own Thinking</span>
+        <span className="tracking-tight font-extrabold text-on-surface flex items-center">
+          Stuck<span className="text-primary ml-0.5">here</span>
         </span>
         {onRemove && (
           <button

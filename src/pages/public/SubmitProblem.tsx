@@ -110,8 +110,6 @@ export const SubmitProblem: React.FC = () => {
   const [newDocTitle, setNewDocTitle] = useState("");
   const [newDocDesc, setNewDocDesc] = useState("");
   const [newDocUrl, setNewDocUrl] = useState("");
-  const [newDocSize, setNewDocSize] = useState("1.8 MB");
-  const [newDocPages, setNewDocPages] = useState("8 pages");
 
   const [evidenceUrls, setEvidenceUrls] = useState<string[]>([]);
   const [newEvidenceUrl, setNewEvidenceUrl] = useState("");
@@ -220,8 +218,6 @@ export const SubmitProblem: React.FC = () => {
         {
           title: "CMS Interoperability Standards & Policy Guidelines",
           description: "Official empirical survey and benchmark dataset detailing technical and logistical friction across 4,500+ rural clinics.",
-          size: "2.4 MB",
-          pages: "12 pages",
           url: "https://www.healthit.gov",
           type: "pdf",
         },
@@ -369,8 +365,6 @@ export const SubmitProblem: React.FC = () => {
         {
           title: "WHO Technical Report: Good Distribution Practices in Air Cargo",
           description: "Global empirical study detailing failure points across 18 international cargo terminals.",
-          size: "3.8 MB",
-          pages: "24 pages",
           url: "https://www.who.int/medicines",
           type: "pdf",
         },
@@ -509,8 +503,6 @@ export const SubmitProblem: React.FC = () => {
         {
           title: "Berkeley Lab: Queued Up 2024 Interconnection Study",
           description: "Empirical dataset analyzing 10,000+ generation and storage projects in US transmission queues.",
-          size: "5.1 MB",
-          pages: "38 pages",
           url: "https://emp.lbl.gov/queues",
           type: "pdf",
         },
@@ -649,8 +641,6 @@ export const SubmitProblem: React.FC = () => {
         {
           title: "BIS CPMI: Enhancing Cross-Border Payments Technical Report",
           description: "Empirical audit of friction, fees, and liquidity drag across 24 global trade settlement corridors.",
-          size: "4.4 MB",
-          pages: "32 pages",
           url: "https://www.bis.org/cpmi/crossborder",
           type: "pdf",
         },
@@ -1586,10 +1576,6 @@ export const SubmitProblem: React.FC = () => {
                               <span className="text-xs font-bold text-on-surface truncate">{doc.title}</span>
                               <span className="text-[11px] text-on-surface-variant line-clamp-1">{doc.description}</span>
                               <div className="flex items-center gap-2 text-[10px] text-outline mt-1 font-mono">
-                                <span>{doc.size || "1.5 MB"}</span>
-                                <span>Â·</span>
-                                <span>{doc.pages || "8 pages"}</span>
-                                <span>Â·</span>
                                 <span className="text-primary truncate">{doc.url}</span>
                               </div>
                             </div>
@@ -1631,23 +1617,7 @@ export const SubmitProblem: React.FC = () => {
                       placeholder="Short summary of dataset or research content"
                       className="w-full bg-surface-container/40 rounded-xl px-3 py-2 text-xs text-on-surface outline-none border border-outline-variant/30"
                     />
-                    <div className="flex items-center justify-between gap-2">
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="text"
-                          value={newDocSize}
-                          onChange={(e) => setNewDocSize(e.target.value)}
-                          placeholder="Size (e.g. 2.4 MB)"
-                          className="w-24 bg-surface-container/40 rounded-xl px-2.5 py-1.5 text-xs text-on-surface outline-none border border-outline-variant/30"
-                        />
-                        <input
-                          type="text"
-                          value={newDocPages}
-                          onChange={(e) => setNewDocPages(e.target.value)}
-                          placeholder="Pages"
-                          className="w-24 bg-surface-container/40 rounded-xl px-2.5 py-1.5 text-xs text-on-surface outline-none border border-outline-variant/30"
-                        />
-                      </div>
+                    <div className="flex items-center justify-end">
                       <button
                         type="button"
                         onClick={() => {
@@ -1658,8 +1628,6 @@ export const SubmitProblem: React.FC = () => {
                                 title: newDocTitle.trim(),
                                 description: newDocDesc.trim() || "Official benchmark dataset and research report.",
                                 url: newDocUrl.trim() || "https://example.com",
-                                size: newDocSize.trim() || "1.5 MB",
-                                pages: newDocPages.trim() || "8 pages",
                                 type: "pdf",
                               },
                             ]);

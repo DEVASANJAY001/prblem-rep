@@ -33,13 +33,14 @@ import {
 // Helpers
 // ─────────────────────────────────────────────────────────────
 function getImpactPoints(u: UserDoc) {
-  return (u.counts?.problemsApproved || 0) * 100 + (u.counts?.votes || 0);
+  return Math.round((u.counts?.problemsApproved || 0) * 100 + (u.counts?.votes || 0));
 }
 function getBuilderPoints(u: UserDoc) {
-  return (u.counts?.problemsApproved || 0) * 80 + (u.counts?.votes || 0) * 0.5 + (u.counts?.comments || 0) * 5;
+  return Math.round((u.counts?.problemsApproved || 0) * 80 + (u.counts?.votes || 0) + (u.counts?.comments || 0) * 5);
 }
 function getValidatorPoints(u: UserDoc) {
-  return (u.counts?.comments || 0) * 20 + (u.counts?.votes || 0) * 10 + (u.counts?.problemsApproved || 0) * 15;
+  const vals = (u as any)._liveValidations || 0;
+  return Math.round((u.counts?.comments || 0) * 20 + vals * 15 + (u.counts?.problemsApproved || 0) * 10);
 }
 
 function timeAgo(dateStr: string) {
@@ -83,10 +84,79 @@ export const Community: React.FC = () => {
     return () => { u1(); u2(); u3(); };
   }, []);
 
+  // ── Compute live dynamic stats from real problems data for each user ──
+  const usersWithLiveStats = useMemo(() => {
+    return users.map((u) => {
+      // Find all approved problems submitted by this user
+      const userProblems = problems.filter(
+        (p) =>
+          (p.submittedByUid && p.submittedByUid === u.uid) ||
+          (p.submittedBy && p.submittedBy === u.uid) ||
+          (p.submittedByName && p.submittedByName.toLowerCase() === u.name.toLowerCase())
+      );
+
+      const liveApprovedCount = userProblems.length;
+      const liveVotesReceived = userProblems.reduce(
+        (sum, p) => sum + (p.votes?.upvotes || 0),
+        0
+      );
+
+      // Comments posted by this user across problems
+      const liveCommentsCount = problems.reduce((sum, p) => {
+        let count = 0;
+        (p.comments || []).forEach((c) => {
+          if (c.authorUid === u.uid || c.author?.toLowerCase() === u.name?.toLowerCase()) {
+            count += 1;
+          }
+          (c.replies || []).forEach((r) => {
+            if (r.author?.toLowerCase() === u.name?.toLowerCase()) {
+              count += 1;
+            }
+          });
+        });
+        return sum + count;
+      }, 0);
+
+      // Validations given by this user across problems
+      const liveValidationsCount = problems.reduce((sum, p) => {
+        const userVals = p.validations?.userValidations?.[u.uid] || [];
+        return sum + userVals.length;
+      }, 0);
+
+      const effectiveApproved = Math.max(liveApprovedCount, u.counts?.problemsApproved || 0);
+      const effectiveVotes = Math.max(liveVotesReceived, u.counts?.votes || 0);
+      const effectiveComments = Math.max(liveCommentsCount, u.counts?.comments || 0);
+
+      // Filter out unwanted badges ("Google Verified", "New Member", "Early Member")
+      const cleanedBadges = (u.badges || []).filter((b) => {
+        const lower = b.toLowerCase().trim();
+        return (
+          lower !== "google verified" &&
+          lower !== "new member" &&
+          lower !== "early member" &&
+          !lower.includes("google verified") &&
+          !lower.includes("new member")
+        );
+      });
+
+      return {
+        ...u,
+        badges: cleanedBadges,
+        counts: {
+          ...u.counts,
+          problemsApproved: effectiveApproved,
+          votes: effectiveVotes,
+          comments: effectiveComments,
+        },
+        _liveValidations: liveValidationsCount,
+      };
+    });
+  }, [users, problems]);
+
   // ── Sorted leaderboards ─────────────────────────────────────
-  const byImpact   = useMemo(() => [...users].sort((a, b) => getImpactPoints(b)   - getImpactPoints(a)),   [users]);
-  const byBuilder  = useMemo(() => [...users].sort((a, b) => getBuilderPoints(b)  - getBuilderPoints(a)),  [users]);
-  const byValidator= useMemo(() => [...users].sort((a, b) => getValidatorPoints(b)- getValidatorPoints(a)),[users]);
+  const byImpact   = useMemo(() => [...usersWithLiveStats].sort((a, b) => getImpactPoints(b)   - getImpactPoints(a)),   [usersWithLiveStats]);
+  const byBuilder  = useMemo(() => [...usersWithLiveStats].sort((a, b) => getBuilderPoints(b)  - getBuilderPoints(a)),  [usersWithLiveStats]);
+  const byValidator= useMemo(() => [...usersWithLiveStats].sort((a, b) => getValidatorPoints(b)- getValidatorPoints(a)),[usersWithLiveStats]);
 
   const activeList  = lbTab === "finders" ? byImpact : lbTab === "builders" ? byBuilder : byValidator;
   const activeScore = lbTab === "finders" ? getImpactPoints : lbTab === "builders" ? getBuilderPoints : getValidatorPoints;
@@ -139,12 +209,12 @@ export const Community: React.FC = () => {
         body: <>
           <Link to={getProblemDetailUrl(p)} className="font-semibold text-primary hover:underline">{p.title}</Link>
           {" · "}
-          <span className="text-on-surface-variant">{(p.validations?.faceCount || 0) + (p.validations?.buildCount || 0) + (p.validations?.payCount || 0)} validations</span>
+          <span className="text-on-surface-variant">{(p.validations?.faceCount || 0) + (p.validations?.buildCount || 0) + (p.validations?.greatCount || 0)} validations</span>
         </>,
         time: p.updatedAt || p.submittedAt,
       }));
 
-    users
+    usersWithLiveStats
       .filter(u => u.badges && u.badges.length > 0)
       .slice(0, 3)
       .forEach(u => items.push({
@@ -156,13 +226,13 @@ export const Community: React.FC = () => {
       }));
 
     return items.sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime()).slice(0, 14);
-  }, [problems, users]);
+  }, [problems, usersWithLiveStats]);
 
   // ── Platform stats ──────────────────────────────────────────
   const totalValidations = useMemo(() =>
     problems.reduce((acc, p) =>
       acc + (p.validations?.faceCount || 0) + (p.validations?.buildCount || 0) +
-      (p.validations?.payCount || 0) + (p.validations?.greatCount || 0), 0),
+      (p.validations?.greatCount || 0), 0),
     [problems]
   );
 
@@ -226,7 +296,7 @@ export const Community: React.FC = () => {
             {/* Quick stats strip */}
             <div className="flex items-center gap-4 sm:gap-6 text-sm shrink-0 flex-wrap">
               {[
-                { value: users.length || "—", label: "Members" },
+                { value: usersWithLiveStats.length || "—", label: "Members" },
                 { value: problems.length, label: "Verified Problems" },
                 { value: totalValidations, label: "Validations" },
               ].map(s => (
@@ -584,7 +654,7 @@ export const Community: React.FC = () => {
                 </div>
                 <div className="divide-y divide-outline-variant/10">
                   {[
-                    { label: "Members", value: users.length },
+                    { label: "Members", value: usersWithLiveStats.length },
                     { label: "Verified Problems", value: problems.length },
                     { label: "Community Validations", value: totalValidations },
                     { label: "Startup Briefs", value: problems.filter(p => p.hasStartupMode).length },

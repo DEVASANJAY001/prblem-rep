@@ -27,21 +27,14 @@ export function isUuidLike(text?: string): boolean {
 }
 
 /**
- * Generates an SEO-optimized slugged URL for a problem statement
- * Formats:
- * - Clean ID: /problem/data-interoperability-failure-in-rural-clinics--prob-1
- * - Legacy UUID: /problem/data-interoperability-failure-in-rural-clinics (UUID stripped completely!)
+ * Generates an SEO-optimized slugged URL for a problem statement.
+ * Uses Amazon/Product Hunt standard semantic format: /problem/<keywords-slug>--<id>
+ * If only ID or only slug is present, gracefully falls back.
  */
 export function getProblemSlug(problem: { id: string; title?: string }): string {
   if (!problem) return "";
   const cleanSlug = problem.title ? slugify(problem.title) : "";
 
-  // NEVER show UUID strings like prob-834e1337-f231-4f5e-a819-bdf862824c2d in any URL
-  if (isUuidLike(problem.id)) {
-    return cleanSlug || "problem-statement";
-  }
-
-  // Clean short IDs (e.g. prob-1, prob-2, prob-7):
   if (cleanSlug && problem.id) {
     return `${cleanSlug}--${problem.id}`;
   }

@@ -236,24 +236,34 @@ export const StartupMode: React.FC = () => {
           }
         }
         setViewsCount((prev) => Math.max(prev, p.views || 0));
-        setInterestedCount((prev) =>
-          Math.max(prev, p.interestedCount || 0, p.interestedUsers?.length || 0)
-        );
-        if (p.interestedUsers?.includes(currentUid)) {
-          setUserInterested(true);
+
+        const userVals = p.validations?.userValidations?.[currentUid] || [];
+        const isInterested = Boolean(p.interestedUsers?.includes(currentUid) || userVals.length > 0);
+        setUserInterested(isInterested);
+
+        const allInterestedUids = new Set<string>(p.interestedUsers || []);
+        if (p.validations?.userValidations) {
+          Object.entries(p.validations.userValidations).forEach(([uid, vals]) => {
+            if (Array.isArray(vals) && vals.length > 0) {
+              allInterestedUids.add(uid);
+            }
+          });
         }
+        const effectiveCount = Math.max(
+          p.interestedCount ?? 0,
+          p.interestedUsers?.length ?? 0,
+          allInterestedUids.size
+        );
+        setInterestedCount(effectiveCount);
 
         if (p.validations) {
-          setFaceCount((prev) => Math.max(prev, p.validations?.faceCount || 0));
-          setGreatCount((prev) => Math.max(prev, p.validations?.greatCount || 0));
-          setPayCount((prev) => Math.max(prev, p.validations?.payCount || 0));
-          setBuildCount((prev) => Math.max(prev, p.validations?.buildCount || 0));
+          setFaceCount(p.validations.faceCount || 0);
+          setGreatCount(p.validations.greatCount || 0);
+          setBuildCount(p.validations.buildCount || 0);
 
-          const userVals = p.validations.userValidations?.[currentUid] || [];
-          if (userVals.includes("face")) setFaced(true);
-          if (userVals.includes("great")) setVotedGreat(true);
-          if (userVals.includes("pay")) setPaid(true);
-          if (userVals.includes("build")) setBuilt(true);
+          setFaced(userVals.includes("face"));
+          setVotedGreat(userVals.includes("great"));
+          setBuilt(userVals.includes("build"));
         }
 
         if (isProblemBookmarked(p.id, currentUid)) {
@@ -342,9 +352,47 @@ export const StartupMode: React.FC = () => {
   const handleInterestToggle = async () => {
     if (!requireAuth()) return;
     if (!problem) return;
-    const res = await toggleUserInterest(problem.id, currentUid);
-    setUserInterested(res.interested);
-    setInterestedCount(res.count);
+
+    // 1. Instantaneous optimistic state update (0ms delay)
+    const nextInterested = !userInterested;
+    setUserInterested(nextInterested);
+    setInterestedCount((prev) => (nextInterested ? prev + 1 : Math.max(0, prev - 1)));
+
+    // If un-toggling interest, clear validations optimistically too
+    if (!nextInterested) {
+      if (faced) {
+        setFaced(false);
+        setFaceCount((prev) => Math.max(0, prev - 1));
+      }
+      if (votedGreat) {
+        setVotedGreat(false);
+        setGreatCount((prev) => Math.max(0, prev - 1));
+      }
+      if (built) {
+        setBuilt(false);
+        setBuildCount((prev) => Math.max(0, prev - 1));
+      }
+    }
+
+    try {
+      const res = await toggleUserInterest(problem.id, currentUid);
+      setUserInterested(res.interested);
+      setInterestedCount(res.count);
+      if (res.validations) {
+        setFaceCount(res.validations.faceCount || 0);
+        setGreatCount(res.validations.greatCount || 0);
+        setBuildCount(res.validations.buildCount || 0);
+        const uVals = res.validations.userValidations?.[currentUid] || [];
+        setFaced(uVals.includes("face"));
+        setVotedGreat(uVals.includes("great"));
+        setBuilt(uVals.includes("build"));
+      }
+    } catch (err) {
+      console.error("Failed to toggle user interest:", err);
+      // Revert optimistic state on error
+      setUserInterested(!nextInterested);
+      setInterestedCount((prev) => (!nextInterested ? prev + 1 : Math.max(0, prev - 1)));
+    }
   };
 
   const handleBookmark = () => {
@@ -360,33 +408,112 @@ export const StartupMode: React.FC = () => {
   const handleFaceToggle = async () => {
     if (!requireAuth()) return;
     if (!problem) return;
-    const res = await toggleCommunityValidation(problem.id, "face", currentUid);
-    setFaced(res.userHasValidated);
-    setFaceCount(res.validations.faceCount);
+
+    const nextFaced = !faced;
+    setFaced(nextFaced);
+    setFaceCount((prev) => (nextFaced ? prev + 1 : Math.max(0, prev - 1)));
+
+    // Synchronize interest count & status
+    const hadOtherInterest = votedGreat || built;
+    if (nextFaced) {
+      if (!userInterested) {
+        setUserInterested(true);
+        setInterestedCount((prev) => prev + 1);
+      }
+    } else {
+      if (!hadOtherInterest && userInterested) {
+        setUserInterested(false);
+        setInterestedCount((prev) => Math.max(0, prev - 1));
+      }
+    }
+
+    try {
+      const res = await toggleCommunityValidation(problem.id, "face", currentUid);
+      setFaced(res.userHasValidated);
+      setFaceCount(res.validations.faceCount);
+      if (typeof res.interested === "boolean") setUserInterested(res.interested);
+      if (typeof res.interestedCount === "number") setInterestedCount(res.interestedCount);
+    } catch (err) {
+      console.error("Failed to toggle face validation:", err);
+      setFaced(!nextFaced);
+      setFaceCount((prev) => (!nextFaced ? prev + 1 : Math.max(0, prev - 1)));
+      setUserInterested(userInterested);
+      setInterestedCount(interestedCount);
+    }
   };
 
   const handleGreatToggle = async () => {
     if (!requireAuth()) return;
     if (!problem) return;
-    const res = await toggleCommunityValidation(problem.id, "great", currentUid);
-    setVotedGreat(res.userHasValidated);
-    setGreatCount(res.validations.greatCount);
-  };
 
-  const handlePayToggle = async () => {
-    if (!requireAuth()) return;
-    if (!problem) return;
-    const res = await toggleCommunityValidation(problem.id, "pay", currentUid);
-    setPaid(res.userHasValidated);
-    setPayCount(res.validations.payCount);
+    const nextGreat = !votedGreat;
+    setVotedGreat(nextGreat);
+    setGreatCount((prev) => (nextGreat ? prev + 1 : Math.max(0, prev - 1)));
+
+    // Synchronize interest count & status
+    const hadOtherInterest = faced || built;
+    if (nextGreat) {
+      if (!userInterested) {
+        setUserInterested(true);
+        setInterestedCount((prev) => prev + 1);
+      }
+    } else {
+      if (!hadOtherInterest && userInterested) {
+        setUserInterested(false);
+        setInterestedCount((prev) => Math.max(0, prev - 1));
+      }
+    }
+
+    try {
+      const res = await toggleCommunityValidation(problem.id, "great", currentUid);
+      setVotedGreat(res.userHasValidated);
+      setGreatCount(res.validations.greatCount);
+      if (typeof res.interested === "boolean") setUserInterested(res.interested);
+      if (typeof res.interestedCount === "number") setInterestedCount(res.interestedCount);
+    } catch (err) {
+      console.error("Failed to toggle great validation:", err);
+      setVotedGreat(!nextGreat);
+      setGreatCount((prev) => (!nextGreat ? prev + 1 : Math.max(0, prev - 1)));
+      setUserInterested(userInterested);
+      setInterestedCount(interestedCount);
+    }
   };
 
   const handleBuildToggle = async () => {
     if (!requireAuth()) return;
     if (!problem) return;
-    const res = await toggleCommunityValidation(problem.id, "build", currentUid);
-    setBuilt(res.userHasValidated);
-    setBuildCount(res.validations.buildCount);
+
+    const nextBuilt = !built;
+    setBuilt(nextBuilt);
+    setBuildCount((prev) => (nextBuilt ? prev + 1 : Math.max(0, prev - 1)));
+
+    // Synchronize interest count & status
+    const hadOtherInterest = faced || votedGreat;
+    if (nextBuilt) {
+      if (!userInterested) {
+        setUserInterested(true);
+        setInterestedCount((prev) => prev + 1);
+      }
+    } else {
+      if (!hadOtherInterest && userInterested) {
+        setUserInterested(false);
+        setInterestedCount((prev) => Math.max(0, prev - 1));
+      }
+    }
+
+    try {
+      const res = await toggleCommunityValidation(problem.id, "build", currentUid);
+      setBuilt(res.userHasValidated);
+      setBuildCount(res.validations.buildCount);
+      if (typeof res.interested === "boolean") setUserInterested(res.interested);
+      if (typeof res.interestedCount === "number") setInterestedCount(res.interestedCount);
+    } catch (err) {
+      console.error("Failed to toggle build validation:", err);
+      setBuilt(!nextBuilt);
+      setBuildCount((prev) => (!nextBuilt ? prev + 1 : Math.max(0, prev - 1)));
+      setUserInterested(userInterested);
+      setInterestedCount(interestedCount);
+    }
   };
 
   const toggleSegment = (seg: string) => {
@@ -704,14 +831,29 @@ export const StartupMode: React.FC = () => {
     Math.round(segmentsScore + valPropScore + checklistScore)
   );
 
+  const effectiveInterestedCount = Math.max(0, interestedCount);
+
   // Interested Innovators list
-  const interestedProfiles = [
-    { name: "Dr. Elena Rostova", role: "Submitter / Lead Clinician", photoURL: null },
-    { name: "Marcus Vance", role: "HealthTech Founder", photoURL: null },
-    { name: "Sarah Jenkins", role: "Clinical Systems Architect", photoURL: null },
-    { name: "Dr. Ahmed Bilal", role: "Rural Medical Director", photoURL: null },
-    { name: "Alex Rivera", role: "Fullstack Engineer", photoURL: null },
-  ];
+  const interestedProfiles = (() => {
+    if (effectiveInterestedCount === 0) return [];
+    const list: Array<{ name: string; role?: string; photoURL?: string | null }> = [];
+    if (userInterested) {
+      list.push({
+        name: userDoc?.name || user?.displayName || "You",
+        role: userDoc?.role === "admin" ? "Admin" : "Community Innovator",
+        photoURL: userDoc?.photoURL || user?.photoURL || null,
+      });
+    }
+    const remaining = effectiveInterestedCount - list.length;
+    for (let i = 0; i < Math.min(remaining, 4 - list.length); i++) {
+      list.push({
+        name: `Innovator ${i + 1}`,
+        role: "Community Member",
+        photoURL: null,
+      });
+    }
+    return list;
+  })();
 
   // Export Brief Handler
   const generateDossierBrief = () => {
@@ -1776,25 +1918,7 @@ Generated from Prblms Startup Canvas on ${new Date().toLocaleDateString()}`;
                 </span>
               </button>
 
-              {/* 3. I'd pay */}
-              <button
-                onClick={handlePayToggle}
-                className={`w-full flex items-center justify-between p-3 rounded-xl transition-all cursor-pointer ${
-                  paid
-                    ? "bg-amber-50 text-amber-800 font-bold shadow-2xs"
-                    : "bg-surface-container/50 hover:bg-surface-container text-on-surface"
-                }`}
-              >
-                <div className="flex items-center gap-2.5">
-                  <span className="material-symbols-outlined text-[20px]">payments</span>
-                  <span className="text-xs font-semibold">I'd pay to solve</span>
-                </div>
-                <span className="bg-[#ffdbd0] text-[#8e2a00] px-2.5 py-0.5 rounded-full text-[11px] font-bold">
-                  {payCount}
-                </span>
-              </button>
-
-              {/* 4. I'd build this */}
+              {/* 3. I'd build this */}
               <button
                 onClick={handleBuildToggle}
                 className={`w-full flex items-center justify-between p-3 rounded-xl transition-all cursor-pointer ${
@@ -1889,23 +2013,30 @@ Generated from Prblms Startup Canvas on ${new Date().toLocaleDateString()}`;
                     }`}
                   />
                   <span>{userInterested ? "Interested" : "Join"}</span>
+                  <span className="text-[10px] font-mono opacity-80">({effectiveInterestedCount})</span>
                 </button>
               </div>
 
-              <div className="flex items-center -space-x-1.5 mt-1">
-                {interestedProfiles.slice(0, 4).map((p, idx) => (
-                  <div
-                    key={idx}
-                    title={p.name}
-                    className="w-8 h-8 rounded-full bg-surface-container border-2 border-surface shadow-2xs flex items-center justify-center overflow-hidden font-bold text-xs text-primary shrink-0"
-                  >
-                    <UserAvatar name={p.name} size="sm" src={p.photoURL} />
-                  </div>
-                ))}
-                <div className="inline-flex h-8 w-8 items-center justify-center rounded-full border-2 border-surface bg-surface-container text-on-surface-variant text-xs font-bold shadow-2xs shrink-0">
-                  +12
+              {effectiveInterestedCount > 0 ? (
+                <div className="flex items-center -space-x-1.5 mt-1">
+                  {interestedProfiles.slice(0, 4).map((p, idx) => (
+                    <div
+                      key={idx}
+                      title={p.name}
+                      className="w-8 h-8 rounded-full bg-surface-container border-2 border-surface shadow-2xs flex items-center justify-center overflow-hidden font-bold text-xs text-primary shrink-0"
+                    >
+                      <UserAvatar name={p.name} size="sm" src={p.photoURL} />
+                    </div>
+                  ))}
+                  {effectiveInterestedCount > 4 && (
+                    <div className="inline-flex h-8 w-8 items-center justify-center rounded-full border-2 border-surface bg-surface-container text-on-surface-variant text-xs font-bold shadow-2xs shrink-0">
+                      +{effectiveInterestedCount - 4}
+                    </div>
+                  )}
                 </div>
-              </div>
+              ) : (
+                <p className="text-[11px] text-gray-400 italic mt-0.5">Be the first to join</p>
+              )}
 
               <button
                 type="button"

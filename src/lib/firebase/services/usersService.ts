@@ -103,23 +103,28 @@ export function subscribeLeaderboard(callback: (users: UserDoc[]) => void): () =
   }
 
   if (!leaderboardStream) {
-    const q = query(
-      collection(db, USERS_COLLECTION),
-      orderBy("counts.problemsApproved", "desc")
-    );
+    const q = query(collection(db, USERS_COLLECTION));
     const listeners = new Set<(users: UserDoc[]) => void>();
     listeners.add(callback);
 
     const unsubscribe = onSnapshot(
       q,
       (snap) => {
-        if (!snap.empty) {
-          const list: UserDoc[] = [];
-          snap.forEach((d) => list.push(d.data() as UserDoc));
-          if (leaderboardStream) {
-            leaderboardStream.latestData = list;
-            leaderboardStream.listeners.forEach((cb) => cb(list));
-          }
+        const list: UserDoc[] = [];
+        snap.forEach((d) => {
+          const u = d.data() as UserDoc;
+          if (u.uid) list.push(u);
+        });
+
+        // Merge Firestore users with REAL_USERS to ensure all active and seed members are included
+        const userMap = new Map<string, UserDoc>();
+        REAL_USERS.forEach((u) => userMap.set(u.uid, u));
+        list.forEach((u) => userMap.set(u.uid, { ...(userMap.get(u.uid) || {}), ...u }));
+        const combined = Array.from(userMap.values());
+
+        if (leaderboardStream) {
+          leaderboardStream.latestData = combined;
+          leaderboardStream.listeners.forEach((cb) => cb(combined));
         }
       },
       (err) => {

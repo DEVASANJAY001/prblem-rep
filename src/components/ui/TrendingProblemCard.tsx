@@ -74,7 +74,7 @@ export const TrendingProblemCard: React.FC<TrendingProblemCardProps> = React.mem
 
   const industry = cleanIndustryName(problem.industry);
 
-  // Real Companies Interested (Exact logic matching ProblemDetail.tsx)
+  // Real Companies Interested (show ONLY if explicitly mentioned / attached)
   const attachedCompanies = useMemo(() => {
     const fromAttached = Array.isArray(problem.attachedCompanyNames) && problem.attachedCompanyNames.length > 0
       ? problem.attachedCompanyNames
@@ -92,15 +92,8 @@ export const TrendingProblemCard: React.FC<TrendingProblemCardProps> = React.mem
       })
       .filter(Boolean) as Array<{ name: string; logoUrl?: string }>;
 
-    if (matchedList.length > 0) return matchedList;
-
-    // Smart sector matching fallback using real company logos
-    const indLower = industry.toLowerCase();
-    return REAL_COMPANIES.filter((c) =>
-      (c.industry && indLower.includes(c.industry.toLowerCase().slice(0, 4))) ||
-      (c.name && ["Google", "Microsoft", "OpenAI", "Amazon"].includes(c.name))
-    ).slice(0, 3).map((c) => ({ name: c.name, logoUrl: c.logoUrl }));
-  }, [problem, industry]);
+    return matchedList;
+  }, [problem.attachedCompanyNames, problem.tags]);
 
   // Severity Level for gradient calculation
   const isCritical = painNormalized >= 90;
@@ -145,35 +138,33 @@ export const TrendingProblemCard: React.FC<TrendingProblemCardProps> = React.mem
                 <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-[#5c37eb]"></div>
               </div>
 
-              {/* Separator Line */}
-              <div className="hidden sm:block w-px h-3.5 bg-gray-200 shrink-0"></div>
-
-              {/* Real Companies Interested */}
-              <div className="flex items-center gap-1 shrink-0">
-                {attachedCompanies.length > 0 ? (
-                  <div className="flex items-center -space-x-1.5">
-                    {attachedCompanies.slice(0, 4).map((comp, idx) => (
-                      <CompanyLogo
-                        key={idx}
-                        name={comp.name}
-                        logoUrl={comp.logoUrl}
-                        size="xs"
-                        className="w-4.5 h-4.5 sm:w-5.5 sm:h-5.5 shadow-2xs ring-1 ring-white"
-                      />
-                    ))}
-                    {attachedCompanies.length > 4 && (
-                      <div
-                        className="w-4.5 h-4.5 sm:w-5.5 sm:h-5.5 rounded-full bg-surface-container border border-gray-200/80 shadow-2xs flex items-center justify-center text-[8px] sm:text-[9px] font-bold text-primary shrink-0"
-                        title={`${attachedCompanies.length} companies interested`}
-                      >
-                        +{attachedCompanies.length - 4}
-                      </div>
-                    )}
+              {/* Real Companies Interested (show ONLY if mentioned) */}
+              {attachedCompanies.length > 0 && (
+                <>
+                  <div className="hidden sm:block w-px h-3.5 bg-gray-200 shrink-0"></div>
+                  <div className="flex items-center gap-1 shrink-0">
+                    <div className="flex items-center -space-x-1.5">
+                      {attachedCompanies.slice(0, 4).map((comp, idx) => (
+                        <CompanyLogo
+                          key={idx}
+                          name={comp.name}
+                          logoUrl={comp.logoUrl}
+                          size="xs"
+                          className="w-4.5 h-4.5 sm:w-5.5 sm:h-5.5 shadow-2xs ring-1 ring-white"
+                        />
+                      ))}
+                      {attachedCompanies.length > 4 && (
+                        <div
+                          className="w-4.5 h-4.5 sm:w-5.5 sm:h-5.5 rounded-full bg-surface-container border border-gray-200/80 shadow-2xs flex items-center justify-center text-[8px] sm:text-[9px] font-bold text-primary shrink-0"
+                          title={`${attachedCompanies.length} companies interested`}
+                        >
+                          +{attachedCompanies.length - 4}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                ) : (
-                  <span className="text-[9px] sm:text-[10px] text-gray-400">Open Problem</span>
-                )}
-              </div>
+                </>
+              )}
             </div>
 
             {/* Interactive Actions Group: Like, Save & Verified Checkmark */}

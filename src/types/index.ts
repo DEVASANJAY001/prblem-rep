@@ -136,8 +136,6 @@ export interface ProblemValidations {
 export interface EvidenceDocument {
   title: string;
   description?: string;
-  size?: string;
-  pages?: string;
   url: string;
   type?: "pdf" | "link" | "doc" | string;
 }
