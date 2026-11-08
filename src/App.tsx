@@ -10,49 +10,79 @@ import { ProtectedRoute, AdminRoute } from "@/components/common/ProtectedRoute";
 import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 import { ScrollRestoration } from "@/components/common/ScrollRestoration";
 
-// Dynamic Code Splitting (Lazy-Loaded Route Modules)
-const Home = lazy(() => import("@/pages/public/Home").then((m) => ({ default: m.Home })));
-const Explore = lazy(() => import("@/pages/public/Explore").then((m) => ({ default: m.Explore })));
-const ProblemDetail = lazy(() => import("@/pages/public/ProblemDetail").then((m) => ({ default: m.ProblemDetail })));
-const StartupMode = lazy(() => import("@/pages/public/StartupMode").then((m) => ({ default: m.StartupMode })));
-const Industries = lazy(() => import("@/pages/public/Industries").then((m) => ({ default: m.Industries })));
-const IndustryDetail = lazy(() => import("@/pages/public/IndustryDetail").then((m) => ({ default: m.IndustryDetail })));
-const Companies = lazy(() => import("@/pages/public/Companies").then((m) => ({ default: m.Companies })));
-const Research = lazy(() => import("@/pages/public/Research").then((m) => ({ default: m.Research })));
-const Community = lazy(() => import("@/pages/public/Community").then((m) => ({ default: m.Community })));
-const About = lazy(() => import("@/pages/public/About").then((m) => ({ default: m.About })));
-const AuthPage = lazy(() => import("@/pages/public/AuthPage").then((m) => ({ default: m.AuthPage })));
-const SubmitProblem = lazy(() => import("@/pages/public/SubmitProblem").then((m) => ({ default: m.SubmitProblem })));
-const Dashboard = lazy(() => import("@/pages/public/Dashboard").then((m) => ({ default: m.Dashboard })));
-const SavedProblems = lazy(() => import("@/pages/public/SavedProblems").then((m) => ({ default: m.SavedProblems })));
-const PublicFormRunner = lazy(() => import("@/pages/public/PublicFormRunner").then((m) => ({ default: m.PublicFormRunner })));
-const NotFound = lazy(() => import("@/pages/public/NotFound").then((m) => ({ default: m.NotFound })));
-const Features = lazy(() => import("@/pages/public/Features").then((m) => ({ default: m.Features })));
-const Solutions = lazy(() => import("@/pages/public/Solutions").then((m) => ({ default: m.Solutions })));
-const Contact = lazy(() => import("@/pages/public/Contact").then((m) => ({ default: m.Contact })));
-const Privacy = lazy(() => import("@/pages/public/Privacy").then((m) => ({ default: m.Privacy })));
-const Terms = lazy(() => import("@/pages/public/Terms").then((m) => ({ default: m.Terms })));
-const Cookies = lazy(() => import("@/pages/public/Cookies").then((m) => ({ default: m.Cookies })));
-const Competitions = lazy(() => import("@/pages/public/Competitions").then((m) => ({ default: m.Competitions })));
+// Robust dynamic import wrapper that handles stale chunk 404s after new deployments
+function lazyWithRetry<T extends React.ComponentType<any>>(
+  factory: () => Promise<{ default: T }>
+) {
+  return lazy(async () => {
+    const sessionKey = "stuckhere_chunk_reload";
+    const hasReloaded = sessionStorage.getItem(sessionKey);
+
+    try {
+      const module = await factory();
+      sessionStorage.removeItem(sessionKey);
+      return module;
+    } catch (error: any) {
+      const isChunkError =
+        error?.message?.includes("Failed to fetch dynamically imported module") ||
+        error?.name === "ChunkLoadError" ||
+        error?.message?.includes("Importing a module script failed");
+
+      if (isChunkError && !hasReloaded) {
+        sessionStorage.setItem(sessionKey, "true");
+        window.location.reload();
+        return new Promise<{ default: T }>(() => {});
+      }
+
+      sessionStorage.removeItem(sessionKey);
+      throw error;
+    }
+  });
+}
+
+// Dynamic Code Splitting (Lazy-Loaded Route Modules with Auto-Reload on Stale Deployments)
+const Home = lazyWithRetry(() => import("@/pages/public/Home").then((m) => ({ default: m.Home })));
+const Explore = lazyWithRetry(() => import("@/pages/public/Explore").then((m) => ({ default: m.Explore })));
+const ProblemDetail = lazyWithRetry(() => import("@/pages/public/ProblemDetail").then((m) => ({ default: m.ProblemDetail })));
+const StartupMode = lazyWithRetry(() => import("@/pages/public/StartupMode").then((m) => ({ default: m.StartupMode })));
+const Industries = lazyWithRetry(() => import("@/pages/public/Industries").then((m) => ({ default: m.Industries })));
+const IndustryDetail = lazyWithRetry(() => import("@/pages/public/IndustryDetail").then((m) => ({ default: m.IndustryDetail })));
+const Companies = lazyWithRetry(() => import("@/pages/public/Companies").then((m) => ({ default: m.Companies })));
+const Research = lazyWithRetry(() => import("@/pages/public/Research").then((m) => ({ default: m.Research })));
+const Community = lazyWithRetry(() => import("@/pages/public/Community").then((m) => ({ default: m.Community })));
+const About = lazyWithRetry(() => import("@/pages/public/About").then((m) => ({ default: m.About })));
+const AuthPage = lazyWithRetry(() => import("@/pages/public/AuthPage").then((m) => ({ default: m.AuthPage })));
+const SubmitProblem = lazyWithRetry(() => import("@/pages/public/SubmitProblem").then((m) => ({ default: m.SubmitProblem })));
+const Dashboard = lazyWithRetry(() => import("@/pages/public/Dashboard").then((m) => ({ default: m.Dashboard })));
+const SavedProblems = lazyWithRetry(() => import("@/pages/public/SavedProblems").then((m) => ({ default: m.SavedProblems })));
+const PublicFormRunner = lazyWithRetry(() => import("@/pages/public/PublicFormRunner").then((m) => ({ default: m.PublicFormRunner })));
+const NotFound = lazyWithRetry(() => import("@/pages/public/NotFound").then((m) => ({ default: m.NotFound })));
+const Features = lazyWithRetry(() => import("@/pages/public/Features").then((m) => ({ default: m.Features })));
+const Solutions = lazyWithRetry(() => import("@/pages/public/Solutions").then((m) => ({ default: m.Solutions })));
+const Contact = lazyWithRetry(() => import("@/pages/public/Contact").then((m) => ({ default: m.Contact })));
+const Privacy = lazyWithRetry(() => import("@/pages/public/Privacy").then((m) => ({ default: m.Privacy })));
+const Terms = lazyWithRetry(() => import("@/pages/public/Terms").then((m) => ({ default: m.Terms })));
+const Cookies = lazyWithRetry(() => import("@/pages/public/Cookies").then((m) => ({ default: m.Cookies })));
+const Competitions = lazyWithRetry(() => import("@/pages/public/Competitions").then((m) => ({ default: m.Competitions })));
 
 // Admin Console Modules (Loaded on-demand only for authorized administrators)
-const AdminLogin = lazy(() => import("@/pages/admin/AdminLogin").then((m) => ({ default: m.AdminLogin })));
-const AdminRegister = lazy(() => import("@/pages/admin/AdminRegister").then((m) => ({ default: m.AdminRegister })));
-const AdminOverview = lazy(() => import("@/pages/admin/AdminOverview").then((m) => ({ default: m.AdminOverview })));
-const AdminReviewQueue = lazy(() => import("@/pages/admin/AdminReviewQueue").then((m) => ({ default: m.AdminReviewQueue })));
-const AdminProblems = lazy(() => import("@/pages/admin/AdminProblems").then((m) => ({ default: m.AdminProblems })));
-const AdminProblemDetailEditor = lazy(() => import("@/pages/admin/AdminProblemDetailEditor").then((m) => ({ default: m.AdminProblemDetailEditor })));
-const AdminForms = lazy(() => import("@/pages/admin/AdminForms").then((m) => ({ default: m.AdminForms })));
-const AdminFormBuilder = lazy(() => import("@/pages/admin/AdminFormBuilder").then((m) => ({ default: m.AdminFormBuilder })));
-const AdminFormResponses = lazy(() => import("@/pages/admin/AdminFormResponses").then((m) => ({ default: m.AdminFormResponses })));
-const AdminUsers = lazy(() => import("@/pages/admin/AdminUsers").then((m) => ({ default: m.AdminUsers })));
-const AdminBadges = lazy(() => import("@/pages/admin/AdminBadges").then((m) => ({ default: m.AdminBadges })));
-const AdminAnalytics = lazy(() => import("@/pages/admin/AdminAnalytics").then((m) => ({ default: m.AdminAnalytics })));
-const AdminSettings = lazy(() => import("@/pages/admin/AdminSettings").then((m) => ({ default: m.AdminSettings })));
-const AdminIndustries = lazy(() => import("@/pages/admin/AdminIndustries").then((m) => ({ default: m.AdminIndustries })));
-const AdminAppController = lazy(() => import("@/pages/admin/AdminAppController").then((m) => ({ default: m.AdminAppController })));
-const AdminCompanies = lazy(() => import("@/pages/admin/AdminCompanies").then((m) => ({ default: m.AdminCompanies })));
-const AdminCredits = lazy(() => import("@/pages/admin/AdminCredits").then((m) => ({ default: m.AdminCredits })));
+const AdminLogin = lazyWithRetry(() => import("@/pages/admin/AdminLogin").then((m) => ({ default: m.AdminLogin })));
+const AdminRegister = lazyWithRetry(() => import("@/pages/admin/AdminRegister").then((m) => ({ default: m.AdminRegister })));
+const AdminOverview = lazyWithRetry(() => import("@/pages/admin/AdminOverview").then((m) => ({ default: m.AdminOverview })));
+const AdminReviewQueue = lazyWithRetry(() => import("@/pages/admin/AdminReviewQueue").then((m) => ({ default: m.AdminReviewQueue })));
+const AdminProblems = lazyWithRetry(() => import("@/pages/admin/AdminProblems").then((m) => ({ default: m.AdminProblems })));
+const AdminProblemDetailEditor = lazyWithRetry(() => import("@/pages/admin/AdminProblemDetailEditor").then((m) => ({ default: m.AdminProblemDetailEditor })));
+const AdminForms = lazyWithRetry(() => import("@/pages/admin/AdminForms").then((m) => ({ default: m.AdminForms })));
+const AdminFormBuilder = lazyWithRetry(() => import("@/pages/admin/AdminFormBuilder").then((m) => ({ default: m.AdminFormBuilder })));
+const AdminFormResponses = lazyWithRetry(() => import("@/pages/admin/AdminFormResponses").then((m) => ({ default: m.AdminFormResponses })));
+const AdminUsers = lazyWithRetry(() => import("@/pages/admin/AdminUsers").then((m) => ({ default: m.AdminUsers })));
+const AdminBadges = lazyWithRetry(() => import("@/pages/admin/AdminBadges").then((m) => ({ default: m.AdminBadges })));
+const AdminAnalytics = lazyWithRetry(() => import("@/pages/admin/AdminAnalytics").then((m) => ({ default: m.AdminAnalytics })));
+const AdminSettings = lazyWithRetry(() => import("@/pages/admin/AdminSettings").then((m) => ({ default: m.AdminSettings })));
+const AdminIndustries = lazyWithRetry(() => import("@/pages/admin/AdminIndustries").then((m) => ({ default: m.AdminIndustries })));
+const AdminAppController = lazyWithRetry(() => import("@/pages/admin/AdminAppController").then((m) => ({ default: m.AdminAppController })));
+const AdminCompanies = lazyWithRetry(() => import("@/pages/admin/AdminCompanies").then((m) => ({ default: m.AdminCompanies })));
+const AdminCredits = lazyWithRetry(() => import("@/pages/admin/AdminCredits").then((m) => ({ default: m.AdminCredits })));
 
 // Pre-warm primary public routes during idle time so navigation is instantaneous
 function RoutePrewarmer() {

@@ -31,6 +31,24 @@ export class ErrorBoundary extends Component<Props, State> {
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error("Uncaught application runtime error:", error, errorInfo);
+
+    // Stale deployment chunk error detection (auto-reload once to fetch fresh bundles)
+    const isChunkError =
+      error?.message?.includes("Failed to fetch dynamically imported module") ||
+      error?.name === "ChunkLoadError" ||
+      error?.message?.includes("Importing a module script failed");
+
+    if (isChunkError) {
+      const reloadKey = "stuckhere_boundary_chunk_reload";
+      const lastReload = sessionStorage.getItem(reloadKey);
+      const now = Date.now();
+      if (!lastReload || now - parseInt(lastReload, 10) > 10000) {
+        sessionStorage.setItem(reloadKey, now.toString());
+        window.location.reload();
+        return;
+      }
+    }
+
     this.setState({ error, errorInfo });
   }
 

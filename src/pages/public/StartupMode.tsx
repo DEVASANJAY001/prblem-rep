@@ -1028,8 +1028,8 @@ Generated from Prblms Startup Canvas on ${new Date().toLocaleDateString()}`;
         <div className="w-full h-px bg-gradient-to-r from-transparent via-gray-300/70 to-transparent -mt-2" />
 
         {/* ── Header Metadata & Clean Circular Score Dials + Sub-metrics ──── */}
-        <div className="w-full flex flex-col md:flex-row gap-8 items-start justify-between">
-          <div className="flex flex-col gap-3 max-w-2xl flex-1">
+        <div className="w-full flex flex-col gap-6">
+          <div className="flex flex-col gap-3 w-full">
             <div className="flex items-center gap-2.5 flex-wrap">
               <span className="bg-surface-container text-on-surface-variant px-3 py-1 rounded-full text-xs font-semibold">
                 {industry.split("&")[0].trim()}
@@ -1050,7 +1050,7 @@ Generated from Prblms Startup Canvas on ${new Date().toLocaleDateString()}`;
               )}
             </div>
 
-            <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-on-surface tracking-tight leading-snug">
+            <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold text-on-surface tracking-tight leading-snug max-w-5xl">
               {problem.title}
             </h1>
             <p className="text-[11px] sm:text-xs text-on-surface-variant font-medium">
@@ -1064,13 +1064,13 @@ Generated from Prblms Startup Canvas on ${new Date().toLocaleDateString()}`;
               · {relativePostTime}
             </p>
 
-            <p className="text-xs sm:text-sm text-on-surface-variant leading-relaxed font-normal">
+            <p className="text-xs sm:text-sm md:text-base text-on-surface-variant leading-relaxed font-normal max-w-4xl">
               {problem.description}
             </p>
           </div>
 
           {/* ── Scores (Left) & Telemetry Metrics (Right) — Seamless Row without containers ──── */}
-          <div className="w-full flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pt-1">
+          <div className="w-full flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pt-2 pb-1 border-t border-outline-variant/20">
             {/* Left Side: Pain Score & Opportunity Dials (No background container) */}
             <div className="flex items-center gap-6 sm:gap-8 shrink-0">
               {/* Pain Score Dial */}
