@@ -404,6 +404,13 @@ export interface ResearchDoc {
   year: number;
   readTime: string;
   summary: string;
+  abstract?: string;
+  methodology?: string;
+  keyFindings?: string[];
+  citationsCount?: number;
+  activeReaders?: number;
+  doi?: string;
+  topic?: string;
 }
 
 export interface StartupBrief {
