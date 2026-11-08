@@ -964,26 +964,6 @@ Generated from Prblms Startup Canvas on ${new Date().toLocaleDateString()}`;
 
           {/* Action Button Bar */}
           <div className="flex items-center gap-2 shrink-0">
-            {/* Auto-Sync Cloud Indicator (Amazon / Google Docs model) */}
-            <div className="hidden sm:flex items-center mr-1">
-              {syncStatus === "saving" ? (
-                <span className="px-2.5 py-1 rounded-full bg-blue-50 text-primary dark:bg-blue-950/40 dark:text-blue-400 text-[11px] font-semibold flex items-center gap-1.5 shadow-2xs animate-pulse">
-                  <Loader2 className="w-3 h-3 animate-spin" />
-                  <span>Saving...</span>
-                </span>
-              ) : syncStatus === "unsaved" ? (
-                <span className="px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400 text-[11px] font-semibold flex items-center gap-1.5 shadow-2xs">
-                  <Clock className="w-3 h-3 text-amber-500" />
-                  <span>Unsaved</span>
-                </span>
-              ) : (
-                <span className="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400 text-[11px] font-semibold flex items-center gap-1.5 shadow-2xs" title="Auto-saved to IndexedDB & Firestore">
-                  <CheckCircle2 className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
-                  <span>Synced</span>
-                </span>
-              )}
-            </div>
-
             <Link
               to={getProblemDetailUrl(problem)}
               className="px-3 sm:px-3.5 py-1.5 rounded-full bg-surface-container/60 hover:bg-surface-container text-on-surface text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer"
