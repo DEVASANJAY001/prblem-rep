@@ -403,25 +403,27 @@ export const Home: React.FC = () => {
 
   return (
     <div className="bg-surface font-body-md text-on-surface antialiased selection:bg-primary/20 selection:text-primary relative overflow-x-hidden min-h-screen">
-      {/* SEO: WebSite + SearchAction schema for Google Sitelinks Search Box */}
+      {/* SEO: WebSite + SearchAction schema + Sitelinks for Google Search Result */}
       <SEOHead
         title="Stuckhere — The World's Problem Intelligence Platform"
         description="Discover, validate and solve real-world verified problems across Healthcare, AI, Energy, FinTech and 140+ industries. The world's largest open registry of startup opportunities."
-        canonicalUrl="https://stuckhere.com/"
+        canonicalUrl="https://stuckhere.davns.com/"
         ogType="website"
         keywords={["problem statements", "startup ideas", "verified problems", "innovation platform", "startup opportunities", "hackathon problems", "problem discovery"]}
         jsonLd={[
           {
             "@context": "https://schema.org",
             "@type": "WebSite",
+            "@id": "https://stuckhere.davns.com/#website",
             "name": "Stuckhere",
-            "url": "https://stuckhere.com",
-            "description": "The world's largest open registry of verified real-world problems, startup opportunities, and innovation challenges.",
+            "alternateName": ["Stuckhere Intelligence", "Stuckhere Platform", "Stuckhere Problem Intelligence"],
+            "url": "https://stuckhere.davns.com/",
+            "description": "The World's Problem Intelligence Platform. Discover, validate and solve real-world verified problems across Healthcare, AI, Energy, FinTech and 140+ industries.",
             "potentialAction": {
               "@type": "SearchAction",
               "target": {
                 "@type": "EntryPoint",
-                "urlTemplate": "https://stuckhere.com/explore?q={search_term_string}"
+                "urlTemplate": "https://stuckhere.davns.com/explore?q={search_term_string}"
               },
               "query-input": "required name=search_term_string"
             }
@@ -429,12 +431,71 @@ export const Home: React.FC = () => {
           {
             "@context": "https://schema.org",
             "@type": "Organization",
+            "@id": "https://stuckhere.davns.com/#organization",
             "name": "Stuckhere",
-            "url": "https://stuckhere.com",
-            "description": "Open registry of verified real-world problems curated for startup founders, researchers, and enterprise innovators.",
+            "url": "https://stuckhere.davns.com/",
+            "logo": {
+              "@type": "ImageObject",
+              "url": "https://stuckhere.davns.com/logo.png",
+              "caption": "Stuckhere Problem Intelligence",
+              "width": 512,
+              "height": 512
+            },
             "sameAs": [
-              "https://stuckhere.com/community",
-              "https://stuckhere.com/explore"
+              "https://stuckhere.davns.com/explore",
+              "https://stuckhere.davns.com/community",
+              "https://twitter.com/stuckhere"
+            ]
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "ItemList",
+            "@id": "https://stuckhere.davns.com/#sitelinks",
+            "name": "Stuckhere Navigation Sitelinks",
+            "description": "Primary navigation sections and intelligence hubs on Stuckhere.",
+            "itemListElement": [
+              {
+                "@type": "SiteNavigationElement",
+                "position": 1,
+                "name": "Explore Problem Statements",
+                "description": "Browse hundreds of verified, evidence-backed real-world problem statements and startup opportunities.",
+                "url": "https://stuckhere.davns.com/explore"
+              },
+              {
+                "@type": "SiteNavigationElement",
+                "position": 2,
+                "name": "Startup Mode & Venture Blueprints",
+                "description": "Turn verified problems into venture blueprints with TAM modeling, competitor gaps, and MVP specs.",
+                "url": "https://stuckhere.davns.com/explore?filter=startup_mode"
+              },
+              {
+                "@type": "SiteNavigationElement",
+                "position": 3,
+                "name": "Submit a Problem Dossier",
+                "description": "Submit an empirical industry problem with telemetry data, research papers, and market sizing.",
+                "url": "https://stuckhere.davns.com/submit"
+              },
+              {
+                "@type": "SiteNavigationElement",
+                "position": 4,
+                "name": "Problem Categories & Industries",
+                "description": "Explore problems categorized across Healthcare, AI, FinTech, Logistics, Energy, and 140+ industries.",
+                "url": "https://stuckhere.davns.com/industries"
+              },
+              {
+                "@type": "SiteNavigationElement",
+                "position": 5,
+                "name": "Community & Innovation Challenges",
+                "description": "Join founders, researchers, and engineers building solutions for high-impact global friction points.",
+                "url": "https://stuckhere.davns.com/community"
+              },
+              {
+                "@type": "SiteNavigationElement",
+                "position": 6,
+                "name": "Innovation Solutions & Solvers",
+                "description": "Discover innovative technical architectures, prototypes, and solutions to registered problems.",
+                "url": "https://stuckhere.davns.com/solutions"
+              }
             ]
           }
         ]}

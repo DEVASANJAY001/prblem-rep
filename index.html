@@ -2,10 +2,11 @@
 <html lang="en" class="light">
   <head>
     <meta charset="UTF-8" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="icon" type="image/png" href="/logo.png?v=3" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=3" />
-    <link rel="shortcut icon" href="/logo.png?v=3" />
-    <link rel="apple-touch-icon" href="/logo.png?v=3" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" href="/icon-192.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <!-- PWA -->
@@ -42,6 +43,103 @@
     <meta name="twitter:title" content="Stuckhere — The World's Problem Intelligence Platform" />
     <meta name="twitter:description" content="Discover, validate and solve real-world verified problems. Built for founders, researchers and changemakers." />
     <meta name="twitter:image" content="https://stuckhere.davns.com/og-image.png" />
+
+    <!-- Google Search Sitelinks & Brand Knowledge Graph Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": "https://stuckhere.davns.com/#website",
+          "url": "https://stuckhere.davns.com/",
+          "name": "Stuckhere",
+          "alternateName": ["Stuckhere Intelligence", "Stuckhere Platform", "Stuckhere Problem Intelligence"],
+          "description": "The World's Problem Intelligence Platform. Discover, validate and solve real-world verified problems across Healthcare, AI, Energy, FinTech and 140+ industries.",
+          "inLanguage": "en-US",
+          "publisher": {
+            "@id": "https://stuckhere.davns.com/#organization"
+          },
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": {
+              "@type": "EntryPoint",
+              "urlTemplate": "https://stuckhere.davns.com/explore?q={search_term_string}"
+            },
+            "query-input": "required name=search_term_string"
+          }
+        },
+        {
+          "@type": "Organization",
+          "@id": "https://stuckhere.davns.com/#organization",
+          "name": "Stuckhere",
+          "url": "https://stuckhere.davns.com/",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://stuckhere.davns.com/logo.png",
+            "caption": "Stuckhere Problem Intelligence",
+            "width": 512,
+            "height": 512
+          },
+          "sameAs": [
+            "https://stuckhere.davns.com/explore",
+            "https://stuckhere.davns.com/community",
+            "https://twitter.com/stuckhere"
+          ]
+        },
+        {
+          "@type": "ItemList",
+          "@id": "https://stuckhere.davns.com/#sitelinks",
+          "name": "Stuckhere Navigation Sitelinks",
+          "description": "Primary navigation sections and intelligence hubs on Stuckhere.",
+          "itemListElement": [
+            {
+              "@type": "SiteNavigationElement",
+              "position": 1,
+              "name": "Explore Problem Statements",
+              "description": "Browse hundreds of verified, evidence-backed real-world problem statements and startup opportunities.",
+              "url": "https://stuckhere.davns.com/explore"
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "position": 2,
+              "name": "Startup Mode & Venture Blueprints",
+              "description": "Turn verified problems into venture blueprints with TAM modeling, competitor gaps, and MVP specs.",
+              "url": "https://stuckhere.davns.com/explore?filter=startup_mode"
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "position": 3,
+              "name": "Submit a Problem Dossier",
+              "description": "Submit an empirical industry problem with telemetry data, research papers, and market sizing.",
+              "url": "https://stuckhere.davns.com/submit"
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "position": 4,
+              "name": "Problem Categories & Industries",
+              "description": "Explore problems categorized across Healthcare, AI, FinTech, Logistics, Energy, and 140+ industries.",
+              "url": "https://stuckhere.davns.com/industries"
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "position": 5,
+              "name": "Community & Innovation Challenges",
+              "description": "Join founders, researchers, and engineers building solutions for high-impact global friction points.",
+              "url": "https://stuckhere.davns.com/community"
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "position": 6,
+              "name": "Innovation Solutions & Solvers",
+              "description": "Discover innovative technical architectures, prototypes, and solutions to registered problems.",
+              "url": "https://stuckhere.davns.com/solutions"
+            }
+          ]
+        }
+      ]
+    }
+    </script>
 
     <!-- DNS-Prefetch and Preconnects for Core Web Vitals Performance -->
     <link rel="dns-prefetch" href="https://firestore.googleapis.com" />

@@ -1002,11 +1002,12 @@ export const SubmitProblem: React.FC = () => {
 
   return (
     <div className="w-full min-h-screen bg-surface py-4 sm:py-8 md:py-10 px-3 sm:px-6 md:px-8 lg:px-12 font-['Poppins',sans-serif] text-on-surface">
-      {/* noindex: form page â€” not content for search engines */}
+      {/* SEO for Sitelinks Indexing */}
       <SEOHead
-        title="Submit a Verified Problem Statement"
-        description="Submit a verified real-world problem statement to Stuckhere. Help the community discover startup opportunities and innovation challenges."
-        noindex
+        title="Submit a Problem Dossier — Problem Intelligence Studio"
+        description="Submit an empirical industry problem with telemetry data, research papers, and market sizing to Stuckhere. Curate real-world challenges for founders and researchers."
+        canonicalUrl="https://stuckhere.davns.com/submit"
+        ogType="website"
       />
       {/* â”€â”€ TOP HERO HEADER & BREADCRUMBS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
 
