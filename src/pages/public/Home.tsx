@@ -106,14 +106,17 @@ export const Home: React.FC = () => {
     return separated.length > 0 ? separated : UNIFIED_POPULAR_TAGS;
   }, [rawPopularTags]);
 
-  const stat1Label = getField("stats", "stat_1_label", "Problems Today");
+  const stat1Label = getField("stats", "stat_1_label", "Verified Problems");
   const stat1Val = getField("stats", "stat_1_value", "14,208");
-  const stat2Label = getField("stats", "stat_2_label", "New This Week");
-  const stat2Val = getField("stats", "stat_2_value", "+1,402");
-  const stat3Label = getField("stats", "stat_3_label", "Industries");
-  const stat3Val = getField("stats", "stat_3_value", "142");
-  const stat4Label = getField("stats", "stat_4_label", "Active Users");
-  const stat4Val = getField("stats", "stat_4_value", "89.4k");
+  const stat2Label = getField("stats", "stat_2_label", "Active Solvers");
+  const stat2Val = getField("stats", "stat_2_value", "84.2K");
+  const stat3Label = getField("stats", "stat_3_label", "Industries Mapped");
+  const stat3Val = getField("stats", "stat_3_value", "128");
+  const rawStat4Label = getField("stats", "stat_4_label", "Total Visitors");
+  const stat4Label =
+    rawStat4Label === "Bounties Awarded" || rawStat4Label === "Active Users" ? "Total Visitors" : rawStat4Label;
+  const rawStat4Val = getField("stats", "stat_4_value", "24.8K");
+  const stat4Val = rawStat4Val === "$2.4M" || rawStat4Val === "89.4k" ? "24.8K" : rawStat4Val;
 
   const ctaHeading = getField("cta", "heading", "Ready to solve the world's most pressing problems?");
   const ctaSubtext = getField(

@@ -42,7 +42,18 @@ export const AdminAppController: React.FC = () => {
     const currentPage = pages.find((p) => p.pageId === selectedPageId) || INITIAL_SITE_CONTENT.find((p) => p.pageId === selectedPageId);
     if (currentPage) {
       // Deep clone to allow non-destructive local edits
-      setEditingSections(JSON.parse(JSON.stringify(currentPage.sections)));
+      const cloned: ContentSection[] = JSON.parse(JSON.stringify(currentPage.sections));
+      // Gracefully modernize legacy "Bounties Awarded" -> "Total Visitors"
+      if (selectedPageId === "home") {
+        const statsSec = cloned.find((s) => s.sectionId === "stats");
+        if (statsSec) {
+          const lField = statsSec.fields.find((f) => f.fieldId === "stat_4_label");
+          const vField = statsSec.fields.find((f) => f.fieldId === "stat_4_value");
+          if (lField && lField.value === "Bounties Awarded") lField.value = "Total Visitors";
+          if (vField && vField.value === "$2.4M") vField.value = "24.8K";
+        }
+      }
+      setEditingSections(cloned);
     }
   }, [selectedPageId, pages]);
 
