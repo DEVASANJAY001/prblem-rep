@@ -1,6 +1,10 @@
-import React, { useState, useMemo, useEffect, useRef } from "react";
+import React, { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { subscribeProblems } from "@/lib/firebase/services/problemsService";
+import {
+  fetchExploreProblemsBatch,
+  fetchTrendingProblemsPage,
+  ExploreCursor,
+} from "@/lib/firebase/services/problemsService";
 import { subscribeCompanies } from "@/lib/firebase/services/companiesService";
 import { ProblemDoc, CompanyDoc, IndustryDoc } from "@/types";
 import { REAL_COMPANIES, REAL_INDUSTRIES } from "@/data/realProductionData";
@@ -27,6 +31,7 @@ import {
   ChevronRight,
   Building2,
   X,
+  CheckCircle2,
 } from "lucide-react";
 
 // Industry Verticals Configuration for Quick Filter Pills (Text-only pills)
@@ -61,13 +66,26 @@ export const Explore: React.FC = () => {
   const [selectedSeverity, setSelectedSeverity] = useState<string>("All");
   const [verifiedOnly, setVerifiedOnly] = useState<boolean>(false);
 
-  const [allProblems, setAllProblems] = useState<ProblemDoc[]>([]);
+  // Static/seed problems for intelligence metrics & offline fallbacks (0 reads)
+  const [allProblems] = useState<ProblemDoc[]>(REAL_PROBLEMS);
   const [companiesList, setCompaniesList] = useState<CompanyDoc[]>(REAL_COMPANIES);
   const [industriesList, setIndustriesList] = useState<IndustryDoc[]>([]);
   const [showDomainsModal, setShowDomainsModal] = useState<boolean>(false);
-  const [loading, setLoading] = useState(true);
-  const [currentPage, setCurrentPage] = useState(1);
-  const ITEMS_PER_PAGE = 20;
+
+  // ── 4-Card Batch Lazy-Loading State (Explore Grid) ──
+  const [exploreProblems, setExploreProblems] = useState<ProblemDoc[]>([]);
+  const [loadingGrid, setLoadingGrid] = useState<boolean>(true);
+  const [loadingMore, setLoadingMore] = useState<boolean>(false);
+  const [hasMore, setHasMore] = useState<boolean>(true);
+  const [totalFilteredCount, setTotalFilteredCount] = useState<number | undefined>(undefined);
+
+  const cursorRef = useRef<ExploreCursor>(null);
+  const isLoadingRef = useRef<boolean>(false);
+  const hasMoreRef = useRef<boolean>(true);
+  const gridSentinelRef = useRef<HTMLDivElement>(null);
+
+  // Top Trending Problems (5 items fetched once, 0 duplicate reads)
+  const [trendingProblems, setTrendingProblems] = useState<ProblemDoc[]>([]);
 
   // Admin CMS custom overrides for explore domains
   const popularSlugsOverride = getField<string[]>("domains_config", "popular_domains", []);
@@ -122,13 +140,25 @@ export const Explore: React.FC = () => {
 
   useEffect(() => {
     setTimeout(checkScroll, 100);
-  }, [allProblems]);
+  }, [trendingProblems]);
 
+  // Fetch top 5 trending problems & subscribe to metadata collections (0 duplicate reads)
   useEffect(() => {
-    const unsubProblems = subscribeProblems({ status: "approved" }, (list) => {
-      setAllProblems(list);
-      setLoading(false);
-    });
+    let mounted = true;
+    fetchTrendingProblemsPage(null, 5)
+      .then((res) => {
+        if (mounted && res.problems && res.problems.length > 0) {
+          setTrendingProblems(res.problems);
+        } else if (mounted) {
+          // Fallback to top 5 from seed
+          setTrendingProblems(REAL_PROBLEMS.slice(0, 5));
+        }
+      })
+      .catch((err) => {
+        console.warn("Failed to fetch trending problems:", err);
+        if (mounted) setTrendingProblems(REAL_PROBLEMS.slice(0, 5));
+      });
+
     const unsubCompanies = subscribeCompanies((list) => {
       if (list && list.length > 0) setCompaniesList(list);
     });
@@ -136,7 +166,7 @@ export const Explore: React.FC = () => {
       if (list) setIndustriesList(list);
     });
     return () => {
-      unsubProblems();
+      mounted = false;
       unsubCompanies();
       unsubIndustries();
     };
@@ -173,88 +203,100 @@ export const Explore: React.FC = () => {
     setVerifiedOnly(false);
     setSearch("");
     setSearchParams({});
-    setCurrentPage(1);
   };
-
-  // Reset to page 1 whenever any filter or sort changes
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [search, selectedIndustries, selectedSeverity, verifiedOnly, sortBy]);
 
   const isSearching = search.trim().length > 0;
   const isDomainSelected = selectedIndustries.length > 0;
   const shouldHideOtherSections = isSearching || isDomainSelected;
 
-  const isFiltered =
-    isSearching ||
-    isDomainSelected ||
-    selectedSeverity !== "All" ||
-    verifiedOnly;
+  // ── 4-Card Batch Data-Fetching Logic (limit 4, cursor pagination, 0 extra writes) ──
+  const fetchNextBatch = useCallback(
+    async (isInitial = false) => {
+      if (isLoadingRef.current) return;
+      if (!isInitial && !hasMoreRef.current) return;
 
-  // Filtered and Sorted problems computation for main grid
-  const filteredProblems = useMemo(() => {
-    const filtered = allProblems.filter((p) => {
-      if (
-        search.trim() &&
-        !p.title.toLowerCase().includes(search.toLowerCase()) &&
-        !p.description.toLowerCase().includes(search.toLowerCase()) &&
-        !p.industry.toLowerCase().includes(search.toLowerCase()) &&
-        !p.tags?.some((t) => t.toLowerCase().includes(search.toLowerCase()))
-      ) {
-        return false;
+      isLoadingRef.current = true;
+      if (isInitial) {
+        setLoadingGrid(true);
+        cursorRef.current = null;
+        hasMoreRef.current = true;
+        setHasMore(true);
+      } else {
+        setLoadingMore(true);
       }
-      if (
-        selectedIndustries.length > 0 &&
-        !selectedIndustries.some((ind) => {
-          const lowerInd = ind.toLowerCase().trim();
-          const pInd = p.industry.toLowerCase().trim();
-          if (lowerInd === "ai") {
-            return pInd === "ai" || pInd.startsWith("ai ") || pInd.endsWith(" ai") || pInd.includes("artificial intelligence");
-          }
-          return pInd.includes(lowerInd) || lowerInd.includes(pInd);
-        })
-      ) {
-        return false;
-      }
-      if (selectedSeverity !== "All" && p.severity !== selectedSeverity.toLowerCase()) {
-        return false;
-      }
-      if (verifiedOnly && !p.verified) {
-        return false;
-      }
-      return true;
-    });
 
-    // Sorting
-    return filtered.sort((a, b) => {
-      if (sortBy === "Highest Pain") {
-        return (b.painScore || 0) - (a.painScore || 0);
-      }
-      if (sortBy === "Newest") {
-        const timeA = a.publishedAt ? new Date(a.publishedAt).getTime() : 0;
-        const timeB = b.publishedAt ? new Date(b.publishedAt).getTime() : 0;
-        return timeB - timeA;
-      }
-      // Default: Trending / Upvotes / Views
-      const scoreA = (a.votes?.upvotes || 0) * 2 + (a.views || 0);
-      const scoreB = (b.votes?.upvotes || 0) * 2 + (b.views || 0);
-      return scoreB - scoreA;
-    });
-  }, [allProblems, search, selectedIndustries, selectedSeverity, verifiedOnly, sortBy]);
+      try {
+        const filters: ExploreProblemsFilter = {
+          search,
+          selectedIndustries,
+          selectedSeverity,
+          verifiedOnly,
+          sortBy,
+        };
 
-  // Trending Problems — top 5 by traction (views + pain + votes)
-  const trendingProblems = useMemo(() => {
-    const scored = [...allProblems].sort((a, b) => {
-      const scoreA = (a.views || 0) * 1.5 + (a.votes?.upvotes || 0) * 2 + Number(a.painScore || a.aiScores?.painLevel || 80);
-      const scoreB = (b.views || 0) * 1.5 + (b.votes?.upvotes || 0) * 2 + Number(b.painScore || b.aiScores?.painLevel || 80);
-      return scoreB - scoreA;
-    });
-    return scored.slice(0, 5);
-  }, [allProblems]);
+        const result = await fetchExploreProblemsBatch(cursorRef.current, 4, filters);
+
+        if (isInitial) {
+          setExploreProblems(result.problems);
+        } else {
+          setExploreProblems((prev) => {
+            const existingIds = new Set(prev.map((p) => p.id));
+            const newOnes = result.problems.filter((p) => !existingIds.has(p.id));
+            return [...prev, ...newOnes];
+          });
+        }
+
+        cursorRef.current = result.cursor;
+        hasMoreRef.current = result.hasMore;
+        setHasMore(result.hasMore);
+        if (result.totalCount !== undefined) {
+          setTotalFilteredCount(result.totalCount);
+        }
+      } catch (err) {
+        console.error("[Explore] Error fetching 4-card batch:", err);
+      } finally {
+        isLoadingRef.current = false;
+        setLoadingGrid(false);
+        setLoadingMore(false);
+      }
+    },
+    [search, selectedIndustries, selectedSeverity, verifiedOnly, sortBy]
+  );
+
+  // Initial fetch and filter reset: loads first 4 cards
+  useEffect(() => {
+    fetchNextBatch(true);
+  }, [fetchNextBatch]);
+
+  // IntersectionObserver for lazy-loading batches of 4 cards on scroll
+  useEffect(() => {
+    const sentinel = gridSentinelRef.current;
+    if (!sentinel) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        if (entry.isIntersecting && hasMoreRef.current && !isLoadingRef.current) {
+          fetchNextBatch(false);
+        }
+      },
+      {
+        root: null,
+        rootMargin: "0px 0px 400px 0px",
+        threshold: 0,
+      }
+    );
+
+    observer.observe(sentinel);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [fetchNextBatch, hasMore, loadingGrid]);
 
   // Suggested problem statements randomly picked from different industries when 0 results match
   const suggestedProblems = useMemo(() => {
-    if (filteredProblems.length > 0 || allProblems.length === 0) return [];
+    if (exploreProblems.length > 0) return [];
 
     // Filter problems that don't match the current filtered set or selected industry
     const pool = allProblems.filter((p) => {
@@ -299,7 +341,7 @@ export const Explore: React.FC = () => {
     }
 
     return selected;
-  }, [allProblems, filteredProblems.length, selectedIndustries]);
+  }, [exploreProblems.length, allProblems, selectedIndustries]);
 
   return (
     <div className="flex flex-col w-full min-h-screen font-['Poppins',sans-serif] text-on-surface bg-surface">
@@ -512,7 +554,7 @@ export const Explore: React.FC = () => {
 
       <main className="max-w-7xl w-full mx-auto px-4 md:px-8 py-8 space-y-10">
         {/* ── Trending Section directly on the page (Hidden smoothly during active search or when domain is selected) ─────────────────────── */}
-        {!shouldHideOtherSections && !loading && trendingProblems.length > 0 && (
+        {!shouldHideOtherSections && trendingProblems.length > 0 && (
           <section className="w-full space-y-4 transition-all duration-300 animate-in fade-in">
             <div className="flex items-end justify-between border-b border-outline-variant/20 pb-4">
               <div className="flex flex-col gap-1.5">
@@ -582,7 +624,7 @@ export const Explore: React.FC = () => {
         )}
 
         {/* ── Top Companies Section (Hidden smoothly during active search or when domain is selected) ───────────────────────────────────── */}
-        {!shouldHideOtherSections && !loading && companiesList.length > 0 && (
+        {!shouldHideOtherSections && companiesList.length > 0 && (
           <section className="w-full space-y-3 sm:space-y-4 font-['Poppins',sans-serif] transition-all duration-300 animate-in fade-in">
             <div className="flex items-end justify-between border-b border-outline-variant/20 pb-3 sm:pb-4">
               <div className="flex flex-col gap-1 sm:gap-1.5">
@@ -628,7 +670,7 @@ export const Explore: React.FC = () => {
                   : "All Problem Statements"}
               </h2>
               <span className="text-xs text-on-surface-variant font-medium">
-                Showing {filteredProblems.length} of {allProblems.length} statements
+                Showing {exploreProblems.length} {totalFilteredCount !== undefined ? `of ${totalFilteredCount}` : ""} statements
               </span>
             </div>
 
@@ -659,16 +701,16 @@ export const Explore: React.FC = () => {
             )}
           </div>
 
-          {loading ? (
-            // Skeleton grid matching real card layout — 10 placeholders (2 cols × 5 rows)
+          {loadingGrid ? (
+            // Skeleton grid matching 4-card initial batch (2 cols × 2 rows)
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
-              {Array.from({ length: 10 }).map((_, i) => (
+              {Array.from({ length: 4 }).map((_, i) => (
                 <div key={i} className="w-full">
                   <ProblemCardSkeleton />
                 </div>
               ))}
             </div>
-          ) : filteredProblems.length === 0 ? (
+          ) : exploreProblems.length === 0 ? (
             <div className="space-y-6 sm:space-y-8 w-full animate-fade-in">
               <div className="w-full max-w-md mx-auto text-center py-2 sm:py-4 space-y-3 bg-transparent">
                 {/* Fade-in Vector Illustration */}
@@ -724,80 +766,57 @@ export const Explore: React.FC = () => {
                 </div>
               )}
             </div>
-          ) : (() => {
-            const totalPages = Math.ceil(filteredProblems.length / ITEMS_PER_PAGE);
-            const safePage = Math.min(currentPage, totalPages);
-            const pageStart = (safePage - 1) * ITEMS_PER_PAGE;
-            const pageItems = filteredProblems.slice(pageStart, pageStart + ITEMS_PER_PAGE);
-
-            // Build page number array with ellipsis (always show first, last, and ±1 around current)
-            const getPageNumbers = () => {
-              if (totalPages <= 7) return Array.from({ length: totalPages }, (_, i) => i + 1);
-              const pages: (number | "...")[] = [1];
-              if (safePage > 3) pages.push("...");
-              for (let p = Math.max(2, safePage - 1); p <= Math.min(totalPages - 1, safePage + 1); p++) {
-                pages.push(p);
-              }
-              if (safePage < totalPages - 2) pages.push("...");
-              pages.push(totalPages);
-              return pages;
-            };
-
-            return (
-              <div className="flex flex-col gap-6">
-                {/* Cards grid */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full animate-fade-in">
-                  {pageItems.map((prob) => (
-                    <TrendingProblemCard key={prob.id} problem={prob} className="w-full h-full" />
-                  ))}
-                </div>
-
-                {/* Pagination controls — only shown when more than 1 page */}
-                {totalPages > 1 && (
-                  <div className="flex items-center justify-center gap-1.5 pt-2 pb-4">
-                    {/* Prev */}
-                    <button
-                      onClick={() => { setCurrentPage((p) => Math.max(1, p - 1)); window.scrollTo({ top: 0, behavior: "smooth" }); }}
-                      disabled={safePage === 1}
-                      className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-semibold border border-outline-variant/40 text-on-surface-variant hover:text-primary hover:border-primary/40 disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer"
-                    >
-                      <ChevronLeft className="w-3.5 h-3.5" />
-                      <span>Prev</span>
-                    </button>
-
-                    {/* Page numbers */}
-                    {getPageNumbers().map((pg, idx) =>
-                      pg === "..." ? (
-                        <span key={`ellipsis-${idx}`} className="px-1.5 text-xs text-on-surface-variant select-none">…</span>
-                      ) : (
-                        <button
-                          key={pg}
-                          onClick={() => { setCurrentPage(pg as number); window.scrollTo({ top: 0, behavior: "smooth" }); }}
-                          className={`min-w-[32px] h-8 flex items-center justify-center rounded-xl text-xs font-bold transition-all cursor-pointer border ${
-                            safePage === pg
-                              ? "bg-primary text-white border-primary shadow-sm"
-                              : "border-outline-variant/30 text-on-surface-variant hover:text-primary hover:border-primary/40 hover:bg-primary/5"
-                          }`}
-                        >
-                          {pg}
-                        </button>
-                      )
-                    )}
-
-                    {/* Next */}
-                    <button
-                      onClick={() => { setCurrentPage((p) => Math.min(totalPages, p + 1)); window.scrollTo({ top: 0, behavior: "smooth" }); }}
-                      disabled={safePage === totalPages}
-                      className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-semibold border border-outline-variant/40 text-on-surface-variant hover:text-primary hover:border-primary/40 disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer"
-                    >
-                      <span>Next</span>
-                      <ChevronRight className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                )}
+          ) : (
+            <div className="flex flex-col gap-6">
+              {/* Cards grid */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full animate-fade-in">
+                {exploreProblems.map((prob) => (
+                  <TrendingProblemCard key={prob.id} problem={prob} className="w-full h-full" />
+                ))}
               </div>
-            );
-          })()}
+
+              {/* Batch Loading Indicator */}
+              {loadingMore && (
+                <div className="w-full flex items-center justify-center py-6" role="status" aria-live="polite">
+                  <div className="flex items-center gap-2.5 px-5 py-2.5 rounded-2xl bg-surface-container-lowest border border-outline-variant/30 shadow-xs">
+                    <div className="w-4 h-4 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+                    <span className="text-xs sm:text-sm font-medium text-on-surface-variant">
+                      Loading next 4 problem statements...
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {/* Infinite Scroll Intersection Sentinel */}
+              {hasMore && (
+                <div
+                  ref={gridSentinelRef}
+                  className="w-full h-8 pointer-events-none opacity-0"
+                  aria-hidden="true"
+                />
+              )}
+
+              {/* End of list indicator */}
+              {!hasMore && exploreProblems.length > 0 && (
+                <div className="w-full flex flex-col items-center justify-center py-10 px-4 text-center border-t border-outline-variant/20 mt-4">
+                  <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mb-2 shadow-2xs border border-emerald-100">
+                    <CheckCircle2 className="w-5 h-5 text-emerald-600" />
+                  </div>
+                  <span className="text-sm font-bold text-on-surface">All Problem Statements Loaded</span>
+                  <p className="text-xs text-on-surface-variant mt-0.5 max-w-sm leading-relaxed">
+                    You've explored all {exploreProblems.length} problem statements. Have a persistent bottleneck to add?
+                  </p>
+                  <Link
+                    to="/submit"
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:text-primary-container mt-3 bg-primary/5 hover:bg-primary/10 px-4 py-2 rounded-full transition-colors"
+                  >
+                    <span>Submit a Problem Statement</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
+                </div>
+              )}
+            </div>
+          )}
         </section>
       </main>
 

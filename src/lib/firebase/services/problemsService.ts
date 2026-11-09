@@ -879,6 +879,187 @@ export async function fetchTrendingProblemsPage(
   };
 }
 
+export interface ExploreProblemsFilter {
+  search?: string;
+  selectedIndustries?: string[];
+  selectedSeverity?: string;
+  verifiedOnly?: boolean;
+  sortBy?: "Trending" | "Highest Pain" | "Newest" | string;
+}
+
+export type ExploreCursor = QueryDocumentSnapshot<DocumentData> | number | null;
+
+export interface ExploreBatchResult {
+  problems: ProblemDoc[];
+  cursor: ExploreCursor;
+  hasMore: boolean;
+  totalCount?: number;
+}
+
+/**
+ * Efficient 4-card batch pagination for the Explore page "All Problem Statements" grid.
+ * Strict database read optimization:
+ * - Fetches only 4 cards per batch.
+ * - Extracts only lightweight card fields.
+ * - Prevents duplicate reads.
+ * - Supports startAfter() cursor pagination with filter & sort resilience.
+ */
+export async function fetchExploreProblemsBatch(
+  cursor: ExploreCursor = null,
+  batchSize = 4,
+  filters: ExploreProblemsFilter = {}
+): Promise<ExploreBatchResult> {
+  const {
+    search = "",
+    selectedIndustries = [],
+    selectedSeverity = "All",
+    verifiedOnly = false,
+    sortBy = "Trending",
+  } = filters;
+
+  const isComplexFilter =
+    Boolean(search.trim()) ||
+    selectedIndustries.length > 1 ||
+    (sortBy && sortBy !== "Trending");
+
+  // CASE 1: Direct Firestore Query with cursor pagination (standard browsing path)
+  if (!isComplexFilter && db && typeof collection === "function") {
+    try {
+      const colRef = collection(db, PROBLEMS_COLLECTION);
+      const constraints: any[] = [where("status", "==", "approved")];
+
+      if (selectedIndustries.length === 1) {
+        constraints.push(where("industry", "==", selectedIndustries[0]));
+      }
+
+      if (selectedSeverity && selectedSeverity !== "All") {
+        constraints.push(where("severity", "==", selectedSeverity.toLowerCase()));
+      }
+
+      if (verifiedOnly) {
+        constraints.push(where("verified", "==", true));
+      }
+
+      if (cursor && typeof cursor === "object" && "data" in cursor) {
+        constraints.push(startAfter(cursor));
+      }
+
+      constraints.push(limit(batchSize));
+
+      const q = query(colRef, ...constraints);
+      const snap = await getDocs(q);
+
+      if (snap.empty) {
+        return {
+          problems: [],
+          cursor,
+          hasMore: false,
+        };
+      }
+
+      const problems = snap.docs.map((d) => extractCardFields(d.data(), d.id));
+      const newCursor = snap.docs[snap.docs.length - 1];
+      const hasMore = snap.docs.length >= batchSize;
+
+      return {
+        problems,
+        cursor: newCursor,
+        hasMore,
+      };
+    } catch (err: any) {
+      console.warn("[ExploreBatch] Direct Firestore query failed, falling back to local:", err?.message || err);
+    }
+  }
+
+  // CASE 2: Filtered / Search / Sorted / Offline Fallback
+  let pool: ProblemDoc[] = [];
+
+  const cachedApproved = swrCache.get<ProblemDoc[]>("approved_problems_pool");
+  if (cachedApproved && cachedApproved.length > 0) {
+    pool = cachedApproved;
+  } else if (db && typeof collection === "function") {
+    try {
+      const colRef = collection(db, PROBLEMS_COLLECTION);
+      const q = query(colRef, where("status", "==", "approved"), limit(100));
+      const snap = await getDocs(q);
+      pool = snap.docs.map((d) => extractCardFields(d.data(), d.id));
+      swrCache.set("approved_problems_pool", pool, 120_000); // 2 minute memory cache
+    } catch {
+      pool = getLocalProblems({ status: "approved" }).map((p) => extractCardFields(p, p.id));
+    }
+  } else {
+    pool = getLocalProblems({ status: "approved" }).map((p) => extractCardFields(p, p.id));
+  }
+
+  if (pool.length === 0) {
+    pool = REAL_PROBLEMS.filter((p) => p.status === "approved").map((p) => extractCardFields(p, p.id));
+  }
+
+  // Apply filters
+  const filtered = pool.filter((p) => {
+    if (search.trim()) {
+      const s = search.toLowerCase();
+      const matchesTitle = p.title?.toLowerCase().includes(s);
+      const matchesDesc = p.description?.toLowerCase().includes(s);
+      const matchesInd = p.industry?.toLowerCase().includes(s);
+      const matchesTags = p.tags?.some((t) => t.toLowerCase().includes(s));
+      if (!matchesTitle && !matchesDesc && !matchesInd && !matchesTags) {
+        return false;
+      }
+    }
+
+    if (selectedIndustries.length > 0) {
+      const matchesIndustry = selectedIndustries.some((ind) => {
+        const lowerInd = ind.toLowerCase().trim();
+        const pInd = (p.industry || "").toLowerCase().trim();
+        if (lowerInd === "ai") {
+          return pInd === "ai" || pInd.startsWith("ai ") || pInd.endsWith(" ai") || pInd.includes("artificial intelligence");
+        }
+        return pInd.includes(lowerInd) || lowerInd.includes(pInd);
+      });
+      if (!matchesIndustry) return false;
+    }
+
+    if (selectedSeverity !== "All" && p.severity?.toLowerCase() !== selectedSeverity.toLowerCase()) {
+      return false;
+    }
+
+    if (verifiedOnly && !p.verified) {
+      return false;
+    }
+
+    return true;
+  });
+
+  // Apply sorting
+  filtered.sort((a, b) => {
+    if (sortBy === "Highest Pain") {
+      return (b.painScore || 0) - (a.painScore || 0);
+    }
+    if (sortBy === "Newest") {
+      const timeA = a.publishedAt ? new Date(a.publishedAt).getTime() : 0;
+      const timeB = b.publishedAt ? new Date(b.publishedAt).getTime() : 0;
+      return timeB - timeA;
+    }
+    // Default: Trending
+    const scoreA = (a.votes?.upvotes || 0) * 2 + (a.views || 0);
+    const scoreB = (b.votes?.upvotes || 0) * 2 + (b.views || 0);
+    return scoreB - scoreA;
+  });
+
+  const startIndex = typeof cursor === "number" ? cursor : 0;
+  const slice = filtered.slice(startIndex, startIndex + batchSize);
+  const nextIndex = startIndex + slice.length;
+  const hasMore = nextIndex < filtered.length;
+
+  return {
+    problems: slice,
+    cursor: hasMore ? nextIndex : null,
+    hasMore,
+    totalCount: filtered.length,
+  };
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // 4. Multiplexed Query Subscription (0 Duplicate Reads)
 // ─────────────────────────────────────────────────────────────────────────────
