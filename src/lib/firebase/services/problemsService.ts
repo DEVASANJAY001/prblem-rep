@@ -14,6 +14,9 @@ import {
   arrayUnion,
   arrayRemove,
   limit,
+  startAfter,
+  QueryDocumentSnapshot,
+  DocumentData,
 } from "firebase/firestore";
 import { db } from "../config";
 import { ProblemDoc, ProblemStatus, AIScores, ProblemComment, CommentReply, ProblemValidations, EvidenceDocument, UserStartupNotes, StartupModeConfig } from "@/types";
@@ -735,6 +738,144 @@ export function subscribeProblemById(
         }, 120_000);
       }
     }
+  };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 3.5. On-Demand Paginated Query for Trending Problems (Minimal Reads, 0 Writes)
+// ─────────────────────────────────────────────────────────────────────────────
+
+export type TrendingCursor = QueryDocumentSnapshot<DocumentData> | number | null;
+
+export interface TrendingProblemsPageResult {
+  problems: ProblemDoc[];
+  cursor: TrendingCursor;
+  hasMore: boolean;
+}
+
+/**
+ * Extracts only lightweight card fields to minimize memory & network footprint.
+ * Heavy documents (with venture blueprints, market landscape, etc.) are stripped.
+ */
+function extractCardFields(raw: any, id: string): ProblemDoc {
+  return {
+    id: id || raw.id,
+    title: raw.title || "Untitled Problem",
+    description: raw.description || "",
+    whenItHappens: raw.whenItHappens || "",
+    whyFrustrating: raw.whyFrustrating || "",
+    frequency: raw.frequency || "",
+    whoFacesIt: raw.whoFacesIt || "",
+    industry: cleanIndustryName(raw.industry || "General"),
+    severity: raw.severity || "medium",
+    currentSolution: raw.currentSolution || "",
+    evidenceUrls: Array.isArray(raw.evidenceUrls) ? raw.evidenceUrls : [],
+    audienceSize: raw.audienceSize || "",
+    willingnessToPay: raw.willingnessToPay || "",
+    isAnonymous: Boolean(raw.isAnonymous),
+    status: "approved",
+    aiScores: raw.aiScores ? { painLevel: raw.aiScores.painLevel } : null,
+    painScore: typeof raw.painScore === "number" ? raw.painScore : 80,
+    opportunityScore: typeof raw.opportunityScore === "number" ? raw.opportunityScore : 80,
+    votes: raw.votes || { upvotes: 0, downvotes: 0, userVote: null },
+    verified: raw.verified ?? true,
+    submittedBy: raw.submittedBy || "anonymous",
+    submittedAt: raw.submittedAt || new Date().toISOString(),
+    reviewedAt: raw.reviewedAt || null,
+    reviewedBy: raw.reviewedBy || null,
+    reviewNote: raw.reviewNote || null,
+    publishedAt: raw.publishedAt || null,
+    updatedAt: raw.updatedAt || new Date().toISOString(),
+    tags: Array.isArray(raw.tags) ? raw.tags : [],
+    views: typeof raw.views === "number" ? raw.views : 0,
+    attachedCompanyNames: Array.isArray(raw.attachedCompanyNames) ? raw.attachedCompanyNames : [],
+    validations: raw.validations
+      ? {
+          faceCount: raw.validations.faceCount || 0,
+          buildCount: raw.validations.buildCount || 0,
+        }
+      : undefined,
+    commentsCount:
+      typeof raw.commentsCount === "number"
+        ? raw.commentsCount
+        : Array.isArray(raw.comments)
+        ? raw.comments.length
+        : 0,
+    comments: Array.isArray(raw.comments)
+      ? raw.comments.slice(0, 5).map((c: any) => ({
+          id: c.id,
+          replies: Array.isArray(c.replies) ? c.replies.map((r: any) => ({ id: r.id })) : [],
+        }))
+      : [],
+  };
+}
+
+/**
+ * Lightweight, on-demand paginated fetch for Trending Problems.
+ * Optimized to strictly minimize Firestore reads and eliminate writes:
+ * - Fetches only the requested batch (initial 5, then 1-at-a-time on scroll).
+ * - Avoids real-time onSnapshot listeners.
+ * - Extracts only the required card fields to minimize memory & bandwidth.
+ * - Uses Firestore cursor-based startAfter() pagination.
+ */
+export async function fetchTrendingProblemsPage(
+  cursor: TrendingCursor = null,
+  pageSize = 5
+): Promise<TrendingProblemsPageResult> {
+  // If Firestore is available, use cursor-based pagination
+  if (db && typeof collection === "function") {
+    try {
+      const colRef = collection(db, PROBLEMS_COLLECTION);
+      const constraints: any[] = [where("status", "==", "approved")];
+
+      if (cursor && typeof cursor === "object" && "data" in cursor) {
+        constraints.push(startAfter(cursor));
+      }
+
+      constraints.push(limit(pageSize));
+
+      const q = query(colRef, ...constraints);
+      const snap = await getDocs(q);
+
+      if (snap.empty) {
+        return {
+          problems: [],
+          cursor,
+          hasMore: false,
+        };
+      }
+
+      const problems: ProblemDoc[] = snap.docs.map((docSnap) => {
+        const d = docSnap.data();
+        return extractCardFields(d, docSnap.id);
+      });
+
+      const newCursor = snap.docs[snap.docs.length - 1];
+      const hasMore = snap.docs.length >= pageSize;
+
+      return {
+        problems,
+        cursor: newCursor,
+        hasMore,
+      };
+    } catch (err: any) {
+      console.warn("[TrendingProblems] Firestore query failed, falling back to local:", err?.message || err);
+    }
+  }
+
+  // Offline / Error fallback: paginate local cache
+  const localApproved = getLocalProblems({ status: "approved" });
+  const pool = localApproved.length > 0 ? localApproved : REAL_PROBLEMS.filter((p) => p.status === "approved");
+
+  const startIndex = typeof cursor === "number" ? cursor : 0;
+  const slice = pool.slice(startIndex, startIndex + pageSize);
+  const nextIndex = startIndex + slice.length;
+  const hasMore = nextIndex < pool.length;
+
+  return {
+    problems: slice.map((p) => extractCardFields(p, p.id)),
+    cursor: hasMore ? nextIndex : null,
+    hasMore,
   };
 }
 

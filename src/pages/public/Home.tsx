@@ -1,15 +1,15 @@
-import React, { useEffect, useRef, useState, useMemo } from "react";
+import React, { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Navbar } from "@/components/common/Navbar";
 import { usePageContent } from "@/hooks/usePageContent";
-import { subscribeProblems } from "@/lib/firebase/services/problemsService";
+import { fetchTrendingProblemsPage, TrendingCursor } from "@/lib/firebase/services/problemsService";
 import { ProblemDoc } from "@/types";
 import { ProblemCardSkeleton } from "@/components/common/LoadingContainer";
 import { ShaderBackground } from "@/components/ui/ShaderBackground";
 import { OrganicAtlasSection } from "@/components/ui/OrganicAtlasSection";
 import { TrendingProblemCard } from "@/components/ui/TrendingProblemCard";
 import { SEOHead } from "@/components/common/SEOHead";
-import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, ArrowRight, CheckCircle2 } from "lucide-react";
 import { separateCompoundIndustry } from "@/lib/algorithms/domainIntelligence";
 
 export const Home: React.FC = () => {
@@ -17,9 +17,16 @@ export const Home: React.FC = () => {
   const mouseGlowRef = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const trendingScrollRef = useRef<HTMLDivElement | null>(null);
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
 
   const [trendingProblems, setTrendingProblems] = useState<ProblemDoc[]>([]);
   const [loadingProblems, setLoadingProblems] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const cursorRef = useRef<TrendingCursor>(null);
+  const isLoadingRef = useRef(false);
+  const hasMoreRef = useRef(true);
+
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
   const [homeSearchQuery, setHomeSearchQuery] = useState("");
@@ -33,8 +40,9 @@ export const Home: React.FC = () => {
     }
   };
 
+  // Scroll position & fallback trigger
   const scrollRaf = useRef<number | null>(null);
-  const checkScroll = () => {
+  const checkScroll = useCallback(() => {
     if (scrollRaf.current) return;
     scrollRaf.current = requestAnimationFrame(() => {
       scrollRaf.current = null;
@@ -42,9 +50,14 @@ export const Home: React.FC = () => {
         const { scrollLeft, scrollWidth, clientWidth } = trendingScrollRef.current;
         setCanScrollLeft(scrollLeft > 15);
         setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 15);
+
+        // Fallback: trigger next card if near the end and observer hasn't caught it yet
+        if (hasMoreRef.current && !isLoadingRef.current && scrollLeft + clientWidth >= scrollWidth - 250) {
+          fetchNextCard();
+        }
       }
     });
-  };
+  }, []);
 
   const scrollTrending = (direction: "left" | "right") => {
     if (trendingScrollRef.current) {
@@ -54,14 +67,93 @@ export const Home: React.FC = () => {
     }
   };
 
+  // 1. Initial Load: Fetch exactly 5 cards (0 onSnapshot listeners)
   useEffect(() => {
-    const unsubscribe = subscribeProblems({ status: "approved" }, (list) => {
-      setTrendingProblems(list);
-      setLoadingProblems(false);
-      setTimeout(checkScroll, 100);
-    });
-    return () => unsubscribe();
-  }, []);
+    let isMounted = true;
+    isLoadingRef.current = true;
+    setLoadingProblems(true);
+
+    fetchTrendingProblemsPage(null, 5)
+      .then((res) => {
+        if (!isMounted) return;
+        setTrendingProblems(res.problems);
+        cursorRef.current = res.cursor;
+        setHasMore(res.hasMore);
+        hasMoreRef.current = res.hasMore;
+        setLoadingProblems(false);
+        isLoadingRef.current = false;
+        setTimeout(checkScroll, 100);
+      })
+      .catch((err) => {
+        if (!isMounted) return;
+        console.warn("Failed to load initial trending problems:", err);
+        setLoadingProblems(false);
+        isLoadingRef.current = false;
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [checkScroll]);
+
+  // 2. Lazy Loading: Fetch 1 card at a time with cursor
+  const fetchNextCard = useCallback(async () => {
+    if (isLoadingRef.current || !hasMoreRef.current) return;
+    isLoadingRef.current = true;
+    setLoadingMore(true);
+
+    try {
+      const res = await fetchTrendingProblemsPage(cursorRef.current, 1);
+      if (res.problems.length > 0) {
+        const nextCard = res.problems[0];
+        setTrendingProblems((prev) => {
+          if (prev.some((p) => p.id === nextCard.id)) return prev;
+          return [...prev, nextCard];
+        });
+        cursorRef.current = res.cursor;
+        setHasMore(res.hasMore);
+        hasMoreRef.current = res.hasMore;
+        setTimeout(checkScroll, 100);
+      } else {
+        setHasMore(false);
+        hasMoreRef.current = false;
+      }
+    } catch (err) {
+      console.warn("Failed to fetch next trending card:", err);
+    } finally {
+      setLoadingMore(false);
+      isLoadingRef.current = false;
+    }
+  }, [checkScroll]);
+
+  // 3. IntersectionObserver for visibility-based loading
+  useEffect(() => {
+    if (!hasMore || loadingProblems) return;
+
+    const sentinelEl = sentinelRef.current;
+    const containerEl = trendingScrollRef.current;
+    if (!sentinelEl || !containerEl || typeof IntersectionObserver === "undefined") return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries;
+        if (entry.isIntersecting && !isLoadingRef.current && hasMoreRef.current) {
+          fetchNextCard();
+        }
+      },
+      {
+        root: containerEl,
+        rootMargin: "0px 250px 0px 0px",
+        threshold: 0.05,
+      }
+    );
+
+    observer.observe(sentinelEl);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [hasMore, loadingProblems, fetchNextCard]);
 
   const { getField, loading: contentLoading } = usePageContent("home");
 
@@ -804,7 +896,7 @@ export const Home: React.FC = () => {
                 style={{ scrollbarWidth: "none" }}
               >
                 {loadingProblems ? (
-                  Array.from({ length: 4 }).map((_, i) => (
+                  Array.from({ length: 5 }).map((_, i) => (
                     <div key={i} className="snap-start shrink-0 w-[285px] sm:w-[480px] md:w-[560px] lg:w-[620px] max-w-[85vw] sm:max-w-none">
                       <ProblemCardSkeleton />
                     </div>
@@ -814,13 +906,63 @@ export const Home: React.FC = () => {
                     No verified problems currently available. Check back soon!
                   </div>
                 ) : (
-                  trendingProblems.map((prob) => (
-                    <TrendingProblemCard
-                      key={prob.id}
-                      problem={prob}
-                      className="snap-start shrink-0 w-[285px] sm:w-[480px] md:w-[560px] lg:w-[620px] max-w-[85vw] sm:max-w-[640px]"
-                    />
-                  ))
+                  <>
+                    {trendingProblems.map((prob) => (
+                      <TrendingProblemCard
+                        key={prob.id}
+                        problem={prob}
+                        className="snap-start shrink-0 w-[285px] sm:w-[480px] md:w-[560px] lg:w-[620px] max-w-[85vw] sm:max-w-[640px]"
+                      />
+                    ))}
+
+                    {/* Small Loading Indicator when fetching next card */}
+                    {loadingMore && (
+                      <div
+                        className="snap-start shrink-0 w-[200px] sm:w-[260px] md:w-[300px] p-6 rounded-3xl bg-white border border-gray-100/90 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] flex flex-col items-center justify-center gap-3 text-center self-stretch min-h-[220px]"
+                        role="status"
+                        aria-live="polite"
+                      >
+                        <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+                        <div className="flex flex-col gap-0.5">
+                          <span className="text-xs sm:text-sm font-semibold text-gray-800">Loading next</span>
+                          <span className="text-[10px] sm:text-xs text-gray-400">Fetching challenge...</span>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Sentinel Element for IntersectionObserver */}
+                    {hasMore && (
+                      <div
+                        ref={sentinelRef}
+                        className="shrink-0 w-8 sm:w-16 h-full flex items-center justify-center pointer-events-none opacity-0"
+                        aria-hidden="true"
+                      />
+                    )}
+
+                    {/* Suitable End-of-List Indicator */}
+                    {!hasMore && trendingProblems.length > 0 && (
+                      <div className="snap-start shrink-0 w-[240px] sm:w-[300px] p-6 rounded-3xl bg-white border border-gray-100/90 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] flex flex-col items-center justify-center gap-3 text-center self-stretch min-h-[220px]">
+                        <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shadow-2xs border border-emerald-100">
+                          <CheckCircle2 className="w-5 h-5 text-emerald-600" />
+                        </div>
+                        <div className="flex flex-col gap-1">
+                          <span className="text-xs sm:text-sm font-bold text-gray-900 tracking-tight">
+                            You're All Caught Up
+                          </span>
+                          <p className="text-[11px] sm:text-xs text-gray-500 leading-relaxed">
+                            You've viewed all trending problems for this week.
+                          </p>
+                        </div>
+                        <Link
+                          to="/explore"
+                          className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:text-primary-container transition-colors mt-1 bg-primary/5 px-3 py-1.5 rounded-full hover:bg-primary/10"
+                        >
+                          <span>Explore all</span>
+                          <ArrowRight className="w-3.5 h-3.5" />
+                        </Link>
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
             </div>
