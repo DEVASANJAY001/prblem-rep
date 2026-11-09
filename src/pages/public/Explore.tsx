@@ -4,10 +4,11 @@ import {
   fetchExploreProblemsBatch,
   fetchTrendingProblemsPage,
   ExploreCursor,
+  ExploreProblemsFilter,
 } from "@/lib/firebase/services/problemsService";
 import { subscribeCompanies } from "@/lib/firebase/services/companiesService";
 import { ProblemDoc, CompanyDoc, IndustryDoc } from "@/types";
-import { REAL_COMPANIES, REAL_INDUSTRIES } from "@/data/realProductionData";
+import { REAL_COMPANIES, REAL_INDUSTRIES, REAL_PROBLEMS } from "@/data/realProductionData";
 import { usePageContent } from "@/hooks/usePageContent";
 import { ProblemCardSkeleton } from "@/components/common/LoadingContainer";
 import { TrendingProblemCard } from "@/components/ui/TrendingProblemCard";
@@ -208,6 +209,11 @@ export const Explore: React.FC = () => {
   const isSearching = search.trim().length > 0;
   const isDomainSelected = selectedIndustries.length > 0;
   const shouldHideOtherSections = isSearching || isDomainSelected;
+  const isFiltered =
+    isSearching ||
+    isDomainSelected ||
+    selectedSeverity !== "All" ||
+    verifiedOnly;
 
   // ── 4-Card Batch Data-Fetching Logic (limit 4, cursor pagination, 0 extra writes) ──
   const fetchNextBatch = useCallback(
@@ -483,7 +489,10 @@ export const Explore: React.FC = () => {
             <div className="flex flex-wrap items-center gap-2 sm:gap-3 w-full sm:w-auto">
               {/* Results Count */}
               <div className="text-[11px] sm:text-xs font-medium text-on-surface-variant">
-                Showing <span className="font-bold text-on-surface">{filteredProblems.length}</span> {filteredProblems.length === 1 ? "problem" : "problems"}
+                Showing <span className="font-bold text-on-surface">{exploreProblems.length}</span> {exploreProblems.length === 1 ? "problem" : "problems"}
+                {totalFilteredCount !== undefined && totalFilteredCount > exploreProblems.length && (
+                  <span className="text-on-surface-variant font-normal"> of {totalFilteredCount}</span>
+                )}
               </div>
 
               <div className="h-4 w-[1px] bg-outline-variant/30 hidden sm:block" />
