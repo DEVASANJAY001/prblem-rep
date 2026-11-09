@@ -133,7 +133,7 @@ export const Contact: React.FC = () => {
       <SEOHead
         title="Contact Us — Stuckhere Support, Partnerships & Global Desks"
         description="Connect with the Stuckhere team for enterprise problem scouting, editorial verification inquiries, research datasets, or solver support. Average SLA under 24 business hours."
-        canonicalUrl="https://stuckhere.com/contact"
+        canonicalUrl="https://stuckhere.davns.com/contact"
         ogType="website"
         keywords={[
           "contact stuckhere",

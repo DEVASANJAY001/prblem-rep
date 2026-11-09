@@ -152,7 +152,7 @@ export const Industries: React.FC = () => {
       <SEOHead
         title="Industry Verticals — Problem Statements by Sector"
         description={`Browse verified problems across ${filtered.length}+ industry sectors including Healthcare, AI & Machine Learning, Clean Energy, FinTech, Logistics, and more. Find startup opportunities by domain.`}
-        canonicalUrl="https://stuckhere.com/industries"
+        canonicalUrl="https://stuckhere.davns.com/industries"
         ogType="website"
         keywords={["industry problems", "healthcare startup ideas", "AI problems", "clean energy challenges", "fintech problems", "sector-specific innovation", "domain problems"]}
         jsonLd={{

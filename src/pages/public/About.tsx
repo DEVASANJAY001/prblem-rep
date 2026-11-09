@@ -128,7 +128,7 @@ export const About: React.FC = () => {
       <SEOHead
         title="About Stuckhere — The World's Open Problem Intelligence Platform"
         description="Learn how Stuckhere maps, quantifies, and verifies humanity's most urgent unsolved problems across 140+ industries to empower founders, researchers, and solvers."
-        canonicalUrl="https://stuckhere.com/about"
+        canonicalUrl="https://stuckhere.davns.com/about"
         ogType="website"
         keywords={[
           "about stuckhere",

@@ -76,7 +76,7 @@ export const Features: React.FC = () => {
       <SEOHead
         title="Platform Features — Stuckhere Problem Intelligence"
         description="Discover how Stuckhere structures, verifies, and quantifies real-world problems for founders, researchers, and enterprise teams."
-        canonicalUrl="https://stuckhere.com/features"
+        canonicalUrl="https://stuckhere.davns.com/features"
         ogType="website"
         keywords={["features", "problem intelligence", "startup validation tools", "pain scoring", "venture thesis builder"]}
       />

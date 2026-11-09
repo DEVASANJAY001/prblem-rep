@@ -256,7 +256,7 @@ export const Community: React.FC = () => {
       <SEOHead
         title="Community \u2014 Problem Finders, Builders & Validators"
         description={`Join ${users.length || "thousands of"} problem finders, startup builders, and domain validators on Stuckhere. Climb the leaderboard, explore trending problems, and connect with innovators.`}
-        canonicalUrl="https://stuckhere.com/community"
+        canonicalUrl="https://stuckhere.davns.com/community"
         ogType="website"
         keywords={["problem solving community", "startup community", "innovation leaderboard", "problem validators", "startup builders", "hackathon community"]}
         jsonLd={{

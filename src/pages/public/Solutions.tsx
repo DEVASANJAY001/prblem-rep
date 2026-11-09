@@ -67,7 +67,7 @@ export const Solutions: React.FC = () => {
       <SEOHead
         title="Solutions — Problem Intelligence for Founders, VCs & Enterprise"
         description="Explore Stuckhere solutions for early-stage founders, venture investors, and enterprise innovation teams."
-        canonicalUrl="https://stuckhere.com/solutions"
+        canonicalUrl="https://stuckhere.davns.com/solutions"
         ogType="website"
         keywords={["solutions", "startup ideation", "venture validation", "enterprise problem scouting", "pain score analysis"]}
       />

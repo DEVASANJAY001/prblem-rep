@@ -9,13 +9,19 @@ User-agent: PerplexityBot
 User-agent: ChatGPT-User
 User-agent: Claude-Web
 Allow: /
+Allow: /problem/
+Allow: /startup-mode/
+Allow: /industries/
+Allow: /submit
+Allow: /community
+Allow: /companies
+Allow: /solutions
+Allow: /research
 Disallow: /admin/
 Disallow: /admin/*
 Disallow: /dashboard
 Disallow: /saved
 Disallow: /bookmarks
-Disallow: /submit
-Disallow: /startup-mode/
 Disallow: /f/*/responses
 
 # 2. BLOCK Uncredited Mass AI Training Scrapers & Bulk Data Harvesters
@@ -40,13 +46,19 @@ Disallow: /
 # 3. Standard Search Engine Crawlers (Googlebot, Bingbot, DuckDuckGo, Yahoo)
 User-agent: *
 Allow: /
+Allow: /problem/
+Allow: /startup-mode/
+Allow: /industries/
+Allow: /submit
+Allow: /community
+Allow: /companies
+Allow: /solutions
+Allow: /research
 Disallow: /admin/
 Disallow: /admin/*
 Disallow: /dashboard
 Disallow: /saved
 Disallow: /bookmarks
-Disallow: /submit
-Disallow: /startup-mode/
 Disallow: /f/*/responses
 
 # 4. XML Sitemap Reference

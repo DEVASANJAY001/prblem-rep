@@ -307,7 +307,7 @@ export const Explore: React.FC = () => {
       <SEOHead
         title="Explore Verified Problem Statements — Healthcare, AI, Energy & More"
         description={`Browse ${allProblems.length}+ verified real-world problems across 140+ industry verticals. Discover startup opportunities, pain points, and innovation challenges curated by domain experts.`}
-        canonicalUrl="https://stuckhere.com/explore"
+        canonicalUrl="https://stuckhere.davns.com/explore"
         ogType="website"
         keywords={["problem statements", "startup ideas", "verified problems", "healthcare problems", "AI challenges", "clean energy problems", "fintech pain points", "innovation opportunities"]}
         jsonLd={{

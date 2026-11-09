@@ -171,7 +171,7 @@ export const Companies: React.FC = () => {
       <SEOHead
         title="Partner Companies & Enterprise Innovation Scouts"
         description="Explore organizations, enterprises, and research labs actively scouting and solving verified problem statements on Stuckhere."
-        canonicalUrl="https://stuckhere.com/companies"
+        canonicalUrl="https://stuckhere.davns.com/companies"
         ogType="website"
         keywords={["enterprise problem statements", "company challenges", "innovation scouting", "corporate startup programs", "enterprise demand signals"]}
         jsonLd={{

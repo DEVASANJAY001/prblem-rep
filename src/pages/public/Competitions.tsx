@@ -57,7 +57,7 @@ export const Competitions: React.FC = () => {
       <SEOHead
         title="Innovation Competitions & Problem Bounties"
         description="Participate in competitive problem-solving challenges, hackathons, and venture bounties with cash prizes and investor backing on Stuckhere."
-        canonicalUrl="https://stuckhere.com/competitions"
+        canonicalUrl="https://stuckhere.davns.com/competitions"
         ogType="website"
         keywords={["hackathons", "problem bounties", "innovation challenges", "startup competitions", "bounty pool", "solver challenges"]}
         jsonLd={{

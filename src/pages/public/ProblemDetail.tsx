@@ -800,7 +800,7 @@ export const ProblemDetail: React.FC = () => {
       <SEOHead
         title={`${problem.title} - ${industry}`}
         description={problem.description || "Explore verified problem statement, market size, TAM, and founder venture thesis on Stuckhere."}
-        canonicalUrl={`https://stuckhere.com${getProblemDetailUrl(problem)}`}
+        canonicalUrl={`https://stuckhere.davns.com${getProblemDetailUrl(problem)}`}
         ogType="article"
         keywords={[industry, ...(problem.psFrom || []), "Problem Statement", "Startup Opportunity", "Venture Thesis", "Market Research"]}
         jsonLd={[

@@ -624,26 +624,31 @@ app.get("/api/metrics", async (req, res) => {
 //    Cached 1 hour at the edge; stale-while-revalidate for zero-downtime refresh.
 // ─────────────────────────────────────────────────────────────────────────────
 app.get("/sitemap.xml", async (req, res) => {
-  const BASE_URL = process.env.PRODUCTION_ORIGIN || "https://stuckhere.com";
+  const BASE_URL = process.env.PRODUCTION_ORIGIN || "https://stuckhere.davns.com";
   const today = new Date().toISOString().slice(0, 10);
 
   const staticEntries = [
     { loc: `${BASE_URL}/`, changefreq: "daily", priority: "1.00" },
-    { loc: `${BASE_URL}/explore`, changefreq: "daily", priority: "0.90" },
-    { loc: `${BASE_URL}/features`, changefreq: "weekly", priority: "0.85" },
-    { loc: `${BASE_URL}/solutions`, changefreq: "weekly", priority: "0.85" },
-    { loc: `${BASE_URL}/industries`, changefreq: "weekly", priority: "0.85" },
-    { loc: `${BASE_URL}/community`, changefreq: "daily", priority: "0.80" },
+    { loc: `${BASE_URL}/explore`, changefreq: "daily", priority: "0.95" },
+    { loc: `${BASE_URL}/explore?filter=startup_mode`, changefreq: "daily", priority: "0.90" },
+    { loc: `${BASE_URL}/industries`, changefreq: "daily", priority: "0.85" },
+    { loc: `${BASE_URL}/community`, changefreq: "daily", priority: "0.85" },
+    { loc: `${BASE_URL}/submit`, changefreq: "weekly", priority: "0.85" },
+    { loc: `${BASE_URL}/solutions`, changefreq: "weekly", priority: "0.80" },
     { loc: `${BASE_URL}/companies`, changefreq: "weekly", priority: "0.80" },
     { loc: `${BASE_URL}/research`, changefreq: "weekly", priority: "0.75" },
+    { loc: `${BASE_URL}/features`, changefreq: "monthly", priority: "0.75" },
+    { loc: `${BASE_URL}/competitions`, changefreq: "weekly", priority: "0.75" },
     { loc: `${BASE_URL}/about`, changefreq: "monthly", priority: "0.70" },
     { loc: `${BASE_URL}/contact`, changefreq: "monthly", priority: "0.60" },
-    { loc: `${BASE_URL}/privacy`, changefreq: "monthly", priority: "0.40" },
-    { loc: `${BASE_URL}/terms`, changefreq: "monthly", priority: "0.40" },
-    { loc: `${BASE_URL}/cookies`, changefreq: "monthly", priority: "0.30" },
+    { loc: `${BASE_URL}/privacy`, changefreq: "yearly", priority: "0.30" },
+    { loc: `${BASE_URL}/terms`, changefreq: "yearly", priority: "0.30" },
+    { loc: `${BASE_URL}/cookies`, changefreq: "yearly", priority: "0.30" },
   ];
 
   const problemEntries = [];
+  const startupEntries = [];
+  const industryEntries = [];
 
   if (adminDb) {
     try {
@@ -658,18 +663,32 @@ app.get("/sitemap.xml", async (req, res) => {
         const titleSlug = (p.title || "problem")
           .toLowerCase()
           .replace(/[^a-z0-9]+/g, "-")
-          .replace(/^-+|-+$/g, "")
-          .substring(0, 60);
-        const slug = `${titleSlug}-${doc.id}`;
+          .replace(/^-+|-+$/g, "");
+        const slug = `${titleSlug}--${doc.id}`;
         const lastmod = p.updatedAt
           ? new Date(p.updatedAt.toDate ? p.updatedAt.toDate() : p.updatedAt).toISOString().slice(0, 10)
           : today;
+
         problemEntries.push({
           loc: `${BASE_URL}/problem/${slug}`,
           lastmod,
           changefreq: "weekly",
-          priority: "0.95",
+          priority: "0.90",
         });
+
+        const hasStartup =
+          p.hasStartupMode !== false &&
+          p.startupModeEnabled !== false &&
+          p.startupModeConfig?.enabled !== false;
+
+        if (hasStartup) {
+          startupEntries.push({
+            loc: `${BASE_URL}/startup-mode/${slug}`,
+            lastmod,
+            changefreq: "weekly",
+            priority: "0.85",
+          });
+        }
       });
     } catch (err) {
       console.warn("[Sitemap] Firestore fetch failed, serving static only:", err.message);
@@ -682,6 +701,8 @@ app.get("/sitemap.xml", async (req, res) => {
   const allEntries = [
     ...staticEntries.map(toXmlEntry),
     ...problemEntries.map(toXmlEntry),
+    ...startupEntries.map(toXmlEntry),
+    ...industryEntries.map(toXmlEntry),
   ].join("\n");
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${allEntries}\n</urlset>`;

@@ -24,7 +24,7 @@ export const Privacy: React.FC = () => {
       <SEOHead
         title="Privacy Policy — Stuckhere"
         description="Comprehensive Privacy Policy detailing how Stuckhere collects, processes, encrypts, and protects your data in compliance with GDPR, CCPA, and international standards."
-        canonicalUrl="https://stuckhere.com/privacy"
+        canonicalUrl="https://stuckhere.davns.com/privacy"
         ogType="website"
         keywords={[
           "privacy policy",

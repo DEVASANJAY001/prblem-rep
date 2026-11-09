@@ -890,7 +890,7 @@ Generated from Prblms Startup Canvas on ${new Date().toLocaleDateString()}`;
       <SEOHead
         title={`Build Startup: ${problem.title}`}
         description={`Venture thesis, Ideal Customer Profile (ICP), MVP features, and competitive whitespace for ${problem.title}.`}
-        canonicalUrl={`https://stuckhere.com${getStartupModeUrl(problem)}`}
+        canonicalUrl={`https://stuckhere.davns.com${getStartupModeUrl(problem)}`}
         ogType="article"
         keywords={[industry, "Startup Idea", "MVP Blueprint", "Venture Thesis", "Ideal Customer Profile", "Business Opportunity"]}
         jsonLd={[

@@ -21,7 +21,7 @@ export const Terms: React.FC = () => {
       <SEOHead
         title="Terms of Service — Stuckhere"
         description="Official Terms of Service for Stuckhere. Learn about acceptable use standards, contributor verification guidelines, open problem licenses, and 100% solver IP protection."
-        canonicalUrl="https://stuckhere.com/terms"
+        canonicalUrl="https://stuckhere.davns.com/terms"
         ogType="website"
         keywords={[
           "terms of service",

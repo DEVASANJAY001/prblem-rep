@@ -20,7 +20,7 @@ export const Cookies: React.FC = () => {
       <SEOHead
         title="Cookie & Storage Policy — Stuckhere"
         description="Comprehensive Cookie & Local Storage Policy. Transparent breakdown of essential authentication tokens, functional preferences, and privacy controls."
-        canonicalUrl="https://stuckhere.com/cookies"
+        canonicalUrl="https://stuckhere.davns.com/cookies"
         ogType="website"
         keywords={[
           "cookie policy",

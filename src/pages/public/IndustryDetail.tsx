@@ -339,7 +339,7 @@ export const IndustryDetail: React.FC = () => {
       <SEOHead
         title={`${industry.name} Problem Statements & Startup Opportunities`}
         description={industry.description || `Explore verified real-world operational bottlenecks, clinical friction, and enterprise demand signals in ${industry.name}.`}
-        canonicalUrl={`https://stuckhere.com/industries/${industrySlug}`}
+        canonicalUrl={`https://stuckhere.davns.com/industries/${industrySlug}`}
         ogType="website"
         keywords={[industry.name, `${industry.name} problems`, `${industry.name} startup ideas`, "industry bottlenecks", "market pain points", "venture opportunities"]}
         jsonLd={[
