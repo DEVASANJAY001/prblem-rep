@@ -31,7 +31,7 @@ import {
 import { cleanIndustryName } from "@/lib/algorithms/domainIntelligence";
 import { INITIAL_SITE_CONTENT } from "@/data/initialContent";
 import { scoreProblemSubmission } from "./aiScoring";
-import { slugify } from "./seoUrls";
+import { slugify, getProblemSlug } from "./seoUrls";
 import { sanitizeAndSeparateIndustries } from "@/lib/algorithms/domainIntelligence";
 
 export const STORAGE_KEYS = {
@@ -320,11 +320,21 @@ export function getProblemById(id: string): ProblemDoc | null {
   const list = load<ProblemDoc[]>(STORAGE_KEYS.PROBLEMS, REAL_PROBLEMS);
   let found = list.find((p) => p.id === id && !deletedIds.has(p.id));
   if (!found) {
-    // Fallback: match by title slug (e.g. "data-interoperability-failure-in-rural-clinics")
-    found = list.find((p) => !deletedIds.has(p.id) && ((p.title && slugify(p.title) === id) || p.id?.toLowerCase() === id?.toLowerCase()));
+    // Fallback: match by explicit slug, title slug, or deduplicated slug
+    found = list.find((p) => !deletedIds.has(p.id) && (
+      (p.slug && (p.slug === id || p.slug.split("--")[0] === id)) ||
+      (p.title && slugify(p.title) === id) ||
+      (p.title && getProblemSlug(p) === id) ||
+      p.id?.toLowerCase() === id?.toLowerCase()
+    ));
   }
   if (!found) {
-    found = REAL_PROBLEMS.find((p) => !deletedIds.has(p.id) && (p.id === id || (p.title && slugify(p.title) === id)));
+    found = REAL_PROBLEMS.find((p) => !deletedIds.has(p.id) && (
+      p.id === id ||
+      (p.slug && (p.slug === id || p.slug.split("--")[0] === id)) ||
+      (p.title && slugify(p.title) === id) ||
+      (p.title && getProblemSlug(p) === id)
+    ));
   }
   if (found) {
     const seed = REAL_PROBLEMS.find((p) => p.id === found!.id);

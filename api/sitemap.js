@@ -12,12 +12,39 @@ function slugify(text) {
     .replace(/^-+|-+$/g, "");
 }
 
-function getProblemSlug(id, title) {
-  const cleanSlug = title ? slugify(title) : "";
-  if (cleanSlug && id) {
-    return `${cleanSlug}--${id}`;
+function getDuplicateSuffix(index) {
+  if (index < 0) return "";
+  let suffix = "";
+  let n = index;
+  while (n >= 0) {
+    suffix = String.fromCharCode(97 + (n % 26)) + suffix;
+    n = Math.floor(n / 26) - 1;
   }
-  return cleanSlug || id || "problem-statement";
+  return suffix;
+}
+
+const sitemapSlugRegistry = new Map();
+
+function getProblemSlug(id, title, slug) {
+  if (slug) {
+    const clean = slug.includes("--") ? slug.split("--")[0] : slug;
+    return slugify(clean);
+  }
+  if (!title) return id ? slugify(id) : "problem-statement";
+  const base = slugify(title);
+  if (!id) return base;
+
+  let ids = sitemapSlugRegistry.get(base);
+  if (!ids) {
+    ids = [id];
+    sitemapSlugRegistry.set(base, ids);
+  } else if (!ids.includes(id)) {
+    ids.push(id);
+  }
+
+  const idx = ids.indexOf(id);
+  if (idx <= 0) return base;
+  return `${base}-${getDuplicateSuffix(idx - 1)}`;
 }
 
 function escapeXml(unsafe) {
@@ -116,7 +143,7 @@ export default async function handler(req, res) {
           continue;
         }
 
-        const slug = getProblemSlug(id, title);
+        const slug = getProblemSlug(id, title, fields.slug?.stringValue);
         let lastMod = today;
         if (fields.updatedAt?.stringValue) {
           lastMod = fields.updatedAt.stringValue.split("T")[0];
@@ -159,7 +186,7 @@ export default async function handler(req, res) {
   // Fallback if Firestore returned 0 problems
   if (problemUrls.length === 0) {
     FALLBACK_PROBLEMS.forEach((p) => {
-      const slug = getProblemSlug(p.id, p.title);
+      const slug = getProblemSlug(p.id, p.title, p.slug);
       problemUrls.push({
         loc: `${BASE_URL}/problem/${slug}`,
         title: p.title,

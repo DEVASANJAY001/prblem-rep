@@ -40,6 +40,7 @@ import {
 import { REAL_PROBLEMS } from "@/data/realProductionData";
 import { swrCache } from "@/lib/swrCache";
 import { cleanIndustryName } from "@/lib/algorithms/domainIntelligence";
+import { getProblemSlug, slugify, buildUniqueSlug } from "@/lib/seoUrls";
 
 const PROBLEMS_COLLECTION = "problems";
 
@@ -391,6 +392,7 @@ export async function createProblem(
   const newProblem: ProblemDoc = {
     id,
     title: problemData.title,
+    slug: buildUniqueSlug(problemData.title, id, getLocalProblems()),
     description: problemData.description,
     industry: problemData.industry,
     severity: problemData.severity,
@@ -550,6 +552,23 @@ export async function getProblemById(idOrSlug: string): Promise<ProblemDoc | nul
         saveLocalProblem(live);
         swrCache.set(`problem_${targetId}`, live, 300_000);
         return live;
+      } else if (!targetId.startsWith("prob-") && typeof collection === "function") {
+        // Fallback query for slug resolution in Firestore
+        const colRef = collection(db, PROBLEMS_COLLECTION);
+        const q = query(colRef, where("status", "==", "approved"), limit(100));
+        const querySnap = await getDocs(q);
+        const match = querySnap.docs.find((d) => {
+          const dData = d.data() as ProblemDoc;
+          const s = dData.slug || (dData.title ? slugify(dData.title) : "");
+          return s === idOrSlug || d.id === idOrSlug || (dData.title && getProblemSlug({ id: d.id, ...dData }) === idOrSlug);
+        });
+        if (match) {
+          const live = { id: match.id, ...match.data() } as ProblemDoc;
+          saveLocalProblem(live);
+          swrCache.set(`problem_${match.id}`, live, 300_000);
+          swrCache.set(`problem_${idOrSlug}`, live, 300_000);
+          return live;
+        }
       }
     }
   } catch (error) {
@@ -697,6 +716,24 @@ export function subscribeProblemById(
                   currentStream.latestData = localFallback;
                   currentStream.listeners.forEach((cb) => cb(localFallback));
                 }
+              } else if (db && typeof collection === "function" && !id.startsWith("prob-")) {
+                // Cold-start slug lookup: resolve clean slug to approved document in Firestore
+                const colRef = collection(db, PROBLEMS_COLLECTION);
+                const q = query(colRef, where("status", "==", "approved"), limit(100));
+                getDocs(q).then((querySnap) => {
+                  const match = querySnap.docs.find((d) => {
+                    const dData = d.data() as ProblemDoc;
+                    const s = dData.slug || (dData.title ? slugify(dData.title) : "");
+                    return s === idOrSlug || d.id === idOrSlug || (dData.title && getProblemSlug({ id: d.id, ...dData }) === idOrSlug);
+                  });
+                  if (match) {
+                    const live = { id: match.id, ...match.data() } as ProblemDoc;
+                    _saveLocalSilent(live);
+                    swrCache.set(`problem_${match.id}`, live, 300_000);
+                    swrCache.set(`problem_${idOrSlug}`, live, 300_000);
+                    callback(live);
+                  }
+                }).catch((err) => console.warn("Firestore slug resolution error:", err));
               }
             }
           },
@@ -761,6 +798,7 @@ function extractCardFields(raw: any, id: string): ProblemDoc {
   return {
     id: id || raw.id,
     title: raw.title || "Untitled Problem",
+    slug: raw.slug || (raw.title ? getProblemSlug({ id: id || raw.id, title: raw.title, slug: raw.slug }) : ""),
     description: raw.description || "",
     whenItHappens: raw.whenItHappens || "",
     whyFrustrating: raw.whyFrustrating || "",
