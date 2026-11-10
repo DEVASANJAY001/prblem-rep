@@ -939,7 +939,7 @@ Generated from Prblms Startup Canvas on ${new Date().toLocaleDateString()}`;
           }
         ]}
       />
-      <main className="w-full max-w-[1280px] mx-auto px-4 md:px-12 py-8 flex flex-col gap-6">
+      <div className="w-full max-w-[1280px] mx-auto px-4 md:px-12 py-8 flex flex-col gap-6">
         {/* ── Top Breadcrumb & Action Toolbar (Seamless Flow matching ProblemDetail) ── */}
         <div className="flex items-center justify-between gap-4 flex-wrap pb-3">
           <div className="text-xs text-on-surface-variant font-medium flex items-center gap-1.5 flex-wrap">
@@ -2094,7 +2094,7 @@ Generated from Prblms Startup Canvas on ${new Date().toLocaleDateString()}`;
             </div>
           </div>
         </div>
-      </main>
+      </div>
 
       {/* ── EMBED & SECURED SHARE MODAL (Matching ProblemDetail) ───────────── */}
       {isShareModalOpen && (
