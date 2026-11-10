@@ -160,13 +160,13 @@ export const Industries: React.FC = () => {
           "@type": "ItemList",
           "name": "Industry Verticals on Stuckhere",
           "description": "Directory of verified problem statements organized by industry sector.",
-          "url": "https://stuckhere.com/industries",
+          "url": "https://stuckhere.davns.com/industries",
           "numberOfItems": filtered.length,
           "itemListElement": filtered.slice(0, 10).map((ind, i) => ({
             "@type": "ListItem",
             "position": i + 1,
             "name": ind.name,
-            "url": `https://stuckhere.com/industries/${ind.slug}`,
+            "url": `https://stuckhere.davns.com/industries/${ind.slug}`,
             "description": ind.description
           }))
         }}

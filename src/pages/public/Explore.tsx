@@ -355,12 +355,12 @@ export const Explore: React.FC = () => {
           "@type": "CollectionPage",
           "name": "Explore Verified Problem Statements",
           "description": "Browse verified real-world problems across healthcare, AI, energy, fintech and 140+ industries.",
-          "url": "https://stuckhere.com/explore",
+          "url": "https://stuckhere.davns.com/explore",
           "numberOfItems": allProblems.length,
           "publisher": {
             "@type": "Organization",
             "name": "Stuckhere",
-            "url": "https://stuckhere.com"
+            "url": "https://stuckhere.davns.com"
           }
         }}
       />

@@ -143,13 +143,19 @@ export const About: React.FC = () => {
           "@context": "https://schema.org",
           "@type": "AboutPage",
           "name": "About Stuckhere",
-          "description": "Stuckhere is the world's open problem intelligence registry mapping verified real-world friction points.",
-          "url": "https://stuckhere.com/about",
+          "description": "Stuckhere is the world's open problem intelligence registry mapping verified real-world friction points, engineered by DAVNS Industries.",
+          "url": "https://stuckhere.davns.com/about",
           "mainEntity": {
             "@type": "Organization",
             "name": "Stuckhere",
-            "url": "https://stuckhere.com",
-            "logo": "https://stuckhere.com/icon.svg",
+            "legalName": "Stuckhere by DAVNS Industries",
+            "url": "https://stuckhere.davns.com",
+            "logo": "https://stuckhere.davns.com/logo.png",
+            "parentOrganization": {
+              "@type": "Corporation",
+              "name": "DAVNS Industries",
+              "url": "https://davns.com"
+            },
             "foundingDate": "2024",
             "description": "Open problem intelligence platform empowering founders to solve verified real-world challenges.",
             "knowsAbout": [

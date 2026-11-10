@@ -664,7 +664,8 @@ app.get("/sitemap.xml", async (req, res) => {
           .toLowerCase()
           .replace(/[^a-z0-9]+/g, "-")
           .replace(/^-+|-+$/g, "");
-        const slug = `${titleSlug}--${doc.id}`;
+        const cleanSlug = p.slug ? (p.slug.includes("--") ? p.slug.split("--")[0] : p.slug) : titleSlug;
+        const slug = cleanSlug;
         const lastmod = p.updatedAt
           ? new Date(p.updatedAt.toDate ? p.updatedAt.toDate() : p.updatedAt).toISOString().slice(0, 10)
           : today;

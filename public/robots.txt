@@ -9,11 +9,13 @@ User-agent: PerplexityBot
 User-agent: ChatGPT-User
 User-agent: Claude-Web
 Allow: /
+Allow: /explore
 Allow: /problem/
 Allow: /startup-mode/
 Allow: /industries/
 Allow: /submit
 Allow: /community
+Allow: /about
 Allow: /companies
 Allow: /solutions
 Allow: /research
@@ -46,11 +48,13 @@ Disallow: /
 # 3. Standard Search Engine Crawlers (Googlebot, Bingbot, DuckDuckGo, Yahoo)
 User-agent: *
 Allow: /
+Allow: /explore
 Allow: /problem/
 Allow: /startup-mode/
 Allow: /industries/
 Allow: /submit
 Allow: /community
+Allow: /about
 Allow: /companies
 Allow: /solutions
 Allow: /research

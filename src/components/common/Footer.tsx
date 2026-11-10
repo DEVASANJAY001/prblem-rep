@@ -85,7 +85,11 @@ export const Footer: React.FC = () => {
             Stuck<span className="text-primary ml-0.5">here</span>
           </span>
         </Link>
-        <p className="text-label-sm text-outline">© 2026 Stuckhere. All rights reserved.</p>
+        <p className="text-label-sm text-outline flex items-center gap-1.5 flex-wrap">
+          <span>A <a href="https://davns.com" target="_blank" rel="noopener noreferrer" className="hover:text-primary underline">DAVNS Industries</a> Innovation Platform</span>
+          <span>·</span>
+          <span>© 2026 Stuckhere. All rights reserved.</span>
+        </p>
       </div>
     </footer>
   );

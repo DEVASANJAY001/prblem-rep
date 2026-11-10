@@ -511,7 +511,13 @@ export const Home: React.FC = () => {
             "@type": "WebSite",
             "@id": "https://stuckhere.davns.com/#website",
             "name": "Stuckhere",
-            "alternateName": ["Stuckhere Intelligence", "Stuckhere Platform", "Stuckhere Problem Intelligence"],
+            "alternateName": [
+              "Stuckhere by DAVNS",
+              "DAVNS Stuckhere",
+              "Stuckhere Intelligence",
+              "Stuckhere Platform",
+              "Stuckhere Problem Intelligence"
+            ],
             "url": "https://stuckhere.davns.com/",
             "description": "The World's Problem Intelligence Platform. Discover, validate and solve real-world verified problems across Healthcare, AI, Energy, FinTech and 140+ industries.",
             "potentialAction": {
@@ -528,6 +534,7 @@ export const Home: React.FC = () => {
             "@type": "Organization",
             "@id": "https://stuckhere.davns.com/#organization",
             "name": "Stuckhere",
+            "legalName": "Stuckhere by DAVNS Industries",
             "url": "https://stuckhere.davns.com/",
             "logo": {
               "@type": "ImageObject",
@@ -536,10 +543,29 @@ export const Home: React.FC = () => {
               "width": 512,
               "height": 512
             },
+            "parentOrganization": {
+              "@type": "Corporation",
+              "name": "DAVNS Industries",
+              "url": "https://davns.com",
+              "logo": "https://davns.com/logo.png",
+              "address": {
+                "@type": "PostalAddress",
+                "streetAddress": "Saveetha Nagar, Kanchipuram - Chennai Rd",
+                "addressLocality": "Sriperumbadur, Chennai",
+                "addressRegion": "Tamil Nadu",
+                "postalCode": "602105",
+                "addressCountry": "IN"
+              },
+              "sameAs": [
+                "https://davns.com",
+                "https://www.linkedin.com/company/davns-industries"
+              ]
+            },
             "sameAs": [
               "https://stuckhere.davns.com/explore",
               "https://stuckhere.davns.com/community",
-              "https://twitter.com/stuckhere"
+              "https://twitter.com/stuckhere",
+              "https://davns.com"
             ]
           },
           {

@@ -1008,6 +1008,18 @@ export const SubmitProblem: React.FC = () => {
         description="Submit an empirical industry problem with telemetry data, research papers, and market sizing to Stuckhere. Curate real-world challenges for founders and researchers."
         canonicalUrl="https://stuckhere.davns.com/submit"
         ogType="website"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "WebPage",
+          "name": "Submit a Problem Dossier",
+          "description": "Submit an empirical industry problem with telemetry data, research papers, and market sizing to Stuckhere.",
+          "url": "https://stuckhere.davns.com/submit",
+          "isPartOf": {
+            "@type": "WebSite",
+            "name": "Stuckhere",
+            "url": "https://stuckhere.davns.com"
+          }
+        }}
       />
       {/* â”€â”€ TOP HERO HEADER & BREADCRUMBS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
 

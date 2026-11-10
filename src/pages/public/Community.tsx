@@ -264,11 +264,11 @@ export const Community: React.FC = () => {
           "@type": "WebPage",
           "name": "Stuckhere Community",
           "description": "Leaderboard, activity feed, and member directory for the Stuckhere problem-solving community.",
-          "url": "https://stuckhere.com/community",
+          "url": "https://stuckhere.davns.com/community",
           "isPartOf": {
             "@type": "WebSite",
             "name": "Stuckhere",
-            "url": "https://stuckhere.com"
+            "url": "https://stuckhere.davns.com"
           }
         }}
       />
