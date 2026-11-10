@@ -175,6 +175,8 @@
 
     <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
     <link rel="dns-prefetch" href="https://www.google-analytics.com" />
+    <link rel="dns-prefetch" href="https://static.cloudflareinsights.com" />
+    <link rel="dns-prefetch" href="https://cloudflareinsights.com" />
 
     <!-- Google Fonts: Poppins, Plus Jakarta Sans, Inter & Material Symbols Outlined -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -194,5 +196,8 @@
   <body class="bg-surface text-on-surface antialiased selection:bg-primary/15 selection:text-primary min-h-screen">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <!-- Cloudflare Web Analytics -->
+    <script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "152b26b90b804798bcf2c4c039fbf743"}'></script>
+    <!-- End Cloudflare Web Analytics -->
   </body>
 </html>
