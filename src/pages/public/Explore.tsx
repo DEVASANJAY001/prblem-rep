@@ -1,10 +1,8 @@
-import React, { useState, useMemo, useEffect, useRef, useCallback } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import {
-  fetchExploreProblemsBatch,
+  subscribeProblems,
   fetchTrendingProblemsPage,
-  ExploreCursor,
-  ExploreProblemsFilter,
 } from "@/lib/firebase/services/problemsService";
 import { subscribeCompanies } from "@/lib/firebase/services/companiesService";
 import { ProblemDoc, CompanyDoc, IndustryDoc } from "@/types";
@@ -68,22 +66,16 @@ export const Explore: React.FC = () => {
   const [verifiedOnly, setVerifiedOnly] = useState<boolean>(false);
 
   // Static/seed problems for intelligence metrics & offline fallbacks (0 reads)
-  const [allProblems] = useState<ProblemDoc[]>(REAL_PROBLEMS);
+  const [allProblems, setAllProblems] = useState<ProblemDoc[]>(REAL_PROBLEMS);
   const [companiesList, setCompaniesList] = useState<CompanyDoc[]>(REAL_COMPANIES);
   const [industriesList, setIndustriesList] = useState<IndustryDoc[]>([]);
   const [showDomainsModal, setShowDomainsModal] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
 
-  // ── 4-Card Batch Lazy-Loading State (Explore Grid) ──
-  const [exploreProblems, setExploreProblems] = useState<ProblemDoc[]>([]);
-  const [loadingGrid, setLoadingGrid] = useState<boolean>(true);
-  const [loadingMore, setLoadingMore] = useState<boolean>(false);
-  const [hasMore, setHasMore] = useState<boolean>(true);
-  const [totalFilteredCount, setTotalFilteredCount] = useState<number | undefined>(undefined);
-
-  const cursorRef = useRef<ExploreCursor>(null);
-  const isLoadingRef = useRef<boolean>(false);
-  const hasMoreRef = useRef<boolean>(true);
-  const gridSentinelRef = useRef<HTMLDivElement>(null);
+  // ── 20 Items Per Page Pagination State ──
+  const ITEMS_PER_PAGE = 20;
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const mainSectionRef = useRef<HTMLElement>(null);
 
   // Top Trending Problems (5 items fetched once, 0 duplicate reads)
   const [trendingProblems, setTrendingProblems] = useState<ProblemDoc[]>([]);
@@ -143,9 +135,19 @@ export const Explore: React.FC = () => {
     setTimeout(checkScroll, 100);
   }, [trendingProblems]);
 
-  // Fetch top 5 trending problems & subscribe to metadata collections (0 duplicate reads)
+  // Fetch live problems & subscribe to metadata collections (0 duplicate reads)
   useEffect(() => {
     let mounted = true;
+
+    const unsubProblems = subscribeProblems({ status: "approved" }, (list) => {
+      if (mounted) {
+        if (list && list.length > 0) {
+          setAllProblems(list);
+        }
+        setLoading(false);
+      }
+    });
+
     fetchTrendingProblemsPage(null, 5)
       .then((res) => {
         if (mounted && res.problems && res.problems.length > 0) {
@@ -168,6 +170,7 @@ export const Explore: React.FC = () => {
     });
     return () => {
       mounted = false;
+      unsubProblems();
       unsubCompanies();
       unsubIndustries();
     };
@@ -204,7 +207,13 @@ export const Explore: React.FC = () => {
     setVerifiedOnly(false);
     setSearch("");
     setSearchParams({});
+    setCurrentPage(1);
   };
+
+  // Reset to page 1 whenever any filter or sort changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, selectedIndustries, selectedSeverity, verifiedOnly, sortBy]);
 
   const isSearching = search.trim().length > 0;
   const isDomainSelected = selectedIndustries.length > 0;
@@ -215,94 +224,77 @@ export const Explore: React.FC = () => {
     selectedSeverity !== "All" ||
     verifiedOnly;
 
-  // ── 4-Card Batch Data-Fetching Logic (limit 4, cursor pagination, 0 extra writes) ──
-  const fetchNextBatch = useCallback(
-    async (isInitial = false) => {
-      if (isLoadingRef.current) return;
-      if (!isInitial && !hasMoreRef.current) return;
-
-      isLoadingRef.current = true;
-      if (isInitial) {
-        setLoadingGrid(true);
-        cursorRef.current = null;
-        hasMoreRef.current = true;
-        setHasMore(true);
-      } else {
-        setLoadingMore(true);
+  // Filtered and Sorted problems computation for main grid
+  const filteredProblems = useMemo(() => {
+    const filtered = allProblems.filter((p) => {
+      if (
+        search.trim() &&
+        !p.title.toLowerCase().includes(search.toLowerCase()) &&
+        !p.description.toLowerCase().includes(search.toLowerCase()) &&
+        !p.industry.toLowerCase().includes(search.toLowerCase()) &&
+        !p.tags?.some((t) => t.toLowerCase().includes(search.toLowerCase()))
+      ) {
+        return false;
       }
-
-      try {
-        const filters: ExploreProblemsFilter = {
-          search,
-          selectedIndustries,
-          selectedSeverity,
-          verifiedOnly,
-          sortBy,
-        };
-
-        const result = await fetchExploreProblemsBatch(cursorRef.current, 4, filters);
-
-        if (isInitial) {
-          setExploreProblems(result.problems);
-        } else {
-          setExploreProblems((prev) => {
-            const existingIds = new Set(prev.map((p) => p.id));
-            const newOnes = result.problems.filter((p) => !existingIds.has(p.id));
-            return [...prev, ...newOnes];
-          });
-        }
-
-        cursorRef.current = result.cursor;
-        hasMoreRef.current = result.hasMore;
-        setHasMore(result.hasMore);
-        if (result.totalCount !== undefined) {
-          setTotalFilteredCount(result.totalCount);
-        }
-      } catch (err) {
-        console.error("[Explore] Error fetching 4-card batch:", err);
-      } finally {
-        isLoadingRef.current = false;
-        setLoadingGrid(false);
-        setLoadingMore(false);
+      if (
+        selectedIndustries.length > 0 &&
+        !selectedIndustries.some((ind) => {
+          const lowerInd = ind.toLowerCase().trim();
+          const pInd = (p.industry || "").toLowerCase().trim();
+          if (lowerInd === "ai") {
+            return pInd === "ai" || pInd.startsWith("ai ") || pInd.endsWith(" ai") || pInd.includes("artificial intelligence");
+          }
+          return pInd.includes(lowerInd) || lowerInd.includes(pInd);
+        })
+      ) {
+        return false;
       }
-    },
-    [search, selectedIndustries, selectedSeverity, verifiedOnly, sortBy]
-  );
-
-  // Initial fetch and filter reset: loads first 4 cards
-  useEffect(() => {
-    fetchNextBatch(true);
-  }, [fetchNextBatch]);
-
-  // IntersectionObserver for lazy-loading batches of 4 cards on scroll
-  useEffect(() => {
-    const sentinel = gridSentinelRef.current;
-    if (!sentinel) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const entry = entries[0];
-        if (entry.isIntersecting && hasMoreRef.current && !isLoadingRef.current) {
-          fetchNextBatch(false);
-        }
-      },
-      {
-        root: null,
-        rootMargin: "0px 0px 400px 0px",
-        threshold: 0,
+      if (selectedSeverity !== "All" && p.severity !== selectedSeverity.toLowerCase()) {
+        return false;
       }
-    );
+      if (verifiedOnly && !p.verified) {
+        return false;
+      }
+      return true;
+    });
 
-    observer.observe(sentinel);
+    // Sorting
+    return filtered.sort((a, b) => {
+      if (sortBy === "Highest Pain") {
+        return (b.painScore || 0) - (a.painScore || 0);
+      }
+      if (sortBy === "Newest") {
+        const timeA = a.publishedAt ? new Date(a.publishedAt).getTime() : 0;
+        const timeB = b.publishedAt ? new Date(b.publishedAt).getTime() : 0;
+        return timeB - timeA;
+      }
+      // Default: Trending / Upvotes / Views
+      const scoreA = (a.votes?.upvotes || 0) * 2 + (a.views || 0);
+      const scoreB = (b.votes?.upvotes || 0) * 2 + (b.views || 0);
+      return scoreB - scoreA;
+    });
+  }, [allProblems, search, selectedIndustries, selectedSeverity, verifiedOnly, sortBy]);
 
-    return () => {
-      observer.disconnect();
-    };
-  }, [fetchNextBatch, hasMore, loadingGrid]);
+  // 20 items per page slice computation
+  const totalItems = filteredProblems.length;
+  const totalPages = Math.max(1, Math.ceil(totalItems / ITEMS_PER_PAGE));
+  const safePage = Math.min(Math.max(1, currentPage), totalPages);
+
+  const startIndex = (safePage - 1) * ITEMS_PER_PAGE;
+  const endIndex = Math.min(startIndex + ITEMS_PER_PAGE, totalItems);
+  const displayedProblems = filteredProblems.slice(startIndex, endIndex);
+
+  const handlePageChange = (newPage: number) => {
+    if (newPage < 1 || newPage > totalPages || newPage === safePage) return;
+    setCurrentPage(newPage);
+    if (mainSectionRef.current) {
+      mainSectionRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
 
   // Suggested problem statements randomly picked from different industries when 0 results match
   const suggestedProblems = useMemo(() => {
-    if (exploreProblems.length > 0) return [];
+    if (filteredProblems.length > 0) return [];
 
     // Filter problems that don't match the current filtered set or selected industry
     const pool = allProblems.filter((p) => {
@@ -489,10 +481,8 @@ export const Explore: React.FC = () => {
             <div className="flex flex-wrap items-center gap-2 sm:gap-3 w-full sm:w-auto">
               {/* Results Count */}
               <div className="text-[11px] sm:text-xs font-medium text-on-surface-variant">
-                Showing <span className="font-bold text-on-surface">{exploreProblems.length}</span> {exploreProblems.length === 1 ? "problem" : "problems"}
-                {totalFilteredCount !== undefined && totalFilteredCount > exploreProblems.length && (
-                  <span className="text-on-surface-variant font-normal"> of {totalFilteredCount}</span>
-                )}
+                Showing <span className="font-bold text-on-surface">{displayedProblems.length}</span> of{" "}
+                <span className="font-bold text-on-surface">{totalItems}</span> {totalItems === 1 ? "problem" : "problems"}
               </div>
 
               <div className="h-4 w-[1px] bg-outline-variant/30 hidden sm:block" />
@@ -668,7 +658,7 @@ export const Explore: React.FC = () => {
         )}
 
         {/* ── Main Problem Cards Grid ────────────────────────────────────────── */}
-        <section className="w-full space-y-4">
+        <section ref={mainSectionRef} className="w-full space-y-4 scroll-mt-20">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-outline-variant/20 pb-3">
             <div>
               <h2 className="text-xl font-bold text-on-surface">
@@ -678,9 +668,44 @@ export const Explore: React.FC = () => {
                   ? `${selectedIndustries.join(", ")} Problems`
                   : "All Problem Statements"}
               </h2>
-              <span className="text-xs text-on-surface-variant font-medium">
-                Showing {exploreProblems.length} {totalFilteredCount !== undefined ? `of ${totalFilteredCount}` : ""} statements
-              </span>
+              <div className="flex items-center gap-1.5 mt-0.5 flex-wrap text-xs text-on-surface-variant font-medium">
+                <span>
+                  {totalItems === 0
+                    ? "Showing 0 statements"
+                    : totalItems <= ITEMS_PER_PAGE
+                    ? `Showing ${totalItems} ${totalItems === 1 ? "statement" : "statements"}`
+                    : `Showing ${startIndex + 1}–${endIndex} of ${totalItems} statements`}
+                </span>
+
+                {totalPages > 1 && (
+                  <div className="flex items-center gap-1 ml-1 select-none">
+                    <span className="opacity-30">·</span>
+                    <button
+                      type="button"
+                      onClick={() => handlePageChange(safePage - 1)}
+                      disabled={safePage === 1}
+                      className="p-0.5 text-on-surface-variant hover:text-primary disabled:opacity-25 disabled:cursor-not-allowed transition-colors cursor-pointer bg-transparent"
+                      title="Previous Page"
+                      aria-label="Previous Page"
+                    >
+                      <ChevronLeft className="w-4 h-4" />
+                    </button>
+                    <span className="font-semibold text-on-surface">
+                      Page {safePage} of {totalPages}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => handlePageChange(safePage + 1)}
+                      disabled={safePage === totalPages}
+                      className="p-0.5 text-on-surface-variant hover:text-primary disabled:opacity-25 disabled:cursor-not-allowed transition-colors cursor-pointer bg-transparent"
+                      title="Next Page"
+                      aria-label="Next Page"
+                    >
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Inline search bar in All Problem Statements (Only visible when not searching from hero) */}
@@ -710,8 +735,8 @@ export const Explore: React.FC = () => {
             )}
           </div>
 
-          {loadingGrid ? (
-            // Skeleton grid matching 4-card initial batch (2 cols × 2 rows)
+          {loading && allProblems.length === 0 ? (
+            // Skeleton grid matching card initial load
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
               {Array.from({ length: 4 }).map((_, i) => (
                 <div key={i} className="w-full">
@@ -719,7 +744,7 @@ export const Explore: React.FC = () => {
                 </div>
               ))}
             </div>
-          ) : exploreProblems.length === 0 ? (
+          ) : totalItems === 0 ? (
             <div className="space-y-6 sm:space-y-8 w-full animate-fade-in">
               <div className="w-full max-w-md mx-auto text-center py-2 sm:py-4 space-y-3 bg-transparent">
                 {/* Fade-in Vector Illustration */}
@@ -777,51 +802,61 @@ export const Explore: React.FC = () => {
             </div>
           ) : (
             <div className="flex flex-col gap-6">
-              {/* Cards grid */}
+              {/* Cards grid (20 items per page) */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full animate-fade-in">
-                {exploreProblems.map((prob) => (
+                {displayedProblems.map((prob) => (
                   <TrendingProblemCard key={prob.id} problem={prob} className="w-full h-full" />
                 ))}
               </div>
 
-              {/* Batch Loading Indicator */}
-              {loadingMore && (
-                <div className="w-full flex items-center justify-center py-6" role="status" aria-live="polite">
-                  <div className="flex items-center gap-2.5 px-5 py-2.5 rounded-2xl bg-surface-container-lowest border border-outline-variant/30 shadow-xs">
-                    <div className="w-4 h-4 rounded-full border-2 border-primary border-t-transparent animate-spin" />
-                    <span className="text-xs sm:text-sm font-medium text-on-surface-variant">
-                      Loading next 4 problem statements...
-                    </span>
+              {/* Bottom Pagination Controls */}
+              {totalPages > 1 && (
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 pb-2 border-t border-outline-variant/15 text-xs text-on-surface-variant">
+                  <div className="text-on-surface-variant font-medium">
+                    Showing <span className="font-bold text-on-surface">{startIndex + 1}–{endIndex}</span> of{" "}
+                    <span className="font-bold text-on-surface">{totalItems}</span> statements
                   </div>
-                </div>
-              )}
 
-              {/* Infinite Scroll Intersection Sentinel */}
-              {hasMore && (
-                <div
-                  ref={gridSentinelRef}
-                  className="w-full h-8 pointer-events-none opacity-0"
-                  aria-hidden="true"
-                />
-              )}
+                  <div className="flex items-center gap-1 select-none">
+                    <button
+                      type="button"
+                      onClick={() => handlePageChange(safePage - 1)}
+                      disabled={safePage === 1}
+                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold text-on-surface-variant hover:text-primary disabled:opacity-25 disabled:cursor-not-allowed transition-colors cursor-pointer bg-transparent"
+                      aria-label="Previous Page"
+                    >
+                      <ChevronLeft className="w-4 h-4" />
+                      <span>Prev</span>
+                    </button>
 
-              {/* End of list indicator */}
-              {!hasMore && exploreProblems.length > 0 && (
-                <div className="w-full flex flex-col items-center justify-center py-10 px-4 text-center border-t border-outline-variant/20 mt-4">
-                  <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mb-2 shadow-2xs border border-emerald-100">
-                    <CheckCircle2 className="w-5 h-5 text-emerald-600" />
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((pg) => (
+                      <button
+                        key={pg}
+                        type="button"
+                        onClick={() => handlePageChange(pg)}
+                        className={`min-w-[32px] h-8 flex items-center justify-center rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                          safePage === pg
+                            ? "bg-primary text-white shadow-2xs"
+                            : "text-on-surface-variant hover:text-primary hover:bg-primary/5 bg-transparent"
+                        }`}
+                        aria-label={`Go to page ${pg}`}
+                        aria-current={safePage === pg ? "page" : undefined}
+                      >
+                        {pg}
+                      </button>
+                    ))}
+
+                    <button
+                      type="button"
+                      onClick={() => handlePageChange(safePage + 1)}
+                      disabled={safePage === totalPages}
+                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold text-on-surface-variant hover:text-primary disabled:opacity-25 disabled:cursor-not-allowed transition-colors cursor-pointer bg-transparent"
+                      aria-label="Next Page"
+                    >
+                      <span>Next</span>
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
                   </div>
-                  <span className="text-sm font-bold text-on-surface">All Problem Statements Loaded</span>
-                  <p className="text-xs text-on-surface-variant mt-0.5 max-w-sm leading-relaxed">
-                    You've explored all {exploreProblems.length} problem statements. Have a persistent bottleneck to add?
-                  </p>
-                  <Link
-                    to="/submit"
-                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:text-primary-container mt-3 bg-primary/5 hover:bg-primary/10 px-4 py-2 rounded-full transition-colors"
-                  >
-                    <span>Submit a Problem Statement</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </Link>
                 </div>
               )}
             </div>
