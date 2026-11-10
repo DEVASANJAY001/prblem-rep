@@ -127,6 +127,7 @@ export const Dashboard: React.FC = () => {
 
   const displayName = userDoc?.displayName || userDoc?.name || user?.displayName || "Innovator";
   const userHandle = userDoc?.username;
+  const userRole = userDoc?.role || "user";
   const earnedBadgesNames = (userDoc?.badges || []).filter(
     (b) =>
       !b.toLowerCase().includes("google verified") &&

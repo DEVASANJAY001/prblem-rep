@@ -204,10 +204,10 @@ export const Home: React.FC = () => {
   const stat2Val = getField("stats", "stat_2_value", "84.2K");
   const stat3Label = getField("stats", "stat_3_label", "Industries Mapped");
   const stat3Val = getField("stats", "stat_3_value", "128");
-  const rawStat4Label = getField("stats", "stat_4_label", "Total Visitors");
+  const rawStat4Label = getField<string>("stats", "stat_4_label", "Total Visitors");
   const stat4Label =
     rawStat4Label === "Bounties Awarded" || rawStat4Label === "Active Users" ? "Total Visitors" : rawStat4Label;
-  const rawStat4Val = getField("stats", "stat_4_value", "24.8K");
+  const rawStat4Val = getField<string>("stats", "stat_4_value", "24.8K");
   const stat4Val = rawStat4Val === "$2.4M" || rawStat4Val === "89.4k" ? "24.8K" : rawStat4Val;
 
   const ctaHeading = getField("cta", "heading", "Ready to solve the world's most pressing problems?");

@@ -431,7 +431,7 @@ export const StartupMode: React.FC = () => {
       const res = await toggleCommunityValidation(problem.id, "face", currentUid);
       setFaced(res.userHasValidated);
       setFaceCount(res.validations.faceCount);
-      if (typeof res.interested === "boolean") setUserInterested(res.interested);
+      if (typeof res.isInterested === "boolean") setUserInterested(res.isInterested);
       if (typeof res.interestedCount === "number") setInterestedCount(res.interestedCount);
     } catch (err) {
       console.error("Failed to toggle face validation:", err);
@@ -468,7 +468,7 @@ export const StartupMode: React.FC = () => {
       const res = await toggleCommunityValidation(problem.id, "great", currentUid);
       setVotedGreat(res.userHasValidated);
       setGreatCount(res.validations.greatCount);
-      if (typeof res.interested === "boolean") setUserInterested(res.interested);
+      if (typeof res.isInterested === "boolean") setUserInterested(res.isInterested);
       if (typeof res.interestedCount === "number") setInterestedCount(res.interestedCount);
     } catch (err) {
       console.error("Failed to toggle great validation:", err);
@@ -505,7 +505,7 @@ export const StartupMode: React.FC = () => {
       const res = await toggleCommunityValidation(problem.id, "build", currentUid);
       setBuilt(res.userHasValidated);
       setBuildCount(res.validations.buildCount);
-      if (typeof res.interested === "boolean") setUserInterested(res.interested);
+      if (typeof res.isInterested === "boolean") setUserInterested(res.isInterested);
       if (typeof res.interestedCount === "number") setInterestedCount(res.interestedCount);
     } catch (err) {
       console.error("Failed to toggle build validation:", err);

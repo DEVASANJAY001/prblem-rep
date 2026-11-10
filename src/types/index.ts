@@ -171,6 +171,7 @@ export interface StartupModeConfig {
 
 export interface ProblemDoc {
   id: string;
+  slug?: string;
   title: string;
   description: string;
   whenItHappens: string;

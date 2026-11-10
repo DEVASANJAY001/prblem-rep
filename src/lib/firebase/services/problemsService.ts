@@ -560,7 +560,7 @@ export async function getProblemById(idOrSlug: string): Promise<ProblemDoc | nul
         const match = querySnap.docs.find((d) => {
           const dData = d.data() as ProblemDoc;
           const s = dData.slug || (dData.title ? slugify(dData.title) : "");
-          return s === idOrSlug || d.id === idOrSlug || (dData.title && getProblemSlug({ id: d.id, ...dData }) === idOrSlug);
+          return s === idOrSlug || d.id === idOrSlug || (dData.title && getProblemSlug({ ...dData, id: d.id }) === idOrSlug);
         });
         if (match) {
           const live = { id: match.id, ...match.data() } as ProblemDoc;
@@ -724,7 +724,7 @@ export function subscribeProblemById(
                   const match = querySnap.docs.find((d) => {
                     const dData = d.data() as ProblemDoc;
                     const s = dData.slug || (dData.title ? slugify(dData.title) : "");
-                    return s === idOrSlug || d.id === idOrSlug || (dData.title && getProblemSlug({ id: d.id, ...dData }) === idOrSlug);
+                    return s === idOrSlug || d.id === idOrSlug || (dData.title && getProblemSlug({ ...dData, id: d.id }) === idOrSlug);
                   });
                   if (match) {
                     const live = { id: match.id, ...match.data() } as ProblemDoc;
@@ -812,7 +812,7 @@ function extractCardFields(raw: any, id: string): ProblemDoc {
     willingnessToPay: raw.willingnessToPay || "",
     isAnonymous: Boolean(raw.isAnonymous),
     status: "approved",
-    aiScores: raw.aiScores ? { painLevel: raw.aiScores.painLevel } : null,
+    aiScores: (raw.aiScores as AIScores) || null,
     painScore: typeof raw.painScore === "number" ? raw.painScore : 80,
     opportunityScore: typeof raw.opportunityScore === "number" ? raw.opportunityScore : 80,
     votes: raw.votes || { upvotes: 0, downvotes: 0, userVote: null },
@@ -830,7 +830,10 @@ function extractCardFields(raw: any, id: string): ProblemDoc {
     validations: raw.validations
       ? {
           faceCount: raw.validations.faceCount || 0,
+          greatCount: raw.validations.greatCount || 0,
+          payCount: raw.validations.payCount || 0,
           buildCount: raw.validations.buildCount || 0,
+          userValidations: raw.validations.userValidations,
         }
       : undefined,
     commentsCount:
@@ -1623,6 +1626,7 @@ export async function toggleCommunityValidation(
   validations: ProblemValidations;
   userHasValidated: boolean;
   isInterested: boolean;
+  interested?: boolean;
   interestedCount: number;
   interestedUsers: string[];
 }> {
@@ -1644,7 +1648,10 @@ export async function toggleCommunityValidation(
   } catch (err) {
     console.warn("Firestore toggleCommunityValidation error:", err);
   }
-  return result;
+  return {
+    ...result,
+    interested: result.isInterested,
+  };
 }
 
 const sessionInterestDedupe = new Set<string>();
@@ -1734,11 +1741,14 @@ export async function toggleUserInterest(
       isInterested = true;
     }
 
+    const userValsKeys = local.validations?.userValidations
+      ? Object.keys(local.validations.userValidations).filter(
+          (uid) => (local.validations?.userValidations?.[uid] || []).length > 0
+        )
+      : [];
     const uniqueUids = new Set<string>([
       ...local.interestedUsers,
-      ...Object.keys(local.validations.userValidations).filter(
-        (uid) => (local.validations.userValidations![uid] || []).length > 0
-      ),
+      ...userValsKeys,
     ]);
     local.interestedUsers = Array.from(uniqueUids);
     local.interestedCount = uniqueUids.size;

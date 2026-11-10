@@ -424,7 +424,7 @@ export function submitProblem(data: any, user: { uid: string; name: string } | n
     commentsCount: 0,
     bookmarksCount: 0,
     tags: [data.industry?.split(" ")[0] || "General", data.severity?.toUpperCase() || "MEDIUM"],
-    evidenceDocuments: (data.evidenceDocuments || []).map((doc) => ({
+    evidenceDocuments: (data.evidenceDocuments || []).map((doc: any) => ({
       title: doc.title,
       description: doc.description || "",
       url: doc.url,
@@ -1231,6 +1231,7 @@ export function toggleLocalValidation(
   validations: ProblemValidations;
   userHasValidated: boolean;
   isInterested: boolean;
+  interested?: boolean;
   interestedCount: number;
   interestedUsers: string[];
 } {
@@ -1293,20 +1294,24 @@ export function toggleLocalValidation(
   }
 
   // Calculate unique interested users
+  const userValsKeys = problem.validations?.userValidations
+    ? Object.keys(problem.validations.userValidations).filter(
+        (uid) => (problem.validations?.userValidations?.[uid] || []).length > 0
+      )
+    : [];
   const uniqueUids = new Set<string>([
     ...problem.interestedUsers,
-    ...Object.keys(problem.validations.userValidations).filter(
-      (uid) => (problem.validations.userValidations![uid] || []).length > 0
-    ),
+    ...userValsKeys,
   ]);
   problem.interestedUsers = Array.from(uniqueUids);
   problem.interestedCount = uniqueUids.size;
 
   save(STORAGE_KEYS.PROBLEMS, list);
   return {
-    validations: problem.validations,
+    validations: problem.validations || { faceCount: 0, greatCount: 0, payCount: 0, buildCount: 0 },
     userHasValidated: !alreadyValidated,
     isInterested: uniqueUids.has(userUid),
+    interested: uniqueUids.has(userUid),
     interestedCount: problem.interestedCount,
     interestedUsers: problem.interestedUsers,
   };
