@@ -339,7 +339,7 @@ export const Explore: React.FC = () => {
     }
 
     return selected;
-  }, [exploreProblems.length, allProblems, selectedIndustries]);
+  }, [filteredProblems.length, allProblems, selectedIndustries]);
 
   return (
     <div className="flex flex-col w-full min-h-screen font-['Poppins',sans-serif] text-on-surface bg-surface">
