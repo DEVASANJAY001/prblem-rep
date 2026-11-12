@@ -42,6 +42,7 @@ import {
 import { REAL_PROBLEMS } from "@/data/realProductionData";
 import { swrCache } from "@/lib/swrCache";
 import { cleanIndustryName } from "@/lib/algorithms/domainIntelligence";
+import { sortProblems, computeProblemRankScore } from "@/lib/algorithms/problemRanking";
 import { getProblemSlug, slugify, buildUniqueSlug } from "@/lib/seoUrls";
 
 const PROBLEMS_COLLECTION = "problems";
@@ -475,6 +476,10 @@ export async function createProblem(
   saveLocalProblem(newProblem);
   swrCache.set(`doc_${id}`, newProblem);
   swrCache.set(`problem_${id}`, newProblem, 300_000);
+  if (resolvedStatus === "approved") {
+    swrCache.invalidate("approved_problems_pool");
+    swrCache.invalidate("explore_page_");
+  }
 
   const existingDocStream = docStreams.get(id);
   if (existingDocStream) {
@@ -888,69 +893,64 @@ function extractCardFields(raw: any, id: string): ProblemDoc {
 }
 
 /**
+ * Shared in-memory cached pool of approved problems for intelligent ranking and instant filtering.
+ * Caches in SWR for 2 minutes, preventing redundant Firestore queries while guaranteeing
+ * deterministic, multi-factor ranking.
+ */
+export async function getApprovedProblemsPool(): Promise<ProblemDoc[]> {
+  const cached = swrCache.get<ProblemDoc[]>("approved_problems_pool");
+  if (cached && cached.length > 0) {
+    return cached;
+  }
+
+  if (db && typeof collection === "function") {
+    try {
+      const colRef = collection(db, PROBLEMS_COLLECTION);
+      const q = query(colRef, where("status", "==", "approved"), limit(200));
+      const snap = await getDocs(q);
+      if (!snap.empty) {
+        const pool = snap.docs.map((d) => extractCardFields(d.data(), d.id));
+        swrCache.set("approved_problems_pool", pool, 120_000); // 2 minute memory cache
+        return pool;
+      }
+    } catch (err: any) {
+      console.warn("[ProblemsService] Pool fetch from Firestore failed, falling back:", err?.message || err);
+    }
+  }
+
+  // Fallback to local storage + real production problems
+  const localApproved = getLocalProblems({ status: "approved" });
+  const map = new Map<string, ProblemDoc>();
+  REAL_PROBLEMS.filter((p) => p.status === "approved").forEach((p) => map.set(p.id, extractCardFields(p, p.id)));
+  localApproved.forEach((p) => map.set(p.id, extractCardFields(p, p.id)));
+  const pool = Array.from(map.values());
+  swrCache.set("approved_problems_pool", pool, 60_000);
+  return pool;
+}
+
+/**
  * Lightweight, on-demand paginated fetch for Trending Problems.
+ * Ranked by intelligent multi-factor algorithm with soft industry anti-clustering.
  * Optimized to strictly minimize Firestore reads and eliminate writes:
  * - Fetches only the requested batch (initial 5, then 1-at-a-time on scroll).
  * - Avoids real-time onSnapshot listeners.
- * - Extracts only the required card fields to minimize memory & bandwidth.
- * - Uses Firestore cursor-based startAfter() pagination.
+ * - Extracts only lightweight card fields.
+ * - Slices deterministically from the ranked pool.
  */
 export async function fetchTrendingProblemsPage(
   cursor: TrendingCursor = null,
   pageSize = 5
 ): Promise<TrendingProblemsPageResult> {
-  // If Firestore is available, use cursor-based pagination
-  if (db && typeof collection === "function") {
-    try {
-      const colRef = collection(db, PROBLEMS_COLLECTION);
-      const constraints: any[] = [where("status", "==", "approved")];
-
-      if (cursor && typeof cursor === "object" && "data" in cursor) {
-        constraints.push(startAfter(cursor));
-      }
-
-      constraints.push(limit(pageSize));
-
-      const q = query(colRef, ...constraints);
-      const snap = await getDocs(q);
-
-      if (snap.empty) {
-        return {
-          problems: [],
-          cursor,
-          hasMore: false,
-        };
-      }
-
-      const problems: ProblemDoc[] = snap.docs.map((docSnap) => {
-        const d = docSnap.data();
-        return extractCardFields(d, docSnap.id);
-      });
-
-      const newCursor = snap.docs[snap.docs.length - 1];
-      const hasMore = snap.docs.length >= pageSize;
-
-      return {
-        problems,
-        cursor: newCursor,
-        hasMore,
-      };
-    } catch (err: any) {
-      console.warn("[TrendingProblems] Firestore query failed, falling back to local:", err?.message || err);
-    }
-  }
-
-  // Offline / Error fallback: paginate local cache
-  const localApproved = getLocalProblems({ status: "approved" });
-  const pool = localApproved.length > 0 ? localApproved : REAL_PROBLEMS.filter((p) => p.status === "approved");
+  const pool = await getApprovedProblemsPool();
+  const sorted = sortProblems(pool, "Trending", { applyDiversity: true, maxConsecutiveSameIndustry: 2 });
 
   const startIndex = typeof cursor === "number" ? cursor : 0;
-  const slice = pool.slice(startIndex, startIndex + pageSize);
+  const slice = sorted.slice(startIndex, startIndex + pageSize);
   const nextIndex = startIndex + slice.length;
-  const hasMore = nextIndex < pool.length;
+  const hasMore = nextIndex < sorted.length;
 
   return {
-    problems: slice.map((p) => extractCardFields(p, p.id)),
+    problems: slice,
     cursor: hasMore ? nextIndex : null,
     hasMore,
   };
@@ -994,83 +994,7 @@ export async function fetchExploreProblemsBatch(
     sortBy = "Trending",
   } = filters;
 
-  const isComplexFilter =
-    Boolean(search.trim()) ||
-    selectedIndustries.length > 1 ||
-    (sortBy && sortBy !== "Trending");
-
-  // CASE 1: Direct Firestore Query with cursor pagination (standard browsing path)
-  if (!isComplexFilter && db && typeof collection === "function") {
-    try {
-      const colRef = collection(db, PROBLEMS_COLLECTION);
-      const constraints: any[] = [where("status", "==", "approved")];
-
-      if (selectedIndustries.length === 1) {
-        constraints.push(where("industry", "==", selectedIndustries[0]));
-      }
-
-      if (selectedSeverity && selectedSeverity !== "All") {
-        constraints.push(where("severity", "==", selectedSeverity.toLowerCase()));
-      }
-
-      if (verifiedOnly) {
-        constraints.push(where("verified", "==", true));
-      }
-
-      if (cursor && typeof cursor === "object" && "data" in cursor) {
-        constraints.push(startAfter(cursor));
-      }
-
-      constraints.push(limit(batchSize));
-
-      const q = query(colRef, ...constraints);
-      const snap = await getDocs(q);
-
-      if (snap.empty) {
-        return {
-          problems: [],
-          cursor,
-          hasMore: false,
-        };
-      }
-
-      const problems = snap.docs.map((d) => extractCardFields(d.data(), d.id));
-      const newCursor = snap.docs[snap.docs.length - 1];
-      const hasMore = snap.docs.length >= batchSize;
-
-      return {
-        problems,
-        cursor: newCursor,
-        hasMore,
-      };
-    } catch (err: any) {
-      console.warn("[ExploreBatch] Direct Firestore query failed, falling back to local:", err?.message || err);
-    }
-  }
-
-  // CASE 2: Filtered / Search / Sorted / Offline Fallback
-  let pool: ProblemDoc[] = [];
-
-  const cachedApproved = swrCache.get<ProblemDoc[]>("approved_problems_pool");
-  if (cachedApproved && cachedApproved.length > 0) {
-    pool = cachedApproved;
-  } else if (db && typeof collection === "function") {
-    try {
-      const colRef = collection(db, PROBLEMS_COLLECTION);
-      const q = query(colRef, where("status", "==", "approved"), limit(100));
-      const snap = await getDocs(q);
-      pool = snap.docs.map((d) => extractCardFields(d.data(), d.id));
-      swrCache.set("approved_problems_pool", pool, 120_000); // 2 minute memory cache
-    } catch {
-      pool = getLocalProblems({ status: "approved" }).map((p) => extractCardFields(p, p.id));
-    }
-  } else {
-    pool = getLocalProblems({ status: "approved" }).map((p) => extractCardFields(p, p.id));
-  }
-
-  if (pool.length === 0) {
-    pool = REAL_PROBLEMS.filter((p) => p.status === "approved").map((p) => extractCardFields(p, p.id));
-  }
+  const pool = await getApprovedProblemsPool();
 
   // Apply filters
   const filtered = pool.filter((p) => {
@@ -1108,32 +1032,22 @@ export async function fetchExploreProblemsBatch(
     return true;
   });
 
-  // Apply sorting
-  filtered.sort((a, b) => {
-    if (sortBy === "Highest Pain") {
-      return (b.painScore || 0) - (a.painScore || 0);
-    }
-    if (sortBy === "Newest") {
-      const timeA = a.publishedAt ? new Date(a.publishedAt).getTime() : 0;
-      const timeB = b.publishedAt ? new Date(b.publishedAt).getTime() : 0;
-      return timeB - timeA;
-    }
-    // Default: Trending
-    const scoreA = (a.votes?.upvotes || 0) * 2 + (a.views || 0);
-    const scoreB = (b.votes?.upvotes || 0) * 2 + (b.views || 0);
-    return scoreB - scoreA;
+  // Apply multi-factor ranking & soft anti-clustering
+  const sorted = sortProblems(filtered, sortBy, {
+    applyDiversity: sortBy === "Trending",
+    maxConsecutiveSameIndustry: 2,
   });
 
   const startIndex = typeof cursor === "number" ? cursor : 0;
-  const slice = filtered.slice(startIndex, startIndex + batchSize);
+  const slice = sorted.slice(startIndex, startIndex + batchSize);
   const nextIndex = startIndex + slice.length;
-  const hasMore = nextIndex < filtered.length;
+  const hasMore = nextIndex < sorted.length;
 
   return {
     problems: slice,
     cursor: hasMore ? nextIndex : null,
     hasMore,
-    totalCount: filtered.length,
+    totalCount: sorted.length,
   };
 }
 
@@ -1200,16 +1114,14 @@ export interface ExplorePageResult {
   totalPages: number;
 }
 
-// In-memory cursor map for forward/backward page navigation (page -> DocumentSnapshot cursor)
-const _explorePageCursors = new Map<string, QueryDocumentSnapshot<DocumentData>>();
-
 /**
- * On-demand 20-card page fetcher for the Explore page "All Problem Statements" grid.
- * Strict database read optimization:
- * - Fetches only 20 cards per page.
- * - Strips heavy fields via extractCardFields (card details only).
- * - Caches pages in memory/SWR so navigating between pages costs 0 reads.
- * - Employs startAfter() cursor pagination when moving forward.
+ * Strict 20-card-per-page query for the Explore page "All Problem Statements" container.
+ * Powered by intelligent multi-factor ranking & soft industry diversity.
+ * Database read optimization:
+ * - Fetches approved problems into SWR cache (max 1 read batch per 2 mins).
+ * - Extracts lightweight card fields only.
+ * - Deterministically sorts and applies soft anti-clustering.
+ * - Paginated at 20 items per page with instant 0-read back/forward navigation.
  */
 export async function fetchExploreProblemsPage(
   page: number = 1,
@@ -1233,84 +1145,7 @@ export async function fetchExploreProblemsPage(
     return cached;
   }
 
-  const isComplexFilter =
-    Boolean(search.trim()) ||
-    selectedIndustries.length > 1;
-
-  // Case 1: Simple Firestore Query with limit(20) and cursor pagination
-  if (!isComplexFilter && db && typeof collection === "function") {
-    try {
-      const colRef = collection(db, PROBLEMS_COLLECTION);
-      const constraints: any[] = [where("status", "==", "approved")];
-
-      if (selectedIndustries.length === 1) {
-        constraints.push(where("industry", "==", selectedIndustries[0]));
-      }
-      if (selectedSeverity && selectedSeverity !== "All") {
-        constraints.push(where("severity", "==", selectedSeverity.toLowerCase()));
-      }
-      if (verifiedOnly) {
-        constraints.push(where("verified", "==", true));
-      }
-
-      // Check total count for this filtered query via getCountFromServer (1 metadata read)
-      let totalCount = 0;
-      const countKey = `total_count_${filterKey}`;
-      const cachedCount = swrCache.get<number>(countKey);
-      if (typeof cachedCount === "number") {
-        totalCount = cachedCount;
-      } else {
-        const countQuery = query(colRef, ...constraints);
-        const countSnap = await getCountFromServer(countQuery);
-        totalCount = countSnap.data().count;
-        swrCache.set(countKey, totalCount, 180_000);
-      }
-
-      // If page > 1, apply cursor from page - 1
-      if (page > 1) {
-        const prevCursorKey = `${filterKey}_p${page - 1}`;
-        const prevCursor = _explorePageCursors.get(prevCursorKey);
-        if (prevCursor) {
-          constraints.push(startAfter(prevCursor));
-        }
-      }
-
-      constraints.push(limit(pageSize));
-      const q = query(colRef, ...constraints);
-      const snap = await getDocs(q);
-
-      if (!snap.empty) {
-        // Store cursor for next page navigation
-        const currentCursorKey = `${filterKey}_p${page}`;
-        _explorePageCursors.set(currentCursorKey, snap.docs[snap.docs.length - 1]);
-
-        const problems = snap.docs.map((d) => extractCardFields(d.data(), d.id));
-        const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
-
-        const result: ExplorePageResult = {
-          problems,
-          totalCount,
-          page,
-          pageSize,
-          totalPages,
-        };
-        swrCache.set(cacheKey, result, 180_000); // 3-minute cache
-        return result;
-      }
-    } catch (err: any) {
-      console.warn("[ExplorePage] Firestore query fallback to local:", err?.message || err);
-    }
-  }
-
-  // Case 2: Filtered / Search / Offline Fallback from local pool
-  let pool = REAL_PROBLEMS.filter((p) => p.status === "approved").map((p) => extractCardFields(p, p.id));
-  const localApproved = getLocalProblems({ status: "approved" });
-  if (localApproved.length > 0) {
-    const map = new Map<string, ProblemDoc>();
-    pool.forEach((p) => map.set(p.id, p));
-    localApproved.forEach((p) => map.set(p.id, extractCardFields(p, p.id)));
-    pool = Array.from(map.values());
-  }
+  const pool = await getApprovedProblemsPool();
 
   // Apply filters
   const filtered = pool.filter((p) => {
@@ -1348,26 +1183,16 @@ export async function fetchExploreProblemsPage(
     return true;
   });
 
-  // Apply sorting
-  filtered.sort((a, b) => {
-    if (sortBy === "Highest Pain") {
-      return (b.painScore || 0) - (a.painScore || 0);
-    }
-    if (sortBy === "Newest") {
-      const timeA = a.publishedAt ? new Date(a.publishedAt).getTime() : 0;
-      const timeB = b.publishedAt ? new Date(b.publishedAt).getTime() : 0;
-      return timeB - timeA;
-    }
-    // Default: Trending
-    const scoreA = (a.votes?.upvotes || 0) * 2 + (a.views || 0);
-    const scoreB = (b.votes?.upvotes || 0) * 2 + (b.views || 0);
-    return scoreB - scoreA;
+  // Apply intelligent multi-factor ranking & sorting
+  const sorted = sortProblems(filtered, sortBy, {
+    applyDiversity: sortBy === "Trending",
+    maxConsecutiveSameIndustry: 2,
   });
 
-  const totalCount = filtered.length;
+  const totalCount = sorted.length;
   const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
   const startIndex = (page - 1) * pageSize;
-  const problems = filtered.slice(startIndex, startIndex + pageSize);
+  const problems = sorted.slice(startIndex, startIndex + pageSize);
 
   const result: ExplorePageResult = {
     problems,
@@ -1377,7 +1202,7 @@ export async function fetchExploreProblemsPage(
     totalPages,
   };
 
-  swrCache.set(cacheKey, result, 180_000);
+  swrCache.set(cacheKey, result, 180_000); // 3-minute cache
   return result;
 }
 
@@ -1614,6 +1439,9 @@ export async function updateProblemStatus(
     saveLocalProblem(updatedProb);
     syncProblemCache(updatedProb);
   }
+  swrCache.invalidate("approved_problems_pool");
+  swrCache.invalidate("explore_page_");
+  swrCache.invalidate("total_approved_problems_count");
   notifyQueryStreams();
 
   if (db && typeof doc === "function") {
@@ -2232,6 +2060,9 @@ export async function updateFullProblemDetails(
 export async function deleteProblem(problemId: string): Promise<boolean> {
   deleteProblemFromStorage(problemId);
   swrCache.invalidate(`problem_${problemId}`);
+  swrCache.invalidate("approved_problems_pool");
+  swrCache.invalidate("explore_page_");
+  swrCache.invalidate("total_approved_problems_count");
 
   const stream = docStreams.get(problemId);
   if (stream) {
