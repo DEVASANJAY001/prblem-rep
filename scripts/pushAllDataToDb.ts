@@ -121,6 +121,17 @@ async function pushAllData() {
       console.log(`  ✓ [CMS Page] ${page.pageId}: ${page.pageName}`);
     }
 
+    // 9. Stats Metadata (Problems Count)
+    console.log("\n📊 Initializing Platform Stats (stats/problems)...");
+    const approvedCount = REAL_PROBLEMS.filter((p) => p.status === "approved").length;
+    const statsRef = doc(db, "stats", "problems");
+    await setDoc(statsRef, {
+      totalApproved: approvedCount,
+      totalProblems: REAL_PROBLEMS.length,
+      updatedAtServer: serverTimestamp(),
+    }, { merge: true });
+    console.log(`  ✓ [Stats] totalApproved: ${approvedCount}`);
+
     console.log("\n========================================================");
     console.log(`🎉 SUCCESS: All ${totalCount} production records successfully pushed to Firestore!`);
     console.log("========================================================\n");

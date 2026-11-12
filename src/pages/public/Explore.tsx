@@ -1,7 +1,8 @@
 import React, { useState, useMemo, useEffect, useRef } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import {
-  subscribeProblems,
+  fetchExploreProblemsPage,
+  subscribeApprovedProblemsCount,
   fetchTrendingProblemsPage,
 } from "@/lib/firebase/services/problemsService";
 import { subscribeCompanies } from "@/lib/firebase/services/companiesService";
@@ -65,17 +66,20 @@ export const Explore: React.FC = () => {
   const [selectedSeverity, setSelectedSeverity] = useState<string>("All");
   const [verifiedOnly, setVerifiedOnly] = useState<boolean>(false);
 
-  // Static/seed problems for intelligence metrics & offline fallbacks (0 reads)
-  const [allProblems, setAllProblems] = useState<ProblemDoc[]>(REAL_PROBLEMS);
+  // ── 20 Items Per Page Pagination State & Realtime Total Count ──
+  const ITEMS_PER_PAGE = 20;
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [pageProblems, setPageProblems] = useState<ProblemDoc[]>([]);
+  const [totalStatementsCount, setTotalStatementsCount] = useState<number>(
+    REAL_PROBLEMS.filter((p) => p.status === "approved").length
+  );
+  const [isPageLoading, setIsPageLoading] = useState<boolean>(true);
+  const mainSectionRef = useRef<HTMLElement>(null);
+
   const [companiesList, setCompaniesList] = useState<CompanyDoc[]>(REAL_COMPANIES);
   const [industriesList, setIndustriesList] = useState<IndustryDoc[]>([]);
   const [showDomainsModal, setShowDomainsModal] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
-
-  // ── 20 Items Per Page Pagination State ──
-  const ITEMS_PER_PAGE = 20;
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const mainSectionRef = useRef<HTMLElement>(null);
 
   // Top Trending Problems (5 items fetched once, 0 duplicate reads)
   const [trendingProblems, setTrendingProblems] = useState<ProblemDoc[]>([]);
@@ -86,7 +90,7 @@ export const Explore: React.FC = () => {
 
   // Real-time Intelligence Algorithm combining problem metrics, velocity, and admin configuration
   const domainIntelligence = useMemo(() => {
-    return computeDomainIntelligence(industriesList, allProblems, {
+    return computeDomainIntelligence(industriesList, REAL_PROBLEMS, {
       popularSlugs: Array.isArray(popularSlugsOverride)
         ? popularSlugsOverride.map((s) => s.toLowerCase().trim())
         : [],
@@ -94,7 +98,7 @@ export const Explore: React.FC = () => {
         ? trendingSlugsOverride.map((s) => s.toLowerCase().trim())
         : [],
     });
-  }, [industriesList, allProblems, popularSlugsOverride, trendingSlugsOverride]);
+  }, [industriesList, popularSlugsOverride, trendingSlugsOverride]);
 
   // Sync state with URL search params when arriving from Home page or external links
   useEffect(() => {
@@ -135,16 +139,14 @@ export const Explore: React.FC = () => {
     setTimeout(checkScroll, 100);
   }, [trendingProblems]);
 
-  // Fetch live problems & subscribe to metadata collections (0 duplicate reads)
+  // Fetch live problems count (realtime doc/aggregation, 1 read) & metadata collections
   useEffect(() => {
     let mounted = true;
 
-    const unsubProblems = subscribeProblems({ status: "approved" }, (list) => {
-      if (mounted) {
-        if (list && list.length > 0) {
-          setAllProblems(list);
-        }
-        setLoading(false);
+    // Real-time total approved statements count (only 1 doc read!)
+    const unsubCount = subscribeApprovedProblemsCount((count) => {
+      if (mounted && typeof count === "number") {
+        setTotalStatementsCount(count);
       }
     });
 
@@ -153,7 +155,6 @@ export const Explore: React.FC = () => {
         if (mounted && res.problems && res.problems.length > 0) {
           setTrendingProblems(res.problems);
         } else if (mounted) {
-          // Fallback to top 5 from seed
           setTrendingProblems(REAL_PROBLEMS.slice(0, 5));
         }
       })
@@ -170,16 +171,51 @@ export const Explore: React.FC = () => {
     });
     return () => {
       mounted = false;
-      unsubProblems();
+      unsubCount();
       unsubCompanies();
       unsubIndustries();
     };
   }, []);
 
-  // Compute statements count per company
+  // Fetch only the 20 problem cards for the current page & filter set
+  useEffect(() => {
+    let mounted = true;
+    setIsPageLoading(true);
+
+    fetchExploreProblemsPage(currentPage, ITEMS_PER_PAGE, {
+      search,
+      selectedIndustries,
+      selectedSeverity,
+      verifiedOnly,
+      sortBy,
+    })
+      .then((res) => {
+        if (mounted) {
+          setPageProblems(res.problems);
+          if (typeof res.totalCount === "number") {
+            setTotalStatementsCount(res.totalCount);
+          }
+          setIsPageLoading(false);
+          setLoading(false);
+        }
+      })
+      .catch((err) => {
+        console.warn("Failed to fetch explore page:", err);
+        if (mounted) {
+          setIsPageLoading(false);
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      mounted = false;
+    };
+  }, [currentPage, search, selectedIndustries, selectedSeverity, verifiedOnly, sortBy]);
+
+  // Compute statements count per company from seed problems (0 reads)
   const companyProblemCounts = useMemo(() => {
     const map: Record<string, number> = {};
-    allProblems.forEach((p) => {
+    REAL_PROBLEMS.forEach((p) => {
       const attached = Array.isArray(p.attachedCompanyNames) && p.attachedCompanyNames.length > 0
         ? p.attachedCompanyNames
         : (p.tags || []);
@@ -188,7 +224,7 @@ export const Explore: React.FC = () => {
       });
     });
     return map;
-  }, [allProblems]);
+  }, []);
 
   const handleIndustryToggle = (ind: string) => {
     setSelectedIndustries((prev) =>
@@ -224,65 +260,14 @@ export const Explore: React.FC = () => {
     selectedSeverity !== "All" ||
     verifiedOnly;
 
-  // Filtered and Sorted problems computation for main grid
-  const filteredProblems = useMemo(() => {
-    const filtered = allProblems.filter((p) => {
-      if (
-        search.trim() &&
-        !p.title.toLowerCase().includes(search.toLowerCase()) &&
-        !p.description.toLowerCase().includes(search.toLowerCase()) &&
-        !p.industry.toLowerCase().includes(search.toLowerCase()) &&
-        !p.tags?.some((t) => t.toLowerCase().includes(search.toLowerCase()))
-      ) {
-        return false;
-      }
-      if (
-        selectedIndustries.length > 0 &&
-        !selectedIndustries.some((ind) => {
-          const lowerInd = ind.toLowerCase().trim();
-          const pInd = (p.industry || "").toLowerCase().trim();
-          if (lowerInd === "ai") {
-            return pInd === "ai" || pInd.startsWith("ai ") || pInd.endsWith(" ai") || pInd.includes("artificial intelligence");
-          }
-          return pInd.includes(lowerInd) || lowerInd.includes(pInd);
-        })
-      ) {
-        return false;
-      }
-      if (selectedSeverity !== "All" && p.severity !== selectedSeverity.toLowerCase()) {
-        return false;
-      }
-      if (verifiedOnly && !p.verified) {
-        return false;
-      }
-      return true;
-    });
-
-    // Sorting
-    return filtered.sort((a, b) => {
-      if (sortBy === "Highest Pain") {
-        return (b.painScore || 0) - (a.painScore || 0);
-      }
-      if (sortBy === "Newest") {
-        const timeA = a.publishedAt ? new Date(a.publishedAt).getTime() : 0;
-        const timeB = b.publishedAt ? new Date(b.publishedAt).getTime() : 0;
-        return timeB - timeA;
-      }
-      // Default: Trending / Upvotes / Views
-      const scoreA = (a.votes?.upvotes || 0) * 2 + (a.views || 0);
-      const scoreB = (b.votes?.upvotes || 0) * 2 + (b.views || 0);
-      return scoreB - scoreA;
-    });
-  }, [allProblems, search, selectedIndustries, selectedSeverity, verifiedOnly, sortBy]);
-
   // 20 items per page slice computation
-  const totalItems = filteredProblems.length;
+  const totalItems = totalStatementsCount;
   const totalPages = Math.max(1, Math.ceil(totalItems / ITEMS_PER_PAGE));
   const safePage = Math.min(Math.max(1, currentPage), totalPages);
 
   const startIndex = (safePage - 1) * ITEMS_PER_PAGE;
-  const endIndex = Math.min(startIndex + ITEMS_PER_PAGE, totalItems);
-  const displayedProblems = filteredProblems.slice(startIndex, endIndex);
+  const endIndex = Math.min(startIndex + pageProblems.length, totalItems);
+  const displayedProblems = pageProblems;
 
   const handlePageChange = (newPage: number) => {
     if (newPage < 1 || newPage > totalPages || newPage === safePage) return;
@@ -294,10 +279,10 @@ export const Explore: React.FC = () => {
 
   // Suggested problem statements randomly picked from different industries when 0 results match
   const suggestedProblems = useMemo(() => {
-    if (filteredProblems.length > 0) return [];
+    if (pageProblems.length > 0 || isPageLoading) return [];
 
     // Filter problems that don't match the current filtered set or selected industry
-    const pool = allProblems.filter((p) => {
+    const pool = REAL_PROBLEMS.filter((p) => {
       if (selectedIndustries.length > 0) {
         return !selectedIndustries.some((ind) =>
           p.industry.toLowerCase().includes(ind.toLowerCase())
@@ -306,7 +291,7 @@ export const Explore: React.FC = () => {
       return true;
     });
 
-    const candidates = pool.length > 0 ? pool : allProblems;
+    const candidates = pool.length > 0 ? pool : REAL_PROBLEMS;
 
     // Group by industry to ensure diverse representation across different sectors
     const industryGroups: Record<string, ProblemDoc[]> = {};
@@ -339,14 +324,14 @@ export const Explore: React.FC = () => {
     }
 
     return selected;
-  }, [filteredProblems.length, allProblems, selectedIndustries]);
+  }, [pageProblems.length, isPageLoading, selectedIndustries]);
 
   return (
     <div className="flex flex-col w-full min-h-screen font-['Poppins',sans-serif] text-on-surface bg-surface">
       {/* SEO: CollectionPage schema for Explore */}
       <SEOHead
         title="Explore Verified Problem Statements — Healthcare, AI, Energy & More"
-        description={`Browse ${allProblems.length}+ verified real-world problems across 140+ industry verticals. Discover startup opportunities, pain points, and innovation challenges curated by domain experts.`}
+        description={`Browse ${totalItems}+ verified real-world problems across 140+ industry verticals. Discover startup opportunities, pain points, and innovation challenges curated by domain experts.`}
         canonicalUrl="https://stuckhere.davns.com/explore"
         ogType="website"
         keywords={["problem statements", "startup ideas", "verified problems", "healthcare problems", "AI challenges", "clean energy problems", "fintech pain points", "innovation opportunities"]}
@@ -356,7 +341,7 @@ export const Explore: React.FC = () => {
           "name": "Explore Verified Problem Statements",
           "description": "Browse verified real-world problems across healthcare, AI, energy, fintech and 140+ industries.",
           "url": "https://stuckhere.davns.com/explore",
-          "numberOfItems": allProblems.length,
+          "numberOfItems": totalItems,
           "publisher": {
             "@type": "Organization",
             "name": "Stuckhere",
@@ -735,7 +720,7 @@ export const Explore: React.FC = () => {
             )}
           </div>
 
-          {loading && allProblems.length === 0 ? (
+          {(loading || isPageLoading) && pageProblems.length === 0 ? (
             // Skeleton grid matching card initial load
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
               {Array.from({ length: 4 }).map((_, i) => (

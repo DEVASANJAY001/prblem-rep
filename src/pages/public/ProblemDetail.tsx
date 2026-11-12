@@ -185,6 +185,14 @@ export const ProblemDetail: React.FC = () => {
         }
         setViewsCount((prev) => Math.max(prev, p.views || 0));
 
+        // When canonical doc ID is resolved, record view against it and keep synchronized
+        if (p.id && lastRecordedViewId.current !== p.id) {
+          lastRecordedViewId.current = p.id;
+          recordProblemView(p.id).then((newViews) => {
+            if (newViews) setViewsCount((prev) => Math.max(prev, newViews));
+          });
+        }
+
         // Read exact interest count & state from Firestore
         const userVals = p.validations?.userValidations?.[currentUid] || [];
         const isInterested = Boolean(p.interestedUsers?.includes(currentUid) || userVals.length > 0);
@@ -250,10 +258,10 @@ export const ProblemDetail: React.FC = () => {
     // Record page view only once per unique problem ID.
     // lastRecordedViewId ref survives StrictMode's unmount/remount cycle,
     // so the second effect invocation sees the ID already recorded and skips.
-    if (lastRecordedViewId.current !== cleanId) {
+    if (cleanId && lastRecordedViewId.current !== cleanId) {
       lastRecordedViewId.current = cleanId;
       recordProblemView(cleanId).then((newViews) => {
-        if (newViews) setViewsCount(newViews);
+        if (newViews) setViewsCount((prev) => Math.max(prev, newViews));
       });
     }
 

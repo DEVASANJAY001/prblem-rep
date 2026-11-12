@@ -1211,10 +1211,34 @@ export function savePageContent(
 }
 
 // ─── Realtime Problem Detail Telemetry & Community Helpers ────────
+function findProblemInStorageList(list: ProblemDoc[], idOrSlug: string): ProblemDoc | undefined {
+  if (!idOrSlug) return undefined;
+  const decoded = decodeURIComponent(idOrSlug).trim();
+  let found = list.find((p) => p.id === decoded);
+  if (!found) {
+    found = list.find((p) =>
+      (p.slug && (p.slug === decoded || p.slug.split("--")[0] === decoded)) ||
+      (p.title && slugify(p.title) === decoded) ||
+      (p.title && getProblemSlug(p) === decoded) ||
+      p.id?.toLowerCase() === decoded.toLowerCase()
+    );
+  }
+  if (!found) {
+    found = REAL_PROBLEMS.find((p) =>
+      p.id === decoded ||
+      (p.slug && (p.slug === decoded || p.slug.split("--")[0] === decoded)) ||
+      (p.title && slugify(p.title) === decoded) ||
+      (p.title && getProblemSlug(p) === decoded) ||
+      p.id?.toLowerCase() === decoded.toLowerCase()
+    );
+  }
+  return found;
+}
+
 export function incrementProblemViews(problemId: string): number {
   initializeStorage();
   const list = load<ProblemDoc[]>(STORAGE_KEYS.PROBLEMS, REAL_PROBLEMS);
-  const problem = list.find((p) => p.id === problemId);
+  const problem = findProblemInStorageList(list, problemId);
   if (problem) {
     problem.views = (problem.views || 0) + 1;
     save(STORAGE_KEYS.PROBLEMS, list);
@@ -1237,7 +1261,7 @@ export function toggleLocalValidation(
 } {
   initializeStorage();
   const list = load<ProblemDoc[]>(STORAGE_KEYS.PROBLEMS, REAL_PROBLEMS);
-  const problem = list.find((p) => p.id === problemId);
+  const problem = findProblemInStorageList(list, problemId);
   if (!problem) {
     return {
       validations: { faceCount: 0, greatCount: 0, payCount: 0, buildCount: 0, userValidations: {} },
@@ -1320,7 +1344,7 @@ export function toggleLocalValidation(
 export function recordLocalInterest(problemId: string, userUid: string): number {
   initializeStorage();
   const list = load<ProblemDoc[]>(STORAGE_KEYS.PROBLEMS, REAL_PROBLEMS);
-  const problem = list.find((p) => p.id === problemId);
+  const problem = findProblemInStorageList(list, problemId);
   if (!problem) return 0;
   if (!problem.interestedUsers) problem.interestedUsers = [];
   if (!problem.interestedUsers.includes(userUid)) {
@@ -1338,7 +1362,7 @@ export function addLocalReply(
 ): CommentReply {
   initializeStorage();
   const list = load<ProblemDoc[]>(STORAGE_KEYS.PROBLEMS, REAL_PROBLEMS);
-  const problem = list.find((p) => p.id === problemId);
+  const problem = findProblemInStorageList(list, problemId);
   const newReply: CommentReply = {
     id: `r-${Date.now()}`,
     author: reply.author,
@@ -1369,7 +1393,7 @@ export function toggleLocalCommentLike(
 ): { likes: number; liked: boolean } {
   initializeStorage();
   const list = load<ProblemDoc[]>(STORAGE_KEYS.PROBLEMS, REAL_PROBLEMS);
-  const problem = list.find((p) => p.id === problemId);
+  const problem = findProblemInStorageList(list, problemId);
   let targetObj: { likes: number; likedBy?: string[] } | null = null;
 
   if (problem && problem.comments) {

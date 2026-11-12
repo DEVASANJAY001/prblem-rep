@@ -15,6 +15,8 @@ import {
   arrayRemove,
   limit,
   startAfter,
+  getCountFromServer,
+  orderBy,
   QueryDocumentSnapshot,
   DocumentData,
 } from "firebase/firestore";
@@ -43,6 +45,8 @@ import { cleanIndustryName } from "@/lib/algorithms/domainIntelligence";
 import { getProblemSlug, slugify, buildUniqueSlug } from "@/lib/seoUrls";
 
 const PROBLEMS_COLLECTION = "problems";
+export const STATS_COLLECTION = "stats";
+export const PROBLEMS_STATS_DOC = "problems";
 
 // Multi-tab real-time synchronization (BroadcastChannel only — no storage event listener)
 // IMPORTANT: The window "storage" event listener has been intentionally REMOVED.
@@ -1101,6 +1105,250 @@ export async function fetchExploreProblemsBatch(
   };
 }
 
+/**
+ * Realtime subscription to the approved problems count.
+ * Costs only 1 single document read (or 1 aggregation query), instead of fetching all documents!
+ */
+export function subscribeApprovedProblemsCount(
+  callback: (count: number) => void
+): () => void {
+  // 1. Initial cached or seed count
+  const cachedCount = swrCache.get<number>("total_approved_problems_count");
+  const fallbackCount = REAL_PROBLEMS.filter((p) => p.status === "approved").length;
+  const initialCount = typeof cachedCount === "number" ? cachedCount : fallbackCount;
+  callback(initialCount);
+
+  if (!db || typeof doc !== "function") {
+    return () => {};
+  }
+
+  try {
+    const statsDocRef = doc(db, STATS_COLLECTION, PROBLEMS_STATS_DOC);
+    const unsubscribe = onSnapshot(
+      statsDocRef,
+      async (snap) => {
+        if (snap.exists() && typeof snap.data()?.totalApproved === "number") {
+          const count = snap.data().totalApproved;
+          swrCache.set("total_approved_problems_count", count, 300_000);
+          callback(count);
+        } else {
+          // If stats doc does not exist yet, compute count from server using getCountFromServer (1 metadata read!)
+          try {
+            const colRef = collection(db, PROBLEMS_COLLECTION);
+            const q = query(colRef, where("status", "==", "approved"));
+            const countSnap = await getCountFromServer(q);
+            const serverCount = countSnap.data().count;
+            if (typeof serverCount === "number" && serverCount > 0) {
+              swrCache.set("total_approved_problems_count", serverCount, 300_000);
+              callback(serverCount);
+              // Initialize stats doc so subsequent sessions and clients have 0 aggregation overhead
+              setDoc(statsDocRef, { totalApproved: serverCount, updatedAt: new Date().toISOString() }, { merge: true }).catch(() => {});
+            }
+          } catch (aggErr) {
+            console.warn("[ProblemsCount] Aggregation count fallback:", aggErr);
+          }
+        }
+      },
+      (err) => {
+        console.warn("[ProblemsCount] Snapshot warning:", err?.message);
+      }
+    );
+    return unsubscribe;
+  } catch (err) {
+    console.warn("[ProblemsCount] Subscription failed:", err);
+    return () => {};
+  }
+}
+
+export interface ExplorePageResult {
+  problems: ProblemDoc[];
+  totalCount: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+}
+
+// In-memory cursor map for forward/backward page navigation (page -> DocumentSnapshot cursor)
+const _explorePageCursors = new Map<string, QueryDocumentSnapshot<DocumentData>>();
+
+/**
+ * On-demand 20-card page fetcher for the Explore page "All Problem Statements" grid.
+ * Strict database read optimization:
+ * - Fetches only 20 cards per page.
+ * - Strips heavy fields via extractCardFields (card details only).
+ * - Caches pages in memory/SWR so navigating between pages costs 0 reads.
+ * - Employs startAfter() cursor pagination when moving forward.
+ */
+export async function fetchExploreProblemsPage(
+  page: number = 1,
+  pageSize: number = 20,
+  filters: ExploreProblemsFilter = {}
+): Promise<ExplorePageResult> {
+  const {
+    search = "",
+    selectedIndustries = [],
+    selectedSeverity = "All",
+    verifiedOnly = false,
+    sortBy = "Trending",
+  } = filters;
+
+  const filterKey = `${search.trim().toLowerCase()}_${selectedIndustries.slice().sort().join(",")}_${selectedSeverity}_${verifiedOnly}_${sortBy}`;
+  const cacheKey = `explore_page_${page}_${pageSize}_${filterKey}`;
+
+  // SWR cache check for instant 0ms, 0-read back/forward pagination
+  const cached = swrCache.get<ExplorePageResult>(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
+  const isComplexFilter =
+    Boolean(search.trim()) ||
+    selectedIndustries.length > 1;
+
+  // Case 1: Simple Firestore Query with limit(20) and cursor pagination
+  if (!isComplexFilter && db && typeof collection === "function") {
+    try {
+      const colRef = collection(db, PROBLEMS_COLLECTION);
+      const constraints: any[] = [where("status", "==", "approved")];
+
+      if (selectedIndustries.length === 1) {
+        constraints.push(where("industry", "==", selectedIndustries[0]));
+      }
+      if (selectedSeverity && selectedSeverity !== "All") {
+        constraints.push(where("severity", "==", selectedSeverity.toLowerCase()));
+      }
+      if (verifiedOnly) {
+        constraints.push(where("verified", "==", true));
+      }
+
+      // Check total count for this filtered query via getCountFromServer (1 metadata read)
+      let totalCount = 0;
+      const countKey = `total_count_${filterKey}`;
+      const cachedCount = swrCache.get<number>(countKey);
+      if (typeof cachedCount === "number") {
+        totalCount = cachedCount;
+      } else {
+        const countQuery = query(colRef, ...constraints);
+        const countSnap = await getCountFromServer(countQuery);
+        totalCount = countSnap.data().count;
+        swrCache.set(countKey, totalCount, 180_000);
+      }
+
+      // If page > 1, apply cursor from page - 1
+      if (page > 1) {
+        const prevCursorKey = `${filterKey}_p${page - 1}`;
+        const prevCursor = _explorePageCursors.get(prevCursorKey);
+        if (prevCursor) {
+          constraints.push(startAfter(prevCursor));
+        }
+      }
+
+      constraints.push(limit(pageSize));
+      const q = query(colRef, ...constraints);
+      const snap = await getDocs(q);
+
+      if (!snap.empty) {
+        // Store cursor for next page navigation
+        const currentCursorKey = `${filterKey}_p${page}`;
+        _explorePageCursors.set(currentCursorKey, snap.docs[snap.docs.length - 1]);
+
+        const problems = snap.docs.map((d) => extractCardFields(d.data(), d.id));
+        const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+
+        const result: ExplorePageResult = {
+          problems,
+          totalCount,
+          page,
+          pageSize,
+          totalPages,
+        };
+        swrCache.set(cacheKey, result, 180_000); // 3-minute cache
+        return result;
+      }
+    } catch (err: any) {
+      console.warn("[ExplorePage] Firestore query fallback to local:", err?.message || err);
+    }
+  }
+
+  // Case 2: Filtered / Search / Offline Fallback from local pool
+  let pool = REAL_PROBLEMS.filter((p) => p.status === "approved").map((p) => extractCardFields(p, p.id));
+  const localApproved = getLocalProblems({ status: "approved" });
+  if (localApproved.length > 0) {
+    const map = new Map<string, ProblemDoc>();
+    pool.forEach((p) => map.set(p.id, p));
+    localApproved.forEach((p) => map.set(p.id, extractCardFields(p, p.id)));
+    pool = Array.from(map.values());
+  }
+
+  // Apply filters
+  const filtered = pool.filter((p) => {
+    if (search.trim()) {
+      const s = search.toLowerCase();
+      const matchesTitle = p.title?.toLowerCase().includes(s);
+      const matchesDesc = p.description?.toLowerCase().includes(s);
+      const matchesInd = p.industry?.toLowerCase().includes(s);
+      const matchesTags = p.tags?.some((t) => t.toLowerCase().includes(s));
+      if (!matchesTitle && !matchesDesc && !matchesInd && !matchesTags) {
+        return false;
+      }
+    }
+
+    if (selectedIndustries.length > 0) {
+      const matchesIndustry = selectedIndustries.some((ind) => {
+        const lowerInd = ind.toLowerCase().trim();
+        const pInd = (p.industry || "").toLowerCase().trim();
+        if (lowerInd === "ai") {
+          return pInd === "ai" || pInd.startsWith("ai ") || pInd.endsWith(" ai") || pInd.includes("artificial intelligence");
+        }
+        return pInd.includes(lowerInd) || lowerInd.includes(pInd);
+      });
+      if (!matchesIndustry) return false;
+    }
+
+    if (selectedSeverity !== "All" && p.severity?.toLowerCase() !== selectedSeverity.toLowerCase()) {
+      return false;
+    }
+
+    if (verifiedOnly && !p.verified) {
+      return false;
+    }
+
+    return true;
+  });
+
+  // Apply sorting
+  filtered.sort((a, b) => {
+    if (sortBy === "Highest Pain") {
+      return (b.painScore || 0) - (a.painScore || 0);
+    }
+    if (sortBy === "Newest") {
+      const timeA = a.publishedAt ? new Date(a.publishedAt).getTime() : 0;
+      const timeB = b.publishedAt ? new Date(b.publishedAt).getTime() : 0;
+      return timeB - timeA;
+    }
+    // Default: Trending
+    const scoreA = (a.votes?.upvotes || 0) * 2 + (a.views || 0);
+    const scoreB = (b.votes?.upvotes || 0) * 2 + (b.views || 0);
+    return scoreB - scoreA;
+  });
+
+  const totalCount = filtered.length;
+  const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+  const startIndex = (page - 1) * pageSize;
+  const problems = filtered.slice(startIndex, startIndex + pageSize);
+
+  const result: ExplorePageResult = {
+    problems,
+    totalCount,
+    page,
+    pageSize,
+    totalPages,
+  };
+
+  swrCache.set(cacheKey, result, 180_000);
+  return result;
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // 4. Multiplexed Query Subscription (0 Duplicate Reads)
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1595,22 +1843,55 @@ const _viewedProblemsThisSession = new Set<string>();
 export async function recordProblemView(problemId: string): Promise<number> {
   const localCount = incrementLocalProblemViews(problemId);
 
+  // 1. Resolve canonical document ID from local cache / storage
+  const localDoc = getLocalProblemById(problemId);
+  let canonicalId = localDoc ? localDoc.id : problemId;
+
+  // Sync SWR cache with the new view count immediately
+  if (localDoc) {
+    localDoc.views = Math.max(localDoc.views || 0, localCount);
+    swrCache.set(`problem_${canonicalId}`, localDoc, 300_000);
+    swrCache.set(`problem_${problemId}`, localDoc, 300_000);
+  }
+
   // Only write to Firestore once per problem per session (prevents refresh spam writes)
-  if (_viewedProblemsThisSession.has(problemId)) {
+  if (_viewedProblemsThisSession.has(canonicalId) || _viewedProblemsThisSession.has(problemId)) {
     return localCount;
   }
+  _viewedProblemsThisSession.add(canonicalId);
   _viewedProblemsThisSession.add(problemId);
 
   try {
     if (db && typeof doc === "function") {
-      const problemRef = doc(db, PROBLEMS_COLLECTION, problemId);
-      // Atomic increment write (0 reads). Fire-and-forget — don't await on hot path.
-      updateDoc(problemRef, {
-        views: increment(1),
-        updatedAt: new Date().toISOString(),
-      }).catch((err) => {
-        console.warn("Firestore recordProblemView deferred:", err?.message);
-      });
+      // If canonicalId doesn't start with prob-, try to resolve from Firestore
+      if (!canonicalId.startsWith("prob-")) {
+        try {
+          const colRef = collection(db, PROBLEMS_COLLECTION);
+          const q = query(colRef, where("status", "==", "approved"), limit(100));
+          const querySnap = await getDocs(q);
+          const match = querySnap.docs.find((d) => {
+            const dData = d.data() as ProblemDoc;
+            const s = dData.slug || (dData.title ? slugify(dData.title) : "");
+            return s === problemId || d.id === problemId || (dData.title && getProblemSlug({ ...dData, id: d.id }) === problemId);
+          });
+          if (match) {
+            canonicalId = match.id;
+          }
+        } catch (findErr) {
+          console.warn("Could not resolve doc ID for view increment:", findErr);
+        }
+      }
+
+      if (canonicalId && canonicalId.startsWith("prob-")) {
+        const problemRef = doc(db, PROBLEMS_COLLECTION, canonicalId);
+        // Atomic increment write (0 reads). Fire-and-forget — don't await on hot path.
+        updateDoc(problemRef, {
+          views: increment(1),
+          updatedAt: new Date().toISOString(),
+        }).catch((err) => {
+          console.warn("Firestore recordProblemView deferred:", err?.message);
+        });
+      }
     }
   } catch (err) {
     console.warn("Firestore recordProblemView error:", err);
@@ -1634,9 +1915,11 @@ export async function toggleCommunityValidation(
   const updatedProb = getLocalProblemById(problemId);
   if (updatedProb) syncProblemCache(updatedProb);
 
+  const canonicalId = updatedProb ? updatedProb.id : problemId;
+
   try {
-    if (db && typeof doc === "function") {
-      const problemRef = doc(db, PROBLEMS_COLLECTION, problemId);
+    if (db && typeof doc === "function" && canonicalId.startsWith("prob-")) {
+      const problemRef = doc(db, PROBLEMS_COLLECTION, canonicalId);
       // Direct validations and interested sync
       await updateDoc(problemRef, {
         validations: result.validations,
@@ -1676,16 +1959,19 @@ export async function recordUserInterest(
     return count;
   }
 
+  const localDoc = getLocalProblemById(problemId);
+  const canonicalId = localDoc ? localDoc.id : problemId;
+
   // Deduplicate per user + problem + action in the current session
-  const dedupeKey = `${problemId}_${userUid}_${action}`;
+  const dedupeKey = `${canonicalId}_${userUid}_${action}`;
   if (sessionInterestDedupe.has(dedupeKey)) {
     return count;
   }
   sessionInterestDedupe.add(dedupeKey);
 
   try {
-    if (db && typeof doc === "function") {
-      const problemRef = doc(db, PROBLEMS_COLLECTION, problemId);
+    if (db && typeof doc === "function" && canonicalId.startsWith("prob-")) {
+      const problemRef = doc(db, PROBLEMS_COLLECTION, canonicalId);
       // Atomic arrayUnion and increment write with 0 reads!
       await updateDoc(problemRef, {
         interestedUsers: arrayUnion(userUid),
