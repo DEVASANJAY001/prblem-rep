@@ -185,14 +185,6 @@ export const ProblemDetail: React.FC = () => {
         }
         setViewsCount((prev) => Math.max(prev, p.views || 0));
 
-        // When canonical doc ID is resolved, record view against it and keep synchronized
-        if (p.id && lastRecordedViewId.current !== p.id) {
-          lastRecordedViewId.current = p.id;
-          recordProblemView(p.id).then((newViews) => {
-            if (newViews) setViewsCount((prev) => Math.max(prev, newViews));
-          });
-        }
-
         // Read exact interest count & state from Firestore
         const userVals = p.validations?.userValidations?.[currentUid] || [];
         const isInterested = Boolean(p.interestedUsers?.includes(currentUid) || userVals.length > 0);

@@ -1,10 +1,10 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ProblemDoc } from "@/types";
 import { REAL_COMPANIES } from "@/data/realProductionData";
 import { CompanyLogo } from "@/components/ui/CompanyLogo";
 import { useAuth } from "@/contexts/AuthContext";
-import { isProblemBookmarked, toggleBookmark } from "@/lib/storage";
+import { isProblemBookmarked, toggleBookmark, getProblemById as getLocalProblemById } from "@/lib/storage";
 import { voteProblem } from "@/lib/firebase/services/problemsService";
 import { getProblemDetailUrl } from "@/lib/seoUrls";
 import { Eye, ShieldCheck, ThumbsUp, Bookmark } from "lucide-react";
@@ -93,8 +93,40 @@ export const TrendingCarouselCard: React.FC<TrendingCarouselCardProps> = React.m
     return matchedList;
   }, [problem.attachedCompanyNames, problem.tags]);
 
-  // Views text (only eye and count)
-  const rawViews = problem.views ?? 0;
+  // Views text connected in real time
+  const [liveViews, setLiveViews] = useState<number>(() => {
+    const local = getLocalProblemById(problem.id);
+    return Math.max(problem.views ?? 0, local?.views ?? 0);
+  });
+
+  useEffect(() => {
+    const syncLatest = () => {
+      const local = getLocalProblemById(problem.id);
+      if (local && typeof local.views === "number") {
+        setLiveViews((prev) => Math.max(prev, local.views || 0));
+      }
+    };
+    syncLatest();
+
+    const handleMetricsEvent = (e: any) => {
+      const targetId = e?.detail?.problemId || e?.data?.problemId;
+      if (!targetId || targetId === problem.id || targetId === problem.slug) {
+        syncLatest();
+      }
+    };
+
+    window.addEventListener("problem_metrics_updated", handleMetricsEvent);
+    return () => {
+      window.removeEventListener("problem_metrics_updated", handleMetricsEvent);
+    };
+  }, [problem.id, problem.slug]);
+
+  useEffect(() => {
+    const local = getLocalProblemById(problem.id);
+    setLiveViews(Math.max(problem.views ?? 0, local?.views ?? 0));
+  }, [problem]);
+
+  const rawViews = liveViews;
   const viewsText = rawViews >= 1000 ? `${(rawViews / 1000).toFixed(1)}K` : `${rawViews}`;
 
   const isCritical = painNormalized >= 90;

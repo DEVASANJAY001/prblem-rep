@@ -799,10 +799,49 @@ export interface TrendingProblemsPageResult {
  * Heavy documents (with venture blueprints, market landscape, etc.) are stripped.
  */
 function extractCardFields(raw: any, id: string): ProblemDoc {
+  const probId = id || raw.id;
+  const localDoc = getLocalProblemById(probId);
+
+  const views = Math.max(
+    typeof raw.views === "number" ? raw.views : 0,
+    typeof localDoc?.views === "number" ? localDoc.views : 0
+  );
+
+  const faceCount = Math.max(
+    raw.validations?.faceCount || 0,
+    localDoc?.validations?.faceCount || 0
+  );
+  const greatCount = Math.max(
+    raw.validations?.greatCount || 0,
+    localDoc?.validations?.greatCount || 0
+  );
+  const payCount = Math.max(
+    raw.validations?.payCount || 0,
+    localDoc?.validations?.payCount || 0
+  );
+  const buildCount = Math.max(
+    raw.validations?.buildCount || 0,
+    localDoc?.validations?.buildCount || 0
+  );
+
+  const rawCommentsCount =
+    typeof raw.commentsCount === "number"
+      ? raw.commentsCount
+      : Array.isArray(raw.comments)
+      ? raw.comments.length
+      : 0;
+  const localCommentsCount =
+    typeof localDoc?.commentsCount === "number"
+      ? localDoc.commentsCount
+      : Array.isArray(localDoc?.comments)
+      ? localDoc.comments.length
+      : 0;
+  const commentsCount = Math.max(rawCommentsCount, localCommentsCount);
+
   return {
-    id: id || raw.id,
+    id: probId,
     title: raw.title || "Untitled Problem",
-    slug: raw.slug || (raw.title ? getProblemSlug({ id: id || raw.id, title: raw.title, slug: raw.slug }) : ""),
+    slug: raw.slug || (raw.title ? getProblemSlug({ id: probId, title: raw.title, slug: raw.slug }) : ""),
     description: raw.description || "",
     whenItHappens: raw.whenItHappens || "",
     whyFrustrating: raw.whyFrustrating || "",
@@ -829,23 +868,16 @@ function extractCardFields(raw: any, id: string): ProblemDoc {
     publishedAt: raw.publishedAt || null,
     updatedAt: raw.updatedAt || new Date().toISOString(),
     tags: Array.isArray(raw.tags) ? raw.tags : [],
-    views: typeof raw.views === "number" ? raw.views : 0,
+    views,
     attachedCompanyNames: Array.isArray(raw.attachedCompanyNames) ? raw.attachedCompanyNames : [],
-    validations: raw.validations
-      ? {
-          faceCount: raw.validations.faceCount || 0,
-          greatCount: raw.validations.greatCount || 0,
-          payCount: raw.validations.payCount || 0,
-          buildCount: raw.validations.buildCount || 0,
-          userValidations: raw.validations.userValidations,
-        }
-      : undefined,
-    commentsCount:
-      typeof raw.commentsCount === "number"
-        ? raw.commentsCount
-        : Array.isArray(raw.comments)
-        ? raw.comments.length
-        : 0,
+    validations: {
+      faceCount,
+      greatCount,
+      payCount,
+      buildCount,
+      userValidations: raw.validations?.userValidations || localDoc?.validations?.userValidations,
+    },
+    commentsCount,
     comments: Array.isArray(raw.comments)
       ? raw.comments.slice(0, 5).map((c: any) => ({
           id: c.id,
@@ -1695,6 +1727,16 @@ export async function addComment(
     console.warn("Firestore addComment error:", error);
   }
 
+  // Dispatch metrics update so all cards update comments count in real time
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(
+      new CustomEvent("problem_metrics_updated", {
+        detail: { problemId: local ? local.id : problemId, commentsCount: totalCount },
+      })
+    );
+  }
+  broadcastSyncEvent({ type: "PROBLEM_METRICS_UPDATED", problemId: local ? local.id : problemId });
+
   return newComment;
 }
 
@@ -1841,25 +1883,45 @@ export async function toggleCommentCompanyStatus(
 const _viewedProblemsThisSession = new Set<string>();
 
 export async function recordProblemView(problemId: string): Promise<number> {
-  const localCount = incrementLocalProblemViews(problemId);
-
-  // 1. Resolve canonical document ID from local cache / storage
+  // 1. Resolve canonical document ID & slug from local cache / storage
   const localDoc = getLocalProblemById(problemId);
   let canonicalId = localDoc ? localDoc.id : problemId;
+  const docSlug = localDoc?.slug || "";
+
+  // Check if ALREADY recorded in this browser session (strictly prevent +2 increments)
+  if (
+    _viewedProblemsThisSession.has(canonicalId) ||
+    _viewedProblemsThisSession.has(problemId) ||
+    (docSlug && _viewedProblemsThisSession.has(docSlug))
+  ) {
+    return localDoc?.views || 1;
+  }
+
+  // Mark viewed immediately so concurrent calls in same turn or StrictMode double-mount are blocked
+  _viewedProblemsThisSession.add(canonicalId);
+  _viewedProblemsThisSession.add(problemId);
+  if (docSlug) _viewedProblemsThisSession.add(docSlug);
+
+  // 2. Increment local count exactly ONCE (+1)
+  const localCount = incrementLocalProblemViews(canonicalId);
 
   // Sync SWR cache with the new view count immediately
   if (localDoc) {
-    localDoc.views = Math.max(localDoc.views || 0, localCount);
+    localDoc.views = localCount;
     swrCache.set(`problem_${canonicalId}`, localDoc, 300_000);
     swrCache.set(`problem_${problemId}`, localDoc, 300_000);
+    if (docSlug) swrCache.set(`problem_${docSlug}`, localDoc, 300_000);
   }
 
-  // Only write to Firestore once per problem per session (prevents refresh spam writes)
-  if (_viewedProblemsThisSession.has(canonicalId) || _viewedProblemsThisSession.has(problemId)) {
-    return localCount;
+  // Dispatch custom event to notify all cards in the app in real time
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(
+      new CustomEvent("problem_metrics_updated", {
+        detail: { problemId: canonicalId, slug: docSlug, views: localCount },
+      })
+    );
   }
-  _viewedProblemsThisSession.add(canonicalId);
-  _viewedProblemsThisSession.add(problemId);
+  broadcastSyncEvent({ type: "PROBLEM_METRICS_UPDATED", problemId: canonicalId });
 
   try {
     if (db && typeof doc === "function") {
@@ -1916,6 +1978,16 @@ export async function toggleCommunityValidation(
   if (updatedProb) syncProblemCache(updatedProb);
 
   const canonicalId = updatedProb ? updatedProb.id : problemId;
+
+  // Dispatch metrics update to all cards
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(
+      new CustomEvent("problem_metrics_updated", {
+        detail: { problemId: canonicalId, validations: result.validations },
+      })
+    );
+  }
+  broadcastSyncEvent({ type: "PROBLEM_METRICS_UPDATED", problemId: canonicalId });
 
   try {
     if (db && typeof doc === "function" && canonicalId.startsWith("prob-")) {

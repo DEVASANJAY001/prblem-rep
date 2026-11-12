@@ -1,10 +1,10 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ProblemDoc } from "@/types";
 import { REAL_COMPANIES } from "@/data/realProductionData";
 import { CompanyLogo } from "@/components/ui/CompanyLogo";
 import { useAuth } from "@/contexts/AuthContext";
-import { isProblemBookmarked, toggleBookmark } from "@/lib/storage";
+import { isProblemBookmarked, toggleBookmark, getProblemById as getLocalProblemById } from "@/lib/storage";
 import { voteProblem } from "@/lib/firebase/services/problemsService";
 import { getProblemDetailUrl } from "@/lib/seoUrls";
 import { ThumbsUp, Bookmark, ShieldCheck, Eye, Hand, Hammer, MessageSquare } from "lucide-react";
@@ -99,18 +99,91 @@ export const TrendingProblemCard: React.FC<TrendingProblemCardProps> = React.mem
   const isCritical = painNormalized >= 90;
   const isSevere = painNormalized >= 75 && painNormalized < 90;
 
-  // Pure Organic Database counts
-  const rawViews = problem.views ?? 0;
-  const views = rawViews >= 1000 ? `${(rawViews / 1000).toFixed(1)}K` : `${rawViews}`;
+  // ── Connected Realtime Metrics (Views, Facing, Building, Comments) ──
+  const [liveViews, setLiveViews] = useState<number>(() => {
+    const local = getLocalProblemById(problem.id);
+    return Math.max(problem.views ?? 0, local?.views ?? 0);
+  });
 
-  const faceCount = Math.max(problem.validations?.faceCount ?? 0, likesCount);
+  const [liveFace, setLiveFace] = useState<number>(() => {
+    const local = getLocalProblemById(problem.id);
+    return Math.max(problem.validations?.faceCount ?? 0, local?.validations?.faceCount ?? 0, initialUpvotes);
+  });
+
+  const [liveBuild, setLiveBuild] = useState<number>(() => {
+    const local = getLocalProblemById(problem.id);
+    return Math.max(problem.validations?.buildCount ?? 0, local?.validations?.buildCount ?? 0);
+  });
+
+  const [liveComments, setLiveComments] = useState<number>(() => {
+    const local = getLocalProblemById(problem.id);
+    const baseComments = Math.max(
+      problem.commentsCount ?? 0,
+      (problem.comments?.length ?? 0) + (problem.comments ?? []).reduce((acc, c) => acc + (c.replies?.length ?? 0), 0)
+    );
+    const localComments = local ? Math.max(
+      local.commentsCount ?? 0,
+      (local.comments?.length ?? 0) + (local.comments ?? []).reduce((acc, c) => acc + (c.replies?.length ?? 0), 0)
+    ) : 0;
+    return Math.max(baseComments, localComments);
+  });
+
+  useEffect(() => {
+    const syncLatestMetrics = () => {
+      const local = getLocalProblemById(problem.id);
+      if (local) {
+        if (typeof local.views === "number") {
+          setLiveViews((prev) => Math.max(prev, local.views || 0));
+        }
+        if (local.validations) {
+          setLiveFace((prev) => Math.max(prev, local.validations?.faceCount || 0, likesCount));
+          setLiveBuild((prev) => Math.max(prev, local.validations?.buildCount || 0));
+        }
+        const cCount = Math.max(
+          local.commentsCount ?? 0,
+          (local.comments?.length ?? 0) + (local.comments ?? []).reduce((acc, c) => acc + (c.replies?.length ?? 0), 0)
+        );
+        setLiveComments((prev) => Math.max(prev, cCount));
+      }
+    };
+
+    syncLatestMetrics();
+
+    const handleMetricsEvent = (e: any) => {
+      const targetId = e?.detail?.problemId || e?.data?.problemId;
+      if (!targetId || targetId === problem.id || targetId === problem.slug) {
+        syncLatestMetrics();
+      }
+    };
+
+    window.addEventListener("problem_metrics_updated", handleMetricsEvent);
+
+    return () => {
+      window.removeEventListener("problem_metrics_updated", handleMetricsEvent);
+    };
+  }, [problem.id, problem.slug, likesCount]);
+
+  useEffect(() => {
+    const local = getLocalProblemById(problem.id);
+    setLiveViews(Math.max(problem.views ?? 0, local?.views ?? 0));
+    setLiveFace(Math.max(problem.validations?.faceCount ?? 0, local?.validations?.faceCount ?? 0, likesCount));
+    setLiveBuild(Math.max(problem.validations?.buildCount ?? 0, local?.validations?.buildCount ?? 0));
+    const baseComments = Math.max(
+      problem.commentsCount ?? 0,
+      (problem.comments?.length ?? 0) + (problem.comments ?? []).reduce((acc, c) => acc + (c.replies?.length ?? 0), 0)
+    );
+    const localComments = local ? Math.max(
+      local.commentsCount ?? 0,
+      (local.comments?.length ?? 0) + (local.comments ?? []).reduce((acc, c) => acc + (c.replies?.length ?? 0), 0)
+    ) : 0;
+    setLiveComments(Math.max(baseComments, localComments));
+  }, [problem]);
+
+  const views = liveViews >= 1000 ? `${(liveViews / 1000).toFixed(1)}K` : `${liveViews}`;
+  const faceCount = Math.max(liveFace, likesCount);
   const faceText = faceCount >= 1000 ? `${(faceCount / 1000).toFixed(1)}K` : `${faceCount}`;
-
-  const comments = Math.max(
-    problem.commentsCount ?? 0,
-    (problem.comments?.length ?? 0) + (problem.comments ?? []).reduce((acc, c) => acc + (c.replies?.length ?? 0), 0)
-  );
-  const buildingCount = problem.validations?.buildCount ?? 0;
+  const buildingCount = liveBuild;
+  const comments = liveComments;
 
   const gradientId = `pain-glow-dt-${problem.id.replace(/[^a-zA-Z0-9]/g, "")}`;
   const mobGradientId = `pain-glow-mob-${problem.id.replace(/[^a-zA-Z0-9]/g, "")}`;
