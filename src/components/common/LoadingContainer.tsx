@@ -1,50 +1,58 @@
 import React from "react";
 
-interface LoadingContainerProps {
+export interface LoadingContainerProps {
   message?: string;
   submessage?: string;
   minHeight?: string;
+  transparent?: boolean;
 }
 
 /**
- * High-fidelity glassmorphic loading fetching container animation
+ * Transparent, clean loading animation.
+ * Completely container-less by default to blend seamlessly with the page background.
  */
 export const LoadingContainer: React.FC<LoadingContainerProps> = ({
-  message = "Fetching live data from Cloud Firestore...",
-  submessage = "Synchronizing verified real-time records",
-  minHeight = "min-h-[280px]",
+  message = "Loading...",
+  submessage,
+  minHeight = "min-h-[300px]",
+  transparent = true,
 }) => {
+  if (transparent) {
+    return (
+      <div
+        className={`w-full ${minHeight} flex flex-col items-center justify-center p-6 bg-transparent`}
+      >
+        {/* Sleek Modern Spinner Animation */}
+        <div className="relative flex items-center justify-center mb-3">
+          <div className="w-9 h-9 rounded-full border-2 border-primary/20 border-t-primary animate-spin" />
+        </div>
+
+        {/* Minimal Loading Text */}
+        <span className="text-sm font-medium text-on-surface-variant animate-pulse tracking-wide">
+          {message || "Loading..."}
+        </span>
+      </div>
+    );
+  }
+
+  // Framed glassmorphic container (only if explicitly requested with transparent={false})
   return (
     <div
       className={`w-full ${minHeight} flex flex-col items-center justify-center p-8 rounded-2xl bg-surface-container-lowest/60 backdrop-blur-xl border border-outline-variant/30 relative overflow-hidden shadow-sm`}
     >
-      {/* Background Animated Gradient Shimmer Wave */}
-      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/5 to-transparent -translate-x-full animate-[shimmer_2s_infinite] pointer-events-none" />
-
-      {/* Center Radar / Orbital Glow Pulse */}
-      <div className="relative flex items-center justify-center mb-5">
-        <div className="absolute w-16 h-16 rounded-full bg-primary/20 animate-ping opacity-40" />
-        <div className="absolute w-12 h-12 rounded-full bg-secondary/15 animate-pulse" />
-        <div className="relative w-10 h-10 rounded-xl bg-primary text-white flex items-center justify-center shadow-lg shadow-primary/30">
-          <span className="material-symbols-outlined text-[22px] animate-spin">
-            progress_activity
-          </span>
-        </div>
+      <div className="relative flex items-center justify-center mb-4">
+        <div className="w-10 h-10 rounded-full border-2 border-primary/20 border-t-primary animate-spin" />
       </div>
 
-      {/* Loading Text */}
-      <div className="text-center space-y-1.5 z-10 max-w-sm">
-        <h4 className="font-headline-sm text-base font-bold text-on-surface tracking-tight">
+      <div className="text-center space-y-1 z-10 max-w-sm">
+        <h4 className="font-headline-sm text-sm font-bold text-on-surface tracking-tight">
           {message}
         </h4>
-        <p className="font-body-md text-xs text-on-surface-variant leading-relaxed">
-          {submessage}
-        </p>
-      </div>
-
-      {/* Mini Progress Pulse Bar */}
-      <div className="w-36 h-1 bg-surface-container-high rounded-full overflow-hidden mt-4">
-        <div className="w-full h-full bg-gradient-to-r from-primary via-secondary to-primary animate-[indeterminate_1.5s_infinite_linear] origin-left" />
+        {submessage && (
+          <p className="font-body-md text-xs text-on-surface-variant leading-relaxed">
+            {submessage}
+          </p>
+        )}
       </div>
     </div>
   );
@@ -98,16 +106,16 @@ export const TableSkeleton: React.FC<{ rows?: number }> = ({ rows = 5 }) => {
       <div className="p-4 border-b border-outline-variant/20 bg-surface-container-low flex items-center gap-4 animate-pulse">
         <div className="h-4 w-1/4 rounded bg-surface-container-high" />
         <div className="h-4 w-1/6 rounded bg-surface-container-high" />
+        <div className="h-4 w-1/5 rounded bg-surface-container-high" />
         <div className="h-4 w-1/6 rounded bg-surface-container-high" />
-        <div className="h-4 w-1/6 rounded bg-surface-container-high ml-auto" />
       </div>
-      <div className="divide-y divide-outline-variant/15">
+      <div className="divide-y divide-outline-variant/10">
         {Array.from({ length: rows }).map((_, i) => (
-          <div key={i} className="p-4.5 flex items-center gap-4 animate-pulse">
-            <div className="h-4 w-1/3 rounded bg-surface-container" />
+          <div key={i} className="p-4 flex items-center gap-4 animate-pulse">
+            <div className="h-4 w-1/4 rounded bg-surface-container" />
             <div className="h-4 w-1/6 rounded bg-surface-container" />
+            <div className="h-4 w-1/5 rounded bg-surface-container" />
             <div className="h-4 w-1/6 rounded bg-surface-container" />
-            <div className="h-8 w-24 rounded-lg bg-surface-container-high ml-auto" />
           </div>
         ))}
       </div>

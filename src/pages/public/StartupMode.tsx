@@ -558,11 +558,11 @@ export const StartupMode: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="mx-auto max-w-4xl px-4 py-20">
+      <div className="mx-auto max-w-4xl px-4 py-24">
         <LoadingContainer
-          message="Loading Startup Workspace..."
-          submessage="Synthesizing unit economics, ICP personas, and MVP hypotheses."
+          message="Loading..."
           minHeight="min-h-[400px]"
+          transparent
         />
       </div>
     );

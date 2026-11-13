@@ -605,11 +605,11 @@ export const ProblemDetail: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="mx-auto max-w-4xl px-4 py-20">
+      <div className="mx-auto max-w-4xl px-4 py-24">
         <LoadingContainer
-          message="Loading problem dossier from Cloud Firestore..."
-          submessage="Retrieving multi-metric AI analysis, evidence links, and community telemetry."
+          message="Loading..."
           minHeight="min-h-[400px]"
+          transparent
         />
       </div>
     );

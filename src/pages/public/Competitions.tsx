@@ -138,9 +138,9 @@ export const Competitions: React.FC = () => {
       {/* Grid of Competition Cards */}
       {loading ? (
         <LoadingContainer
-          message="Fetching active competitions & problem bounties from Cloud Firestore..."
-          submessage="Retrieving live prize pools, deadlines, and participant telemetry."
+          message="Loading..."
           minHeight="min-h-[300px]"
+          transparent
         />
       ) : competitionsList.length === 0 ? (
         <div className="text-center py-16 bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 text-xs text-zinc-500">

@@ -116,7 +116,7 @@ const PageLoader = () => (
     <div className="flex min-h-[50vh] w-full items-center justify-center">
       <div className="flex flex-col items-center gap-3">
         <div className="h-7 w-7 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-        <span className="text-xs font-semibold text-on-surface-variant">Switching page...</span>
+        <span className="text-xs font-semibold text-on-surface-variant animate-pulse">Loading...</span>
       </div>
     </div>
   </div>
