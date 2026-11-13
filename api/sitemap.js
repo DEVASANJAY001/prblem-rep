@@ -362,15 +362,64 @@ const FALLBACK_PROBLEMS = [
     "id": "prob-7-zqwy",
     "title": "Ambulance Delays Cannot Be Traced to Their Cause Because Call, Dispatch, Travel and Hospital-Handover Times Are Not Analysed Together",
     "startup": true
+  },
+  {
+    "id": "prob-1",
+    "title": "Data Interoperability Failure in Rural Clinics",
+    "startup": true
+  },
+  {
+    "id": "prob-2",
+    "title": "Fragmented patient medical records across incompatible EHR vendor architectures",
+    "startup": false
+  },
+  {
+    "id": "prob-3",
+    "title": "Subsurface hydrogen pipeline micro-leaks escaping standard optical gas detection",
+    "startup": false
+  },
+  {
+    "id": "prob-4",
+    "title": "Silent sensor occlusion and false-positive phantom braking in autonomous freight trucks",
+    "startup": false
+  },
+  {
+    "id": "prob-5",
+    "title": "High-latency cross-border B2B settlement fees crushing emerging market SMB exporters",
+    "startup": false
+  },
+  {
+    "id": "prob-6",
+    "title": "Subsurface soil carbon measurement uncertainty preventing farmer carbon credit verification",
+    "startup": false
   }
 ];
 
 const FALLBACK_INDUSTRIES = [
-  "healthcare", "ai", "clean-energy", "fintech", "agriculture", "logistics",
-  "manufacturing", "biotech", "supply-chain", "cybersecurity", "education",
-  "construction", "aerospace", "robotics", "defense", "quantum-computing",
-  "legaltech", "ecommerce", "mobility", "web3", "food-security", "cleantech",
-  "machine-learning", "defi"
+  "healthcare",
+  "cybersecurity",
+  "education",
+  "construction",
+  "aerospace",
+  "robotics",
+  "defense",
+  "quantum-computing",
+  "legaltech",
+  "ecommerce",
+  "mobility",
+  "ai",
+  "web3",
+  "food-security",
+  "cleantech",
+  "machine-learning",
+  "defi",
+  "clean-energy",
+  "fintech",
+  "agriculture",
+  "logistics",
+  "manufacturing",
+  "biotech",
+  "supply-chain"
 ];
 
 export default async function handler(req, res) {
@@ -598,6 +647,6 @@ ${industryUrls
   res.setHeader("Content-Type", "application/xml; charset=utf-8");
   res.setHeader("X-Content-Type-Options", "nosniff");
   // Cache in Vercel Edge for 1 hour, serve stale up to 24 hours while revalidating in background
-  res.setHeader("Cache-Control", "public, s-maxage=3600, stale-while-revalidate=86400");
+  res.setHeader("Cache-Control", "public, max-age=0, s-maxage=600, must-revalidate");
   res.status(200).send(xml);
 }

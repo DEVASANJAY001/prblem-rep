@@ -1,7 +1,7 @@
-# ─────────────────────────────────────────────────────────────
+# -------------------------------------------------------------
 # Stuckhere Robots Manifest (GEO & SEO Optimized)
-# Updated: Oct 2026
-# ─────────────────────────────────────────────────────────────
+# Updated: Nov 2026
+# -------------------------------------------------------------
 
 # 1. ALLOW AI Search & Citation Engines (Perplexity AI & ChatGPT Search)
 # Enables AI search engines to discover, link, and cite Stuckhere in answers
