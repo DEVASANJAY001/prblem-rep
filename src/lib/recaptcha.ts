@@ -15,11 +15,13 @@ declare global {
 
 let scriptLoadingPromise: Promise<void> | null = null;
 
+const DEFAULT_RECAPTCHA_SITE_KEY = "6Le5ByUuAAAAAFyUN-9UhYpU2xMClx00HPpy_wYa";
+
 /**
- * Returns the configured reCAPTCHA v3 site key from environment variables.
+ * Returns the configured reCAPTCHA v3 site key from environment variables (or registered fallback).
  */
 export function getRecaptchaSiteKey(): string {
-  return (import.meta.env.VITE_RECAPTCHA_SITE_KEY || "").trim();
+  return (import.meta.env.VITE_RECAPTCHA_SITE_KEY || DEFAULT_RECAPTCHA_SITE_KEY).trim();
 }
 
 /**
