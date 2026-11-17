@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Lock, ArrowRight, Shield } from "lucide-react";
 import { HumanVerification } from "@/components/common/HumanVerification";
+import { executeRecaptcha } from "@/lib/recaptcha";
 
 export const AdminLogin: React.FC = () => {
   const navigate = useNavigate();
@@ -20,13 +21,13 @@ export const AdminLogin: React.FC = () => {
       setError("Please enter your admin credentials.");
       return;
     }
-    if (!isHumanVerified) {
-      setError("Please complete the 'I am not a robot' verification check.");
-      return;
-    }
     setLoading(true);
     setError(null);
     try {
+      if (!isHumanVerified) {
+        await executeRecaptcha("admin_login");
+        setIsHumanVerified(true);
+      }
       await adminLogin(email, password);
       navigate("/admin");
     } catch (err: any) {
@@ -108,6 +109,7 @@ export const AdminLogin: React.FC = () => {
 
             <div className="pt-1">
               <HumanVerification
+                action="admin_login"
                 onVerify={() => {
                   setIsHumanVerified(true);
                   setError(null);

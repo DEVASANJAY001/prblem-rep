@@ -4,6 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { validateAndUseAdminInvite } from "@/lib/storage";
 import { Key, ShieldCheck, ArrowRight, ArrowLeft, Lock, Mail, User, Zap } from "lucide-react";
 import { HumanVerification } from "@/components/common/HumanVerification";
+import { executeRecaptcha } from "@/lib/recaptcha";
 
 export const AdminRegister: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -29,13 +30,14 @@ export const AdminRegister: React.FC = () => {
       setError("Please provide all required registration fields and a valid token.");
       return;
     }
-    if (!isHumanVerified) {
-      setError("Please complete the 'I am not a robot' verification check.");
-      return;
-    }
 
     setLoading(true);
     setError(null);
+
+    if (!isHumanVerified) {
+      await executeRecaptcha("admin_register");
+      setIsHumanVerified(true);
+    }
 
     // Validate invite token
     const isValid = validateAndUseAdminInvite(token.trim());
@@ -141,6 +143,7 @@ export const AdminRegister: React.FC = () => {
 
           <div className="pt-1">
             <HumanVerification
+              action="admin_register"
               onVerify={() => {
                 setIsHumanVerified(true);
                 setError(null);

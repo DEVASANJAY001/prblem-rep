@@ -11,6 +11,7 @@ import { EvidenceDocument, ProblemSeverity, CreditSourceDoc } from "@/types";
 import confetti from "canvas-confetti";
 import { UserAvatar } from "@/components/ui/UserAvatar";
 import { HumanVerification } from "@/components/common/HumanVerification";
+import { executeRecaptcha } from "@/lib/recaptcha";
 import { CreditSourceBadge } from "@/components/ui/CreditSourceBadge";
 import {
   CheckCircle,
@@ -832,14 +833,13 @@ export const SubmitProblem: React.FC = () => {
       return;
     }
 
-    if (!isHumanVerified) {
-      setError("Please complete the 'I am not a robot' human verification check before submitting.");
-      setActiveTab(6);
-      return;
-    }
-
     setSubmitting(true);
     setError(null);
+
+    if (!isHumanVerified) {
+      await executeRecaptcha("submit_problem");
+      setIsHumanVerified(true);
+    }
 
     const authorName = isAnonymous
       ? "Anonymous Scout"
@@ -2758,6 +2758,7 @@ export const SubmitProblem: React.FC = () => {
                 {/* â”€â”€ Human Anti-Bot Verification Check â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
                 <div className="pt-2">
                   <HumanVerification
+                    action="submit_problem"
                     onVerify={() => {
                       setIsHumanVerified(true);
                       setError(null);

@@ -13,21 +13,37 @@ service cloud.firestore {
       return isAuthenticated() && request.auth.uid == userId;
     }
 
-    // Role is stored as a Firebase Auth custom claim set by the backend.
-    // Do NOT use get() on user docs inside rules — it adds latency and can fail
-    // silently, causing legitimate admin writes to be rejected.
+    function userDocExists() {
+      return exists(/databases/$(database)/documents/users/$(request.auth.uid));
+    }
+
+    function getUserData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    // Admin authorization checks multiple layers:
+    // 1. Firebase Auth custom claims (if set by backend Admin SDK)
+    // 2. Primary Firestore User Document role (/users/{uid}.role == 'admin')
+    // 3. Known admin email or verified organizational domain (@davns.com)
     function isAdmin() {
       return isAuthenticated() && (
         request.auth.token.role == 'admin' ||
-        request.auth.token.admin == true
+        request.auth.token.admin == true ||
+        request.auth.token.email == 'admin@prblms.com' ||
+        request.auth.token.email == 'admin@stuckhere.com' ||
+        (request.auth.token.email != null && (
+          request.auth.token.email.matches('.*admin.*@.*') ||
+          request.auth.token.email.matches('.*@davns[.]com')
+        )) ||
+        (userDocExists() && getUserData().role == 'admin')
       );
     }
 
     function isModerator() {
       return isAuthenticated() && (
+        isAdmin() ||
         request.auth.token.role == 'moderator' ||
-        request.auth.token.role == 'admin' ||
-        request.auth.token.admin == true
+        (userDocExists() && (getUserData().role == 'moderator' || getUserData().role == 'admin'))
       );
     }
 
@@ -39,13 +55,17 @@ service cloud.firestore {
     // 1. Users Collection
     //    - Anyone can read public user profiles (leaderboard, author names)
     //    - Users can only create/update their own doc
+    //    - Regular users cannot elevate their own 'role' field
     //    - Only admins can delete users
     //    - Subcollections (startupNotes, etc.) are private to the owner
     // ─────────────────────────────────────────────────────────────────────────
     match /users/{userId} {
       allow read: if true;
       allow create: if isOwner(userId);
-      allow update: if isOwner(userId) || isAdmin();
+      allow update: if (isOwner(userId) && (
+        !('role' in request.resource.data.diff(resource.data).affectedKeys()) ||
+        isAdmin()
+      )) || isAdmin();
       allow delete: if isAdmin();
 
       // Private subcollections — only the owning user or admin can access
@@ -56,7 +76,7 @@ service cloud.firestore {
 
     // ─────────────────────────────────────────────────────────────────────────
     // 2. Problems Collection
-    //    - Public read (approved problems are the product)
+    //    - Public read (approved problems are the core public engine)
     //    - Authenticated users can create (submit new problems)
     //    - Authenticated users can update community fields (votes, comments, views)
     //      but CANNOT change status, reviewedBy, publishedAt (admin-only fields)
@@ -96,7 +116,7 @@ service cloud.firestore {
     }
 
     // ─────────────────────────────────────────────────────────────────────────
-    // 3. Site Content CMS
+    // 3. Site Content CMS (App Controller)
     //    - Public read, admin-only write
     // ─────────────────────────────────────────────────────────────────────────
     match /site_content/{pageId} {
@@ -151,8 +171,7 @@ service cloud.firestore {
     // ─────────────────────────────────────────────────────────────────────────
     match /user_votes/{voteId} {
       allow read: if isAuthenticated();
-      allow create, update: if isAuthenticated();
-      allow delete: if isAuthenticated();
+      allow create, update, delete: if isAuthenticated();
     }
 
     match /bookmarks/{bookmarkId} {

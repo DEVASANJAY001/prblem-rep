@@ -23,6 +23,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { SEOHead } from "@/components/common/SEOHead";
 import { HumanVerification } from "@/components/common/HumanVerification";
+import { executeRecaptcha } from "@/lib/recaptcha";
 
 interface AuthPageProps {
   defaultMode?: "login" | "register";
@@ -92,13 +93,13 @@ export const AuthPage: React.FC<AuthPageProps> = ({ defaultMode }) => {
       setError("Please fill in both email and password.");
       return;
     }
-    if (!isHumanVerified) {
-      setError("Please complete the quick verification check below.");
-      return;
-    }
     setLoading(true);
     setError(null);
     try {
+      if (!isHumanVerified) {
+        await executeRecaptcha("login");
+        setIsHumanVerified(true);
+      }
       await setPersistence(auth, rememberMe ? browserLocalPersistence : browserSessionPersistence);
       await loginWithEmail(email, password);
       navigate(from, { replace: true });
@@ -131,13 +132,13 @@ export const AuthPage: React.FC<AuthPageProps> = ({ defaultMode }) => {
       setError("Please agree to our Terms of Service and Privacy Policy.");
       return;
     }
-    if (!isHumanVerified) {
-      setError("Please complete the quick verification check below.");
-      return;
-    }
     setLoading(true);
     setError(null);
     try {
+      if (!isHumanVerified) {
+        await executeRecaptcha("register");
+        setIsHumanVerified(true);
+      }
       await registerWithEmail(name.trim(), email.trim(), password);
       navigate("/dashboard");
     } catch (err: any) {
@@ -389,6 +390,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ defaultMode }) => {
 
                   <div className="pt-0.5">
                     <HumanVerification
+                      action="login"
                       onVerify={() => setIsHumanVerified(true)}
                       onExpire={() => setIsHumanVerified(false)}
                     />
@@ -396,7 +398,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ defaultMode }) => {
 
                   <button
                     type="submit"
-                    disabled={loading || !isHumanVerified}
+                    disabled={loading}
                     className="w-full group relative overflow-hidden py-2.5 px-4 rounded-xl bg-primary hover:bg-primary-container text-white font-bold text-xs sm:text-[13px] shadow-sm hover:shadow-md active:scale-[0.99] transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
                   >
                     <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/15 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" />
@@ -573,6 +575,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ defaultMode }) => {
 
                   <div className="pt-0.5">
                     <HumanVerification
+                      action="register"
                       onVerify={() => setIsHumanVerified(true)}
                       onExpire={() => setIsHumanVerified(false)}
                     />
@@ -580,7 +583,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ defaultMode }) => {
 
                   <button
                     type="submit"
-                    disabled={loading || !agreedToTerms || !isHumanVerified}
+                    disabled={loading || !agreedToTerms}
                     className="w-full group relative overflow-hidden py-2.5 px-4 rounded-xl bg-primary hover:bg-primary-container text-white font-bold text-xs sm:text-[13px] shadow-sm hover:shadow-md active:scale-[0.99] transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
                   >
                     <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/15 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" />

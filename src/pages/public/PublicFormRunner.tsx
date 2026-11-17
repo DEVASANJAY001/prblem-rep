@@ -7,6 +7,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import confetti from "canvas-confetti";
 import { CheckCircle2, ArrowRight, ArrowLeft, Shield, FileText } from "lucide-react";
 import { HumanVerification } from "@/components/common/HumanVerification";
+import { executeRecaptcha } from "@/lib/recaptcha";
 
 export const PublicFormRunner: React.FC = () => {
   const { formSlug } = useParams<{ formSlug: string }>();
@@ -78,8 +79,8 @@ export const PublicFormRunner: React.FC = () => {
     }
 
     if (!isHumanVerified) {
-      setSubmitError("Please complete the 'I am not a robot' verification check.");
-      return;
+      await executeRecaptcha("form_response");
+      setIsHumanVerified(true);
     }
 
     setSubmitError(null);
@@ -159,6 +160,7 @@ export const PublicFormRunner: React.FC = () => {
 
         <div className="pt-2">
           <HumanVerification
+            action="form_response"
             onVerify={() => {
               setIsHumanVerified(true);
               setSubmitError(null);
