@@ -3,7 +3,7 @@ service cloud.firestore {
   match /databases/{database}/documents {
 
     // ─────────────────────────────────────────────────────────────────────────
-    // Helper Functions
+    // Helper Functions (Zero PII / No Hardcoded Emails)
     // ─────────────────────────────────────────────────────────────────────────
     function isAuthenticated() {
       return request.auth != null;
@@ -21,20 +21,12 @@ service cloud.firestore {
       return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
     }
 
-    // Admin authorization checks multiple layers:
-    // 1. Firebase Auth custom claims (if set by backend Admin SDK)
-    // 2. Primary Firestore User Document role (/users/{uid}.role == 'admin')
-    // 3. Known admin email or verified organizational domain (@davns.com)
+    // Role-based authorization verified dynamically via user doc or auth claim
+    // Zero sensitive email addresses, domains, or names exposed in rules
     function isAdmin() {
       return isAuthenticated() && (
         request.auth.token.role == 'admin' ||
         request.auth.token.admin == true ||
-        request.auth.token.email == 'admin@prblms.com' ||
-        request.auth.token.email == 'admin@stuckhere.com' ||
-        (request.auth.token.email != null && (
-          request.auth.token.email.matches('.*admin.*@.*') ||
-          request.auth.token.email.matches('.*@davns[.]com')
-        )) ||
         (userDocExists() && getUserData().role == 'admin')
       );
     }
@@ -53,11 +45,9 @@ service cloud.firestore {
 
     // ─────────────────────────────────────────────────────────────────────────
     // 1. Users Collection
-    //    - Anyone can read public user profiles (leaderboard, author names)
-    //    - Users can only create/update their own doc
-    //    - Regular users cannot elevate their own 'role' field
-    //    - Only admins can delete users
-    //    - Subcollections (startupNotes, etc.) are private to the owner
+    //    - Public read for community leaderboards, creator cards, and profiles
+    //    - Users manage their own profiles; role escalation is blocked
+    //    - Only confirmed admins can modify the 'role' field or delete accounts
     // ─────────────────────────────────────────────────────────────────────────
     match /users/{userId} {
       allow read: if true;
@@ -68,7 +58,7 @@ service cloud.firestore {
       )) || isAdmin();
       allow delete: if isAdmin();
 
-      // Private subcollections — only the owning user or admin can access
+      // Private subcollections (e.g. startupNotes) restricted to owner & admins
       match /{allUserSubcollections=**} {
         allow read, write: if isOwner(userId) || isAdmin();
       }
@@ -76,25 +66,16 @@ service cloud.firestore {
 
     // ─────────────────────────────────────────────────────────────────────────
     // 2. Problems Collection
-    //    - Public read (approved problems are the core public engine)
-    //    - Authenticated users can create (submit new problems)
-    //    - Authenticated users can update community fields (votes, comments, views)
-    //      but CANNOT change status, reviewedBy, publishedAt (admin-only fields)
-    //    - Only admins/moderators can update status/moderation fields
-    //    - Only admins/moderators or the problem author can delete
+    //    - Public read (discovery search engine)
+    //    - Authenticated users can submit problems
+    //    - Community can interact (votes, views, comments)
+    //    - Moderation fields (status, reviewedBy, publishedAt) restricted to admins/mods
     // ─────────────────────────────────────────────────────────────────────────
     match /problems/{problemId} {
       allow read: if true;
-
-      // Any authenticated user can submit a new problem
       allow create: if isAuthenticated();
-
-      // Community updates (votes, views, comments, validations, interest)
-      // Authenticated users can update BUT cannot change moderation fields
       allow update: if isAuthenticated() && (
-        // Admin/mod can update anything
         isAdminOrModerator() ||
-        // Regular users can update community interaction fields only
         (
           !('status' in request.resource.data.diff(resource.data).affectedKeys()) &&
           !('reviewedBy' in request.resource.data.diff(resource.data).affectedKeys()) &&
@@ -103,12 +84,9 @@ service cloud.firestore {
           !('verified' in request.resource.data.diff(resource.data).affectedKeys())
         )
       );
-
-      // Only admins/mods or the original author can delete
       allow delete: if isAdminOrModerator() ||
         (isAuthenticated() && resource.data.submittedByUid == request.auth.uid);
 
-      // Subcollections follow the same pattern as the parent
       match /{allProblemSubcollections=**} {
         allow read: if true;
         allow write: if isAuthenticated();
@@ -126,10 +104,6 @@ service cloud.firestore {
 
     // ─────────────────────────────────────────────────────────────────────────
     // 4. Dynamic Forms & Responses
-    //    - Forms are public read (so anyone can fill them)
-    //    - Only admins can create/update/delete forms
-    //    - Anyone can submit a response (create only)
-    //    - Only admins can read/delete responses
     // ─────────────────────────────────────────────────────────────────────────
     match /forms/{formId} {
       allow read: if true;
@@ -137,7 +111,7 @@ service cloud.firestore {
     }
 
     match /form_responses/{responseId} {
-      allow create: if true; // Anyone can submit a form response
+      allow create: if true;
       allow read, update, delete: if isAdminOrModerator();
     }
 
@@ -167,7 +141,6 @@ service cloud.firestore {
 
     // ─────────────────────────────────────────────────────────────────────────
     // 6. User Interactions (Votes, Bookmarks)
-    //    - Authenticated users manage their own interactions
     // ─────────────────────────────────────────────────────────────────────────
     match /user_votes/{voteId} {
       allow read: if isAuthenticated();
@@ -181,11 +154,9 @@ service cloud.firestore {
 
     // ─────────────────────────────────────────────────────────────────────────
     // 7. Admin Invites & Audit Logs
-    //    - Invites: admin write, anyone can read (to validate tokens)
-    //    - Audit logs: anyone can create (immutable append), admin can read/delete
     // ─────────────────────────────────────────────────────────────────────────
     match /admin_invites/{token} {
-      allow read: if true; // Token validation on signup page
+      allow read: if true;
       allow write: if isAdmin();
     }
 
@@ -197,7 +168,6 @@ service cloud.firestore {
 
     // ─────────────────────────────────────────────────────────────────────────
     // 8. Credits & Badges System
-    //    - Public read, admin-only write
     // ─────────────────────────────────────────────────────────────────────────
     match /credits/{creditId} {
       allow read: if true;
@@ -210,7 +180,7 @@ service cloud.firestore {
     }
 
     // ─────────────────────────────────────────────────────────────────────────
-    // Fallback: Deny everything not explicitly covered above
+    // Fallback: Deny unhandled writes
     // ─────────────────────────────────────────────────────────────────────────
     match /{document=**} {
       allow read, write: if false;
