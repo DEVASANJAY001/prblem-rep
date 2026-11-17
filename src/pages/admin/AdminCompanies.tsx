@@ -8,7 +8,7 @@ import {
 } from "@/lib/firebase/services/companiesService";
 import { REAL_INDUSTRIES } from "@/data/realProductionData";
 import { CompanyDoc } from "@/types";
-import { normalizeLogoUrl } from "@/components/ui/CompanyLogo";
+import { CompanyLogo, normalizeLogoUrl, resolveCompanyLogo } from "@/components/ui/CompanyLogo";
 import {
   Building2,
   Plus,
@@ -74,10 +74,7 @@ export const AdminCompanies: React.FC = () => {
     if (!createName.trim()) return;
 
     setIsSubmitting(true);
-    const rawLogo = createLogoUrl.trim();
-    const logo = rawLogo
-      ? normalizeLogoUrl(rawLogo)
-      : `https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=150&h=150&fit=crop&crop=faces`;
+    const logo = resolveCompanyLogo(createLogoUrl.trim(), createName.trim(), createWebsite.trim());
 
     await createCompany({
       name: createName.trim(),
@@ -100,7 +97,9 @@ export const AdminCompanies: React.FC = () => {
   const handleOpenEdit = (comp: CompanyDoc) => {
     setEditingCompany(comp);
     setEditName(comp.name);
-    setEditLogoUrl(normalizeLogoUrl(comp.logoUrl));
+    // Pre-resolve so user immediately sees the valid direct logo instead of placeholders or article URLs
+    const resolved = resolveCompanyLogo(comp.logoUrl, comp.name, comp.website);
+    setEditLogoUrl(resolved || comp.logoUrl);
     setEditWebsite(comp.website);
     setEditIndustry(comp.industry);
     setEditDescription(comp.description || "");
@@ -112,9 +111,11 @@ export const AdminCompanies: React.FC = () => {
     if (!editingCompany || !editName.trim()) return;
 
     setIsUpdating(true);
+    const resolvedLogo = resolveCompanyLogo(editLogoUrl.trim(), editName.trim(), editWebsite.trim());
+
     await updateCompanyDetails(editingCompany.id, {
       name: editName.trim(),
-      logoUrl: normalizeLogoUrl(editLogoUrl.trim()),
+      logoUrl: resolvedLogo || editLogoUrl.trim(),
       website: editWebsite.trim(),
       industry: editIndustry,
       description: editDescription.trim(),
@@ -288,21 +289,13 @@ export const AdminCompanies: React.FC = () => {
                 <div className="flex flex-col gap-3">
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex items-center gap-3">
-                      {/* Square Logo */}
-                      <div className="w-12 h-12 rounded-xl border border-outline-variant/40 bg-white flex items-center justify-center overflow-hidden shrink-0 shadow-2xs p-1">
-                        {company.logoUrl ? (
-                          <img
-                            src={normalizeLogoUrl(company.logoUrl)}
-                            alt={company.name}
-                            className="w-full h-full object-contain"
-                            onError={(e) => {
-                              (e.target as any).src = "https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=150&h=150&fit=crop";
-                            }}
-                          />
-                        ) : (
-                          <Building2 className="w-6 h-6 text-gray-400" />
-                        )}
-                      </div>
+                      {/* Square Logo using CompanyLogo */}
+                      <CompanyLogo
+                        name={company.name}
+                        logoUrl={company.logoUrl}
+                        website={company.website}
+                        size="lg"
+                      />
 
                       <div className="flex flex-col min-w-0">
                         <div className="flex items-center gap-1.5">
@@ -434,30 +427,41 @@ export const AdminCompanies: React.FC = () => {
 
               {/* Square Logo URL */}
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-bold text-on-surface">
-                  Logo URL (Square Image)
-                </label>
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-bold text-on-surface">
+                    Logo URL (Square Image)
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const auto = resolveCompanyLogo(createLogoUrl, createName, createWebsite);
+                      if (auto) {
+                        setCreateLogoUrl(auto);
+                        showToast("Auto-fetched official logo asset!");
+                      }
+                    }}
+                    className="text-[10px] font-bold text-primary hover:underline flex items-center gap-1 cursor-pointer"
+                  >
+                    <Sparkles className="w-3 h-3" /> Auto-Fetch Logo
+                  </button>
+                </div>
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl border border-outline-variant/40 bg-white flex items-center justify-center overflow-hidden shrink-0 p-1 shadow-2xs">
-                    {createLogoUrl ? (
-                      <img
-                        src={normalizeLogoUrl(createLogoUrl)}
-                        alt="Preview"
-                        className="w-full h-full object-contain"
-                        onError={(e) => {
-                          (e.target as any).style.display = "none";
-                        }}
-                      />
-                    ) : (
-                      <Building2 className="w-5 h-5 text-gray-400" />
-                    )}
-                  </div>
+                  <CompanyLogo
+                    name={createName || "Company"}
+                    logoUrl={createLogoUrl}
+                    website={createWebsite}
+                    size="md"
+                    className="shrink-0"
+                  />
                   <input
                     type="text"
                     value={createLogoUrl}
                     onChange={(e) => setCreateLogoUrl(e.target.value)}
-                    onBlur={(e) => setCreateLogoUrl(normalizeLogoUrl(e.target.value))}
-                    placeholder="https://images.unsplash.com/... or Wikipedia / web link"
+                    onBlur={(e) => {
+                      const resolved = resolveCompanyLogo(e.target.value, createName, createWebsite);
+                      if (resolved) setCreateLogoUrl(resolved);
+                    }}
+                    placeholder="e.g. Wikipedia file link, direct image, or leave blank to auto-fetch"
                     className="flex-1 bg-surface-container-low rounded-xl px-3 py-2 text-xs text-on-surface outline-none focus:ring-2 focus:ring-primary"
                   />
                 </div>
@@ -588,29 +592,40 @@ export const AdminCompanies: React.FC = () => {
 
               {/* Square Logo URL */}
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-bold text-on-surface">
-                  Logo URL (Square Image)
-                </label>
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-bold text-on-surface">
+                    Logo URL (Square Image)
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const auto = resolveCompanyLogo(editLogoUrl, editName, editWebsite);
+                      if (auto) {
+                        setEditLogoUrl(auto);
+                        showToast("Auto-fetched official logo asset!");
+                      }
+                    }}
+                    className="text-[10px] font-bold text-primary hover:underline flex items-center gap-1 cursor-pointer"
+                  >
+                    <Sparkles className="w-3 h-3" /> Auto-Fetch Logo
+                  </button>
+                </div>
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl border border-outline-variant/40 bg-white flex items-center justify-center overflow-hidden shrink-0 p-1 shadow-2xs">
-                    {editLogoUrl ? (
-                      <img
-                        src={normalizeLogoUrl(editLogoUrl)}
-                        alt="Preview"
-                        className="w-full h-full object-contain"
-                        onError={(e) => {
-                          (e.target as any).style.display = "none";
-                        }}
-                      />
-                    ) : (
-                      <Building2 className="w-5 h-5 text-gray-400" />
-                    )}
-                  </div>
+                  <CompanyLogo
+                    name={editName || "Company"}
+                    logoUrl={editLogoUrl}
+                    website={editWebsite}
+                    size="md"
+                    className="shrink-0"
+                  />
                   <input
                     type="text"
                     value={editLogoUrl}
                     onChange={(e) => setEditLogoUrl(e.target.value)}
-                    onBlur={(e) => setEditLogoUrl(normalizeLogoUrl(e.target.value))}
+                    onBlur={(e) => {
+                      const resolved = resolveCompanyLogo(e.target.value, editName, editWebsite);
+                      if (resolved) setEditLogoUrl(resolved);
+                    }}
                     placeholder="https://... logo URL (Wikipedia, SVG, PNG)"
                     className="flex-1 bg-surface-container-low rounded-xl px-3 py-2 text-xs text-on-surface outline-none focus:ring-2 focus:ring-primary"
                   />
