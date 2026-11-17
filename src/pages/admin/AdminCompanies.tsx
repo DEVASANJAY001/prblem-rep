@@ -8,6 +8,7 @@ import {
 } from "@/lib/firebase/services/companiesService";
 import { REAL_INDUSTRIES } from "@/data/realProductionData";
 import { CompanyDoc } from "@/types";
+import { normalizeLogoUrl } from "@/components/ui/CompanyLogo";
 import {
   Building2,
   Plus,
@@ -73,9 +74,10 @@ export const AdminCompanies: React.FC = () => {
     if (!createName.trim()) return;
 
     setIsSubmitting(true);
-    const logo =
-      createLogoUrl.trim() ||
-      `https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=150&h=150&fit=crop&crop=faces`;
+    const rawLogo = createLogoUrl.trim();
+    const logo = rawLogo
+      ? normalizeLogoUrl(rawLogo)
+      : `https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=150&h=150&fit=crop&crop=faces`;
 
     await createCompany({
       name: createName.trim(),
@@ -98,7 +100,7 @@ export const AdminCompanies: React.FC = () => {
   const handleOpenEdit = (comp: CompanyDoc) => {
     setEditingCompany(comp);
     setEditName(comp.name);
-    setEditLogoUrl(comp.logoUrl);
+    setEditLogoUrl(normalizeLogoUrl(comp.logoUrl));
     setEditWebsite(comp.website);
     setEditIndustry(comp.industry);
     setEditDescription(comp.description || "");
@@ -112,7 +114,7 @@ export const AdminCompanies: React.FC = () => {
     setIsUpdating(true);
     await updateCompanyDetails(editingCompany.id, {
       name: editName.trim(),
-      logoUrl: editLogoUrl.trim(),
+      logoUrl: normalizeLogoUrl(editLogoUrl.trim()),
       website: editWebsite.trim(),
       industry: editIndustry,
       description: editDescription.trim(),
@@ -287,12 +289,12 @@ export const AdminCompanies: React.FC = () => {
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex items-center gap-3">
                       {/* Square Logo */}
-                      <div className="w-12 h-12 rounded-xl border border-outline-variant/40 bg-surface-container flex items-center justify-center overflow-hidden shrink-0 shadow-2xs">
+                      <div className="w-12 h-12 rounded-xl border border-outline-variant/40 bg-white flex items-center justify-center overflow-hidden shrink-0 shadow-2xs p-1">
                         {company.logoUrl ? (
                           <img
-                            src={company.logoUrl}
+                            src={normalizeLogoUrl(company.logoUrl)}
                             alt={company.name}
-                            className="w-full h-full object-cover"
+                            className="w-full h-full object-contain"
                             onError={(e) => {
                               (e.target as any).src = "https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=150&h=150&fit=crop";
                             }}
@@ -436,18 +438,26 @@ export const AdminCompanies: React.FC = () => {
                   Logo URL (Square Image)
                 </label>
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl border border-outline-variant/40 bg-surface-container flex items-center justify-center overflow-hidden shrink-0">
+                  <div className="w-10 h-10 rounded-xl border border-outline-variant/40 bg-white flex items-center justify-center overflow-hidden shrink-0 p-1 shadow-2xs">
                     {createLogoUrl ? (
-                      <img src={createLogoUrl} alt="Preview" className="w-full h-full object-cover" />
+                      <img
+                        src={normalizeLogoUrl(createLogoUrl)}
+                        alt="Preview"
+                        className="w-full h-full object-contain"
+                        onError={(e) => {
+                          (e.target as any).style.display = "none";
+                        }}
+                      />
                     ) : (
                       <Building2 className="w-5 h-5 text-gray-400" />
                     )}
                   </div>
                   <input
-                    type="url"
+                    type="text"
                     value={createLogoUrl}
                     onChange={(e) => setCreateLogoUrl(e.target.value)}
-                    placeholder="https://images.unsplash.com/... or logo link"
+                    onBlur={(e) => setCreateLogoUrl(normalizeLogoUrl(e.target.value))}
+                    placeholder="https://images.unsplash.com/... or Wikipedia / web link"
                     className="flex-1 bg-surface-container-low rounded-xl px-3 py-2 text-xs text-on-surface outline-none focus:ring-2 focus:ring-primary"
                   />
                 </div>
@@ -582,17 +592,26 @@ export const AdminCompanies: React.FC = () => {
                   Logo URL (Square Image)
                 </label>
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl border border-outline-variant/40 bg-surface-container flex items-center justify-center overflow-hidden shrink-0">
+                  <div className="w-10 h-10 rounded-xl border border-outline-variant/40 bg-white flex items-center justify-center overflow-hidden shrink-0 p-1 shadow-2xs">
                     {editLogoUrl ? (
-                      <img src={editLogoUrl} alt="Preview" className="w-full h-full object-cover" />
+                      <img
+                        src={normalizeLogoUrl(editLogoUrl)}
+                        alt="Preview"
+                        className="w-full h-full object-contain"
+                        onError={(e) => {
+                          (e.target as any).style.display = "none";
+                        }}
+                      />
                     ) : (
                       <Building2 className="w-5 h-5 text-gray-400" />
                     )}
                   </div>
                   <input
-                    type="url"
+                    type="text"
                     value={editLogoUrl}
                     onChange={(e) => setEditLogoUrl(e.target.value)}
+                    onBlur={(e) => setEditLogoUrl(normalizeLogoUrl(e.target.value))}
+                    placeholder="https://... logo URL (Wikipedia, SVG, PNG)"
                     className="flex-1 bg-surface-container-low rounded-xl px-3 py-2 text-xs text-on-surface outline-none focus:ring-2 focus:ring-primary"
                   />
                 </div>
