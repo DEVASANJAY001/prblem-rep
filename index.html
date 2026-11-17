@@ -196,8 +196,16 @@
   <body class="bg-surface text-on-surface antialiased selection:bg-primary/15 selection:text-primary min-h-screen">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
-    <!-- Cloudflare Web Analytics -->
-    <script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "152b26b90b804798bcf2c4c039fbf743"}'></script>
+    <!-- Cloudflare Web Analytics (Production Only) -->
+    <script type="module">
+      if (typeof window !== "undefined" && window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1") {
+        const beaconScript = document.createElement("script");
+        beaconScript.type = "module";
+        beaconScript.src = "https://static.cloudflareinsights.com/beacon.min.js";
+        beaconScript.setAttribute("data-cf-beacon", '{"token": "152b26b90b804798bcf2c4c039fbf743"}');
+        document.body.appendChild(beaconScript);
+      }
+    </script>
     <!-- End Cloudflare Web Analytics -->
   </body>
 </html>
