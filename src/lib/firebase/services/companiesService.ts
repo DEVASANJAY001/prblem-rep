@@ -6,6 +6,12 @@ import {
   deleteDoc,
   onSnapshot,
   getDocs,
+  query,
+  orderBy,
+  limit,
+  startAfter,
+  QueryDocumentSnapshot,
+  DocumentData,
   serverTimestamp,
 } from "firebase/firestore";
 import { db } from "../config";
@@ -100,6 +106,72 @@ export async function getCompanies(): Promise<CompanyDoc[]> {
     console.warn("Firestore getCompanies deferred to local dataset");
   }
   return local;
+}
+
+export interface PaginatedCompaniesResult {
+  companies: CompanyDoc[];
+  lastDoc: QueryDocumentSnapshot<DocumentData> | null;
+  hasMore: boolean;
+  totalLoaded: number;
+}
+
+/**
+ * Optimized paginated fetch for companies:
+ * Fetches exactly `pageSize` (default 16) documents from Firestore using cursor-based
+ * pagination (`limit`, `orderBy`, `startAfter`), drastically minimizing read operations
+ * and database costs compared to full collection listeners.
+ */
+export async function fetchCompaniesBatch(
+  pageSize: number = 16,
+  lastDocSnapshot: QueryDocumentSnapshot<DocumentData> | null = null,
+  offsetIndex: number = 0
+): Promise<PaginatedCompaniesResult> {
+  try {
+    if (db && typeof collection === "function") {
+      const colRef = collection(db, COLLECTION_NAME);
+      const constraints: any[] = [orderBy("name", "asc")];
+      if (lastDocSnapshot) {
+        constraints.push(startAfter(lastDocSnapshot));
+      }
+      constraints.push(limit(pageSize));
+
+      const q = query(colRef, ...constraints);
+      const snapshot = await getDocs(q);
+
+      if (!snapshot.empty) {
+        const rawList: CompanyDoc[] = [];
+        snapshot.forEach((d) => {
+          const docData = d.data() as CompanyDoc;
+          if (!docData.hidden) {
+            rawList.push(docData);
+          }
+        });
+        const lastDoc = snapshot.docs[snapshot.docs.length - 1] || null;
+        const hasMore = snapshot.docs.length >= pageSize;
+
+        return {
+          companies: rawList,
+          lastDoc,
+          hasMore,
+          totalLoaded: rawList.length,
+        };
+      }
+    }
+  } catch (err) {
+    console.warn("Firestore fetchCompaniesBatch deferred to local dataset:", err);
+  }
+
+  // Graceful fallback to local storage / REAL_COMPANIES dataset chunked by offset
+  const allLocal = getLocalCompanies().filter((c) => !c.hidden);
+  const slice = allLocal.slice(offsetIndex, offsetIndex + pageSize);
+  const hasMore = offsetIndex + pageSize < allLocal.length;
+
+  return {
+    companies: slice,
+    lastDoc: null,
+    hasMore,
+    totalLoaded: slice.length,
+  };
 }
 
 export async function createCompany(companyData: {

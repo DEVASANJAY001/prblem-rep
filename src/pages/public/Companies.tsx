@@ -1,6 +1,7 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useCallback } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { subscribeCompanies } from "@/lib/firebase/services/companiesService";
+import { QueryDocumentSnapshot, DocumentData } from "firebase/firestore";
+import { fetchCompaniesBatch } from "@/lib/firebase/services/companiesService";
 import { subscribeProblems } from "@/lib/firebase/services/problemsService";
 import { CompanyDoc, ProblemDoc } from "@/types";
 import { REAL_COMPANIES } from "@/data/realProductionData";
@@ -15,6 +16,8 @@ import {
   Sparkles,
   ChevronDown,
   ArrowRight,
+  ArrowDown,
+  Loader2,
   Filter,
   CheckCircle2,
   X,
@@ -32,6 +35,8 @@ const INDUSTRY_HUBS = [
   { name: "Manufacturing", slug: "manufacturing" },
 ];
 
+const PAGE_SIZE = 16;
+
 export const Companies: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const initialCompany = searchParams.get("company") || "";
@@ -41,9 +46,12 @@ export const Companies: React.FC = () => {
   const [selectedIndustries, setSelectedIndustries] = useState<string[]>([]);
   const [selectedCompany, setSelectedCompany] = useState<string>(initialCompany);
 
-  const [companiesList, setCompaniesList] = useState<CompanyDoc[]>(REAL_COMPANIES);
+  const [companiesList, setCompaniesList] = useState<CompanyDoc[]>([]);
   const [allProblems, setAllProblems] = useState<ProblemDoc[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(false);
+  const [lastDoc, setLastDoc] = useState<QueryDocumentSnapshot<DocumentData> | null>(null);
 
   // Sync search param when selectedCompany changes
   useEffect(() => {
@@ -52,21 +60,53 @@ export const Companies: React.FC = () => {
     }
   }, [initialCompany]);
 
-  useEffect(() => {
-    const unsubCompanies = subscribeCompanies((list) => {
-      if (list && list.length > 0) setCompaniesList(list);
+  const loadInitialBatch = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await fetchCompaniesBatch(PAGE_SIZE, null, 0);
+      setCompaniesList(res.companies);
+      setLastDoc(res.lastDoc);
+      setHasMore(res.hasMore);
+    } catch (err) {
+      console.warn("Companies initial batch fetch fallback:", err);
+      const fallback = REAL_COMPANIES.slice(0, PAGE_SIZE);
+      setCompaniesList(fallback);
+      setHasMore(REAL_COMPANIES.length > PAGE_SIZE);
+    } finally {
       setLoading(false);
-    });
+    }
+  }, []);
+
+  useEffect(() => {
+    loadInitialBatch();
 
     const unsubProblems = subscribeProblems({ status: "approved" }, (list) => {
       setAllProblems(list);
     });
 
     return () => {
-      unsubCompanies();
       unsubProblems();
     };
-  }, []);
+  }, [loadInitialBatch]);
+
+  const handleLoadMore = async () => {
+    if (loadingMore || !hasMore) return;
+    setLoadingMore(true);
+    try {
+      const res = await fetchCompaniesBatch(PAGE_SIZE, lastDoc, companiesList.length);
+      setCompaniesList((prev) => {
+        const seen = new Set(prev.map((c) => c.id || c.name.toLowerCase()));
+        const nextUnique = res.companies.filter((c) => !seen.has(c.id || c.name.toLowerCase()));
+        return [...prev, ...nextUnique];
+      });
+      setLastDoc(res.lastDoc);
+      setHasMore(res.hasMore);
+    } catch (err) {
+      console.warn("Failed to load more companies:", err);
+    } finally {
+      setLoadingMore(false);
+    }
+  };
 
   // Compute statements attached per company
   const companyProblemCounts = useMemo(() => {
@@ -322,48 +362,108 @@ export const Companies: React.FC = () => {
 
           {loading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-              {Array.from({ length: 4 }).map((_, i) => (
+              {Array.from({ length: 16 }).map((_, i) => (
                 <div key={i} className="h-44 bg-surface-container-low rounded-3xl animate-pulse" />
               ))}
             </div>
           ) : filteredCompanies.length === 0 ? (
-            <div className="text-center py-16 bg-white rounded-3xl border border-gray-100 p-8 space-y-3">
-              <Building2 className="w-10 h-10 text-gray-300 mx-auto" />
-              <h3 className="text-base font-bold text-gray-900">No partner companies found</h3>
-              <p className="text-xs text-gray-500 max-w-sm mx-auto">
-                No organizations match your current search and industry criteria.
-              </p>
-              <button
-                onClick={handleResetFilters}
-                className="px-4 py-2 rounded-xl bg-primary text-white text-xs font-semibold"
-              >
-                Reset Filters
-              </button>
+            <div className="text-center py-16 bg-surface-container-lowest rounded-3xl border border-outline-variant/30 p-8 space-y-4">
+              <Building2 className="w-10 h-10 text-on-surface-variant/40 mx-auto" />
+              <div className="space-y-1">
+                <h3 className="text-base font-bold text-on-surface">No partner companies found</h3>
+                <p className="text-xs text-on-surface-variant max-w-sm mx-auto">
+                  No organizations match your current search and industry criteria in the loaded batch.
+                </p>
+              </div>
+              <div className="flex flex-wrap items-center justify-center gap-2.5">
+                <button
+                  onClick={handleResetFilters}
+                  className="px-4 py-2 rounded-xl bg-surface-container-low border border-outline-variant/30 text-on-surface text-xs font-semibold hover:bg-surface-container cursor-pointer transition-colors shadow-2xs"
+                >
+                  Reset Filters
+                </button>
+                {hasMore && (
+                  <button
+                    type="button"
+                    onClick={handleLoadMore}
+                    disabled={loadingMore}
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-white text-xs font-semibold hover:bg-primary-hover transition-all cursor-pointer shadow-sm disabled:opacity-60"
+                  >
+                    {loadingMore ? (
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    ) : (
+                      <ArrowDown className="w-3.5 h-3.5" />
+                    )}
+                    <span>Fetch Next 16 from Database</span>
+                  </button>
+                )}
+              </div>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-              {filteredCompanies.map((comp) => {
-                const isSelected =
-                  selectedCompany.toLowerCase() === comp.name.toLowerCase();
-                return (
-                  <div
-                    key={comp.id}
-                    className={`relative rounded-3xl transition-all duration-300 ${
-                      isSelected
-                        ? "ring-3 ring-primary shadow-xl scale-[1.02]"
-                        : ""
-                    }`}
+            <div className="space-y-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                {filteredCompanies.map((comp) => {
+                  const isSelected =
+                    selectedCompany.toLowerCase() === comp.name.toLowerCase();
+                  return (
+                    <div
+                      key={comp.id}
+                      className={`relative rounded-3xl transition-all duration-300 ${
+                        isSelected
+                          ? "ring-3 ring-primary shadow-xl scale-[1.02]"
+                          : ""
+                      }`}
+                    >
+                      <CompanyCard
+                        company={comp}
+                        problemsCount={
+                          companyProblemCounts[comp.name.toLowerCase()] || 4
+                        }
+                        onClick={() => handleSelectCompany(comp.name)}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* ── Paginated "Load More" Control with Vector Arrow ────────────── */}
+              {hasMore && (
+                <div className="flex flex-col items-center justify-center pt-2 pb-2">
+                  <button
+                    type="button"
+                    onClick={handleLoadMore}
+                    disabled={loadingMore}
+                    className="group relative inline-flex items-center gap-3 px-8 py-3.5 rounded-2xl bg-surface-container-low hover:bg-surface-container border border-outline-variant/40 hover:border-primary/50 text-xs sm:text-sm font-bold text-on-surface hover:text-primary transition-all duration-200 shadow-2xs hover:shadow-md cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed hover:scale-[1.02] active:scale-[0.99]"
                   >
-                    <CompanyCard
-                      company={comp}
-                      problemsCount={
-                        companyProblemCounts[comp.name.toLowerCase()] || 4
-                      }
-                      onClick={() => handleSelectCompany(comp.name)}
-                    />
-                  </div>
-                );
-              })}
+                    {loadingMore ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin text-primary shrink-0" />
+                        <span>Fetching next 16 companies...</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>Load More Companies</span>
+                        <span className="text-[11px] text-on-surface-variant font-normal">
+                          (Showing {filteredCompanies.length})
+                        </span>
+                        <div className="w-6 h-6 rounded-full bg-primary/10 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all shrink-0">
+                          <ArrowDown className="w-3.5 h-3.5 group-hover:translate-y-0.5 transition-transform" />
+                        </div>
+                      </>
+                    )}
+                  </button>
+                  <p className="text-[11px] text-on-surface-variant/70 mt-2 flex items-center gap-1.5">
+                    <span>Fetched in batches of 16 to minimize Firestore read operations</span>
+                  </p>
+                </div>
+              )}
+
+              {!hasMore && filteredCompanies.length > 0 && (
+                <div className="flex items-center justify-center gap-2 py-2 text-xs font-semibold text-on-surface-variant">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+                  <span>All {filteredCompanies.length} enterprise partners loaded</span>
+                </div>
+              )}
             </div>
           )}
         </section>
