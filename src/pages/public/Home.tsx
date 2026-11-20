@@ -12,24 +12,6 @@ import { SEOHead } from "@/components/common/SEOHead";
 import { ChevronLeft, ChevronRight, ArrowRight, CheckCircle2, Sparkles, Dices } from "lucide-react";
 import { separateCompoundIndustry } from "@/lib/algorithms/domainIntelligence";
 
-const DOMAIN_ICONS: Record<string, string> = {
-  "Healthcare": "🩺",
-  "Biotech": "🧬",
-  "AI": "🤖",
-  "Machine Learning": "🧠",
-  "Clean Energy": "⚡",
-  "CleanTech": "🌱",
-  "FinTech": "💳",
-  "DeFi": "🪙",
-  "Agriculture": "🚜",
-  "Logistics": "📦",
-  "Supply Chain": "⛓️",
-  "Cybersecurity": "🛡️",
-  "Defense": "🛰️",
-  "Aerospace": "🚀",
-  "Robotics": "🦾",
-};
-
 export const Home: React.FC = () => {
   const navigate = useNavigate();
   const mouseGlowRef = useRef<HTMLDivElement | null>(null);
@@ -686,21 +668,6 @@ export const Home: React.FC = () => {
 
             {/* Hero Content */}
             <div className="max-w-5xl w-full z-10 flex flex-col items-center gap-4 sm:gap-6 md:gap-7 relative my-auto">
-              {/* Interactive Live Beacon Pill */}
-              <Link
-                to="/explore"
-                className="group inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 rounded-full bg-surface-container-lowest/90 dark:bg-zinc-900/90 border border-outline-variant/40 hover:border-primary/50 text-[11px] sm:text-xs font-semibold text-on-surface shadow-2xs hover:shadow-xs backdrop-blur-md transition-all active:scale-95 cursor-pointer"
-              >
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
-                </span>
-                <span className="text-on-surface-variant group-hover:text-primary transition-colors">
-                  <strong className="text-on-surface group-hover:text-primary font-bold">14,200+</strong> Verified Real-World Problem Statements
-                </span>
-                <ArrowRight className="w-3 h-3 text-on-surface-variant group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
-              </Link>
-
               {contentLoading ? (
                 <div className="flex flex-col items-center gap-4 w-full py-4 animate-pulse">
                   <div className="h-12 sm:h-16 md:h-20 w-3/4 max-w-2xl bg-surface-container-high rounded-3xl" />
@@ -769,39 +736,44 @@ export const Home: React.FC = () => {
                       ))}
                     </div>
                   ) : (
-                    popularTags.map((cat) => {
-                      const icon = DOMAIN_ICONS[cat] || "✨";
-                      return (
-                        <Link
-                          key={cat}
-                          to={`/explore?industry=${encodeURIComponent(cat)}`}
-                          className="inline-flex items-center gap-1.5 text-on-surface-variant hover:text-primary active:text-primary text-[11px] sm:text-xs font-medium transition-all px-3 py-1.5 rounded-full bg-surface-container-lowest/80 dark:bg-zinc-900/80 backdrop-blur-md border border-outline-variant/40 hover:border-primary/50 shadow-2xs hover:shadow-xs shrink-0 cursor-pointer active:scale-95"
-                        >
-                          <span className="text-xs">{icon}</span>
-                          <span>{cat}</span>
-                        </Link>
-                      );
-                    })
+                    popularTags.map((cat) => (
+                      <Link
+                        key={cat}
+                        to={`/explore?industry=${encodeURIComponent(cat)}`}
+                        className="inline-flex items-center text-on-surface-variant hover:text-primary active:text-primary text-[11px] sm:text-xs font-medium transition-all px-3 py-1 rounded-full bg-surface-container-lowest/80 dark:bg-zinc-900/80 backdrop-blur-md border border-outline-variant/40 hover:border-primary/50 shadow-2xs hover:shadow-xs shrink-0 cursor-pointer active:scale-95"
+                      >
+                        <span>{cat}</span>
+                      </Link>
+                    ))
                   )}
                 </div>
               </div>
 
-              {/* Interactive Mobile Quick Actions Bar */}
-              <div className="flex sm:hidden items-center justify-center gap-2.5 w-full pt-1">
+              {/* Funky Clickable Text Quick Actions (No background container, human designed) */}
+              <div className="flex items-center justify-center gap-5 sm:gap-7 w-full pt-2 pb-1">
                 <button
                   type="button"
                   onClick={handleRandomProblem}
-                  className="flex-1 max-w-[180px] inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-surface-container-low hover:bg-surface-container border border-outline-variant/40 text-[11px] font-bold text-on-surface shadow-2xs active:scale-95 transition-all cursor-pointer"
+                  className="group inline-flex items-center gap-1.5 text-xs sm:text-sm font-black italic tracking-tight text-on-surface hover:text-primary transition-all cursor-pointer active:scale-95"
                 >
-                  <Dices className="w-3.5 h-3.5 text-primary" />
-                  <span>Surprise Me</span>
+                  <Dices className="w-3.5 h-3.5 text-primary group-hover:rotate-12 transition-transform" />
+                  <span className="underline decoration-wavy decoration-primary/40 underline-offset-4 group-hover:decoration-primary">
+                    Surprise me
+                  </span>
+                  <span className="text-primary font-bold text-xs opacity-75 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all">→</span>
                 </button>
+
+                <span className="text-outline-variant/50 text-xs select-none">•</span>
+
                 <Link
                   to="/explore?filter=startup_mode"
-                  className="flex-1 max-w-[180px] inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-primary/10 border border-primary/30 text-[11px] font-bold text-primary shadow-2xs active:scale-95 transition-all"
+                  className="group inline-flex items-center gap-1.5 text-xs sm:text-sm font-black italic tracking-tight text-on-surface hover:text-amber-500 transition-all cursor-pointer active:scale-95"
                 >
-                  <Sparkles className="w-3.5 h-3.5" />
-                  <span>Startup Blueprints</span>
+                  <Sparkles className="w-3.5 h-3.5 text-amber-500 group-hover:scale-110 transition-transform" />
+                  <span className="underline decoration-wavy decoration-amber-500/40 underline-offset-4 group-hover:decoration-amber-500">
+                    Startup blueprints
+                  </span>
+                  <span className="text-amber-500 font-bold text-xs opacity-75 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all">→</span>
                 </Link>
               </div>
             </div>
