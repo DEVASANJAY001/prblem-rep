@@ -11,6 +11,8 @@ import { REAL_INDUSTRIES } from "@/data/realProductionData";
 import { CompanyDoc, IndustryDoc } from "@/types";
 import { CompanyLogo, normalizeLogoUrl, resolveCompanyLogo } from "@/components/ui/CompanyLogo";
 import { SearchableIndustrySelect } from "@/components/ui/SearchableIndustrySelect";
+import { AdminBulkCompanyImportModal } from "@/components/admin/AdminBulkCompanyImportModal";
+import { exportCompaniesToCsv, downloadCsvFile } from "@/lib/csv/companyCsvHelper";
 import {
   Building2,
   Plus,
@@ -26,6 +28,12 @@ import {
   Sparkles,
   ShieldCheck,
   Filter,
+  Upload,
+  Download,
+  Maximize2,
+  Minimize2,
+  Check,
+  RotateCcw,
 } from "lucide-react";
 
 export const AdminCompanies: React.FC = () => {
@@ -38,6 +46,7 @@ export const AdminCompanies: React.FC = () => {
 
   // Create Modal State
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [isCreateFullscreen, setIsCreateFullscreen] = useState(false);
   const [createName, setCreateName] = useState("");
   const [createLogoUrl, setCreateLogoUrl] = useState("");
   const [createWebsite, setCreateWebsite] = useState("");
@@ -48,6 +57,7 @@ export const AdminCompanies: React.FC = () => {
 
   // Edit Modal State
   const [editingCompany, setEditingCompany] = useState<CompanyDoc | null>(null);
+  const [isEditFullscreen, setIsEditFullscreen] = useState(false);
   const [editName, setEditName] = useState("");
   const [editLogoUrl, setEditLogoUrl] = useState("");
   const [editWebsite, setEditWebsite] = useState("");
@@ -55,6 +65,9 @@ export const AdminCompanies: React.FC = () => {
   const [editDescription, setEditDescription] = useState("");
   const [editVerified, setEditVerified] = useState(true);
   const [isUpdating, setIsUpdating] = useState(false);
+
+  // Bulk Modal State
+  const [isBulkModalOpen, setIsBulkModalOpen] = useState(false);
 
   // Toast
   const [toast, setToast] = useState<string | null>(null);
@@ -242,14 +255,38 @@ export const AdminCompanies: React.FC = () => {
           </div>
         </div>
 
-        {/* Global Action: Add Company */}
-        <button
-          onClick={() => setIsCreateOpen(true)}
-          className="px-4 py-2.5 bg-primary hover:bg-primary-container text-white rounded-xl text-xs font-bold flex items-center gap-2 shadow-sm transition-all cursor-pointer"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Add Company</span>
-        </button>
+        {/* Global Action: Add Company, Bulk Upload, Export */}
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            onClick={() => {
+              const exported = exportCompaniesToCsv(companies);
+              downloadCsvFile(`prblms-companies-export-${new Date().toISOString().slice(0, 10)}.csv`, exported);
+              showToast(`Exported ${companies.length} companies to CSV!`);
+            }}
+            title="Export all companies as a CSV spreadsheet"
+            className="px-3.5 py-2 bg-surface-container-low hover:bg-surface-container border border-outline-variant/40 rounded-xl text-xs font-semibold text-on-surface flex items-center gap-1.5 shadow-xs transition-all cursor-pointer"
+          >
+            <Download className="w-3.5 h-3.5 text-zinc-500" />
+            <span className="hidden sm:inline">Export CSV</span>
+          </button>
+
+          <button
+            onClick={() => setIsBulkModalOpen(true)}
+            title="Upload CSV / Excel file or paste companies in bulk"
+            className="px-3.5 py-2 rounded-xl border border-blue-200 bg-blue-50/70 hover:bg-blue-100/70 text-xs font-bold text-primary shadow-xs transition-all flex items-center gap-1.5 cursor-pointer"
+          >
+            <Upload className="w-3.5 h-3.5 text-primary" />
+            <span>Bulk Upload (CSV / Excel)</span>
+          </button>
+
+          <button
+            onClick={() => setIsCreateOpen(true)}
+            className="px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded-xl text-xs font-bold flex items-center gap-2 shadow-sm transition-all cursor-pointer"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Add Company</span>
+          </button>
+        </div>
       </div>
 
       {/* Filter & Search Bar */}
@@ -438,321 +475,578 @@ export const AdminCompanies: React.FC = () => {
         </div>
       )}
 
-      {/* ── CREATE COMPANY MODAL ────────────────────────────────────────── */}
+      {/* ── CREATE COMPANY MODAL (Full Screen Studio) ────────────────── */}
       {isCreateOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fade-in">
-          <div className="bg-surface-container-lowest rounded-2xl w-full max-w-lg shadow-2xl border border-outline-variant/30 overflow-hidden flex flex-col">
-            <div className="flex items-center justify-between p-5 border-b border-outline-variant/30 bg-surface-container-low">
-              <div className="flex items-center gap-2">
-                <div className="p-2 rounded-xl bg-primary/10 text-primary">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/70 backdrop-blur-xs animate-fade-in">
+          <div
+            className={`bg-surface-container-lowest rounded-2xl shadow-2xl border border-outline-variant/30 overflow-hidden flex flex-col transition-all duration-300 ${
+              isCreateFullscreen
+                ? "w-full h-full rounded-none"
+                : "w-full max-w-5xl max-h-[92vh] h-[850px]"
+            }`}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between p-5 border-b border-outline-variant/30 bg-surface-container-low shrink-0">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-xl bg-primary/10 text-primary border border-primary/20">
                   <Building2 className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-on-surface">Create New Enterprise Partner</h3>
-                  <p className="text-[11px] text-on-surface-variant">
-                    Add a verified company or venture solver to the directory.
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-base font-bold text-on-surface">Create New Enterprise Partner</h3>
+                    <span className="rounded-full bg-blue-50 dark:bg-blue-950/40 px-2.5 py-0.5 text-[11px] font-bold text-primary border border-primary/20">
+                      Partner Directory
+                    </span>
+                  </div>
+                  <p className="text-xs text-on-surface-variant">
+                    Add a verified company, bounty sponsor, or venture solver to the ecosystem directory.
                   </p>
                 </div>
               </div>
-              <button
-                onClick={() => setIsCreateOpen(false)}
-                className="p-1 rounded-full text-gray-400 hover:text-on-surface cursor-pointer"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <form onSubmit={handleCreateCompany} className="p-6 flex flex-col gap-4">
-              {/* Name */}
-              <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-bold text-on-surface">
-                  Company Name <span className="text-error">*</span>
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={createName}
-                  onChange={(e) => setCreateName(e.target.value)}
-                  placeholder="e.g. Apex Health Systems"
-                  className="w-full bg-surface-container-low rounded-xl px-4 py-2.5 text-xs font-semibold text-on-surface outline-none focus:ring-2 focus:ring-primary"
-                />
-              </div>
-
-              {/* Square Logo URL */}
-              <div className="flex flex-col gap-1.5">
-                <div className="flex items-center justify-between">
-                  <label className="text-xs font-bold text-on-surface">
-                    Logo URL (Square Image)
-                  </label>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const auto = resolveCompanyLogo(createLogoUrl, createName, createWebsite);
-                      if (auto) {
-                        setCreateLogoUrl(auto);
-                        showToast("Auto-fetched official logo asset!");
-                      }
-                    }}
-                    className="text-[10px] font-bold text-primary hover:underline flex items-center gap-1 cursor-pointer"
-                  >
-                    <Sparkles className="w-3 h-3" /> Auto-Fetch Logo
-                  </button>
-                </div>
-                <div className="flex items-center gap-3">
-                  <CompanyLogo
-                    name={createName || "Company"}
-                    logoUrl={createLogoUrl}
-                    website={createWebsite}
-                    size="md"
-                    className="shrink-0"
-                  />
-                  <input
-                    type="text"
-                    value={createLogoUrl}
-                    onChange={(e) => setCreateLogoUrl(e.target.value)}
-                    onBlur={(e) => {
-                      const resolved = resolveCompanyLogo(e.target.value, createName, createWebsite);
-                      if (resolved) setCreateLogoUrl(resolved);
-                    }}
-                    placeholder="e.g. Wikipedia file link, direct image, or leave blank to auto-fetch"
-                    className="flex-1 bg-surface-container-low rounded-xl px-3 py-2 text-xs text-on-surface outline-none focus:ring-2 focus:ring-primary"
-                  />
-                </div>
-              </div>
-
-              {/* Website Link */}
-              <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-bold text-on-surface">
-                  Company Website Link
-                </label>
-                <input
-                  type="text"
-                  value={createWebsite}
-                  onChange={(e) => setCreateWebsite(e.target.value)}
-                  placeholder="https://apexhealth.io"
-                  className="w-full bg-surface-container-low rounded-xl px-4 py-2 text-xs text-on-surface outline-none focus:ring-2 focus:ring-primary"
-                />
-              </div>
-
-              {/* Industry & Verified */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-bold text-on-surface">Industry</label>
-                  <SearchableIndustrySelect
-                    value={createIndustry}
-                    onChange={setCreateIndustry}
-                    industries={availableIndustries}
-                    placeholder="Search or select industry..."
-                  />
-                </div>
-
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-bold text-on-surface">Verified Badge</label>
-                  <button
-                    type="button"
-                    onClick={() => setCreateVerified(!createVerified)}
-                    className={`py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer border ${
-                      createVerified
-                        ? "bg-primary/10 text-primary border-primary/30"
-                        : "bg-surface-container text-gray-400 border-outline-variant/30"
-                    }`}
-                  >
-                    <CheckCircle2 className="w-3.5 h-3.5" />
-                    <span>{createVerified ? "Verified ✓" : "Unverified"}</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* Description */}
-              <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-bold text-on-surface">Description / Focus Areas</label>
-                <textarea
-                  rows={2}
-                  value={createDescription}
-                  onChange={(e) => setCreateDescription(e.target.value)}
-                  placeholder="Brief description of enterprise focus, procurement goals, or venture mandate..."
-                  className="w-full bg-surface-container-low rounded-xl p-3 text-xs text-on-surface outline-none focus:ring-2 focus:ring-primary"
-                />
-              </div>
-
-              {/* Submit & Cancel */}
-              <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-outline-variant/30">
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsCreateFullscreen(!isCreateFullscreen)}
+                  title={isCreateFullscreen ? "Exit Fullscreen" : "Fullscreen"}
+                  className="p-2 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors hidden sm:inline-flex cursor-pointer"
+                >
+                  {isCreateFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+                </button>
                 <button
                   type="button"
                   onClick={() => setIsCreateOpen(false)}
-                  className="px-4 py-2 rounded-xl text-xs font-bold text-on-surface-variant hover:bg-surface-container cursor-pointer"
+                  className="p-2 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors cursor-pointer"
                 >
-                  Cancel
+                  <X className="w-5 h-5" />
                 </button>
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="px-5 py-2 rounded-xl text-xs font-bold bg-primary hover:bg-primary-container text-white flex items-center gap-1.5 shadow-sm cursor-pointer disabled:opacity-50"
-                >
-                  <Sparkles className="w-3.5 h-3.5" />
-                  <span>{isSubmitting ? "Creating..." : "Create Company"}</span>
-                </button>
+              </div>
+            </div>
+
+            {/* Body: 2-column studio layout */}
+            <form onSubmit={handleCreateCompany} className="flex-1 flex flex-col overflow-hidden">
+              <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 p-6 overflow-y-auto">
+                {/* Left Column: Form Controls (7 cols) */}
+                <div className="lg:col-span-7 flex flex-col gap-4">
+                  {/* Name */}
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-xs font-bold text-on-surface">
+                      Company Name <span className="text-error">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={createName}
+                      onChange={(e) => setCreateName(e.target.value)}
+                      placeholder="e.g. Nvidia, Google Health, Stripe"
+                      className="w-full bg-surface-container-low rounded-xl px-4 py-2.5 text-xs font-semibold text-on-surface outline-none focus:ring-2 focus:ring-primary border border-outline-variant/30"
+                    />
+                  </div>
+
+                  {/* Square Logo URL */}
+                  <div className="flex flex-col gap-1.5">
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs font-bold text-on-surface">
+                        Logo URL (Square Image)
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const auto = resolveCompanyLogo(createLogoUrl, createName, createWebsite);
+                          if (auto) {
+                            setCreateLogoUrl(auto);
+                            showToast("Auto-fetched official logo asset!");
+                          }
+                        }}
+                        className="text-[11px] font-bold text-primary hover:underline flex items-center gap-1 cursor-pointer"
+                      >
+                        <Sparkles className="w-3.5 h-3.5" /> Auto-Fetch Logo
+                      </button>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <CompanyLogo
+                        name={createName || "Company"}
+                        logoUrl={createLogoUrl}
+                        website={createWebsite}
+                        size="md"
+                        className="shrink-0"
+                      />
+                      <input
+                        type="text"
+                        value={createLogoUrl}
+                        onChange={(e) => setCreateLogoUrl(e.target.value)}
+                        onBlur={(e) => {
+                          const resolved = resolveCompanyLogo(e.target.value, createName, createWebsite);
+                          if (resolved) setCreateLogoUrl(resolved);
+                        }}
+                        placeholder="https://.../logo.png or leave blank to auto-fetch"
+                        className="flex-1 bg-surface-container-low rounded-xl px-3.5 py-2.5 text-xs text-on-surface outline-none focus:ring-2 focus:ring-primary border border-outline-variant/30"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Website Link */}
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-xs font-bold text-on-surface">
+                      Company Website Link
+                    </label>
+                    <div className="relative">
+                      <Globe className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-on-surface-variant" />
+                      <input
+                        type="text"
+                        value={createWebsite}
+                        onChange={(e) => setCreateWebsite(e.target.value)}
+                        placeholder="https://www.nvidia.com"
+                        className="w-full bg-surface-container-low rounded-xl pl-9 pr-4 py-2.5 text-xs text-on-surface outline-none focus:ring-2 focus:ring-primary border border-outline-variant/30 font-mono text-[11px]"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Industry & Verified */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-xs font-bold text-on-surface">Industry</label>
+                      <SearchableIndustrySelect
+                        value={createIndustry}
+                        onChange={setCreateIndustry}
+                        industries={availableIndustries}
+                        placeholder="Search or select industry..."
+                      />
+                    </div>
+
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-xs font-bold text-on-surface">Verified Badge</label>
+                      <button
+                        type="button"
+                        onClick={() => setCreateVerified(!createVerified)}
+                        className={`py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer border transition-all ${
+                          createVerified
+                            ? "bg-primary/10 text-primary border-primary/30 shadow-2xs"
+                            : "bg-surface-container text-gray-400 border-outline-variant/30"
+                        }`}
+                      >
+                        <CheckCircle2 className="w-4 h-4" />
+                        <span>{createVerified ? "Verified Partner ✓" : "Standard Partner"}</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Description */}
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-xs font-bold text-on-surface">Description / Focus Areas</label>
+                    <textarea
+                      rows={4}
+                      value={createDescription}
+                      onChange={(e) => setCreateDescription(e.target.value)}
+                      placeholder="Brief overview of venture mandate, core engineering focus, problem areas, or technical thesis..."
+                      className="w-full bg-surface-container-low rounded-xl p-3.5 text-xs text-on-surface outline-none focus:ring-2 focus:ring-primary border border-outline-variant/30 resize-y"
+                    />
+                  </div>
+                </div>
+
+                {/* Right Column: Live Card Preview (5 cols) */}
+                <div className="lg:col-span-5 flex flex-col gap-3 bg-surface-container-low/70 rounded-2xl p-5 border border-outline-variant/30 justify-between">
+                  <div>
+                    <div className="flex items-center justify-between pb-3 border-b border-outline-variant/20 mb-4">
+                      <div className="flex items-center gap-2">
+                        <Sparkles className="w-4 h-4 text-primary" />
+                        <span className="text-xs font-bold text-on-surface">Live Directory Preview</span>
+                      </div>
+                      <span className="text-[10px] uppercase font-mono tracking-wider text-on-surface-variant font-bold">
+                        Interactive
+                      </span>
+                    </div>
+
+                    {/* Rendered Preview Card */}
+                    <div className="bg-surface-container-lowest rounded-2xl p-5 border border-outline-variant/30 shadow-sm flex flex-col gap-4">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex items-center gap-3">
+                          <CompanyLogo
+                            name={createName || "Partner"}
+                            logoUrl={createLogoUrl}
+                            website={createWebsite}
+                            size="lg"
+                          />
+                          <div>
+                            <div className="flex items-center gap-1.5">
+                              <h4 className="text-sm font-extrabold text-on-surface line-clamp-1">
+                                {createName.trim() || "Company Name"}
+                              </h4>
+                              {createVerified && (
+                                <span title="Verified Enterprise Partner">
+                                  <CheckCircle2 className="w-3.5 h-3.5 text-primary shrink-0" />
+                                </span>
+                              )}
+                            </div>
+                            <span className="text-[11px] font-semibold text-primary">
+                              {createIndustry || "General Industry"}
+                            </span>
+                          </div>
+                        </div>
+
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">
+                          Active
+                        </span>
+                      </div>
+
+                      <p className="text-xs text-on-surface-variant line-clamp-3 min-h-[48px]">
+                        {createDescription.trim() ||
+                          "Enterprise solver and ecosystem venture partner actively reviewing challenge tracks."}
+                      </p>
+
+                      <div className="flex items-center justify-between pt-3 border-t border-outline-variant/20 text-xs">
+                        {createWebsite.trim() ? (
+                          <span className="inline-flex items-center gap-1.5 text-primary font-mono text-[11px] truncate max-w-[200px]">
+                            <Globe className="w-3.5 h-3.5 shrink-0" />
+                            <span className="truncate">
+                              {createWebsite.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "")}
+                            </span>
+                            <ExternalLink className="w-3 h-3 shrink-0" />
+                          </span>
+                        ) : (
+                          <span className="text-on-surface-variant/40 font-mono text-[11px]">
+                            www.website.com
+                          </span>
+                        )}
+
+                        <span className="text-[10px] font-mono text-on-surface-variant">
+                          ID: auto-generated
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Help Tips */}
+                  <div className="p-3.5 rounded-xl bg-surface border border-outline-variant/20 text-[11px] text-on-surface-variant space-y-1">
+                    <p className="font-bold text-on-surface flex items-center gap-1.5">
+                      <ShieldCheck className="w-3.5 h-3.5 text-primary" />
+                      Enterprise Directory Standards
+                    </p>
+                    <p>
+                      Square 1:1 logos work best. If left blank, the system automatically retrieves official favicons and SVG vectors from the company domain.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Modal Footer */}
+              <div className="flex items-center justify-between px-6 py-4 border-t border-outline-variant/30 bg-surface-container-low shrink-0">
+                <span className="text-xs text-on-surface-variant">
+                  Partner will be immediately published to the live directory.
+                </span>
+                <div className="flex items-center gap-2.5">
+                  <button
+                    type="button"
+                    onClick={() => setIsCreateOpen(false)}
+                    className="px-4 py-2 rounded-xl text-xs font-bold text-on-surface-variant hover:bg-surface-container cursor-pointer transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="px-5 py-2.5 rounded-xl text-xs font-bold bg-primary hover:bg-primary/90 text-white flex items-center gap-2 shadow-sm cursor-pointer disabled:opacity-50 transition-all hover:scale-[1.02]"
+                  >
+                    <Sparkles className="w-3.5 h-3.5" />
+                    <span>{isSubmitting ? "Creating..." : "Create Enterprise Partner"}</span>
+                  </button>
+                </div>
               </div>
             </form>
           </div>
         </div>
       )}
 
-      {/* ── EDIT COMPANY MODAL ──────────────────────────────────────────── */}
+      {/* ── EDIT COMPANY MODAL (Full Screen Studio) ──────────────────── */}
       {editingCompany && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fade-in">
-          <div className="bg-surface-container-lowest rounded-2xl w-full max-w-lg shadow-2xl border border-outline-variant/30 overflow-hidden flex flex-col">
-            <div className="flex items-center justify-between p-5 border-b border-outline-variant/30 bg-surface-container-low">
-              <div className="flex items-center gap-2">
-                <div className="p-2 rounded-xl bg-primary/10 text-primary">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/70 backdrop-blur-xs animate-fade-in">
+          <div
+            className={`bg-surface-container-lowest rounded-2xl shadow-2xl border border-outline-variant/30 overflow-hidden flex flex-col transition-all duration-300 ${
+              isEditFullscreen
+                ? "w-full h-full rounded-none"
+                : "w-full max-w-5xl max-h-[92vh] h-[850px]"
+            }`}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between p-5 border-b border-outline-variant/30 bg-surface-container-low shrink-0">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-xl bg-primary/10 text-primary border border-primary/20">
                   <Edit3 className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-on-surface">Edit Company Details</h3>
-                  <p className="text-[11px] text-on-surface-variant">
-                    Modify name, square logo, website link, and industry tags.
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-base font-bold text-on-surface">Edit Enterprise Partner</h3>
+                    <span className="rounded-full bg-blue-50 dark:bg-blue-950/40 px-2.5 py-0.5 text-[11px] font-bold text-primary border border-primary/20">
+                      ID: {editingCompany.id}
+                    </span>
+                  </div>
+                  <p className="text-xs text-on-surface-variant">
+                    Modify partner identity, logo asset, domain link, and problem focus areas.
                   </p>
                 </div>
               </div>
-              <button
-                onClick={() => setEditingCompany(null)}
-                className="p-1 rounded-full text-gray-400 hover:text-on-surface cursor-pointer"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <form onSubmit={handleSaveEdit} className="p-6 flex flex-col gap-4">
-              {/* Name */}
-              <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-bold text-on-surface">
-                  Company Name <span className="text-error">*</span>
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={editName}
-                  onChange={(e) => setEditName(e.target.value)}
-                  className="w-full bg-surface-container-low rounded-xl px-4 py-2.5 text-xs font-semibold text-on-surface outline-none focus:ring-2 focus:ring-primary"
-                />
-              </div>
-
-              {/* Square Logo URL */}
-              <div className="flex flex-col gap-1.5">
-                <div className="flex items-center justify-between">
-                  <label className="text-xs font-bold text-on-surface">
-                    Logo URL (Square Image)
-                  </label>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const auto = resolveCompanyLogo(editLogoUrl, editName, editWebsite);
-                      if (auto) {
-                        setEditLogoUrl(auto);
-                        showToast("Auto-fetched official logo asset!");
-                      }
-                    }}
-                    className="text-[10px] font-bold text-primary hover:underline flex items-center gap-1 cursor-pointer"
-                  >
-                    <Sparkles className="w-3 h-3" /> Auto-Fetch Logo
-                  </button>
-                </div>
-                <div className="flex items-center gap-3">
-                  <CompanyLogo
-                    name={editName || "Company"}
-                    logoUrl={editLogoUrl}
-                    website={editWebsite}
-                    size="md"
-                    className="shrink-0"
-                  />
-                  <input
-                    type="text"
-                    value={editLogoUrl}
-                    onChange={(e) => setEditLogoUrl(e.target.value)}
-                    onBlur={(e) => {
-                      const resolved = resolveCompanyLogo(e.target.value, editName, editWebsite);
-                      if (resolved) setEditLogoUrl(resolved);
-                    }}
-                    placeholder="https://... logo URL (Wikipedia, SVG, PNG)"
-                    className="flex-1 bg-surface-container-low rounded-xl px-3 py-2 text-xs text-on-surface outline-none focus:ring-2 focus:ring-primary"
-                  />
-                </div>
-              </div>
-
-              {/* Website Link */}
-              <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-bold text-on-surface">
-                  Company Website Link
-                </label>
-                <input
-                  type="text"
-                  value={editWebsite}
-                  onChange={(e) => setEditWebsite(e.target.value)}
-                  className="w-full bg-surface-container-low rounded-xl px-4 py-2 text-xs text-on-surface outline-none focus:ring-2 focus:ring-primary"
-                />
-              </div>
-
-              {/* Industry & Verified */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-bold text-on-surface">Industry</label>
-                  <SearchableIndustrySelect
-                    value={editIndustry}
-                    onChange={setEditIndustry}
-                    industries={availableIndustries}
-                    placeholder="Search or select industry..."
-                  />
-                </div>
-
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-bold text-on-surface">Verified Badge</label>
-                  <button
-                    type="button"
-                    onClick={() => setEditVerified(!editVerified)}
-                    className={`py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer border ${
-                      editVerified
-                        ? "bg-primary/10 text-primary border-primary/30"
-                        : "bg-surface-container text-gray-400 border-outline-variant/30"
-                    }`}
-                  >
-                    <CheckCircle2 className="w-3.5 h-3.5" />
-                    <span>{editVerified ? "Verified ✓" : "Unverified"}</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* Description */}
-              <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-bold text-on-surface">Description</label>
-                <textarea
-                  rows={2}
-                  value={editDescription}
-                  onChange={(e) => setEditDescription(e.target.value)}
-                  className="w-full bg-surface-container-low rounded-xl p-3 text-xs text-on-surface outline-none focus:ring-2 focus:ring-primary"
-                />
-              </div>
-
-              {/* Submit & Cancel */}
-              <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-outline-variant/30">
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsEditFullscreen(!isEditFullscreen)}
+                  title={isEditFullscreen ? "Exit Fullscreen" : "Fullscreen"}
+                  className="p-2 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors hidden sm:inline-flex cursor-pointer"
+                >
+                  {isEditFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+                </button>
                 <button
                   type="button"
                   onClick={() => setEditingCompany(null)}
-                  className="px-4 py-2 rounded-xl text-xs font-bold text-on-surface-variant hover:bg-surface-container cursor-pointer"
+                  className="p-2 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors cursor-pointer"
                 >
-                  Cancel
+                  <X className="w-5 h-5" />
                 </button>
-                <button
-                  type="submit"
-                  disabled={isUpdating}
-                  className="px-5 py-2 rounded-xl text-xs font-bold bg-primary hover:bg-primary-container text-white flex items-center gap-1.5 shadow-sm cursor-pointer disabled:opacity-50"
-                >
-                  <Sparkles className="w-3.5 h-3.5" />
-                  <span>{isUpdating ? "Saving..." : "Save Changes"}</span>
-                </button>
+              </div>
+            </div>
+
+            {/* Body: 2-column studio layout */}
+            <form onSubmit={handleSaveEdit} className="flex-1 flex flex-col overflow-hidden">
+              <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 p-6 overflow-y-auto">
+                {/* Left Column: Form Controls (7 cols) */}
+                <div className="lg:col-span-7 flex flex-col gap-4">
+                  {/* Name */}
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-xs font-bold text-on-surface">
+                      Company Name <span className="text-error">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={editName}
+                      onChange={(e) => setEditName(e.target.value)}
+                      placeholder="e.g. Nvidia, Google Health, Stripe"
+                      className="w-full bg-surface-container-low rounded-xl px-4 py-2.5 text-xs font-semibold text-on-surface outline-none focus:ring-2 focus:ring-primary border border-outline-variant/30"
+                    />
+                  </div>
+
+                  {/* Square Logo URL */}
+                  <div className="flex flex-col gap-1.5">
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs font-bold text-on-surface">
+                        Logo URL (Square Image)
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const auto = resolveCompanyLogo(editLogoUrl, editName, editWebsite);
+                          if (auto) {
+                            setEditLogoUrl(auto);
+                            showToast("Auto-fetched official logo asset!");
+                          }
+                        }}
+                        className="text-[11px] font-bold text-primary hover:underline flex items-center gap-1 cursor-pointer"
+                      >
+                        <Sparkles className="w-3.5 h-3.5" /> Auto-Fetch Logo
+                      </button>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <CompanyLogo
+                        name={editName || "Company"}
+                        logoUrl={editLogoUrl}
+                        website={editWebsite}
+                        size="md"
+                        className="shrink-0"
+                      />
+                      <input
+                        type="text"
+                        value={editLogoUrl}
+                        onChange={(e) => setEditLogoUrl(e.target.value)}
+                        onBlur={(e) => {
+                          const resolved = resolveCompanyLogo(e.target.value, editName, editWebsite);
+                          if (resolved) setEditLogoUrl(resolved);
+                        }}
+                        placeholder="https://... logo URL (Wikipedia, SVG, PNG)"
+                        className="flex-1 bg-surface-container-low rounded-xl px-3.5 py-2.5 text-xs text-on-surface outline-none focus:ring-2 focus:ring-primary border border-outline-variant/30"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Website Link */}
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-xs font-bold text-on-surface">
+                      Company Website Link
+                    </label>
+                    <div className="relative">
+                      <Globe className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-on-surface-variant" />
+                      <input
+                        type="text"
+                        value={editWebsite}
+                        onChange={(e) => setEditWebsite(e.target.value)}
+                        placeholder="https://www.company.com"
+                        className="w-full bg-surface-container-low rounded-xl pl-9 pr-4 py-2.5 text-xs text-on-surface outline-none focus:ring-2 focus:ring-primary border border-outline-variant/30 font-mono text-[11px]"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Industry & Verified */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-xs font-bold text-on-surface">Industry</label>
+                      <SearchableIndustrySelect
+                        value={editIndustry}
+                        onChange={setEditIndustry}
+                        industries={availableIndustries}
+                        placeholder="Search or select industry..."
+                      />
+                    </div>
+
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-xs font-bold text-on-surface">Verified Badge</label>
+                      <button
+                        type="button"
+                        onClick={() => setEditVerified(!editVerified)}
+                        className={`py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer border transition-all ${
+                          editVerified
+                            ? "bg-primary/10 text-primary border-primary/30 shadow-2xs"
+                            : "bg-surface-container text-gray-400 border-outline-variant/30"
+                        }`}
+                      >
+                        <CheckCircle2 className="w-4 h-4" />
+                        <span>{editVerified ? "Verified Partner ✓" : "Standard Partner"}</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Description */}
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-xs font-bold text-on-surface">Description / Focus Areas</label>
+                    <textarea
+                      rows={4}
+                      value={editDescription}
+                      onChange={(e) => setEditDescription(e.target.value)}
+                      placeholder="Brief overview of venture mandate, core engineering focus, problem areas, or technical thesis..."
+                      className="w-full bg-surface-container-low rounded-xl p-3.5 text-xs text-on-surface outline-none focus:ring-2 focus:ring-primary border border-outline-variant/30 resize-y"
+                    />
+                  </div>
+                </div>
+
+                {/* Right Column: Live Card Preview (5 cols) */}
+                <div className="lg:col-span-5 flex flex-col gap-3 bg-surface-container-low/70 rounded-2xl p-5 border border-outline-variant/30 justify-between">
+                  <div>
+                    <div className="flex items-center justify-between pb-3 border-b border-outline-variant/20 mb-4">
+                      <div className="flex items-center gap-2">
+                        <Sparkles className="w-4 h-4 text-primary" />
+                        <span className="text-xs font-bold text-on-surface">Live Directory Preview</span>
+                      </div>
+                      <span className="text-[10px] uppercase font-mono tracking-wider text-on-surface-variant font-bold">
+                        Interactive
+                      </span>
+                    </div>
+
+                    {/* Rendered Preview Card */}
+                    <div className="bg-surface-container-lowest rounded-2xl p-5 border border-outline-variant/30 shadow-sm flex flex-col gap-4">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex items-center gap-3">
+                          <CompanyLogo
+                            name={editName || "Partner"}
+                            logoUrl={editLogoUrl}
+                            website={editWebsite}
+                            size="lg"
+                          />
+                          <div>
+                            <div className="flex items-center gap-1.5">
+                              <h4 className="text-sm font-extrabold text-on-surface line-clamp-1">
+                                {editName.trim() || "Company Name"}
+                              </h4>
+                              {editVerified && (
+                                <span title="Verified Enterprise Partner">
+                                  <CheckCircle2 className="w-3.5 h-3.5 text-primary shrink-0" />
+                                </span>
+                              )}
+                            </div>
+                            <span className="text-[11px] font-semibold text-primary">
+                              {editIndustry || "General Industry"}
+                            </span>
+                          </div>
+                        </div>
+
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">
+                          Active
+                        </span>
+                      </div>
+
+                      <p className="text-xs text-on-surface-variant line-clamp-3 min-h-[48px]">
+                        {editDescription.trim() ||
+                          "Enterprise solver and ecosystem venture partner actively reviewing challenge tracks."}
+                      </p>
+
+                      <div className="flex items-center justify-between pt-3 border-t border-outline-variant/20 text-xs">
+                        {editWebsite.trim() ? (
+                          <span className="inline-flex items-center gap-1.5 text-primary font-mono text-[11px] truncate max-w-[200px]">
+                            <Globe className="w-3.5 h-3.5 shrink-0" />
+                            <span className="truncate">
+                              {editWebsite.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "")}
+                            </span>
+                            <ExternalLink className="w-3 h-3 shrink-0" />
+                          </span>
+                        ) : (
+                          <span className="text-on-surface-variant/40 font-mono text-[11px]">
+                            www.website.com
+                          </span>
+                        )}
+
+                        <span className="text-[10px] font-mono text-on-surface-variant">
+                          ID: {editingCompany.id}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Help Tips */}
+                  <div className="p-3.5 rounded-xl bg-surface border border-outline-variant/20 text-[11px] text-on-surface-variant space-y-1">
+                    <p className="font-bold text-on-surface flex items-center gap-1.5">
+                      <ShieldCheck className="w-3.5 h-3.5 text-primary" />
+                      Live Ecosystem Sync
+                    </p>
+                    <p>
+                      Changes made here immediately synchronize to the public directory and challenge sponsorship displays.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Modal Footer */}
+              <div className="flex items-center justify-between px-6 py-4 border-t border-outline-variant/30 bg-surface-container-low shrink-0">
+                <span className="text-xs text-on-surface-variant">
+                  Updating partner record for <strong>{editingCompany.name}</strong>.
+                </span>
+                <div className="flex items-center gap-2.5">
+                  <button
+                    type="button"
+                    onClick={() => setEditingCompany(null)}
+                    className="px-4 py-2 rounded-xl text-xs font-bold text-on-surface-variant hover:bg-surface-container cursor-pointer transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isUpdating}
+                    className="px-5 py-2.5 rounded-xl text-xs font-bold bg-primary hover:bg-primary/90 text-white flex items-center gap-2 shadow-sm cursor-pointer disabled:opacity-50 transition-all hover:scale-[1.02]"
+                  >
+                    <Sparkles className="w-3.5 h-3.5" />
+                    <span>{isUpdating ? "Saving..." : "Save Changes"}</span>
+                  </button>
+                </div>
               </div>
             </form>
           </div>
         </div>
+      )}
+
+      {/* ── BULK COMPANY IMPORT MODAL (CSV / EXCEL) ────────────────────── */}
+      {isBulkModalOpen && (
+        <AdminBulkCompanyImportModal
+          isOpen={isBulkModalOpen}
+          onClose={() => setIsBulkModalOpen(false)}
+          existingCompanies={companies}
+          onImportComplete={(created, merged) => {
+            showToast(`Bulk import complete: ${created} created, ${merged} merged!`);
+          }}
+        />
       )}
     </div>
   );

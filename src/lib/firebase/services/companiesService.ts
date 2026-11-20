@@ -147,6 +147,43 @@ export async function createCompany(companyData: {
   return newCompany;
 }
 
+export async function bulkSaveCompaniesToFirestore(
+  companiesList: CompanyDoc[]
+): Promise<{ total: number; success: number }> {
+  let success = 0;
+  for (const comp of companiesList) {
+    try {
+      // 1. Save locally
+      saveLocalCompany(comp);
+
+      // 2. Save to Firestore with merge: true
+      if (db && typeof doc === "function") {
+        const compRef = doc(db, COLLECTION_NAME, comp.id);
+        await setDoc(
+          compRef,
+          {
+            ...comp,
+            updatedAtServer: serverTimestamp(),
+          },
+          { merge: true }
+        );
+      }
+      success++;
+    } catch (err) {
+      console.warn("Firestore bulkSaveCompanies error:", comp.name, err);
+    }
+  }
+
+  // Notify active listeners
+  if (companiesStream) {
+    const fresh = getLocalCompanies();
+    companiesStream.latestData = fresh;
+    companiesStream.listeners.forEach((cb) => cb(fresh));
+  }
+
+  return { total: companiesList.length, success };
+}
+
 export async function updateCompanyDetails(
   id: string,
   updates: Partial<CompanyDoc>
