@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore, doc, setDoc, serverTimestamp } from "firebase/firestore";
-import { getAuth, signInAnonymously } from "firebase/auth";
+import { getAuth, signInAnonymously, signInWithEmailAndPassword } from "firebase/auth";
 import {
   REAL_PROBLEMS,
   REAL_INDUSTRIES,
@@ -32,11 +32,24 @@ async function pushAllData() {
   console.log("🚀 ========================================================");
   console.log(`Target Project: ${firebaseConfig.projectId}`);
 
-  try {
-    const cred = await signInAnonymously(auth);
-    console.log(`✓ Authenticated session with UID: ${cred.user.uid}`);
-  } catch (err: any) {
-    console.log(`Notice: Anonymous auth (${err?.message || err})`);
+  const email = process.env.ADMIN_EMAIL || process.env.SEED_ADMIN_EMAIL;
+  const password = process.env.ADMIN_PASSWORD || process.env.SEED_ADMIN_PASSWORD;
+
+  if (email && password) {
+    try {
+      const cred = await signInWithEmailAndPassword(auth, email, password);
+      console.log(`✓ Authenticated admin session as ${email} (UID: ${cred.user.uid})`);
+    } catch (err: any) {
+      console.error(`❌ Admin sign-in failed:`, err?.message || err);
+      process.exit(1);
+    }
+  } else {
+    try {
+      const cred = await signInAnonymously(auth);
+      console.log(`✓ Authenticated session with UID: ${cred.user.uid}`);
+    } catch (err: any) {
+      console.log(`Notice: Anonymous auth restricted (${err?.message || err}). Tip: Provide ADMIN_EMAIL and ADMIN_PASSWORD to seed with full admin privileges.`);
+    }
   }
 
   let totalCount = 0;
