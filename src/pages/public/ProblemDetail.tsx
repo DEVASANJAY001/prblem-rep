@@ -15,8 +15,9 @@ import {
   updateProblemStatus,
 } from "@/lib/firebase/services/problemsService";
 import { subscribeCompanies } from "@/lib/firebase/services/companiesService";
+import { subscribeCredits } from "@/lib/firebase/services/creditsService";
 import { REAL_COMPANIES } from "@/data/realProductionData";
-import { ProblemDoc, ProblemComment, CommentReply, CompanyDoc } from "@/types";
+import { ProblemDoc, ProblemComment, CommentReply, CompanyDoc, CreditSourceDoc } from "@/types";
 import { toggleBookmark, isProblemBookmarked, resolveProblemAuthor } from "@/lib/storage";
 import { useAuth } from "@/contexts/AuthContext";
 import { LoadingContainer } from "@/components/common/LoadingContainer";
@@ -27,7 +28,7 @@ import { cleanIndustryName } from "@/lib/algorithms/domainIntelligence";
 import { UserAvatar } from "@/components/ui/UserAvatar";
 import { CompanyLogo } from "@/components/ui/CompanyLogo";
 import { TrendingProblemCard } from "@/components/ui/TrendingProblemCard";
-import { CreditSourceBadge } from "@/components/ui/CreditSourceBadge";
+import { CreditSourceBadge, CreditLogoCircle } from "@/components/ui/CreditSourceBadge";
 import {
   Bookmark,
   Share2,
@@ -280,6 +281,27 @@ export const ProblemDetail: React.FC = () => {
     });
     return () => unsub();
   }, []);
+
+  // Subscribe to real credits directory for logo and website resolution
+  const [allCredits, setAllCredits] = useState<CreditSourceDoc[]>([]);
+  useEffect(() => {
+    const unsub = subscribeCredits((list) => {
+      if (list && list.length > 0) {
+        setAllCredits(list);
+      }
+    });
+    return () => unsub();
+  }, []);
+
+  // Aggregate credit sources (psFrom + credits)
+  const creditsList = useMemo(() => {
+    const fromPs = problem?.psFrom && problem.psFrom.length > 0 ? problem.psFrom : [];
+    const fromCredits = problem?.credits && problem.credits.length > 0 ? problem.credits : [];
+    const customPs = problem?.psFromCustom ? [problem.psFromCustom] : [];
+    const customCred = problem?.creditsCustom ? [problem.creditsCustom] : [];
+    const combined = Array.from(new Set([...fromPs, ...fromCredits, ...customPs, ...customCred].filter(Boolean)));
+    return combined.length > 0 ? combined : ["Own Thinking"];
+  }, [problem?.psFrom, problem?.credits, problem?.psFromCustom, problem?.creditsCustom]);
 
   // Related Problems: read from in-memory cache (no new Firestore subscription needed)
   // getApprovedProblemsSnapshot() checks queryStreams → SWR → localStorage, 0 network reads
@@ -2042,6 +2064,7 @@ export const ProblemDetail: React.FC = () => {
                         name={comp.name}
                         logoUrl={comp.logoUrl}
                         size="md"
+                        className="!rounded-full border-2 border-surface !w-8 !h-8 p-1"
                       />
                     ))}
                     {attachedCompanies.length > 4 && (
@@ -2087,17 +2110,26 @@ export const ProblemDetail: React.FC = () => {
                   )}
                 </div>
 
-                {problem.psFrom && problem.psFrom.length > 0 ? (
-                  <div className="flex flex-wrap gap-1.5">
-                    {problem.psFrom.map((source, idx) => (
-                      <CreditSourceBadge key={idx} source={source} size="sm" />
-                    ))}
-                  </div>
-                ) : (
-                  <div className="flex flex-wrap gap-1.5">
-                    <CreditSourceBadge source="Stuckhere" size="sm" />
-                  </div>
-                )}
+                <div className="flex items-center -space-x-1.5 mt-1">
+                  {creditsList.slice(0, 4).map((source, idx) => {
+                    const matchedDoc = allCredits.find(
+                      (c) => c.name.toLowerCase() === source.toLowerCase() || c.id === source
+                    );
+                    return (
+                      <CreditLogoCircle
+                        key={idx}
+                        source={matchedDoc?.name || source}
+                        customLogoUrl={matchedDoc?.logoUrl}
+                        websiteUrl={matchedDoc?.websiteUrl}
+                      />
+                    );
+                  })}
+                  {creditsList.length > 4 && (
+                    <div className="inline-flex h-8 w-8 items-center justify-center rounded-full border-2 border-surface bg-surface-container text-primary text-[10px] font-bold shadow-2xs shrink-0">
+                      +{creditsList.length - 4}
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Build Startup Primary CTA */}

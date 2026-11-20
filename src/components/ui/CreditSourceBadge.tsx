@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import { StuckhereLogoMark } from "./StuckhereLogo";
+import { resolveCompanyLogo, getCompanyBrand } from "./CompanyLogo";
 import { X } from "lucide-react";
 
 export interface CreditSourceBadgeProps {
@@ -100,5 +101,139 @@ export const CreditSourceBadge: React.FC<CreditSourceBadgeProps> = ({
         </button>
       )}
     </span>
+  );
+};
+
+export const KNOWN_CREDIT_DOMAINS: Record<string, string> = {
+  "hack2skill": "hack2skill.com",
+  "unstop": "unstop.com",
+  "smart india hackathon (sih)": "sih.gov.in",
+  "smart india hackathon": "sih.gov.in",
+  "sih": "sih.gov.in",
+  "msme idea hackathon": "mygov.in",
+  "msme": "msme.gov.in",
+  "devfolio / devpost": "devfolio.co",
+  "devfolio": "devfolio.co",
+  "devpost": "devpost.com",
+  "open innovation / corporate": "openinnovation.net",
+  "open innovation": "openinnovation.net",
+  "kaggle": "kaggle.com",
+  "y combinator": "ycombinator.com",
+  "techstars": "techstars.com",
+  "mit solve": "solve.mit.edu",
+  "xprize": "xprize.org",
+};
+
+export function resolveCreditLogo(
+  source: string = "",
+  customLogoUrl?: string,
+  websiteUrl?: string
+): string {
+  if (isOwnThinkingCredit(source)) {
+    return "/logo.png";
+  }
+
+  // 1. If explicit custom logo provided
+  if (customLogoUrl && customLogoUrl.trim()) {
+    return resolveCompanyLogo(customLogoUrl, source, websiteUrl);
+  }
+
+  const cleanSource = source.toLowerCase().trim();
+
+  // 2. Check known credit platforms
+  for (const [key, domain] of Object.entries(KNOWN_CREDIT_DOMAINS)) {
+    if (cleanSource === key || cleanSource.includes(key)) {
+      return `https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://${domain}&size=128`;
+    }
+  }
+
+  // 3. If explicit website provided
+  if (websiteUrl && websiteUrl.trim()) {
+    try {
+      const urlObj = new URL(websiteUrl.startsWith("http") ? websiteUrl : `https://${websiteUrl}`);
+      const domain = urlObj.hostname.replace(/^www\./, "");
+      if (domain && domain.includes(".")) {
+        return `https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://${domain}&size=128`;
+      }
+    } catch {
+      // ignore
+    }
+  }
+
+  // 4. Try resolveCompanyLogo (e.g. if source is a company name like Google, Microsoft, Tata, etc.)
+  return resolveCompanyLogo("", source, websiteUrl);
+}
+
+export interface CreditLogoCircleProps {
+  source: string;
+  className?: string;
+  size?: "sm" | "md";
+  customLogoUrl?: string;
+  websiteUrl?: string;
+}
+
+/**
+ * CreditLogoCircle: Renders only the logo in a clean circular avatar
+ * matching the People and Companies interested avatar clusters.
+ */
+export const CreditLogoCircle: React.FC<CreditLogoCircleProps> = ({
+  source,
+  className = "",
+  size = "md",
+  customLogoUrl,
+  websiteUrl,
+}) => {
+  const [loadError, setLoadError] = useState(false);
+  const isOwn = isOwnThinkingCredit(source);
+  const logoUrl = resolveCreditLogo(source, customLogoUrl, websiteUrl);
+  const brand = getCompanyBrand(source);
+
+  const sizeClasses = size === "sm" ? "w-7 h-7 text-[10px]" : "w-8 h-8 text-xs";
+
+  if (isOwn) {
+    return (
+      <div
+        className={`rounded-full bg-surface-container border-2 border-surface shadow-2xs flex items-center justify-center overflow-hidden shrink-0 hover:scale-110 hover:z-20 transition-all cursor-pointer ${sizeClasses} ${className}`}
+        title="Stuckhere (Own Thinking - Original Discovery)"
+      >
+        {!loadError ? (
+          <img
+            src="/logo.png"
+            alt="Stuckhere"
+            className="w-full h-full object-contain p-1"
+            onError={() => setLoadError(true)}
+          />
+        ) : (
+          <StuckhereLogoMark className="w-4 h-4 text-primary stroke-[2.5]" />
+        )}
+      </div>
+    );
+  }
+
+  if (logoUrl && !loadError) {
+    return (
+      <div
+        className={`rounded-full bg-white dark:bg-zinc-800 border-2 border-surface shadow-2xs flex items-center justify-center overflow-hidden shrink-0 hover:scale-110 hover:z-20 transition-all cursor-pointer p-1 ${sizeClasses} ${className}`}
+        title={source}
+      >
+        <img
+          src={logoUrl}
+          alt={source}
+          className="w-full h-full object-contain"
+          onError={() => setLoadError(true)}
+          loading="lazy"
+        />
+      </div>
+    );
+  }
+
+  // Branded Monogram Fallback
+  return (
+    <div
+      className={`rounded-full border-2 border-surface shadow-2xs flex items-center justify-center font-bold tracking-tight select-none shrink-0 hover:scale-110 hover:z-20 transition-all cursor-pointer ${brand.bg} ${brand.text} ${sizeClasses} ${className}`}
+      title={source}
+    >
+      <span>{brand.iconText}</span>
+    </div>
   );
 };
