@@ -67,6 +67,7 @@ const Competitions = lazyWithRetry(() => import("@/pages/public/Competitions").t
 const Methodology = lazyWithRetry(() => import("@/pages/public/Methodology").then((m) => ({ default: m.Methodology })));
 const ProblemDiscoveryGuide = lazyWithRetry(() => import("@/pages/public/ProblemDiscoveryGuide").then((m) => ({ default: m.ProblemDiscoveryGuide })));
 const OpenInnovation = lazyWithRetry(() => import("@/pages/public/OpenInnovation").then((m) => ({ default: m.OpenInnovation })));
+const Learn = lazyWithRetry(() => import("@/pages/public/Learn").then((m) => ({ default: m.Learn })));
 
 // Admin Console Modules (Loaded on-demand only for authorized administrators)
 const AdminLogin = lazyWithRetry(() => import("@/pages/admin/AdminLogin").then((m) => ({ default: m.AdminLogin })));
@@ -175,6 +176,10 @@ export default function App() {
                 <Route path="/guides/problem-discovery-framework" element={<PublicLayout><ProblemDiscoveryGuide /></PublicLayout>} />
                 <Route path="/problem-discovery" element={<Navigate to="/guides/problem-discovery-framework" replace />} />
                 <Route path="/open-innovation" element={<PublicLayout><OpenInnovation /></PublicLayout>} />
+                <Route path="/learn" element={<PublicLayout><Learn /></PublicLayout>} />
+                <Route path="/learn/:slug" element={<PublicLayout><Learn /></PublicLayout>} />
+                <Route path="/academy" element={<Navigate to="/learn" replace />} />
+                <Route path="/tutorials" element={<Navigate to="/learn" replace />} />
 
                 {/* Dynamic Public Form Runner */}
                 <Route path="/f/:formSlug" element={<PublicLayout><PublicFormRunner /></PublicLayout>} />

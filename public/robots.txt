@@ -27,6 +27,11 @@ Allow: /research/
 Allow: /solutions/
 Allow: /community/
 Allow: /about/
+Allow: /methodology
+Allow: /guides/
+Allow: /open-innovation
+Allow: /learn
+Allow: /learn/
 Allow: /llms.txt
 Allow: /sitemap.xml
 Disallow: /admin/
@@ -48,6 +53,11 @@ Allow: /research/
 Allow: /solutions/
 Allow: /community/
 Allow: /about/
+Allow: /methodology
+Allow: /guides/
+Allow: /open-innovation
+Allow: /learn
+Allow: /learn/
 Allow: /llms.txt
 Allow: /sitemap.xml
 Disallow: /admin/
