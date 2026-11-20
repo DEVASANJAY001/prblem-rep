@@ -135,6 +135,65 @@ export const DEFAULT_CREDITS: CreditSourceDoc[] = [
   },
 ];
 
+// Helper to identify mock/seed users that should never appear on the public Community leaderboard or Admin users list.
+export function isMockUser(u: { uid?: string; name?: string; displayName?: string; email?: string; username?: string } | null | undefined): boolean {
+  if (!u) return true;
+  const mockUids = new Set([
+    "admin_1",
+    "user_dr_elena",
+    "user_marcus_md",
+    "user_energy_tech",
+    "user_sarah_ai",
+    "user_fin_analyst",
+    "user_agro_david",
+  ]);
+  if (u.uid && mockUids.has(u.uid)) return true;
+
+  const mockNames = new Set([
+    "system master admin",
+    "dr. elena rostova",
+    "dr. marcus vance",
+    "dr. marcus vance, md",
+    "maya lin",
+    "maya lin, grid systems",
+    "sarah chen",
+    "dr. sarah chen, phd",
+    "vikram malhotra",
+    "vikram malhotra, cfa",
+    "david kiprop",
+    "david kiprop, agronomist",
+    "stuckhere core team",
+  ]);
+  if (u.name && mockNames.has(u.name.trim().toLowerCase())) return true;
+  if (u.displayName && mockNames.has(u.displayName.trim().toLowerCase())) return true;
+
+  const mockUsernames = new Set([
+    "stuckhere_admin",
+    "elena_rostova",
+    "marcus_vance",
+    "sarah_chen",
+    "vikram_m",
+    "vikram_fin",
+    "david_kiprop",
+    "maya_lin",
+    "mayalin_grid",
+  ]);
+  if (u.username && mockUsernames.has(u.username.trim().toLowerCase())) return true;
+
+  const mockEmails = new Set([
+    "admin@stuckhere.com",
+    "elena.rostova@biologics-research.org",
+    "marcus.vance@ruralhealth.org",
+    "maya.lin@cleangrid.energy",
+    "sarah.chen@openhealth.ai",
+    "vikram.m@treasuryflows.com",
+    "david.kiprop@soilcarbon.ag",
+  ]);
+  if (u.email && mockEmails.has(u.email.trim().toLowerCase())) return true;
+
+  return false;
+}
+
 // Safe LocalStorage helpers
 export function cleanupStorage(): void {
   if (typeof window === "undefined" || !window.localStorage) return;
@@ -169,6 +228,18 @@ export function cleanupStorage(): void {
         if (Array.isArray(parsed)) {
           const cleaned = parsed.filter((p: any) => p && p.id !== "prob-pending-seed" && p.id !== "prob-needs-info-seed");
           localStorage.setItem(STORAGE_KEYS.PROBLEMS, JSON.stringify(cleaned));
+        }
+      } catch {}
+    }
+
+    // Purge mock/seed users from local storage to keep Community and Admin users completely real
+    const storedUsers = localStorage.getItem(STORAGE_KEYS.USERS);
+    if (storedUsers) {
+      try {
+        const parsed = JSON.parse(storedUsers);
+        if (Array.isArray(parsed)) {
+          const cleaned = parsed.filter((u: any) => !isMockUser(u));
+          localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(cleaned));
         }
       } catch {}
     }
@@ -691,7 +762,7 @@ export function checkUsernameAvailability(username: string, currentUid?: string)
     return { available: false, error: "Username must be 3-20 characters and contain only lowercase letters, numbers, and underscores." };
   }
 
-  const users = load<UserDoc[]>(STORAGE_KEYS.USERS, REAL_USERS);
+  const users = load<UserDoc[]>(STORAGE_KEYS.USERS, []).filter((u) => !isMockUser(u));
   const match = users.find((u) => u.username?.toLowerCase() === clean && u.uid !== currentUid);
   if (match) {
     return { available: false, error: `Username @${clean} is already claimed by another innovator.` };
@@ -700,7 +771,7 @@ export function checkUsernameAvailability(username: string, currentUid?: string)
 }
 
 export function saveLocalUser(userDoc: UserDoc): void {
-  const users = load<UserDoc[]>(STORAGE_KEYS.USERS, REAL_USERS);
+  const users = load<UserDoc[]>(STORAGE_KEYS.USERS, []).filter((u) => !isMockUser(u));
   const idx = users.findIndex((u) => u.uid === userDoc.uid);
   let updated: UserDoc[];
   if (idx >= 0) {
@@ -724,7 +795,7 @@ export function resolveProblemAuthor(problem: ProblemDoc): { displayName: string
   const candidateUsername = problem.submitterUsername || problem.authorUsername;
 
   // 2. Look up in registered and seed users list by submittedByUid or submittedBy
-  const users = load<UserDoc[]>(STORAGE_KEYS.USERS, REAL_USERS);
+  const users = load<UserDoc[]>(STORAGE_KEYS.USERS, []);
   const matchedUser = users.find(
     (u) =>
       (problem.submittedByUid && u.uid === problem.submittedByUid) ||
@@ -1078,7 +1149,7 @@ export function getResearch(): ResearchDoc[] {
 
 export function getLeaderboard(): UserDoc[] {
   initializeStorage();
-  return load<UserDoc[]>(STORAGE_KEYS.USERS, REAL_USERS);
+  return load<UserDoc[]>(STORAGE_KEYS.USERS, []).filter((u) => !isMockUser(u));
 }
 
 // ─── Audit Logs ────────────────────────────────────────────────
@@ -1489,7 +1560,7 @@ export function deleteBadgeFromStorage(badgeId: string): boolean {
 
 export function grantBadgeToUserInStorage(uid: string, badgeName: string): UserDoc | null {
   initializeStorage();
-  const users = load<UserDoc[]>(STORAGE_KEYS.USERS, REAL_USERS);
+  const users = load<UserDoc[]>(STORAGE_KEYS.USERS, []).filter((u) => !isMockUser(u));
   const index = users.findIndex((u) => u.uid === uid);
   if (index >= 0) {
     const currentBadges = users[index].badges || [];
@@ -1505,7 +1576,7 @@ export function grantBadgeToUserInStorage(uid: string, badgeName: string): UserD
 
 export function revokeBadgeFromUserInStorage(uid: string, badgeName: string): UserDoc | null {
   initializeStorage();
-  const users = load<UserDoc[]>(STORAGE_KEYS.USERS, REAL_USERS);
+  const users = load<UserDoc[]>(STORAGE_KEYS.USERS, []).filter((u) => !isMockUser(u));
   const index = users.findIndex((u) => u.uid === uid);
   if (index >= 0) {
     const currentBadges = users[index].badges || [];

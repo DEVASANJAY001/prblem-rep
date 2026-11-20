@@ -7,6 +7,7 @@ import {
   grantBadgeToUser,
 } from "@/lib/firebase/services/badgesService";
 import { subscribeLeaderboard } from "@/lib/firebase/services/usersService";
+import { isMockUser } from "@/lib/storage";
 import { BadgeDoc, BadgeTier, BadgeCategory, BadgeTaskType, UserDoc } from "@/types";
 import {
   DynamicBadgeIcon,
@@ -97,7 +98,7 @@ export const AdminBadges: React.FC = () => {
 
   useEffect(() => {
     const unsubBadges = subscribeBadges((list) => setBadges(list));
-    const unsubUsers = subscribeLeaderboard((list) => setUsers(list));
+    const unsubUsers = subscribeLeaderboard((list) => setUsers(list.filter((u) => !isMockUser(u))));
     return () => {
       unsubBadges();
       unsubUsers();

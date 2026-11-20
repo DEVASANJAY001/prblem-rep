@@ -5,7 +5,7 @@ import {
   grantBadgeToUser,
   revokeBadgeFromUser,
 } from "@/lib/firebase/services/badgesService";
-import { generateAdminInviteToken } from "@/lib/storage";
+import { generateAdminInviteToken, isMockUser } from "@/lib/storage";
 import { useAuth } from "@/contexts/AuthContext";
 import { UserDoc, UserRole, BadgeDoc } from "@/types";
 import {
@@ -47,7 +47,7 @@ export const AdminUsers: React.FC = () => {
   const [badgeActionLoading, setBadgeActionLoading] = useState(false);
 
   useEffect(() => {
-    const unsubUsers = subscribeLeaderboard((list) => setUsers(list));
+    const unsubUsers = subscribeLeaderboard((list) => setUsers(list.filter((u) => !isMockUser(u))));
     const unsubBadges = subscribeBadges((list) => setBadges(list));
     return () => {
       unsubUsers();
@@ -97,6 +97,7 @@ export const AdminUsers: React.FC = () => {
   };
 
   const filtered = users.filter((u) => {
+    if (isMockUser(u)) return false;
     if (roleFilter !== "all" && u.role !== roleFilter) return false;
     if (
       search.trim() &&

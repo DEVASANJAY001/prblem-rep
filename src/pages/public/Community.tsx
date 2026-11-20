@@ -9,6 +9,7 @@ import { UserAvatar } from "@/components/ui/UserAvatar";
 import { DynamicBadgeIcon, TIER_CONFIG } from "@/components/ui/DynamicBadgeIcon";
 import { getProblemDetailUrl, getStartupModeUrl } from "@/lib/seoUrls";
 import { SEOHead } from "@/components/common/SEOHead";
+import { isMockUser } from "@/lib/storage";
 import {
   Trophy,
   Crown,
@@ -78,7 +79,7 @@ export const Community: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const u1 = subscribeLeaderboard((list) => { setUsers(list); setLoading(false); });
+    const u1 = subscribeLeaderboard((list) => { setUsers(list.filter((u) => !isMockUser(u))); setLoading(false); });
     const u2 = subscribeProblems({ status: "approved" }, (list) => setProblems(list));
     const u3 = subscribeBadges((list) => setBadges(list));
     return () => { u1(); u2(); u3(); };
@@ -86,7 +87,9 @@ export const Community: React.FC = () => {
 
   // ── Compute live dynamic stats from real problems data for each user ──
   const usersWithLiveStats = useMemo(() => {
-    return users.map((u) => {
+    return users
+      .filter((u) => !isMockUser(u))
+      .map((u) => {
       // Find all approved problems submitted by this user
       const userProblems = problems.filter(
         (p) =>

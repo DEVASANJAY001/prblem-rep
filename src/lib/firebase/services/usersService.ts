@@ -10,8 +10,7 @@ import {
 } from "firebase/firestore";
 import { db } from "../config";
 import { UserDoc, UserRole } from "@/types";
-import { getLeaderboard as getLocalLeaderboard, saveLocalUser, load, STORAGE_KEYS } from "@/lib/storage";
-import { REAL_USERS } from "@/data/realProductionData";
+import { getLeaderboard as getLocalLeaderboard, saveLocalUser, load, STORAGE_KEYS, isMockUser } from "@/lib/storage";
 
 const USERS_COLLECTION = "users";
 
@@ -38,7 +37,7 @@ export async function getUserDoc(uid: string): Promise<UserDoc | null> {
   }
 
   // Resilient fallback to local storage if Firestore network/quota throttles
-  const localUsers = load<UserDoc[]>(STORAGE_KEYS.USERS, REAL_USERS);
+  const localUsers = load<UserDoc[]>(STORAGE_KEYS.USERS, []).filter((u) => !isMockUser(u));
   const found = localUsers.find((u) => u.uid === uid);
   return found || null;
 }
@@ -95,7 +94,7 @@ export async function syncUserProfile(userDoc: UserDoc): Promise<UserDoc> {
 }
 
 export function subscribeLeaderboard(callback: (users: UserDoc[]) => void): () => void {
-  const local = getLocalLeaderboard();
+  const local = getLocalLeaderboard().filter((u) => !isMockUser(u));
   callback(local);
 
   if (!db || typeof collection !== "function") {
@@ -113,13 +112,12 @@ export function subscribeLeaderboard(callback: (users: UserDoc[]) => void): () =
         const list: UserDoc[] = [];
         snap.forEach((d) => {
           const u = d.data() as UserDoc;
-          if (u.uid) list.push(u);
+          if (u.uid && !isMockUser(u)) list.push(u);
         });
 
-        // Merge Firestore users with REAL_USERS to ensure all active and seed members are included
+        // Collect and update Firestore users (excluding mock/seed entries)
         const userMap = new Map<string, UserDoc>();
-        REAL_USERS.forEach((u) => userMap.set(u.uid, u));
-        list.forEach((u) => userMap.set(u.uid, { ...(userMap.get(u.uid) || {}), ...u }));
+        list.forEach((u) => userMap.set(u.uid, u));
         const combined = Array.from(userMap.values());
 
         if (leaderboardStream) {
