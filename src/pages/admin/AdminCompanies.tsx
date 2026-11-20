@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   subscribeCompanies,
   createCompany,
@@ -6,9 +6,11 @@ import {
   toggleCompanyVisibility,
   deleteCompany,
 } from "@/lib/firebase/services/companiesService";
+import { subscribeIndustries } from "@/lib/firebase/services/industriesService";
 import { REAL_INDUSTRIES } from "@/data/realProductionData";
-import { CompanyDoc } from "@/types";
+import { CompanyDoc, IndustryDoc } from "@/types";
 import { CompanyLogo, normalizeLogoUrl, resolveCompanyLogo } from "@/components/ui/CompanyLogo";
+import { SearchableIndustrySelect } from "@/components/ui/SearchableIndustrySelect";
 import {
   Building2,
   Plus,
@@ -28,6 +30,7 @@ import {
 
 export const AdminCompanies: React.FC = () => {
   const [companies, setCompanies] = useState<CompanyDoc[]>([]);
+  const [industries, setIndustries] = useState<IndustryDoc[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [industryFilter, setIndustryFilter] = useState("all");
@@ -62,12 +65,62 @@ export const AdminCompanies: React.FC = () => {
   };
 
   useEffect(() => {
-    const unsubscribe = subscribeCompanies((list) => {
+    const unsubCompanies = subscribeCompanies((list) => {
       setCompanies(list);
       setLoading(false);
     });
-    return () => unsubscribe();
+    const unsubIndustries = subscribeIndustries((list) => {
+      setIndustries(list);
+    });
+    return () => {
+      unsubCompanies();
+      unsubIndustries();
+    };
   }, []);
+
+  // Compute live available industries combining Firestore industries, company industries & defaults
+  const availableIndustries = useMemo(() => {
+    const map = new Map<string, { name: string; icon?: string; color?: string }>();
+
+    // 1. Live added industries from Firestore / storage
+    industries.forEach((ind) => {
+      if (ind && ind.name && !ind.hidden) {
+        map.set(ind.name.trim().toLowerCase(), {
+          name: ind.name.trim(),
+          icon: ind.icon,
+          color: ind.color,
+        });
+      }
+    });
+
+    // 2. Also ensure industries already on existing companies exist
+    companies.forEach((c) => {
+      if (c.industry && c.industry.trim()) {
+        const key = c.industry.trim().toLowerCase();
+        if (!map.has(key)) {
+          map.set(key, { name: c.industry.trim(), color: "#1657FF" });
+        }
+      }
+    });
+
+    // 3. Fallback to REAL_INDUSTRIES if empty
+    if (map.size === 0) {
+      REAL_INDUSTRIES.forEach((ind) => {
+        map.set(ind.name.trim().toLowerCase(), {
+          name: ind.name.trim(),
+          icon: ind.icon,
+          color: ind.color,
+        });
+      });
+    }
+
+    // Always ensure "General Industry" is present
+    if (!map.has("general industry")) {
+      map.set("general industry", { name: "General Industry", color: "#6B7280" });
+    }
+
+    return Array.from(map.values()).sort((a, b) => a.name.localeCompare(b.name));
+  }, [industries, companies]);
 
   const handleCreateCompany = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -249,8 +302,8 @@ export const AdminCompanies: React.FC = () => {
             className="bg-surface-container-low rounded-xl px-3 py-2 text-xs font-semibold text-on-surface outline-none focus:ring-2 focus:ring-primary cursor-pointer pr-8"
           >
             <option value="all">All Industries</option>
-            {REAL_INDUSTRIES.map((ind) => (
-              <option key={ind.id} value={ind.name}>
+            {availableIndustries.map((ind) => (
+              <option key={ind.name} value={ind.name}>
                 {ind.name}
               </option>
             ))}
@@ -485,18 +538,12 @@ export const AdminCompanies: React.FC = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="flex flex-col gap-1.5">
                   <label className="text-xs font-bold text-on-surface">Industry</label>
-                  <select
+                  <SearchableIndustrySelect
                     value={createIndustry}
-                    onChange={(e) => setCreateIndustry(e.target.value)}
-                    className="bg-surface-container-low rounded-xl px-3 py-2 text-xs font-semibold text-on-surface outline-none focus:ring-2 focus:ring-primary"
-                  >
-                    {REAL_INDUSTRIES.map((ind) => (
-                      <option key={ind.id} value={ind.name}>
-                        {ind.name}
-                      </option>
-                    ))}
-                    <option value="General Industry">General Industry</option>
-                  </select>
+                    onChange={setCreateIndustry}
+                    industries={availableIndustries}
+                    placeholder="Search or select industry..."
+                  />
                 </div>
 
                 <div className="flex flex-col gap-1.5">
@@ -649,18 +696,12 @@ export const AdminCompanies: React.FC = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="flex flex-col gap-1.5">
                   <label className="text-xs font-bold text-on-surface">Industry</label>
-                  <select
+                  <SearchableIndustrySelect
                     value={editIndustry}
-                    onChange={(e) => setEditIndustry(e.target.value)}
-                    className="bg-surface-container-low rounded-xl px-3 py-2 text-xs font-semibold text-on-surface outline-none focus:ring-2 focus:ring-primary"
-                  >
-                    {REAL_INDUSTRIES.map((ind) => (
-                      <option key={ind.id} value={ind.name}>
-                        {ind.name}
-                      </option>
-                    ))}
-                    <option value="General Industry">General Industry</option>
-                  </select>
+                    onChange={setEditIndustry}
+                    industries={availableIndustries}
+                    placeholder="Search or select industry..."
+                  />
                 </div>
 
                 <div className="flex flex-col gap-1.5">
