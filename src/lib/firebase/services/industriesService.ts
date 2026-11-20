@@ -6,6 +6,12 @@ import {
   deleteDoc,
   onSnapshot,
   getDocs,
+  query,
+  orderBy,
+  limit,
+  startAfter,
+  QueryDocumentSnapshot,
+  DocumentData,
   serverTimestamp,
 } from "firebase/firestore";
 import { db } from "../config";
@@ -115,6 +121,73 @@ export async function getIndustries(): Promise<IndustryDoc[]> {
     console.warn("Firestore getIndustries deferred to local dataset");
   }
   return local;
+}
+
+export interface PaginatedIndustriesResult {
+  industries: IndustryDoc[];
+  lastDoc: QueryDocumentSnapshot<DocumentData> | null;
+  hasMore: boolean;
+  totalLoaded: number;
+}
+
+/**
+ * Optimized paginated fetch for industries:
+ * Fetches exactly `pageSize` (default 15) documents from Firestore using cursor-based
+ * pagination (`limit`, `orderBy`, `startAfter`), drastically minimizing read/write operations
+ * and database costs compared to full collection listeners.
+ */
+export async function fetchIndustriesBatch(
+  pageSize: number = 15,
+  lastDocSnapshot: QueryDocumentSnapshot<DocumentData> | null = null,
+  offsetIndex: number = 0
+): Promise<PaginatedIndustriesResult> {
+  try {
+    if (db && typeof collection === "function") {
+      const colRef = collection(db, COLLECTION_NAME);
+      const constraints: any[] = [orderBy("name", "asc")];
+      if (lastDocSnapshot) {
+        constraints.push(startAfter(lastDocSnapshot));
+      }
+      constraints.push(limit(pageSize));
+
+      const q = query(colRef, ...constraints);
+      const snapshot = await getDocs(q);
+
+      if (!snapshot.empty) {
+        const rawList: IndustryDoc[] = [];
+        snapshot.forEach((d) => {
+          const docData = d.data() as IndustryDoc;
+          if (!docData.hidden) {
+            rawList.push(docData);
+          }
+        });
+        const sanitized = sanitizeAndSeparateIndustries(rawList);
+        const lastDoc = snapshot.docs[snapshot.docs.length - 1] || null;
+        const hasMore = snapshot.docs.length >= pageSize;
+
+        return {
+          industries: sanitized,
+          lastDoc,
+          hasMore,
+          totalLoaded: sanitized.length,
+        };
+      }
+    }
+  } catch (err) {
+    console.warn("Firestore fetchIndustriesBatch deferred to local dataset:", err);
+  }
+
+  // Graceful fallback to local storage / REAL_INDUSTRIES dataset chunked by offset
+  const allLocal = sanitizeAndSeparateIndustries(getLocalIndustries()).filter((i) => !i.hidden);
+  const slice = allLocal.slice(offsetIndex, offsetIndex + pageSize);
+  const hasMore = offsetIndex + pageSize < allLocal.length;
+
+  return {
+    industries: slice,
+    lastDoc: null,
+    hasMore,
+    totalLoaded: slice.length,
+  };
 }
 
 export async function getIndustryBySlug(slug: string): Promise<IndustryDoc | null> {

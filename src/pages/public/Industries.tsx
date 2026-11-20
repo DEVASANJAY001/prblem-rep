@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { collection, onSnapshot } from "firebase/firestore";
-import { db } from "@/lib/firebase/config";
+import { QueryDocumentSnapshot, DocumentData } from "firebase/firestore";
 import { subscribeProblems } from "@/lib/firebase/services/problemsService";
+import { fetchIndustriesBatch } from "@/lib/firebase/services/industriesService";
 import { REAL_INDUSTRIES } from "@/data/realProductionData";
 import { IndustryDoc, ProblemDoc } from "@/types";
 import { SEOHead } from "@/components/common/SEOHead";
@@ -12,6 +12,9 @@ import {
   ArrowRight,
   RotateCcw,
   ChevronDown,
+  ArrowDown,
+  Loader2,
+  CheckCircle2,
 } from "lucide-react";
 
 const getCanonicalIndustry = (industryStr: string): string => {
@@ -62,53 +65,67 @@ const sanitizeAndMergeIndustries = (firestoreList: IndustryDoc[]): IndustryDoc[]
   return sanitizeAndSeparateIndustries(firestoreList);
 };
 
+const PAGE_SIZE = 15;
+
 export const Industries: React.FC = () => {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState("Most Problems");
-  const [industriesList, setIndustriesList] = useState<IndustryDoc[]>(REAL_INDUSTRIES);
+  const [industriesList, setIndustriesList] = useState<IndustryDoc[]>([]);
   const [allProblems, setAllProblems] = useState<ProblemDoc[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(false);
+  const [lastDoc, setLastDoc] = useState<QueryDocumentSnapshot<DocumentData> | null>(null);
 
-  useEffect(() => {
-    // 1. Initial fallback data
-    setIndustriesList(REAL_INDUSTRIES);
-
-    // 2. Real-time Firestore subscription for industries
-    let unsubIndustries = () => {};
+  const loadInitialBatch = useCallback(async () => {
+    setLoading(true);
     try {
-      if (db && typeof collection === "function") {
-        const colRef = collection(db, "industries");
-        unsubIndustries = onSnapshot(
-          colRef,
-          (snapshot) => {
-            if (!snapshot.empty) {
-              const list: IndustryDoc[] = [];
-              snapshot.forEach((d) => list.push(d.data() as IndustryDoc));
-              setIndustriesList(sanitizeAndMergeIndustries(list));
-            }
-            setLoading(false);
-          },
-          (err) => {
-            console.warn("Industries Firestore fetch (using fallback):", err.message);
-            setLoading(false);
-          }
-        );
-      }
-    } catch (e) {
+      const res = await fetchIndustriesBatch(PAGE_SIZE, null, 0);
+      setIndustriesList(res.industries);
+      setLastDoc(res.lastDoc);
+      setHasMore(res.hasMore);
+    } catch (err) {
+      console.warn("Industries initial batch fetch fallback:", err);
+      const fallback = sanitizeAndSeparateIndustries(REAL_INDUSTRIES).slice(0, PAGE_SIZE);
+      setIndustriesList(fallback);
+      setHasMore(REAL_INDUSTRIES.length > PAGE_SIZE);
+    } finally {
       setLoading(false);
     }
+  }, []);
 
-    // 3. Subscribe to real problems to calculate live counts per industry
+  useEffect(() => {
+    loadInitialBatch();
+
+    // Subscribe to approved problems to calculate live counts per industry
     const unsubProblems = subscribeProblems({ status: "approved" }, (list) => {
       setAllProblems(list);
     });
 
     return () => {
-      unsubIndustries();
       unsubProblems();
     };
-  }, []);
+  }, [loadInitialBatch]);
+
+  const handleLoadMore = async () => {
+    if (loadingMore || !hasMore) return;
+    setLoadingMore(true);
+    try {
+      const res = await fetchIndustriesBatch(PAGE_SIZE, lastDoc, industriesList.length);
+      setIndustriesList((prev) => {
+        const seen = new Set(prev.map((i) => i.slug.toLowerCase()));
+        const nextUnique = res.industries.filter((i) => !seen.has(i.slug.toLowerCase()));
+        return [...prev, ...nextUnique];
+      });
+      setLastDoc(res.lastDoc);
+      setHasMore(res.hasMore);
+    } catch (err) {
+      console.warn("Failed to load more industries:", err);
+    } finally {
+      setLoadingMore(false);
+    }
+  };
 
   // Compute live problem counts mapped by canonical industry slug
   const problemCounts = useMemo(() => {
@@ -239,7 +256,7 @@ export const Industries: React.FC = () => {
       <main className="max-w-7xl w-full mx-auto px-4 md:px-8 py-10 space-y-10">
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {Array.from({ length: 9 }).map((_, i) => (
+            {Array.from({ length: 15 }).map((_, i) => (
               <div
                 key={i}
                 className="h-20 rounded-2xl bg-surface-container/40 border border-outline-variant/20 animate-pulse"
@@ -253,40 +270,98 @@ export const Industries: React.FC = () => {
                 No industry verticals found
               </h3>
               <p className="text-sm text-on-surface-variant font-normal">
-                No sectors matched &ldquo;{search}&rdquo;. Try a different keyword or browse all domain categories.
+                No sectors matched &ldquo;{search}&rdquo; in the current batch. Try a different keyword or load more sectors from the database.
               </p>
             </div>
-            <button
-              onClick={() => setSearch("")}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary text-white text-xs font-semibold hover:bg-primary-hover transition-all cursor-pointer shadow-sm"
-            >
-              <RotateCcw className="w-3.5 h-3.5" />
-              <span>Reset Search</span>
-            </button>
+            <div className="flex flex-wrap items-center justify-center gap-2.5">
+              <button
+                onClick={() => setSearch("")}
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-surface-container-low border border-outline-variant/30 text-on-surface text-xs font-semibold hover:bg-surface-container transition-all cursor-pointer shadow-2xs"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+                <span>Reset Search</span>
+              </button>
+              {hasMore && (
+                <button
+                  type="button"
+                  onClick={handleLoadMore}
+                  disabled={loadingMore}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-white text-xs font-semibold hover:bg-primary-hover transition-all cursor-pointer shadow-sm disabled:opacity-60"
+                >
+                  {loadingMore ? (
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  ) : (
+                    <ArrowDown className="w-3.5 h-3.5" />
+                  )}
+                  <span>Fetch Next 15 from Database</span>
+                </button>
+              )}
+            </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 animate-fade-in">
-            {filtered.map((ind) => {
-              const count = problemCounts[ind.slug] ?? 0;
+          <div className="space-y-8 animate-fade-in">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {filtered.map((ind) => {
+                const count = problemCounts[ind.slug] ?? 0;
 
-              return (
-                <Link
-                  key={ind.slug}
-                  to={`/industries/${ind.slug}`}
-                  className="flex items-center justify-between p-4 rounded-2xl border border-outline-variant/30 hover:border-primary/40 hover:bg-surface-container-low transition-all group cursor-pointer"
+                return (
+                  <Link
+                    key={ind.slug}
+                    to={`/industries/${ind.slug}`}
+                    className="flex items-center justify-between p-4 rounded-2xl border border-outline-variant/30 hover:border-primary/40 hover:bg-surface-container-low transition-all group cursor-pointer shadow-2xs hover:shadow-sm"
+                  >
+                    <div className="min-w-0 pr-3">
+                      <h5 className="text-xs sm:text-sm font-bold text-on-surface group-hover:text-primary transition-colors truncate">
+                        {ind.name}
+                      </h5>
+                      <span className="text-[11px] text-on-surface-variant font-normal">
+                        {count} problem{count === 1 ? "" : "s"}
+                      </span>
+                    </div>
+                    <ArrowRight className="w-4 h-4 text-on-surface-variant group-hover:text-primary group-hover:translate-x-0.5 transition-all shrink-0" />
+                  </Link>
+                );
+              })}
+            </div>
+
+            {/* ── Paginated "Load More" Control with Vector Arrow ────────────────── */}
+            {hasMore && (
+              <div className="flex flex-col items-center justify-center pt-2 pb-2">
+                <button
+                  type="button"
+                  onClick={handleLoadMore}
+                  disabled={loadingMore}
+                  className="group relative inline-flex items-center gap-3 px-8 py-3.5 rounded-2xl bg-surface-container-low hover:bg-surface-container border border-outline-variant/40 hover:border-primary/50 text-xs sm:text-sm font-bold text-on-surface hover:text-primary transition-all duration-200 shadow-2xs hover:shadow-md cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed hover:scale-[1.02] active:scale-[0.99]"
                 >
-                  <div className="min-w-0 pr-3">
-                    <h5 className="text-xs sm:text-sm font-bold text-on-surface group-hover:text-primary transition-colors truncate">
-                      {ind.name}
-                    </h5>
-                    <span className="text-[11px] text-on-surface-variant font-normal">
-                      {count} problem{count === 1 ? "" : "s"}
-                    </span>
-                  </div>
-                  <ArrowRight className="w-4 h-4 text-on-surface-variant group-hover:text-primary group-hover:translate-x-0.5 transition-all shrink-0" />
-                </Link>
-              );
-            })}
+                  {loadingMore ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin text-primary shrink-0" />
+                      <span>Fetching next 15 industries...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>Load More Industries</span>
+                      <span className="text-[11px] text-on-surface-variant font-normal">
+                        (Showing {filtered.length})
+                      </span>
+                      <div className="w-6 h-6 rounded-full bg-primary/10 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all shrink-0">
+                        <ArrowDown className="w-3.5 h-3.5 group-hover:translate-y-0.5 transition-transform" />
+                      </div>
+                    </>
+                  )}
+                </button>
+                <p className="text-[11px] text-on-surface-variant/70 mt-2 flex items-center gap-1.5">
+                  <span>Fetched in batches of 15 to minimize Firestore read operations</span>
+                </p>
+              </div>
+            )}
+
+            {!hasMore && filtered.length > 0 && (
+              <div className="flex items-center justify-center gap-2 py-4 text-xs font-semibold text-on-surface-variant">
+                <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+                <span>All {filtered.length} industry sectors loaded</span>
+              </div>
+            )}
           </div>
         )}
 
