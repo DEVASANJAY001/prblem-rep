@@ -93,7 +93,10 @@ export const Companies: React.FC = () => {
     if (loadingMore || !hasMore) return;
     setLoadingMore(true);
     try {
-      const res = await fetchCompaniesBatch(PAGE_SIZE, lastDoc, companiesList.length);
+      const [res] = await Promise.all([
+        fetchCompaniesBatch(PAGE_SIZE, lastDoc, companiesList.length),
+        new Promise((resolve) => setTimeout(resolve, 800)),
+      ]);
       setCompaniesList((prev) => {
         const seen = new Set(prev.map((c) => c.id || c.name.toLowerCase()));
         const nextUnique = res.companies.filter((c) => !seen.has(c.id || c.name.toLowerCase()));
@@ -424,37 +427,40 @@ export const Companies: React.FC = () => {
                     </div>
                   );
                 })}
+
+                {/* Loading card animation while loading for ~1 second */}
+                {loadingMore &&
+                  Array.from({ length: 4 }).map((_, i) => (
+                    <div
+                      key={`comp-loading-${i}`}
+                      className="h-44 bg-surface-container-low/60 rounded-3xl animate-pulse border border-outline-variant/20 p-5 flex flex-col justify-between"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 rounded-2xl bg-surface-container-high/60" />
+                        <div className="space-y-2 flex-1">
+                          <div className="h-4 bg-surface-container-high/60 rounded w-2/3" />
+                          <div className="h-3 bg-surface-container-high/40 rounded w-1/3" />
+                        </div>
+                      </div>
+                      <div className="space-y-1.5">
+                        <div className="h-3 bg-surface-container-high/40 rounded w-full" />
+                        <div className="h-3 bg-surface-container-high/30 rounded w-4/5" />
+                      </div>
+                    </div>
+                  ))}
               </div>
 
-              {/* ── Paginated "Load More" Control with Vector Arrow ────────────── */}
-              {hasMore && (
-                <div className="flex flex-col items-center justify-center pt-2 pb-2">
+              {/* ── Paginated "Load More" Control with Vector Arrow (No bulky background container) ── */}
+              {hasMore && !loadingMore && (
+                <div className="flex items-center justify-center pt-3 pb-2">
                   <button
                     type="button"
                     onClick={handleLoadMore}
-                    disabled={loadingMore}
-                    className="group relative inline-flex items-center gap-3 px-8 py-3.5 rounded-2xl bg-surface-container-low hover:bg-surface-container border border-outline-variant/40 hover:border-primary/50 text-xs sm:text-sm font-bold text-on-surface hover:text-primary transition-all duration-200 shadow-2xs hover:shadow-md cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed hover:scale-[1.02] active:scale-[0.99]"
+                    className="group inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-primary hover:text-primary-hover transition-all cursor-pointer py-2 px-4 hover:underline"
                   >
-                    {loadingMore ? (
-                      <>
-                        <Loader2 className="w-4 h-4 animate-spin text-primary shrink-0" />
-                        <span>Fetching next 16 companies...</span>
-                      </>
-                    ) : (
-                      <>
-                        <span>Load More Companies</span>
-                        <span className="text-[11px] text-on-surface-variant font-normal">
-                          (Showing {filteredCompanies.length})
-                        </span>
-                        <div className="w-6 h-6 rounded-full bg-primary/10 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all shrink-0">
-                          <ArrowDown className="w-3.5 h-3.5 group-hover:translate-y-0.5 transition-transform" />
-                        </div>
-                      </>
-                    )}
+                    <span>Load More Companies</span>
+                    <ArrowDown className="w-4 h-4 text-primary group-hover:translate-y-1 transition-transform" />
                   </button>
-                  <p className="text-[11px] text-on-surface-variant/70 mt-2 flex items-center gap-1.5">
-                    <span>Fetched in batches of 16 to minimize Firestore read operations</span>
-                  </p>
                 </div>
               )}
 

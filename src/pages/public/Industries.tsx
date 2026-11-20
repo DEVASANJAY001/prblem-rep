@@ -112,7 +112,10 @@ export const Industries: React.FC = () => {
     if (loadingMore || !hasMore) return;
     setLoadingMore(true);
     try {
-      const res = await fetchIndustriesBatch(PAGE_SIZE, lastDoc, industriesList.length);
+      const [res] = await Promise.all([
+        fetchIndustriesBatch(PAGE_SIZE, lastDoc, industriesList.length),
+        new Promise((resolve) => setTimeout(resolve, 800)),
+      ]);
       setIndustriesList((prev) => {
         const seen = new Set(prev.map((i) => i.slug.toLowerCase()));
         const nextUnique = res.industries.filter((i) => !seen.has(i.slug.toLowerCase()));
@@ -322,37 +325,34 @@ export const Industries: React.FC = () => {
                   </Link>
                 );
               })}
+
+              {/* Loading card animation while loading for ~1 second */}
+              {loadingMore &&
+                Array.from({ length: 6 }).map((_, i) => (
+                  <div
+                    key={`loading-skeleton-${i}`}
+                    className="flex items-center justify-between p-4 rounded-2xl border border-outline-variant/20 bg-surface-container-low/60 animate-pulse"
+                  >
+                    <div className="space-y-2 w-3/4">
+                      <div className="h-4 bg-surface-container-high rounded-md w-2/3" />
+                      <div className="h-3 bg-surface-container-high/60 rounded-md w-1/3" />
+                    </div>
+                    <div className="w-4 h-4 rounded-full bg-surface-container-high/50" />
+                  </div>
+                ))}
             </div>
 
-            {/* ── Paginated "Load More" Control with Vector Arrow ────────────────── */}
-            {hasMore && (
-              <div className="flex flex-col items-center justify-center pt-2 pb-2">
+            {/* ── Paginated "Load More" Control with Vector Arrow (No bulky background container) ── */}
+            {hasMore && !loadingMore && (
+              <div className="flex items-center justify-center pt-3 pb-2">
                 <button
                   type="button"
                   onClick={handleLoadMore}
-                  disabled={loadingMore}
-                  className="group relative inline-flex items-center gap-3 px-8 py-3.5 rounded-2xl bg-surface-container-low hover:bg-surface-container border border-outline-variant/40 hover:border-primary/50 text-xs sm:text-sm font-bold text-on-surface hover:text-primary transition-all duration-200 shadow-2xs hover:shadow-md cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed hover:scale-[1.02] active:scale-[0.99]"
+                  className="group inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-primary hover:text-primary-hover transition-all cursor-pointer py-2 px-4 hover:underline"
                 >
-                  {loadingMore ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin text-primary shrink-0" />
-                      <span>Fetching next 15 industries...</span>
-                    </>
-                  ) : (
-                    <>
-                      <span>Load More Industries</span>
-                      <span className="text-[11px] text-on-surface-variant font-normal">
-                        (Showing {filtered.length})
-                      </span>
-                      <div className="w-6 h-6 rounded-full bg-primary/10 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all shrink-0">
-                        <ArrowDown className="w-3.5 h-3.5 group-hover:translate-y-0.5 transition-transform" />
-                      </div>
-                    </>
-                  )}
+                  <span>Load More Industries</span>
+                  <ArrowDown className="w-4 h-4 text-primary group-hover:translate-y-1 transition-transform" />
                 </button>
-                <p className="text-[11px] text-on-surface-variant/70 mt-2 flex items-center gap-1.5">
-                  <span>Fetched in batches of 15 to minimize Firestore read operations</span>
-                </p>
               </div>
             )}
 
