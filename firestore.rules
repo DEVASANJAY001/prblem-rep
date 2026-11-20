@@ -22,7 +22,6 @@ service cloud.firestore {
     }
 
     // Role-based authorization verified dynamically via user doc or auth claim
-    // Zero sensitive email addresses, domains, or names exposed in rules
     function isAdmin() {
       return isAuthenticated() && (
         request.auth.token.role == 'admin' ||
@@ -45,47 +44,24 @@ service cloud.firestore {
 
     // ─────────────────────────────────────────────────────────────────────────
     // 1. Users Collection
-    //    - Public read for community leaderboards, creator cards, and profiles
-    //    - Users manage their own profiles; role escalation is blocked
-    //    - Only confirmed admins can modify the 'role' field or delete accounts
     // ─────────────────────────────────────────────────────────────────────────
     match /users/{userId} {
       allow read: if true;
-      allow create: if isOwner(userId);
-      allow update: if (isOwner(userId) && (
-        !('role' in request.resource.data.diff(resource.data).affectedKeys()) ||
-        isAdmin()
-      )) || isAdmin();
-      allow delete: if isAdmin();
+      allow create, update: if isAuthenticated();
+      allow delete: if isAdmin() || isOwner(userId);
 
-      // Private subcollections (e.g. startupNotes) restricted to owner & admins
       match /{allUserSubcollections=**} {
-        allow read, write: if isOwner(userId) || isAdmin();
+        allow read, write: if isOwner(userId) || isAdmin() || isAuthenticated();
       }
     }
 
     // ─────────────────────────────────────────────────────────────────────────
     // 2. Problems Collection
-    //    - Public read (discovery search engine)
-    //    - Authenticated users can submit problems
-    //    - Community can interact (votes, views, comments)
-    //    - Moderation fields (status, reviewedBy, publishedAt) restricted to admins/mods
     // ─────────────────────────────────────────────────────────────────────────
     match /problems/{problemId} {
       allow read: if true;
-      allow create: if isAuthenticated();
-      allow update: if isAuthenticated() && (
-        isAdminOrModerator() ||
-        (
-          !('status' in request.resource.data.diff(resource.data).affectedKeys()) &&
-          !('reviewedBy' in request.resource.data.diff(resource.data).affectedKeys()) &&
-          !('reviewedByUid' in request.resource.data.diff(resource.data).affectedKeys()) &&
-          !('publishedAt' in request.resource.data.diff(resource.data).affectedKeys()) &&
-          !('verified' in request.resource.data.diff(resource.data).affectedKeys())
-        )
-      );
-      allow delete: if isAdminOrModerator() ||
-        (isAuthenticated() && resource.data.submittedByUid == request.auth.uid);
+      allow create, update: if isAuthenticated();
+      allow delete: if isAuthenticated();
 
       match /{allProblemSubcollections=**} {
         allow read: if true;
@@ -94,12 +70,21 @@ service cloud.firestore {
     }
 
     // ─────────────────────────────────────────────────────────────────────────
-    // 3. Site Content CMS (App Controller)
-    //    - Public read, admin-only write
+    // 3. Site Content CMS & App Controller (Admin / App Control)
     // ─────────────────────────────────────────────────────────────────────────
     match /site_content/{pageId} {
       allow read: if true;
-      allow write: if isAdmin();
+      allow write: if isAuthenticated();
+    }
+
+    match /appControl/{docId} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+
+    match /app_control/{docId} {
+      allow read: if true;
+      allow write: if isAuthenticated();
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -107,49 +92,45 @@ service cloud.firestore {
     // ─────────────────────────────────────────────────────────────────────────
     match /forms/{formId} {
       allow read: if true;
-      allow write: if isAdmin();
+      allow write: if isAuthenticated();
     }
 
     match /form_responses/{responseId} {
-      allow create: if true;
-      allow read, update, delete: if isAdminOrModerator();
+      allow create, read, update, delete: if true;
     }
 
     // ─────────────────────────────────────────────────────────────────────────
     // 5. Reference Taxonomies (Industries, Competitions, Companies, Research)
-    //    - Public read, admin-only write
     // ─────────────────────────────────────────────────────────────────────────
     match /industries/{industryId} {
       allow read: if true;
-      allow write: if isAdmin();
+      allow write: if isAuthenticated();
     }
 
     match /competitions/{competitionId} {
       allow read: if true;
-      allow write: if isAdmin();
+      allow write: if isAuthenticated();
     }
 
     match /companies/{companyId} {
       allow read: if true;
-      allow write: if isAdmin();
+      allow write: if isAuthenticated();
     }
 
     match /research/{researchId} {
       allow read: if true;
-      allow write: if isAdminOrModerator();
+      allow write: if isAuthenticated();
     }
 
     // ─────────────────────────────────────────────────────────────────────────
     // 6. User Interactions (Votes, Bookmarks)
     // ─────────────────────────────────────────────────────────────────────────
     match /user_votes/{voteId} {
-      allow read: if isAuthenticated();
-      allow create, update, delete: if isAuthenticated();
+      allow read, write: if isAuthenticated();
     }
 
     match /bookmarks/{bookmarkId} {
-      allow read: if isAuthenticated();
-      allow create, update, delete: if isAuthenticated();
+      allow read, write: if isAuthenticated();
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -157,13 +138,12 @@ service cloud.firestore {
     // ─────────────────────────────────────────────────────────────────────────
     match /admin_invites/{token} {
       allow read: if true;
-      allow write: if isAdmin();
+      allow write: if isAuthenticated();
     }
 
     match /audit_logs/{logId} {
-      allow read: if isAdminOrModerator();
-      allow create: if isAuthenticated();
-      allow update, delete: if isAdmin();
+      allow read, create, update: if isAuthenticated();
+      allow delete: if isAdmin();
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -171,19 +151,20 @@ service cloud.firestore {
     // ─────────────────────────────────────────────────────────────────────────
     match /credits/{creditId} {
       allow read: if true;
-      allow write: if isAdmin();
+      allow write: if isAuthenticated();
     }
 
     match /badges/{badgeId} {
       allow read: if true;
-      allow write: if isAdmin();
+      allow write: if isAuthenticated();
     }
 
     // ─────────────────────────────────────────────────────────────────────────
-    // Fallback: Deny unhandled writes
+    // Fallback: Default allow read for unknown public collections, write if auth
     // ─────────────────────────────────────────────────────────────────────────
     match /{document=**} {
-      allow read, write: if false;
+      allow read: if true;
+      allow write: if isAuthenticated();
     }
   }
 }
