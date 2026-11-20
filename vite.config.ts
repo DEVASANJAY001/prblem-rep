@@ -21,17 +21,15 @@ export default defineConfig({
     host: true,
   },
   build: {
-    chunkSizeWarningLimit: 600,
+    chunkSizeWarningLimit: 700,
     rollupOptions: {
       output: {
         manualChunks: {
           "vendor-react": ["react", "react-dom", "react-router-dom"],
-          "vendor-firebase": [
-            "firebase/app",
-            "firebase/auth",
-            "firebase/firestore",
-            "firebase/storage",
-          ],
+          "vendor-firebase-auth": ["firebase/app", "firebase/auth"],
+          "vendor-firebase-firestore": ["firebase/firestore"],
+          "vendor-firebase-storage": ["firebase/storage"],
+          "vendor-three": ["three"],
           "vendor-ui": ["framer-motion", "lucide-react", "canvas-confetti"],
         },
       },

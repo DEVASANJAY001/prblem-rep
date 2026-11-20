@@ -44,3 +44,11 @@ jobs:
           du -sh dist/
           echo "=== Chunk sizes ==="
           ls -lh dist/assets/*.js | sort -k5 -rh | head -20
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run Autonomous Agent Smoke Gate
+        run: npm run test:smoke
+        env:
+          CI: true
