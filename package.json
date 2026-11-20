@@ -8,7 +8,14 @@
     "server": "node server/index.js",
     "build": "vite build",
     "preview": "vite preview",
-    "seed": "npx tsx scripts/pushAllDataToDb.ts"
+    "seed": "npx tsx scripts/pushAllDataToDb.ts",
+    "test:agents": "playwright test",
+    "test:smoke": "playwright test tests/e2e/07_smoke_orchestrator.spec.ts",
+    "test:security": "playwright test tests/e2e/01_auth_security.spec.ts",
+    "test:data": "playwright test tests/e2e/02_data_pagination.spec.ts",
+    "test:routes": "playwright test tests/e2e/03_route_crawler.spec.ts",
+    "test:mobile": "playwright test tests/e2e/04_mobile_viewport.spec.ts",
+    "test:report": "playwright show-report"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",
@@ -40,6 +47,7 @@
     "zod": "^3.24.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.65.1",
     "@tailwindcss/vite": "^4.0.0",
     "@types/canvas-confetti": "^1.9.0",
     "@types/node": "^20.14.0",

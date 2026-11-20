@@ -151,20 +151,20 @@ service cloud.firestore {
     // ─────────────────────────────────────────────────────────────────────────
     match /credits/{creditId} {
       allow read: if true;
-      allow write: if isAuthenticated();
+      allow write: if isAdminOrModerator();
     }
 
     match /badges/{badgeId} {
       allow read: if true;
-      allow write: if isAuthenticated();
+      allow write: if isAdminOrModerator();
     }
 
     // ─────────────────────────────────────────────────────────────────────────
-    // Fallback: Default allow read for unknown public collections, write if auth
+    // Fallback: Default allow read for public content, write strictly restricted to Admin
     // ─────────────────────────────────────────────────────────────────────────
     match /{document=**} {
       allow read: if true;
-      allow write: if isAuthenticated();
+      allow write: if isAdmin();
     }
   }
 }
