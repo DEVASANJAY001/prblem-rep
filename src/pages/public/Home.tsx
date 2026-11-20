@@ -9,8 +9,26 @@ import { ShaderBackground } from "@/components/ui/ShaderBackground";
 import { OrganicAtlasSection } from "@/components/ui/OrganicAtlasSection";
 import { TrendingProblemCard } from "@/components/ui/TrendingProblemCard";
 import { SEOHead } from "@/components/common/SEOHead";
-import { ChevronLeft, ChevronRight, ArrowRight, CheckCircle2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, ArrowRight, CheckCircle2, Sparkles, Dices } from "lucide-react";
 import { separateCompoundIndustry } from "@/lib/algorithms/domainIntelligence";
+
+const DOMAIN_ICONS: Record<string, string> = {
+  "Healthcare": "🩺",
+  "Biotech": "🧬",
+  "AI": "🤖",
+  "Machine Learning": "🧠",
+  "Clean Energy": "⚡",
+  "CleanTech": "🌱",
+  "FinTech": "💳",
+  "DeFi": "🪙",
+  "Agriculture": "🚜",
+  "Logistics": "📦",
+  "Supply Chain": "⛓️",
+  "Cybersecurity": "🛡️",
+  "Defense": "🛰️",
+  "Aerospace": "🚀",
+  "Robotics": "🦾",
+};
 
 export const Home: React.FC = () => {
   const navigate = useNavigate();
@@ -38,6 +56,18 @@ export const Home: React.FC = () => {
     } else {
       navigate("/explore");
     }
+  };
+
+  const handleRandomProblem = () => {
+    if (trendingProblems && trendingProblems.length > 0) {
+      const idx = Math.floor(Math.random() * trendingProblems.length);
+      const chosen = trendingProblems[idx];
+      if (chosen?.id) {
+        navigate(`/problem/${chosen.id}`);
+        return;
+      }
+    }
+    navigate("/explore");
   };
 
   // Scroll position & fallback trigger
@@ -410,6 +440,7 @@ export const Home: React.FC = () => {
 
     window.addEventListener("mousemove", handleWindowMouseMove, { passive: true });
     window.addEventListener("touchmove", handleWindowTouchMove, { passive: true });
+    window.addEventListener("touchstart", handleWindowTouchMove, { passive: true });
 
     function syncSize() {
       if (!canvas || !gl) return;
@@ -487,6 +518,7 @@ export const Home: React.FC = () => {
       document.removeEventListener("visibilitychange", handleVisibility);
       window.removeEventListener("mousemove", handleWindowMouseMove);
       window.removeEventListener("touchmove", handleWindowTouchMove);
+      window.removeEventListener("touchstart", handleWindowTouchMove);
       resizeObserver.disconnect();
       if (intersectionObserver) intersectionObserver.disconnect();
       gl.deleteProgram(prog);
@@ -635,7 +667,7 @@ export const Home: React.FC = () => {
       <main className="w-full bg-surface relative">
         <div className="flex flex-col w-full">
           {/* Section 1: Hero with Direct WebGL Shader extending behind header */}
-          <section className="w-full flex flex-col items-center justify-center min-h-screen pt-24 pb-12 px-4 md:px-8 text-center relative overflow-hidden">
+          <section className="w-full flex flex-col items-center justify-center min-h-[78vh] sm:min-h-screen pt-20 pb-8 sm:pt-28 sm:pb-16 px-4 md:px-8 text-center relative overflow-hidden">
             {/* Direct WebGL Canvas */}
             <canvas
               ref={canvasRef}
@@ -650,10 +682,25 @@ export const Home: React.FC = () => {
             <div className="absolute inset-0 bg-dot-pattern z-0 pointer-events-none" />
             {/* Smooth merging fade & blur transition at bottom of hero */}
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-surface/20 to-surface z-0 pointer-events-none" />
-            <div className="absolute bottom-0 inset-x-0 h-44 bg-gradient-to-t from-surface via-surface/80 to-transparent pointer-events-none z-10" />
+            <div className="absolute bottom-0 inset-x-0 h-28 sm:h-44 bg-gradient-to-t from-surface via-surface/80 to-transparent pointer-events-none z-10" />
 
             {/* Hero Content */}
-            <div className="max-w-5xl w-full z-10 flex flex-col items-center gap-6 md:gap-7 relative my-auto">
+            <div className="max-w-5xl w-full z-10 flex flex-col items-center gap-4 sm:gap-6 md:gap-7 relative my-auto">
+              {/* Interactive Live Beacon Pill */}
+              <Link
+                to="/explore"
+                className="group inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 rounded-full bg-surface-container-lowest/90 dark:bg-zinc-900/90 border border-outline-variant/40 hover:border-primary/50 text-[11px] sm:text-xs font-semibold text-on-surface shadow-2xs hover:shadow-xs backdrop-blur-md transition-all active:scale-95 cursor-pointer"
+              >
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                </span>
+                <span className="text-on-surface-variant group-hover:text-primary transition-colors">
+                  <strong className="text-on-surface group-hover:text-primary font-bold">14,200+</strong> Verified Real-World Problem Statements
+                </span>
+                <ArrowRight className="w-3 h-3 text-on-surface-variant group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
+              </Link>
+
               {contentLoading ? (
                 <div className="flex flex-col items-center gap-4 w-full py-4 animate-pulse">
                   <div className="h-12 sm:h-16 md:h-20 w-3/4 max-w-2xl bg-surface-container-high rounded-3xl" />
@@ -662,16 +709,16 @@ export const Home: React.FC = () => {
                 </div>
               ) : (
                 <>
-                  <h1 className="text-2xl xs:text-3xl sm:text-5xl md:text-6xl lg:text-[76px] xl:text-[84px] leading-[1.08] text-on-surface tracking-tighter max-w-5xl font-extrabold relative text-center">
+                  <h1 className="text-[32px] xs:text-[40px] sm:text-5xl md:text-6xl lg:text-[76px] xl:text-[84px] leading-[1.12] sm:leading-[1.08] text-on-surface tracking-tight font-black relative text-center max-w-5xl">
                     <div className="absolute -inset-4 bg-gradient-to-r from-primary/10 via-purple-500/10 to-primary/10 blur-xl -z-10 rounded-full animate-blob" />
                     <span className="block">{headline1}</span>
                     <span className="block mt-1 sm:mt-2">
                       {headline2.includes("Problem") ? (
                         <>
                           {headline2.split("Problem")[0]}
-                          <span className="text-primary-container relative inline-block">
-                            <span className="relative z-10">Problem</span>
-                            <span className="absolute bottom-0 left-0 w-full h-3 bg-primary/20 -z-10 -skew-x-12" />
+                          <span className="relative inline-block">
+                            <span className="relative z-10 bg-gradient-to-r from-primary via-blue-600 to-indigo-600 bg-clip-text text-transparent">Problem</span>
+                            <span className="absolute bottom-1 left-0 w-full h-2.5 sm:h-3.5 bg-primary/15 -z-10 -skew-x-12 rounded-sm" />
                           </span>
                           {headline2.split("Problem")[1]}
                         </>
@@ -681,7 +728,7 @@ export const Home: React.FC = () => {
                     </span>
                   </h1>
 
-                  <p className="font-body-lg text-xs sm:text-base md:text-lg text-on-surface-variant max-w-2xl leading-relaxed">
+                  <p className="font-body-lg text-xs sm:text-base md:text-lg text-on-surface-variant max-w-2xl leading-relaxed px-2 sm:px-0">
                     {subheadline}
                   </p>
                 </>
@@ -689,47 +736,73 @@ export const Home: React.FC = () => {
 
               <form
                 onSubmit={handleHomeSearch}
-                className="w-full max-w-2xl relative rounded-2xl bg-surface-container-lowest/80 dark:bg-zinc-900/80 backdrop-blur-xl border border-white/60 dark:border-zinc-700/60 shadow-lg shadow-primary/5 hover:border-primary/50 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 transition-all group"
+                className="w-full max-w-2xl relative rounded-2xl bg-surface-container-lowest/90 dark:bg-zinc-900/90 backdrop-blur-xl border border-white/60 dark:border-zinc-700/60 shadow-lg shadow-primary/5 hover:border-primary/50 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 transition-all group"
               >
-                <span className="material-symbols-outlined absolute left-3.5 sm:left-5 top-1/2 transform -translate-y-1/2 text-on-surface-variant group-focus-within:text-primary transition-colors text-[18px] sm:text-[24px]">
+                <span className="material-symbols-outlined absolute left-3.5 sm:left-5 top-1/2 transform -translate-y-1/2 text-on-surface-variant group-focus-within:text-primary transition-colors text-[20px] sm:text-[24px]">
                   search
                 </span>
                 <input
                   value={homeSearchQuery}
                   onChange={(e) => setHomeSearchQuery(e.target.value)}
-                  className="w-full pl-9 sm:pl-14 pr-20 sm:pr-36 py-2.5 sm:py-4 md:py-4.5 bg-transparent focus:outline-none focus:ring-0 rounded-2xl font-body-lg text-xs sm:text-base text-on-surface placeholder-on-surface-variant/70 border-none"
+                  className="w-full pl-10 sm:pl-14 pr-24 sm:pr-36 py-3 sm:py-4 md:py-4.5 bg-transparent focus:outline-none focus:ring-0 rounded-2xl font-body-lg text-xs sm:text-base text-on-surface placeholder:text-on-surface-variant/70 border-none"
                   placeholder={searchPlaceholder}
                   type="text"
                 />
                 <button
                   type="submit"
-                  className="absolute right-1.5 sm:right-2.5 top-1/2 -translate-y-1/2 bg-on-surface text-surface px-3 sm:px-6 py-1.5 sm:py-2.5 rounded-xl font-label-md text-[11px] sm:text-sm hover:bg-primary active:scale-[0.98] transition-colors shadow-sm hover:shadow-md hover:shadow-primary/20 cursor-pointer"
+                  className="absolute right-1.5 sm:right-2.5 top-1/2 -translate-y-1/2 bg-on-surface text-surface px-4 sm:px-6 py-2 sm:py-2.5 rounded-xl font-label-md text-xs sm:text-sm hover:bg-primary active:scale-[0.95] transition-all shadow-sm hover:shadow-md hover:shadow-primary/20 cursor-pointer font-bold"
                 >
                   {searchBtnLabel}
                 </button>
               </form>
 
-              <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 mt-1 min-h-[28px] sm:min-h-[32px]">
-                <span className="font-label-sm text-[10px] sm:text-xs text-on-surface-variant uppercase tracking-wider mr-1 sm:mr-1.5 font-semibold">
-                  Popular:
-                </span>
-                {contentLoading ? (
-                  <div className="flex items-center gap-2 animate-pulse">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <div key={i} className="h-6 w-14 bg-surface-container-high/80 rounded-full" />
-                    ))}
-                  </div>
-                ) : (
-                  popularTags.map((cat) => (
-                    <Link
-                      key={cat}
-                      to={`/explore?industry=${encodeURIComponent(cat)}`}
-                      className="text-on-surface-variant hover:text-primary text-[11px] sm:text-xs font-medium transition-all px-2.5 py-1 rounded-full bg-surface-container-lowest/70 dark:bg-zinc-900/70 backdrop-blur-md border border-outline-variant/30 hover:border-primary/40 shadow-2xs hover:shadow-xs cursor-pointer"
-                    >
-                      {cat}
-                    </Link>
-                  ))
-                )}
+              {/* Interactive Swipeable Domain Carousel on Mobile / Wrapped on Desktop */}
+              <div className="w-full relative mt-1">
+                <div className="flex sm:flex-wrap items-center justify-start sm:justify-center gap-2 overflow-x-auto sm:overflow-x-visible pb-2 sm:pb-0 hide-scrollbar px-1">
+                  <span className="font-label-sm text-[10px] sm:text-xs text-on-surface-variant uppercase tracking-wider font-semibold shrink-0 sm:mr-1">
+                    Popular:
+                  </span>
+                  {contentLoading ? (
+                    <div className="flex items-center gap-2 animate-pulse">
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <div key={i} className="h-7 w-20 bg-surface-container-high/80 rounded-full" />
+                      ))}
+                    </div>
+                  ) : (
+                    popularTags.map((cat) => {
+                      const icon = DOMAIN_ICONS[cat] || "✨";
+                      return (
+                        <Link
+                          key={cat}
+                          to={`/explore?industry=${encodeURIComponent(cat)}`}
+                          className="inline-flex items-center gap-1.5 text-on-surface-variant hover:text-primary active:text-primary text-[11px] sm:text-xs font-medium transition-all px-3 py-1.5 rounded-full bg-surface-container-lowest/80 dark:bg-zinc-900/80 backdrop-blur-md border border-outline-variant/40 hover:border-primary/50 shadow-2xs hover:shadow-xs shrink-0 cursor-pointer active:scale-95"
+                        >
+                          <span className="text-xs">{icon}</span>
+                          <span>{cat}</span>
+                        </Link>
+                      );
+                    })
+                  )}
+                </div>
+              </div>
+
+              {/* Interactive Mobile Quick Actions Bar */}
+              <div className="flex sm:hidden items-center justify-center gap-2.5 w-full pt-1">
+                <button
+                  type="button"
+                  onClick={handleRandomProblem}
+                  className="flex-1 max-w-[180px] inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-surface-container-low hover:bg-surface-container border border-outline-variant/40 text-[11px] font-bold text-on-surface shadow-2xs active:scale-95 transition-all cursor-pointer"
+                >
+                  <Dices className="w-3.5 h-3.5 text-primary" />
+                  <span>Surprise Me</span>
+                </button>
+                <Link
+                  to="/explore?filter=startup_mode"
+                  className="flex-1 max-w-[180px] inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-primary/10 border border-primary/30 text-[11px] font-bold text-primary shadow-2xs active:scale-95 transition-all"
+                >
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>Startup Blueprints</span>
+                </Link>
               </div>
             </div>
           </section>
