@@ -4,9 +4,27 @@
   <!-- Core Platform Hubs & Gateways (18 Pages) -->
   <url>
     <loc>https://stuckhere.davns.com/</loc>
-    <lastmod>2026-11-13</lastmod>
+    <lastmod>2026-11-21</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/methodology</loc>
+    <lastmod>2026-11-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/guides/problem-discovery-framework</loc>
+    <lastmod>2026-11-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/open-innovation</loc>
+    <lastmod>2026-11-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
   </url>
   <url>
     <loc>https://stuckhere.davns.com/explore</loc>

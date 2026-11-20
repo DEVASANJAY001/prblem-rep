@@ -12,6 +12,9 @@ Sitemap: https://stuckhere.davns.com/sitemap.xml
 
 - [Explore Verified Problems](https://stuckhere.davns.com/explore): Search and filter verified real-world problem statements by industry, pain score, and venture thesis.
 - [Startup Blueprints & Founder Mode](https://stuckhere.davns.com/explore?filter=startup_mode): Actionable startup opportunities equipped with unit economics, competitor teardowns, and suggested MVP roadmaps.
+- [Problem Verification Methodology & Pain Scoring](https://stuckhere.davns.com/methodology): The 10-point empirical diagnostic protocol, mathematical 0–100 pain scoring formula, and TAM sizing heuristics.
+- [Founder Problem Discovery Guide](https://stuckhere.davns.com/guides/problem-discovery-framework): The definitive guide for founders to discover high-severity problems, avoid the 42% "No Market Need" failure, and test willingness-to-pay.
+- [Open Innovation & Enterprise Challenges](https://stuckhere.davns.com/open-innovation): The global standard connecting corporate bottlenecks and hackathon tracks with verified problem solvers.
 - [Industry Verticals Atlas](https://stuckhere.davns.com/industries): Deep-dive into problem taxonomies across Healthcare, AI, CleanTech, Clean Energy, FinTech, Agriculture, Logistics, and Manufacturing.
 - [Enterprise Directory](https://stuckhere.davns.com/companies): Leading enterprises, health systems, and supply chain operators encountering these operational challenges.
 - [Research & Empirical Dossiers](https://stuckhere.davns.com/research): Academic research, clinical data, and audit reports documenting industry failures.

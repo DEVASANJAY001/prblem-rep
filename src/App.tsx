@@ -64,6 +64,9 @@ const Privacy = lazyWithRetry(() => import("@/pages/public/Privacy").then((m) =>
 const Terms = lazyWithRetry(() => import("@/pages/public/Terms").then((m) => ({ default: m.Terms })));
 const Cookies = lazyWithRetry(() => import("@/pages/public/Cookies").then((m) => ({ default: m.Cookies })));
 const Competitions = lazyWithRetry(() => import("@/pages/public/Competitions").then((m) => ({ default: m.Competitions })));
+const Methodology = lazyWithRetry(() => import("@/pages/public/Methodology").then((m) => ({ default: m.Methodology })));
+const ProblemDiscoveryGuide = lazyWithRetry(() => import("@/pages/public/ProblemDiscoveryGuide").then((m) => ({ default: m.ProblemDiscoveryGuide })));
+const OpenInnovation = lazyWithRetry(() => import("@/pages/public/OpenInnovation").then((m) => ({ default: m.OpenInnovation })));
 
 // Admin Console Modules (Loaded on-demand only for authorized administrators)
 const AdminLogin = lazyWithRetry(() => import("@/pages/admin/AdminLogin").then((m) => ({ default: m.AdminLogin })));
@@ -168,6 +171,10 @@ export default function App() {
                 <Route path="/terms" element={<PublicLayout><Terms /></PublicLayout>} />
                 <Route path="/cookies" element={<PublicLayout><Cookies /></PublicLayout>} />
                 <Route path="/competitions" element={<PublicLayout><Competitions /></PublicLayout>} />
+                <Route path="/methodology" element={<PublicLayout><Methodology /></PublicLayout>} />
+                <Route path="/guides/problem-discovery-framework" element={<PublicLayout><ProblemDiscoveryGuide /></PublicLayout>} />
+                <Route path="/problem-discovery" element={<Navigate to="/guides/problem-discovery-framework" replace />} />
+                <Route path="/open-innovation" element={<PublicLayout><OpenInnovation /></PublicLayout>} />
 
                 {/* Dynamic Public Form Runner */}
                 <Route path="/f/:formSlug" element={<PublicLayout><PublicFormRunner /></PublicLayout>} />

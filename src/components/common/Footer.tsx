@@ -23,6 +23,9 @@ export const Footer: React.FC = () => {
             <Link to="/explore" className="text-body-md text-on-surface-variant hover:text-primary transition-colors">
               Problem Catalog
             </Link>
+            <Link to="/methodology" className="text-body-md text-on-surface-variant hover:text-primary transition-colors">
+              Methodology & Scoring
+            </Link>
           </nav>
         </div>
 
@@ -34,6 +37,12 @@ export const Footer: React.FC = () => {
           <nav className="flex flex-col gap-3">
             <Link to="/community" className="text-body-md text-on-surface-variant hover:text-primary transition-colors">
               Forums & Feed
+            </Link>
+            <Link to="/guides/problem-discovery-framework" className="text-body-md text-on-surface-variant hover:text-primary transition-colors">
+              Founder Discovery Guide
+            </Link>
+            <Link to="/open-innovation" className="text-body-md text-on-surface-variant hover:text-primary transition-colors">
+              Open Innovation
             </Link>
             <Link to="/companies" className="text-body-md text-on-surface-variant hover:text-primary transition-colors">
               Industry Partners
