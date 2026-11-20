@@ -159,7 +159,9 @@ export function getCompanyBrand(name: string = "") {
 interface CompanyLogoProps {
   name: string;
   logoUrl?: string;
+  url?: string;
   website?: string;
+  domain?: string;
   size?: "xs" | "sm" | "md" | "lg";
   className?: string;
 }
@@ -167,7 +169,9 @@ interface CompanyLogoProps {
 export const CompanyLogo: React.FC<CompanyLogoProps> = ({
   name,
   logoUrl,
+  url,
   website,
+  domain,
   size = "sm",
   className = "",
 }) => {
@@ -181,7 +185,7 @@ export const CompanyLogo: React.FC<CompanyLogoProps> = ({
     lg: "w-12 h-12 text-base",
   }[size];
 
-  const effectiveLogo = resolveCompanyLogo(logoUrl, name, website);
+  const effectiveLogo = resolveCompanyLogo(logoUrl || url, name, website || domain);
 
   if (effectiveLogo && !loadError) {
     return (

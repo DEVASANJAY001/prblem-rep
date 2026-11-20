@@ -565,9 +565,10 @@ export const AdminBulkCompanyImportModal: React.FC<AdminBulkCompanyImportModalPr
                           <td className="py-2.5 px-3">
                             <div className="flex items-center gap-2.5">
                               <CompanyLogo
-                                url={row.logoUrl}
+                                logoUrl={row.logoUrl}
                                 name={row.name}
-                                domain={row.website}
+                                website={row.website}
+                                size="sm"
                                 className="w-7 h-7 rounded-lg border border-outline-variant/30 shrink-0"
                               />
                               <div>
