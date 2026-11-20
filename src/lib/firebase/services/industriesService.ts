@@ -126,16 +126,33 @@ export async function saveIndustryToFirestore(industry: IndustryDoc): Promise<In
   const saved = saveLocalIndustry(industry);
   try {
     if (db && typeof doc === "function") {
-      const indRef = doc(db, COLLECTION_NAME, saved.id || saved.slug);
+      const docId = saved.id || (saved.slug.startsWith("ind-") ? saved.slug : `ind-${saved.slug}`);
+      const indRef = doc(db, COLLECTION_NAME, docId);
       await setDoc(indRef, {
         ...saved,
+        id: docId,
         updatedAtServer: serverTimestamp(),
-      });
+      }, { merge: true });
     }
   } catch (error) {
     console.warn("Firestore saveIndustry deferred:", error);
   }
   return saved;
+}
+
+export async function bulkSaveIndustriesToFirestore(
+  industriesList: IndustryDoc[]
+): Promise<{ total: number; success: number }> {
+  let success = 0;
+  for (const ind of industriesList) {
+    try {
+      await saveIndustryToFirestore(ind);
+      success++;
+    } catch (err) {
+      console.warn("Error saving industry in bulk:", ind.name, err);
+    }
+  }
+  return { total: industriesList.length, success };
 }
 
 export async function deleteIndustryFromFirestore(slug: string): Promise<boolean> {

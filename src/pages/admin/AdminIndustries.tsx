@@ -15,6 +15,8 @@ import {
   subscribeIndustries,
 } from "@/lib/firebase/services/industriesService";
 import { IndustryDoc } from "@/types";
+import { AdminBulkIndustryImportModal } from "@/components/admin/AdminBulkIndustryImportModal";
+import { exportIndustriesToCsv, downloadCsvFile } from "@/lib/csv/industryCsvHelper";
 import {
   Building2,
   Plus,
@@ -46,6 +48,21 @@ import {
   Coffee,
   Activity,
   Globe,
+  Upload,
+  Download,
+  Cpu,
+  Stethoscope,
+  Cloud,
+  Database,
+  Truck,
+  Briefcase,
+  Code,
+  Trophy,
+  Compass,
+  BookOpen,
+  Users,
+  Radio,
+  Wifi,
 } from "lucide-react";
 
 // Supported Lucide icon mapping
@@ -67,12 +84,26 @@ const ICON_MAP: Record<string, any> = {
   Globe,
   Layers,
   Sparkles,
+  Cpu,
+  Stethoscope,
+  Cloud,
+  Database,
+  Truck,
+  Briefcase,
+  Code,
+  Trophy,
+  Compass,
+  BookOpen,
+  Users,
+  Radio,
+  Wifi,
 };
 
 export const AdminIndustries: React.FC = () => {
   const [industries, setIndustries] = useState<IndustryDoc[]>([]);
   const [layoutMode, setLayoutMode] = useState<"grid" | "list" | "compact">("grid");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isBulkModalOpen, setIsBulkModalOpen] = useState(false);
   const [editingSlug, setEditingSlug] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
 
@@ -273,6 +304,28 @@ export const AdminIndustries: React.FC = () => {
               <Layers className="h-4 w-4" />
             </button>
           </div>
+
+          <button
+            onClick={() => {
+              const exported = exportIndustriesToCsv(industries);
+              downloadCsvFile(`prblms-industries-export-${new Date().toISOString().slice(0, 10)}.csv`, exported);
+              showNotification(`Exported ${industries.length} industries to CSV!`);
+            }}
+            title="Export all industries as a CSV spreadsheet"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-zinc-200 bg-white px-3 py-2 text-xs font-semibold text-zinc-700 hover:bg-zinc-50 shadow-xs transition-all hover:scale-[1.02]"
+          >
+            <Download className="h-3.5 w-3.5 text-zinc-500" />
+            <span className="hidden sm:inline">Export CSV</span>
+          </button>
+
+          <button
+            onClick={() => setIsBulkModalOpen(true)}
+            title="Upload CSV / Excel file or paste rows in bulk"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-blue-200 bg-blue-50/70 hover:bg-blue-100/70 px-3.5 py-2 text-xs font-bold text-[#1657FF] shadow-xs transition-all hover:scale-[1.02]"
+          >
+            <Upload className="h-3.5 w-3.5 text-[#1657FF]" />
+            <span>Bulk Upload (CSV / Excel)</span>
+          </button>
 
           <Link
             to="/industries"
@@ -811,6 +864,21 @@ export const AdminIndustries: React.FC = () => {
             </form>
           </div>
         </div>
+      )}
+
+      {/* Bulk Upload CSV / Excel Modal with Smart Duplicate Merge */}
+      {isBulkModalOpen && (
+        <AdminBulkIndustryImportModal
+          isOpen={isBulkModalOpen}
+          onClose={() => setIsBulkModalOpen(false)}
+          existingIndustries={industries}
+          onImportComplete={(created, merged) => {
+            loadAll();
+            showNotification(
+              `Bulk import complete: ${created} new industries created, ${merged} existing industries merged without duplicates!`
+            );
+          }}
+        />
       )}
     </div>
   );
