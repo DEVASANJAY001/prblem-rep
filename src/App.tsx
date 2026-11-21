@@ -67,7 +67,9 @@ const Competitions = lazyWithRetry(() => import("@/pages/public/Competitions").t
 const Methodology = lazyWithRetry(() => import("@/pages/public/Methodology").then((m) => ({ default: m.Methodology })));
 const ProblemDiscoveryGuide = lazyWithRetry(() => import("@/pages/public/ProblemDiscoveryGuide").then((m) => ({ default: m.ProblemDiscoveryGuide })));
 const OpenInnovation = lazyWithRetry(() => import("@/pages/public/OpenInnovation").then((m) => ({ default: m.OpenInnovation })));
-const Learn = lazyWithRetry(() => import("@/pages/public/Learn").then((m) => ({ default: m.Learn })));
+const AcademyHome = lazyWithRetry(() => import("@/pages/public/AcademyHome").then((m) => ({ default: m.AcademyHome })));
+const SubjectPage = lazyWithRetry(() => import("@/pages/public/SubjectPage").then((m) => ({ default: m.SubjectPage })));
+const ChapterReader = lazyWithRetry(() => import("@/pages/public/ChapterReader").then((m) => ({ default: m.ChapterReader })));
 
 // Admin Console Modules (Loaded on-demand only for authorized administrators)
 const AdminLogin = lazyWithRetry(() => import("@/pages/admin/AdminLogin").then((m) => ({ default: m.AdminLogin })));
@@ -97,6 +99,7 @@ function RoutePrewarmer() {
       import("@/pages/public/Community");
       import("@/pages/public/About");
       import("@/pages/public/ProblemDetail");
+      import("@/pages/public/AcademyHome");
     };
 
     if (typeof window !== "undefined") {
@@ -176,8 +179,12 @@ export default function App() {
                 <Route path="/guides/problem-discovery-framework" element={<PublicLayout><ProblemDiscoveryGuide /></PublicLayout>} />
                 <Route path="/problem-discovery" element={<Navigate to="/guides/problem-discovery-framework" replace />} />
                 <Route path="/open-innovation" element={<PublicLayout><OpenInnovation /></PublicLayout>} />
-                <Route path="/learn" element={<PublicLayout><Learn /></PublicLayout>} />
-                <Route path="/learn/:slug" element={<PublicLayout><Learn /></PublicLayout>} />
+                <Route path="/learn" element={<AcademyHome />} />
+                <Route path="/learn/module-1" element={<SubjectPage />} />
+                <Route path="/learn/course" element={<SubjectPage />} />
+                <Route path="/learn/problem-discovery-validation" element={<SubjectPage />} />
+                <Route path="/learn/chapter/:chapterNum" element={<ChapterReader />} />
+                <Route path="/learn/:slug" element={<ChapterReader />} />
                 <Route path="/academy" element={<Navigate to="/learn" replace />} />
                 <Route path="/tutorials" element={<Navigate to="/learn" replace />} />
 

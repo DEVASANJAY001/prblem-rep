@@ -372,4 +372,12 @@ body {
   animation: fadeIn 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+.serif {
+  font-family: 'Source Serif 4', Georgia, serif;
+}
+
+.font-source-sans {
+  font-family: 'Source Sans 3', system-ui, sans-serif;
+}
+
 

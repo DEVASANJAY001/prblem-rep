@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Chapter 1 Reader</title>
+<script src="./vendor/react.js"></script>
+<script src="./vendor/react-dom.js"></script>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;font-family:'Source Sans 3',system-ui,sans-serif}
+a{color:#0056d2}a:hover{color:#00419e}
+button{font-family:inherit;cursor:pointer}
+a:focus-visible,summary:focus-visible{outline:3px solid #0056d2;outline-offset:2px}
+</style>
+</helmet>
+<div style="width:100%;color:#1f1f1f;background:#fff">
+ <div style="border-bottom:1px solid #dae1ed"><div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px 24px;max-width:1280px;margin:0 auto;padding:14px 32px;box-sizing:border-box">
+  <a href="Main.dc.html" style="font-size:24px;font-weight:700;text-decoration:none;color:#1f1f1f">Stuck<span style="color:#0056d2;font-weight:600">here</span></a>
+  <a href="Main.dc.html" style="font-weight:600;padding:10px 0;min-height:44px;box-sizing:border-box">Academy</a>
+  <a href="Course.dc.html" style="padding:10px 0;min-height:44px;box-sizing:border-box">Problem Discovery &amp; Validation</a>
+ </div></div>
+ <div style="display:flex;flex-wrap:wrap;gap:40px 48px;max-width:1280px;margin:0 auto;padding:40px 32px 80px;box-sizing:border-box;align-items:flex-start">
+  <nav aria-label="Course chapters" style="flex:0 0 260px;box-sizing:border-box;border:1px solid #dae1ed;border-radius:8px;padding:12px">
+   <div style="font-size:13px;font-weight:600;letter-spacing:1px;color:#5b606b;padding:8px 10px">MODULE 1 CONTENTS</div>
+   <sc-for list="{{chapters}}" as="c" hint-placeholder-count="6">
+    <a href="Reader.dc.html" style="{{c.st}}"><span style="width:24px;flex:0 0 24px;color:#5b606b">{{c.num}}</span><span>{{c.title}}</span></a>
+    <sc-if value="{{c.cur}}" hint-placeholder-val="{{false}}">
+     <div style="margin:0 0 8px 34px;display:flex;flex-direction:column;font-size:14px">
+      <a href="#s11" style="padding:9px 6px;text-decoration:none;color:#3d424d">1.1 Problem, idea, solution</a>
+      <a href="#s12" style="padding:9px 6px;text-decoration:none;color:#3d424d">1.2 A good problem statement</a>
+      <a href="#s13" style="padding:9px 6px;text-decoration:none;color:#3d424d">1.3 The template</a>
+      <a href="#s14" style="padding:9px 6px;text-decoration:none;color:#3d424d">1.4 Practice</a>
+     </div>
+    </sc-if>
+   </sc-for>
+  </nav>
+
+  <main style="flex:999 1 520px;min-width:0;max-width:720px">
+   <div style="font-size:14px;color:#5b606b">Module 1 · Chapter 1</div>
+   <h1 style="margin:10px 0 0;font-size:44px;line-height:1.1;letter-spacing:-1px;font-weight:700">Foundations: What Is a Problem?</h1>
+   <p style="font-size:20px;line-height:1.55;color:#3d424d;margin:16px 0 0">Most builders start with a solution and go looking for a problem. This chapter gives you the words to tell the two apart.</p>
+   <div style="margin-top:22px;background:#f5f8ff;border:1px solid #dae1ed;border-radius:8px;padding:18px 22px"><div style="font-weight:700">In this chapter</div><div style="font-size:16px;line-height:1.6;color:#3d424d;margin-top:6px">The difference between a problem, an idea and a solution · The five parts of a good problem statement · A fill-in template · Practice</div></div>
+
+   <h2 id="s11" style="margin:44px 0 0;font-size:28px;font-weight:700;letter-spacing:-0.4px">1.1 Problem, idea, solution</h2>
+   <p style="font-size:18px;line-height:1.7;margin:12px 0 0;color:#1f1f1f">A <b>problem</b> is a situation where someone's goal is blocked. An <b>idea</b> is a guess about what might help. A <b>solution</b> is something that actually removes the block. People mix them up because ideas arrive faster than understanding.</p>
+   <table style="width:100%;border-collapse:collapse;margin-top:16px;font-size:16px;line-height:1.5">
+    <tr style="border-top:1px solid #dae1ed;background:#f5f8ff"><td style="padding:12px 16px;font-weight:700;width:120px">Problem</td><td style="padding:12px 16px">Clinic staff lose part of every week rebuilding the doctor schedule by hand.</td></tr>
+    <tr style="border-top:1px solid #dae1ed"><td style="padding:12px 16px;font-weight:700">Idea</td><td style="padding:12px 16px">Maybe a scheduling app could fix it.</td></tr>
+    <tr style="border-top:1px solid #dae1ed;border-bottom:1px solid #dae1ed"><td style="padding:12px 16px;font-weight:700">Solution</td><td style="padding:12px 16px">A tool that rebuilds the schedule after a no-show, tested with real staff.</td></tr>
+   </table>
+   <h3 style="margin:24px 0 0;font-size:21px">The solution in disguise</h3>
+   <p style="font-size:18px;line-height:1.7;margin:12px 0 0;color:#1f1f1f">"The problem is that we lack an app" is not a problem. It is a solution wearing a problem's clothes. Ask what the app would let someone do that they cannot do today.</p>
+
+   <h2 id="s12" style="margin:44px 0 0;font-size:28px;font-weight:700;letter-spacing:-0.4px">1.2 A good problem statement</h2>
+   <p style="font-size:18px;line-height:1.7;margin:12px 0 0;color:#1f1f1f">Good statements are specific enough that two people would picture the same situation. Cover five things:</p>
+   <div style="margin-top:12px;border-top:1px solid #dae1ed">
+    <div style="padding:14px 0;border-bottom:1px solid #dae1ed"><b>Who</b> faces it. A specific role, not "everyone".</div>
+    <div style="padding:14px 0;border-bottom:1px solid #dae1ed"><b>What happens.</b> Behaviour you could observe.</div>
+    <div style="padding:14px 0;border-bottom:1px solid #dae1ed"><b>When, and how often.</b> Recurring problems matter most.</div>
+    <div style="padding:14px 0;border-bottom:1px solid #dae1ed"><b>What it costs.</b> Time, money, risk or stress.</div>
+    <div style="padding:14px 0;border-bottom:1px solid #dae1ed"><b>What they do today.</b> The current workaround.</div>
+   </div>
+
+   <h2 id="s13" style="margin:44px 0 0;font-size:28px;font-weight:700;letter-spacing:-0.4px">1.3 The template</h2>
+   <div style="margin-top:14px;border:1px solid #dae1ed;border-radius:8px;padding:18px 22px;font-size:17px;line-height:1.7;background:#f5f8ff"><b>[Role]</b> at <b>[type of workplace]</b> struggle to <b>[goal]</b> because <b>[blocker]</b>. It happens <b>[how often]</b> and costs <b>[time, money or risk]</b>. Today they <b>[workaround]</b>.</div>
+   <p style="font-size:18px;line-height:1.7;margin:12px 0 0;color:#1f1f1f"><b>Weak:</b> "Hospitals need better software."<br><b>Stronger:</b> "Clinic managers at small clinics struggle to keep the doctor schedule full because no-shows arrive without warning. It happens [how often] and costs [hours per week]. Today they rebuild the schedule by hand in a spreadsheet."</p>
+
+   <h2 id="s14" style="margin:44px 0 0;font-size:28px;font-weight:700;letter-spacing:-0.4px">1.4 Practice</h2>
+   <p style="font-size:18px;line-height:1.7;margin:12px 0 0;color:#1f1f1f"><b>Exercise.</b> Pick five frustrations from your own week. Rewrite each one using the template above. Cross out any that name a solution.</p>
+   <h3 style="margin:24px 0 0;font-size:21px">Check yourself</h3>
+   <details style="border-bottom:1px solid #dae1ed"><summary style="display:flex;align-items:center;min-height:44px;cursor:pointer;font-weight:600;color:#0056d2">1. Is "we need a mobile app for our shop" a problem statement?</summary><p style="margin:0 0 14px;font-size:17px;line-height:1.6;color:#3d424d">No. It names a solution. Ask what the shop owner cannot do today.</p></details>
+   <details style="border-bottom:1px solid #dae1ed"><summary style="display:flex;align-items:center;min-height:44px;cursor:pointer;font-weight:600;color:#0056d2">2. Which of the five parts is missing: "Nurses struggle with handover notes"?</summary><p style="margin:0 0 14px;font-size:17px;line-height:1.6;color:#3d424d">How often it happens, what it costs and what they do today are all missing.</p></details>
+
+   <div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px 24px;margin-top:44px;padding-top:20px;border-top:1px solid #dae1ed">
+    <a href="Reader.dc.html" style="padding:12px 0;min-height:44px;box-sizing:border-box;font-weight:600;text-decoration:none">← Chapter 0: Course overview</a>
+    <a href="Reader.dc.html" style="padding:12px 0;min-height:44px;box-sizing:border-box;font-weight:600;text-decoration:none">Chapter 2: Why startups fail →</a>
+   </div>
+  </main>
+
+  <aside style="flex:0 0 200px;box-sizing:border-box">
+   <div style="font-size:13px;font-weight:600;letter-spacing:1px;color:#5b606b;margin-bottom:6px">ON THIS PAGE</div>
+   <div style="display:flex;flex-direction:column;font-size:15px;border-top:1px solid #dae1ed">
+    <a href="#s11" style="padding:11px 0;border-bottom:1px solid #dae1ed;text-decoration:none;color:#3d424d">Problem, idea, solution</a>
+    <a href="#s12" style="padding:11px 0;border-bottom:1px solid #dae1ed;text-decoration:none;color:#3d424d">A good problem statement</a>
+    <a href="#s13" style="padding:11px 0;border-bottom:1px solid #dae1ed;text-decoration:none;color:#3d424d">The template</a>
+    <a href="#s14" style="padding:11px 0;border-bottom:1px solid #dae1ed;text-decoration:none;color:#3d424d">Practice</a>
+   </div>
+  </aside>
+ </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1500}}'>
+const TITLES=['Course Overview','What Is a Problem?','Why Startups Fail','Vitamin, Painkiller, Surgery','Where to Find Real Problems','Customer Discovery Interviews','The Problem Dossier','Measuring Pain','Validation Signals','Workarounds and Competitors','Sizing the Opportunity','Solution Hypothesis','Bias, Ethics, Mistakes','Capstone Project','Appendices'];
+class Component extends DCLogic {
+ renderVals(){
+  return {chapters:TITLES.map((t,i)=>({num:i,title:t,cur:i===1,
+   st:'display:flex;gap:6px;align-items:baseline;padding:10px;border-radius:6px;text-decoration:none;font-size:16px;min-height:44px;box-sizing:border-box;color:#1f1f1f;'+(i===1?'background:#e8f0fe;font-weight:700;color:#00419e':'')}))};
+ }
+}
+</script>
+</body>
+</html>
