@@ -1,0 +1,37 @@
+<svg viewBox="0 0 760 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="760" height="200" rx="12" fill="#F8FAFC"/>
+  <text x="380" y="26" fill="#0F172A" font-size="14" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">The Value-Based Pricing Spectrum</text>
+
+  <!-- Low -->
+  <g transform="translate(40, 50)">
+    <rect width="210" height="130" rx="8" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5"/>
+    <rect width="210" height="30" rx="8" fill="#64748B"/>
+    <text x="105" y="20" fill="#FFFFFF" font-size="11" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">COST-PLUS (COMMODITY)</text>
+    <text x="15" y="55" fill="#0F172A" font-size="11" font-weight="bold" font-family="system-ui, sans-serif">Your Cost + 20% margin</text>
+    <text x="15" y="75" fill="#64748B" font-size="11" font-family="system-ui, sans-serif">• Server hosting: $20</text>
+    <text x="15" y="93" fill="#64748B" font-size="11" font-family="system-ui, sans-serif">• You charge: $24</text>
+    <text x="15" y="118" fill="#DC2626" font-size="10" font-weight="bold" font-family="system-ui, sans-serif">Leaves 90% of value on table</text>
+  </g>
+
+  <!-- Mid -->
+  <g transform="translate(275, 50)">
+    <rect width="210" height="130" rx="8" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5"/>
+    <rect width="210" height="30" rx="8" fill="#0B6B83"/>
+    <text x="105" y="20" fill="#FFFFFF" font-size="11" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">COMPETITOR BENCHMARK</text>
+    <text x="15" y="55" fill="#0F172A" font-size="11" font-weight="bold" font-family="system-ui, sans-serif">Match or undercut existing</text>
+    <text x="15" y="75" fill="#64748B" font-size="11" font-family="system-ui, sans-serif">• Incumbent charges: $200</text>
+    <text x="15" y="93" fill="#64748B" font-size="11" font-family="system-ui, sans-serif">• You charge: $179</text>
+    <text x="15" y="118" fill="#D97706" font-size="10" font-weight="bold" font-family="system-ui, sans-serif">Tethers you to legacy flaws</text>
+  </g>
+
+  <!-- High -->
+  <g transform="translate(510, 46)">
+    <rect width="210" height="138" rx="8" fill="#FFFFFF" stroke="#16A34A" stroke-width="2.5"/>
+    <rect width="210" height="32" rx="8" fill="#16A34A"/>
+    <text x="105" y="21" fill="#FFFFFF" font-size="11" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">VALUE-BASED (RECOMMENDED)</text>
+    <text x="15" y="55" fill="#0F172A" font-size="11" font-weight="bold" font-family="system-ui, sans-serif">10% to 20% of verified savings</text>
+    <text x="15" y="75" fill="#475569" font-size="11" font-family="system-ui, sans-serif">• Clinic loses: $2,500/mo</text>
+    <text x="15" y="93" fill="#475569" font-size="11" font-family="system-ui, sans-serif">• You save: $1,800/mo</text>
+    <text x="15" y="118" fill="#16A34A" font-size="11" font-weight="bold" font-family="system-ui, sans-serif">You charge: $300/mo (6x ROI!)</text>
+  </g>
+</svg>

@@ -1,0 +1,43 @@
+<svg viewBox="0 0 760 210" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="760" height="210" rx="12" fill="#F8FAFC"/>
+  <text x="380" y="24" fill="#0F172A" font-size="14" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">The Executive Opportunity One-Pager Summary</text>
+
+  <!-- 6 Grid Blocks -->
+  <g transform="translate(35, 42)">
+    <!-- Box 1 -->
+    <rect width="215" height="68" rx="6" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5"/>
+    <text x="12" y="22" fill="#0056D2" font-size="10" font-weight="bold" font-family="system-ui, sans-serif">1. VERIFIED PROBLEM &amp; PAIN SCORE</text>
+    <text x="12" y="42" fill="#0F172A" font-size="11" font-semibold font-family="system-ui, sans-serif">Clinic No-Shows (Score: 84/100)</text>
+    <text x="12" y="58" fill="#64748B" font-size="10" font-family="system-ui, sans-serif">Cost: $1,800/wk vacant doctor hours</text>
+
+    <!-- Box 2 -->
+    <rect x="235" width="215" height="68" rx="6" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5"/>
+    <text x="247" y="22" fill="#0056D2" font-size="10" font-weight="bold" font-family="system-ui, sans-serif">2. BEACHHEAD BUYER (ICP)</text>
+    <text x="247" y="42" fill="#0F172A" font-size="11" font-semibold font-family="system-ui, sans-serif">Private Pediatric Clinics (2-5 docs)</text>
+    <text x="247" y="58" fill="#64748B" font-size="10" font-family="system-ui, sans-serif">Decider: Clinic Practice Manager</text>
+
+    <!-- Box 3 -->
+    <rect x="470" width="215" height="68" rx="6" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5"/>
+    <text x="482" y="22" fill="#0056D2" font-size="10" font-weight="bold" font-family="system-ui, sans-serif">3. PRICING &amp; ACV</text>
+    <text x="482" y="42" fill="#0F172A" font-size="11" font-semibold font-family="system-ui, sans-serif">$150 / month / practice ($1,800 ACV)</text>
+    <text x="482" y="58" fill="#16A34A" font-size="10" font-semibold font-family="system-ui, sans-serif">Captures ~10% of lost revenue</text>
+
+    <!-- Box 4 -->
+    <rect y="82" width="215" height="68" rx="6" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5"/>
+    <text x="12" y="104" fill="#0056D2" font-size="10" font-weight="bold" font-family="system-ui, sans-serif">4. MARKET SIZING (TAM / SAM / SOM)</text>
+    <text x="12" y="124" fill="#0F172A" font-size="11" font-semibold font-family="system-ui, sans-serif">TAM: $280M · SAM: $27M</text>
+    <text x="12" y="140" fill="#0056D2" font-size="11" font-bold font-family="system-ui, sans-serif">SOM Year 2: $840k (460 clinics)</text>
+
+    <!-- Box 5 -->
+    <rect x="235" y="82" width="215" height="68" rx="6" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5"/>
+    <text x="247" y="104" fill="#0056D2" font-size="10" font-weight="bold" font-family="system-ui, sans-serif">5. UNIT ECONOMICS</text>
+    <text x="247" y="124" fill="#0F172A" font-size="11" font-semibold font-family="system-ui, sans-serif">CAC: $420 · LTV: $1,620</text>
+    <text x="247" y="140" fill="#16A34A" font-size="10" font-semibold font-family="system-ui, sans-serif">LTV:CAC 3.8x · Payback 3.2 mos</text>
+
+    <!-- Box 6 -->
+    <rect x="470" y="82" width="215" height="68" rx="6" fill="#FFFFFF" stroke="#16A34A" stroke-width="2"/>
+    <text x="482" y="104" fill="#16A34A" font-size="10" font-weight="bold" font-family="system-ui, sans-serif">6. DECISION VERDICT</text>
+    <text x="482" y="124" fill="#16A34A" font-size="12" font-bold font-family="system-ui, sans-serif">PROCEED TO BUILD (GO)</text>
+    <text x="482" y="140" fill="#475569" font-size="10" font-family="system-ui, sans-serif">Launch 14-day smoke test in metro</text>
+  </g>
+</svg>

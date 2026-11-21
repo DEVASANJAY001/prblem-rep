@@ -1,0 +1,45 @@
+<svg viewBox="0 0 760 190" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="760" height="190" rx="12" fill="#F8FAFC"/>
+  <text x="380" y="26" fill="#0F172A" font-size="14" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">The Operational Triad: User vs. Buyer vs. Payer</text>
+
+  <!-- User -->
+  <g transform="translate(40, 45)">
+    <rect width="200" height="120" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+    <rect width="200" height="28" rx="8" fill="#3B82F6"/>
+    <text x="100" y="19" fill="#FFFFFF" font-size="12" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">THE USER</text>
+    <text x="15" y="50" fill="#0F172A" font-size="11" font-weight="bold" font-family="system-ui, sans-serif">Feels the daily friction</text>
+    <text x="15" y="70" fill="#64748B" font-size="11" font-family="system-ui, sans-serif">• Front-desk receptionist</text>
+    <text x="15" y="88" fill="#64748B" font-size="11" font-family="system-ui, sans-serif">• Warehouse picker</text>
+    <text x="15" y="108" fill="#2563EB" font-size="10" font-weight="semibold" font-family="system-ui, sans-serif">Cares about: Usability &amp; Time</text>
+  </g>
+
+  <!-- Arrow 1 -->
+  <path d="M255 105H285" stroke="#94A3B8" stroke-width="2" stroke-linecap="round"/>
+  <polygon points="285,101 293,105 285,109" fill="#94A3B8"/>
+
+  <!-- Buyer -->
+  <g transform="translate(295, 45)">
+    <rect width="200" height="120" rx="8" fill="#FFFFFF" stroke="#0056D2" stroke-width="2"/>
+    <rect width="200" height="28" rx="8" fill="#0056D2"/>
+    <text x="100" y="19" fill="#FFFFFF" font-size="12" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">THE BUYER (DECIDER)</text>
+    <text x="15" y="50" fill="#0F172A" font-size="11" font-weight="bold" font-family="system-ui, sans-serif">Has authority to choose</text>
+    <text x="15" y="70" fill="#64748B" font-size="11" font-family="system-ui, sans-serif">• Clinic Operations Director</text>
+    <text x="15" y="88" fill="#64748B" font-size="11" font-family="system-ui, sans-serif">• Head of Supply Chain</text>
+    <text x="15" y="108" fill="#0056D2" font-size="10" font-weight="semibold" font-family="system-ui, sans-serif">Cares about: Reliability &amp; ROI</text>
+  </g>
+
+  <!-- Arrow 2 -->
+  <path d="M510 105H540" stroke="#94A3B8" stroke-width="2" stroke-linecap="round"/>
+  <polygon points="540,101 548,105 540,109" fill="#94A3B8"/>
+
+  <!-- Payer -->
+  <g transform="translate(550, 45)">
+    <rect width="170" height="120" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+    <rect width="170" height="28" rx="8" fill="#10B981"/>
+    <text x="85" y="19" fill="#FFFFFF" font-size="12" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">THE PAYER</text>
+    <text x="15" y="50" fill="#0F172A" font-size="11" font-weight="bold" font-family="system-ui, sans-serif">Controls the budget</text>
+    <text x="15" y="70" fill="#64748B" font-size="11" font-family="system-ui, sans-serif">• Chief Financial Officer</text>
+    <text x="15" y="88" fill="#64748B" font-size="11" font-family="system-ui, sans-serif">• Procurement Office</text>
+    <text x="15" y="108" fill="#059669" font-size="10" font-weight="semibold" font-family="system-ui, sans-serif">Cares about: Total Cost &amp; Term</text>
+  </g>
+</svg>

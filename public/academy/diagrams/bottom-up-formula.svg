@@ -1,0 +1,43 @@
+<svg viewBox="0 0 760 190" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="760" height="190" rx="12" fill="#F8FAFC"/>
+  <text x="380" y="26" fill="#0F172A" font-size="14" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">The Bottom-Up Market Sizing Formula</text>
+
+  <!-- Box 1: Count -->
+  <g transform="translate(40, 48)">
+    <rect width="180" height="110" rx="8" fill="#FFFFFF" stroke="#0056D2" stroke-width="2"/>
+    <rect width="180" height="26" rx="8" fill="#0056D2"/>
+    <text x="90" y="18" fill="#FFFFFF" font-size="11" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">COUNT (N)</text>
+    <text x="15" y="46" fill="#0F172A" font-size="11" font-weight="bold" font-family="system-ui, sans-serif">Qualified Buyers</text>
+    <text x="15" y="66" fill="#64748B" font-size="10" font-family="system-ui, sans-serif">Filtered by size, tech, location</text>
+    <text x="15" y="94" fill="#0056D2" font-size="11" font-weight="bold" font-family="system-ui, sans-serif">e.g. 12,500 Clinics</text>
+  </g>
+
+  <!-- Multiply 1 -->
+  <text x="245" y="112" fill="#0F172A" font-size="24" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">×</text>
+
+  <!-- Box 2: Usage / Volume -->
+  <g transform="translate(270, 48)">
+    <rect width="180" height="110" rx="8" fill="#FFFFFF" stroke="#0056D2" stroke-width="2"/>
+    <rect width="180" height="26" rx="8" fill="#0056D2"/>
+    <text x="90" y="18" fill="#FFFFFF" font-size="11" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">USAGE (Q)</text>
+    <text x="15" y="46" fill="#0F172A" font-size="11" font-weight="bold" font-family="system-ui, sans-serif">Annual Volume</text>
+    <text x="15" y="66" fill="#64748B" font-size="10" font-family="system-ui, sans-serif">Licenses, seats or transactions</text>
+    <text x="15" y="94" fill="#0056D2" font-size="11" font-weight="bold" font-family="system-ui, sans-serif">e.g. 1 Subscription / yr</text>
+  </g>
+
+  <!-- Multiply 2 -->
+  <text x="475" y="112" fill="#0F172A" font-size="24" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">×</text>
+
+  <!-- Box 3: Price -->
+  <g transform="translate(500, 48)">
+    <rect width="180" height="110" rx="8" fill="#FFFFFF" stroke="#0056D2" stroke-width="2"/>
+    <rect width="180" height="26" rx="8" fill="#0056D2"/>
+    <text x="90" y="18" fill="#FFFFFF" font-size="11" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">PRICE (P)</text>
+    <text x="15" y="46" fill="#0F172A" font-size="11" font-weight="bold" font-family="system-ui, sans-serif">Annual Value</text>
+    <text x="15" y="66" fill="#64748B" font-size="10" font-family="system-ui, sans-serif">ACV anchored to pain cost</text>
+    <text x="15" y="94" fill="#0056D2" font-size="11" font-weight="bold" font-family="system-ui, sans-serif">e.g. $1,800 / year</text>
+  </g>
+
+  <!-- Result Banner -->
+  <text x="702" y="112" fill="#0F172A" font-size="24" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">=</text>
+</svg>

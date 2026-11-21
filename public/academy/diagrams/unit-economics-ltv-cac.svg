@@ -1,0 +1,42 @@
+<svg viewBox="0 0 760 210" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="760" height="210" rx="12" fill="#F8FAFC"/>
+  <text x="380" y="26" fill="#0F172A" font-size="14" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">Unit Economics: The Golden LTV : CAC Ratio</text>
+
+  <!-- CAC -->
+  <g transform="translate(40, 50)">
+    <rect width="200" height="135" rx="8" fill="#FFFFFF" stroke="#EF4444" stroke-width="2"/>
+    <rect width="200" height="30" rx="8" fill="#EF4444"/>
+    <text x="100" y="20" fill="#FFFFFF" font-size="12" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">CAC (ACQUISITION COST)</text>
+    <text x="15" y="54" fill="#0F172A" font-size="11" font-weight="bold" font-family="system-ui, sans-serif">Cost to Acquire One Customer</text>
+    <text x="15" y="74" fill="#64748B" font-size="11" font-family="system-ui, sans-serif">(Sales + Ads + Demos) / Won</text>
+    <text x="15" y="98" fill="#EF4444" font-size="13" font-weight="bold" font-family="system-ui, sans-serif">Example: $450 CAC</text>
+    <text x="15" y="122" fill="#64748B" font-size="10" font-family="system-ui, sans-serif">Payback Target: &lt; 12 months</text>
+  </g>
+
+  <!-- VS Comparison Badge -->
+  <circle cx="280" cy="118" r="22" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="2"/>
+  <text x="280" y="123" fill="#0F172A" font-size="11" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">vs</text>
+
+  <!-- LTV -->
+  <g transform="translate(320, 50)">
+    <rect width="200" height="135" rx="8" fill="#FFFFFF" stroke="#16A34A" stroke-width="2"/>
+    <rect width="200" height="30" rx="8" fill="#16A34A"/>
+    <text x="100" y="20" fill="#FFFFFF" font-size="12" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">LTV (LIFETIME VALUE)</text>
+    <text x="15" y="54" fill="#0F172A" font-size="11" font-weight="bold" font-family="system-ui, sans-serif">Gross Margin per Customer</text>
+    <text x="15" y="74" fill="#64748B" font-size="11" font-family="system-ui, sans-serif">ARPU × Margin % × Lifespan</text>
+    <text x="15" y="98" fill="#16A34A" font-size="13" font-weight="bold" font-family="system-ui, sans-serif">Example: $1,800 LTV</text>
+    <text x="15" y="122" fill="#64748B" font-size="10" font-family="system-ui, sans-serif">36-month lifespan at 80% margin</text>
+  </g>
+
+  <!-- Ratio Verdict -->
+  <g transform="translate(545, 50)">
+    <rect width="175" height="135" rx="8" fill="#FFFFFF" stroke="#0056D2" stroke-width="2"/>
+    <rect width="175" height="30" rx="8" fill="#0056D2"/>
+    <text x="88" y="20" fill="#FFFFFF" font-size="12" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">THE RATIO: 4.0x</text>
+    <text x="15" y="54" fill="#16A34A" font-size="12" font-weight="bold" font-family="system-ui, sans-serif">✓ High Health (&gt;3:1)</text>
+    <text x="15" y="74" fill="#64748B" font-size="10" font-family="system-ui, sans-serif">• &lt; 1:1 = Burning money</text>
+    <text x="15" y="92" fill="#64748B" font-size="10" font-family="system-ui, sans-serif">• 1 to 2:1 = Dangerous</text>
+    <text x="15" y="110" fill="#64748B" font-size="10" font-family="system-ui, sans-serif">• 3:1 to 5:1 = Ideal venture</text>
+    <text x="15" y="128" fill="#64748B" font-size="10" font-family="system-ui, sans-serif">• &gt; 5:1 = Under-investing in growth</text>
+  </g>
+</svg>

@@ -1,164 +1,219 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useMemo } from "react";
+import { Link, useParams, useLocation } from "react-router-dom";
 import { SEOHead } from "@/components/common/SEOHead";
-import { ACADEMY_PARTS, ACADEMY_CHAPTERS } from "@/data/academyData";
+import {
+  ACADEMY_COURSES,
+  COURSE_1_CHAPTERS,
+  COURSE_2_CHAPTERS,
+  COURSE_1_PARTS,
+  COURSE_2_PARTS,
+  AcademyChapter,
+  AcademyPart,
+} from "@/data/academyData";
 
 export const SubjectPage: React.FC = () => {
+  const { courseSlug } = useParams<{ courseSlug?: string }>();
+  const location = useLocation();
+
+  // Determine active course
+  const isCourse2 =
+    location.pathname.includes("market-sizing") ||
+    courseSlug?.includes("market-sizing") ||
+    courseSlug === "course-2";
+
+  const course = isCourse2 ? ACADEMY_COURSES[1] : ACADEMY_COURSES[0];
+  const chapters: AcademyChapter[] = isCourse2 ? COURSE_2_CHAPTERS : COURSE_1_CHAPTERS;
+  const parts: AcademyPart[] = (isCourse2 ? COURSE_2_PARTS : COURSE_1_PARTS).filter(
+    (p) => p.name !== "All"
+  );
+
   // Active syllabus accordion part (default to part 0: Foundations)
   const [openPart, setOpenPart] = useState<number>(0);
 
-  // We exclude the "All" part for the syllabus accordion
-  const syllabusParts = ACADEMY_PARTS.filter((p) => p.name !== "All");
+  const whatYouWillLearn = useMemo(() => {
+    if (isCourse2) {
+      return [
+        "Estimate TAM, SAM and SOM bottom-up from real operational inputs",
+        "Navigate the User vs. Buyer vs. Payer triad in B2B sales",
+        "Price software to capture 10% to 20% of verified customer waste",
+        "Build transparent spreadsheet models with sensitivity ranges",
+        "Evaluate unit economics for a healthy >3:1 LTV:CAC ratio",
+        "Produce an executive 6-box opportunity dossier for stakeholders",
+      ];
+    }
+    return [
+      "Spot problems in real workplaces and daily life",
+      "Interview operators without pitching solutions",
+      "Document a problem as a structured dossier",
+      "Score pain on a 0 to 100 mathematical scale",
+      "Test a problem with cheap validation experiments",
+      "Decide objectively to go, pivot or stop",
+    ];
+  }, [isCourse2]);
+
+  const skills = useMemo(() => {
+    if (isCourse2) {
+      return [
+        "Bottom-Up Sizing",
+        "Value-Based Pricing",
+        "Unit Economics",
+        "LTV : CAC Modeling",
+        "Sensitivity Analysis",
+        "India & Emerging Markets",
+      ];
+    }
+    return [
+      "Customer discovery",
+      "Pain scoring",
+      "Competitor analysis",
+      "Bottom-up sizing",
+      "Validation experiments",
+    ];
+  }, [isCourse2]);
 
   return (
     <div className="font-source-sans w-full min-h-screen bg-white text-[#1f1f1f] text-base antialiased">
       <SEOHead
-        title="Problem Discovery & Validation — Stuckhere Academy"
-        description="From raw friction to a verified, buildable problem. Learn to find, document, score and test problems before you write a line of code."
-        canonicalUrl="https://stuckhere.davns.com/learn/problem-discovery-and-validation"
+        title={`${course.title} — Stuckhere Academy`}
+        description={course.description}
+        canonicalUrl={`https://stuckhere.davns.com/learn/${course.slug}`}
       />
 
-      {/* Hero Section */}
-      <section className="bg-[#f5f8ff] border-b border-[#dae1ed] py-10 sm:py-14">
-        <div className="max-w-[1280px] mx-auto px-4 sm:px-8 box-border flex flex-wrap gap-8 items-start">
-          <div className="flex-[2_1_560px] min-w-0">
-            <div className="text-sm font-semibold text-[#0056d2]">Academy / Course 1</div>
-            <h1 className="m-0 mt-3 text-3xl sm:text-[42px] leading-[1.1] font-bold tracking-[-0.8px] text-[#1f1f1f]">
-              Problem Discovery &amp; Validation
+      {/* Hero Section - Fully Responsive on Mobile & Desktop */}
+      <section className="bg-[#f5f8ff] border-b border-[#dae1ed] py-8 sm:py-12 md:py-14">
+        <div className="max-w-[1280px] mx-auto px-4 sm:px-6 md:px-8 box-border flex flex-col lg:flex-row gap-8 items-start">
+          <div className="flex-1 min-w-0">
+            <div className="inline-flex items-center gap-1.5 text-xs font-bold tracking-wider text-[#0056d2] uppercase bg-[#0056d2]/10 px-2.5 py-1 rounded-full mb-3">
+              Academy / Course {course.n}
+            </div>
+            <h1 className="m-0 text-2xl sm:text-3xl md:text-[40px] leading-[1.15] font-bold tracking-[-0.8px] text-[#1f1f1f]">
+              {course.title}
             </h1>
-            <p className="m-0 mt-3.5 max-w-[640px] text-lg sm:text-[19px] leading-[1.5] text-[#3d424d]">
-              From raw friction to a verified, buildable problem. Learn to find, document, score and test problems before you write a line of code.
+            <p className="m-0 mt-3.5 max-w-[640px] text-base sm:text-lg md:text-[19px] leading-[1.5] text-[#3d424d]">
+              {course.description}
             </p>
 
-            <div className="flex flex-wrap gap-3 mt-5.5">
+            <div className="flex flex-wrap gap-3 mt-6">
               <Link
-                to="/learn/problem-discovery-and-validation/course-overview"
-                className="inline-block bg-[#0056d2] hover:bg-[#00419e] text-white font-semibold no-underline py-3.5 px-7 rounded-lg min-h-[44px] box-border transition-colors shadow-sm"
+                to={`/learn/${course.slug}/course-overview`}
+                className="inline-block bg-[#0056d2] hover:bg-[#00419e] text-white font-semibold no-underline py-3 sm:py-3.5 px-6 sm:px-7 rounded-lg min-h-[44px] box-border transition-colors shadow-sm text-center"
               >
                 Start learning
               </Link>
+              <Link
+                to="/learn"
+                className="inline-block bg-white hover:bg-slate-50 text-[#1f1f1f] border border-[#dae1ed] font-semibold no-underline py-3 sm:py-3.5 px-5 sm:px-6 rounded-lg min-h-[44px] box-border transition-colors text-center"
+              >
+                ← All Courses
+              </Link>
             </div>
 
-            <div className="flex flex-wrap gap-3 sm:gap-9 mt-7">
+            <div className="flex flex-wrap gap-4 sm:gap-8 mt-7 pt-5 border-t border-[#dae1ed]/60">
               <div>
-                <div className="font-bold text-[18px] text-[#1f1f1f]">15 chapters</div>
-                <div className="text-sm text-[#5b606b]">78 sections</div>
+                <div className="font-bold text-[17px] sm:text-[18px] text-[#1f1f1f]">
+                  {course.chaptersCount} chapters
+                </div>
+                <div className="text-xs sm:text-sm text-[#5b606b]">{course.sectionsCount} sections</div>
               </div>
               <div>
-                <div className="font-bold text-[18px] text-[#1f1f1f]">Beginner</div>
-                <div className="text-sm text-[#5b606b]">No prior experience</div>
+                <div className="font-bold text-[17px] sm:text-[18px] text-[#1f1f1f]">{course.level}</div>
+                <div className="text-xs sm:text-sm text-[#5b606b]">
+                  {isCourse2 ? "Prerequisite: Course 1" : "No prior experience"}
+                </div>
               </div>
               <div>
-                <div className="font-bold text-[18px] text-[#1f1f1f]">Quiz per chapter</div>
-                <div className="text-sm text-[#5b606b]">Plus a capstone</div>
+                <div className="font-bold text-[17px] sm:text-[18px] text-[#1f1f1f]">Checkpoint Quizzes</div>
+                <div className="text-xs sm:text-sm text-[#5b606b]">Plus a verified capstone</div>
               </div>
             </div>
           </div>
 
-          {/* Right Card: What is included matching Course.dc.html */}
-          <div className="flex-[1_1_300px] bg-white border border-[#dae1ed] rounded-lg p-5 sm:p-6 box-border self-start shadow-sm">
-            <div className="text-[18px] font-bold text-[#1f1f1f]">What is included</div>
-            <div className="flex flex-col gap-3 mt-3.5 text-base text-[#3d424d]">
+          {/* Right Card: What is included */}
+          <div className="w-full lg:w-[320px] xl:w-[340px] bg-white border border-[#dae1ed] rounded-lg p-5 sm:p-6 box-border shadow-sm shrink-0">
+            <div className="text-[17px] sm:text-[18px] font-bold text-[#1f1f1f]">What is included</div>
+            <div className="flex flex-col gap-3 mt-3.5 text-sm sm:text-base text-[#3d424d]">
               <div className="flex items-center gap-2.5">
                 <span className="text-[#0056d2] font-bold">✓</span>
-                <span>Readable chapters and examples</span>
+                <span>Readable chapters and worked cases</span>
               </div>
               <div className="flex items-center gap-2.5">
                 <span className="text-[#0056d2] font-bold">✓</span>
-                <span>Exercises on real problems</span>
+                <span>Real industry data models &amp; exercises</span>
               </div>
               <div className="flex items-center gap-2.5">
                 <span className="text-[#0056d2] font-bold">✓</span>
-                <span>Checkpoint quizzes</span>
+                <span>Checkpoint quizzes with explanations</span>
               </div>
               <div className="flex items-center gap-2.5">
                 <span className="text-[#0056d2] font-bold">✓</span>
-                <span>Capstone project</span>
+                <span>Institutional capstone project</span>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Anchor Navigation Bar matching Course.dc.html */}
+      {/* Anchor Navigation Bar - Horizontal Scrolling on Mobile */}
       <nav
-        aria-label="Module sections"
-        className="max-w-[1280px] mx-auto px-4 sm:px-8 box-border border-b border-[#dae1ed] flex flex-wrap gap-x-7 text-base sticky top-14 sm:top-16 bg-white z-30"
+        aria-label="Course navigation sections"
+        className="w-full border-b border-[#dae1ed] sticky top-14 sm:top-16 bg-white z-30 overflow-x-auto no-scrollbar"
       >
-        <a
-          href="#about"
-          className="py-3.5 text-[#1f1f1f] font-bold border-b-[3px] border-[#0056d2] no-underline"
-        >
-          About
-        </a>
-        <a
-          href="#syllabus"
-          className="py-3.5 text-[#5b606b] hover:text-[#0056d2] no-underline transition-colors"
-        >
-          Syllabus
-        </a>
-        <a
-          href="#skills"
-          className="py-3.5 text-[#5b606b] hover:text-[#0056d2] no-underline transition-colors"
-        >
-          Skills
-        </a>
-        <a
-          href="#faq"
-          className="py-3.5 text-[#5b606b] hover:text-[#0056d2] no-underline transition-colors"
-        >
-          FAQ
-        </a>
+        <div className="max-w-[1280px] mx-auto px-4 sm:px-6 md:px-8 flex gap-6 sm:gap-8 text-sm sm:text-base whitespace-nowrap">
+          <a
+            href="#about"
+            className="py-3 sm:py-3.5 text-[#1f1f1f] font-bold border-b-[3px] border-[#0056d2] no-underline"
+          >
+            About
+          </a>
+          <a
+            href="#syllabus"
+            className="py-3 sm:py-3.5 text-[#5b606b] hover:text-[#0056d2] no-underline transition-colors"
+          >
+            Syllabus
+          </a>
+          <a
+            href="#skills"
+            className="py-3 sm:py-3.5 text-[#5b606b] hover:text-[#0056d2] no-underline transition-colors"
+          >
+            Skills
+          </a>
+          <a
+            href="#faq"
+            className="py-3 sm:py-3.5 text-[#5b606b] hover:text-[#0056d2] no-underline transition-colors"
+          >
+            FAQ
+          </a>
+        </div>
       </nav>
 
-      {/* Main Content Area matching Course.dc.html */}
-      <div className="max-w-[1280px] mx-auto px-4 sm:px-8 py-10 pb-18 box-border flex flex-wrap gap-10 items-start">
-        <main className="flex-[2_1_560px] min-w-0">
+      {/* Main Content Area */}
+      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 md:px-8 py-8 sm:py-10 pb-20 box-border flex flex-col md:flex-row gap-8 sm:gap-10 items-start">
+        <main className="flex-1 min-w-0 w-full">
           {/* Section: What you will learn */}
           <section id="about">
-            <h2 className="m-0 text-[26px] font-bold text-[#1f1f1f]">What you will learn</h2>
-            <div className="mt-4 border border-[#dae1ed] rounded-lg p-5 sm:p-6 grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-7 text-base leading-[1.45] text-[#3d424d] bg-white">
-              <div className="flex gap-2.5 items-start">
-                <span className="text-[#0056d2] font-bold mt-0.5">•</span>
-                <span>Spot problems in real workplaces and daily life</span>
-              </div>
-              <div className="flex gap-2.5 items-start">
-                <span className="text-[#0056d2] font-bold mt-0.5">•</span>
-                <span>Interview operators without pitching</span>
-              </div>
-              <div className="flex gap-2.5 items-start">
-                <span className="text-[#0056d2] font-bold mt-0.5">•</span>
-                <span>Document a problem as a structured dossier</span>
-              </div>
-              <div className="flex gap-2.5 items-start">
-                <span className="text-[#0056d2] font-bold mt-0.5">•</span>
-                <span>Score pain on a 0 to 100 scale</span>
-              </div>
-              <div className="flex gap-2.5 items-start">
-                <span className="text-[#0056d2] font-bold mt-0.5">•</span>
-                <span>Test a problem with cheap experiments</span>
-              </div>
-              <div className="flex gap-2.5 items-start">
-                <span className="text-[#0056d2] font-bold mt-0.5">•</span>
-                <span>Decide to go, pivot or stop</span>
-              </div>
+            <h2 className="m-0 text-xl sm:text-2xl md:text-[26px] font-bold text-[#1f1f1f]">
+              What you will learn
+            </h2>
+            <div className="mt-4 border border-[#dae1ed] rounded-lg p-4 sm:p-6 grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-6 text-sm sm:text-base leading-[1.5] text-[#3d424d] bg-white">
+              {whatYouWillLearn.map((item, idx) => (
+                <div key={idx} className="flex gap-2.5 items-start">
+                  <span className="text-[#0056d2] font-bold mt-0.5">•</span>
+                  <span>{item}</span>
+                </div>
+              ))}
             </div>
           </section>
 
           {/* Section: Skills you will gain */}
           <section id="skills" className="mt-10">
-            <h2 className="m-0 text-[26px] font-bold text-[#1f1f1f]">Skills you will gain</h2>
-            <div className="flex flex-wrap gap-2.5 mt-3.5">
-              {[
-                "Customer discovery",
-                "Pain scoring",
-                "Competitor analysis",
-                "Bottom-up sizing",
-                "Validation experiments",
-              ].map((skill) => (
+            <h2 className="m-0 text-xl sm:text-2xl md:text-[26px] font-bold text-[#1f1f1f]">
+              Skills you will gain
+            </h2>
+            <div className="flex flex-wrap gap-2 sm:gap-2.5 mt-3.5">
+              {skills.map((skill) => (
                 <span
                   key={skill}
-                  className="bg-[#eef2fb] text-[#00419e] font-medium rounded py-2 px-3.5 text-[15px]"
+                  className="inline-block bg-[#f5f8ff] text-[#0056d2] border border-[#dae1ed] py-1.5 px-3 rounded-full text-xs sm:text-sm font-semibold"
                 >
                   {skill}
                 </span>
@@ -166,33 +221,39 @@ export const SubjectPage: React.FC = () => {
             </div>
           </section>
 
-          {/* Section: Syllabus matching Course.dc.html */}
+          {/* Section: Syllabus Accordion */}
           <section id="syllabus" className="mt-10">
-            <h2 className="m-0 text-[26px] font-bold text-[#1f1f1f]">Syllabus</h2>
-            <div className="mt-3.5 border-t border-[#dae1ed]">
-              {syllabusParts.map((p, idx) => {
+            <h2 className="m-0 text-xl sm:text-2xl md:text-[26px] font-bold text-[#1f1f1f]">
+              Course Syllabus
+            </h2>
+            <div className="text-sm text-[#5b606b] mt-1 mb-4">
+              {course.chaptersCount} chapters organized into {parts.length} distinct curriculum parts.
+            </div>
+
+            <div className="border border-[#dae1ed] rounded-lg overflow-hidden bg-white divide-y divide-[#dae1ed]">
+              {parts.map((p, idx) => {
                 const isOpen = openPart === idx;
-                const partChapters = ACADEMY_CHAPTERS.filter(
+                const partChapters = chapters.filter(
                   (c) => c.num >= p.startChapter && c.num <= p.endChapter
                 );
 
                 return (
-                  <div key={p.name} className="border-b border-[#dae1ed]">
+                  <div key={p.name} className="transition-colors">
                     <button
                       type="button"
                       onClick={() => setOpenPart(isOpen ? -1 : idx)}
                       aria-expanded={isOpen}
-                      className="flex items-center gap-3.5 w-full text-left bg-transparent border-0 py-4.5 px-1 min-h-[44px] text-[#1f1f1f] cursor-pointer hover:bg-black/[0.01] transition-colors"
+                      className="flex items-center gap-3 w-full text-left bg-transparent border-0 py-4 px-4 min-h-[48px] text-[#1f1f1f] cursor-pointer hover:bg-black/[0.02] transition-colors"
                     >
-                      <span className="flex-1">
-                        <span className="block text-[13px] font-semibold tracking-[1px] text-[#5b606b]">
+                      <span className="flex-1 min-w-0">
+                        <span className="block text-xs font-bold tracking-[1px] text-[#0056d2] uppercase">
                           PART {idx + 1}
                         </span>
-                        <span className="block text-[19px] font-bold mt-0.5 text-[#1f1f1f]">
-                          {p.title}
+                        <span className="block text-base sm:text-[18px] font-bold mt-0.5 text-[#1f1f1f] truncate">
+                          {p.title || p.name}
                         </span>
                       </span>
-                      <span className="text-sm text-[#5b606b] mr-2 hidden sm:inline">
+                      <span className="text-xs sm:text-sm text-[#5b606b] mr-1 hidden sm:inline">
                         {p.meta}
                       </span>
                       <svg
@@ -203,29 +264,34 @@ export const SubjectPage: React.FC = () => {
                         stroke="#5b606b"
                         strokeWidth="2.4"
                         aria-hidden="true"
-                        className={`transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+                        className={`transition-transform duration-200 shrink-0 ${isOpen ? "rotate-180" : ""}`}
                       >
                         <path d="m6 9 6 6 6-6" />
                       </svg>
                     </button>
 
                     {isOpen && (
-                      <div className="px-1 pb-4.5 text-base leading-[1.7] text-[#3d424d] animate-fade-in">
-                        <div className="text-sm text-[#5b606b] mb-3">
-                          {p.items}
-                        </div>
-                        <div className="flex flex-col gap-2 mt-2">
+                      <div className="px-4 pb-4 pt-1 text-sm sm:text-base leading-[1.6] text-[#3d424d] bg-[#fafbfc] border-t border-[#dae1ed]/60 animate-fade-in">
+                        {p.items && (
+                          <div className="text-xs sm:text-sm text-[#5b606b] mb-3 italic">
+                            {p.items}
+                          </div>
+                        )}
+                        <div className="flex flex-col gap-1.5 mt-2">
                           {partChapters.map((ch) => (
                             <Link
                               key={ch.num}
-                              to={`/learn/problem-discovery-and-validation/${ch.slug}`}
-                              className="flex items-center justify-between py-2 px-3 rounded hover:bg-[#eef2fb] text-[#1f1f1f] hover:text-[#0056d2] no-underline transition-colors"
+                              to={`/learn/${course.slug}/${ch.slug}`}
+                              className="flex items-center justify-between py-2.5 px-3 rounded-lg bg-white border border-[#dae1ed]/80 hover:border-[#0056d2] hover:bg-[#f0f4fa] text-[#1f1f1f] hover:text-[#0056d2] no-underline transition-all min-h-[42px] group"
                             >
-                              <span className="font-medium">
-                                Chapter {ch.num}: {ch.title}
+                              <span className="font-semibold text-xs sm:text-sm flex items-center gap-2 min-w-0">
+                                <span className="w-5 text-center text-xs font-bold text-[#5b606b] group-hover:text-[#0056d2]">
+                                  {ch.num}
+                                </span>
+                                <span className="truncate">{ch.title}</span>
                               </span>
-                              <span className="text-xs text-[#0056d2] font-semibold shrink-0 ml-4">
-                                Read chapter →
+                              <span className="text-xs text-[#0056d2] font-semibold shrink-0 ml-3">
+                                Read →
                               </span>
                             </Link>
                           ))}
@@ -240,56 +306,50 @@ export const SubjectPage: React.FC = () => {
 
           {/* Section: Frequently Asked Questions */}
           <section id="faq" className="mt-10">
-            <h2 className="m-0 text-[26px] font-bold text-[#1f1f1f]">
+            <h2 className="m-0 text-xl sm:text-2xl md:text-[26px] font-bold text-[#1f1f1f]">
               Frequently asked questions
             </h2>
-            <div className="mt-3 text-base leading-[1.6] text-[#3d424d]">
-              <div className="font-bold text-[#1f1f1f]">Do I need a technical background?</div>
-              <p className="m-0 mt-1 mb-4 text-[#3d424d]">
-                No. The course is about people, operational workflows, and verified economic friction—not code.
-              </p>
+            <div className="mt-3 text-sm sm:text-base leading-[1.6] text-[#3d424d] space-y-4">
+              <div>
+                <div className="font-bold text-[#1f1f1f]">Do I need an advanced finance degree?</div>
+                <p className="m-0 mt-1 text-[#3d424d]">
+                  No. The math relies on practical unit arithmetic (Count × Usage × Price) and clean spreadsheet logic—not multivariable calculus.
+                </p>
+              </div>
 
-              <div className="font-bold text-[#1f1f1f]">How long does it take?</div>
-              <p className="m-0 mt-1 text-[#3d424d]">
-                Go at your own pace, one chapter at a time. Each chapter takes about 5 to 7 minutes to read and practice.
-              </p>
+              <div>
+                <div className="font-bold text-[#1f1f1f]">How long does the course take?</div>
+                <p className="m-0 mt-1 text-[#3d424d]">
+                  At your own pace, approximately 6 to 8 hours. Each chapter is designed for 7 to 10 minutes of active reading and practice.
+                </p>
+              </div>
+
+              <div>
+                <div className="font-bold text-[#1f1f1f]">Can I apply this to non-software businesses?</div>
+                <p className="m-0 mt-1 text-[#3d424d]">
+                  Yes. The bottom-up customer counting and unit economics apply equally to hardware, physical operations, logistics, and local service providers.
+                </p>
+              </div>
             </div>
           </section>
         </main>
 
-        {/* Aside Sidebar matching Course.dc.html */}
-        <aside className="flex-[1_1_280px] box-border sticky top-28 hidden md:block">
-          <div className="border border-[#dae1ed] rounded-lg p-5">
-            <div className="text-[18px] font-bold text-[#1f1f1f]">Curriculum Parts</div>
-            <div className="flex flex-col mt-2.5 text-[15px]">
-              <a
-                href="#syllabus"
-                onClick={() => setOpenPart(0)}
-                className="py-2.5 text-[#3d424d] hover:text-[#0056d2] border-b border-[#dae1ed] no-underline"
-              >
-                Part 1 · Foundations
-              </a>
-              <a
-                href="#syllabus"
-                onClick={() => setOpenPart(1)}
-                className="py-2.5 text-[#3d424d] hover:text-[#0056d2] border-b border-[#dae1ed] no-underline"
-              >
-                Part 2 · Discover
-              </a>
-              <a
-                href="#syllabus"
-                onClick={() => setOpenPart(2)}
-                className="py-2.5 text-[#3d424d] hover:text-[#0056d2] border-b border-[#dae1ed] no-underline"
-              >
-                Part 3 · Measure and validate
-              </a>
-              <a
-                href="#syllabus"
-                onClick={() => setOpenPart(3)}
-                className="py-2.5 text-[#3d424d] hover:text-[#0056d2] no-underline"
-              >
-                Part 4 · Apply
-              </a>
+        {/* Aside Sidebar: Quick Jump */}
+        <aside className="w-full md:w-[260px] lg:w-[280px] box-border sticky top-28 hidden md:block shrink-0">
+          <div className="border border-[#dae1ed] rounded-lg p-4 sm:p-5 bg-white shadow-2xs">
+            <div className="text-base font-bold text-[#1f1f1f]">Curriculum Parts</div>
+            <div className="flex flex-col mt-2.5 text-xs sm:text-sm divide-y divide-[#dae1ed]">
+              {parts.map((p, idx) => (
+                <a
+                  key={p.name}
+                  href="#syllabus"
+                  onClick={() => setOpenPart(idx)}
+                  className="py-2.5 text-[#3d424d] hover:text-[#0056d2] no-underline transition-colors flex items-center justify-between"
+                >
+                  <span className="truncate">Part {idx + 1} · {p.name}</span>
+                  <span className="text-xs text-[#5b606b]">→</span>
+                </a>
+              ))}
             </div>
           </div>
         </aside>

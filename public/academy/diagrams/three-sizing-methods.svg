@@ -1,0 +1,34 @@
+<svg viewBox="0 0 760 210" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="760" height="210" rx="12" fill="#F8FAFC"/>
+  <text x="380" y="28" fill="#0F172A" font-size="14" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">The Three Methods of Sizing a Market</text>
+
+  <!-- Top Down -->
+  <rect x="25" y="48" width="220" height="142" rx="8" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5"/>
+  <rect x="25" y="48" width="220" height="32" rx="8" fill="#64748B"/>
+  <text x="135" y="69" fill="#FFFFFF" font-size="12" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">1. TOP-DOWN</text>
+  <text x="40" y="100" fill="#0F172A" font-size="11" font-weight="bold" font-family="system-ui, sans-serif">Analyst Reports (Gartner, IDC)</text>
+  <text x="40" y="120" fill="#64748B" font-size="11" font-family="system-ui, sans-serif">"Global CRM is $80B, we'll get 1%"</text>
+  <rect x="40" y="132" width="190" height="20" rx="4" fill="#FEE2E2"/>
+  <text x="135" y="146" fill="#DC2626" font-size="10" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">Fragile: Ignores actual buyers</text>
+  <text x="40" y="174" fill="#94A3B8" font-size="10" font-family="system-ui, sans-serif">Best for: Quick macro context</text>
+
+  <!-- Bottom Up (Recommended) -->
+  <rect x="270" y="44" width="220" height="150" rx="8" fill="#FFFFFF" stroke="#0056D2" stroke-width="2.5"/>
+  <rect x="270" y="44" width="220" height="34" rx="8" fill="#0056D2"/>
+  <text x="380" y="66" fill="#FFFFFF" font-size="13" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">2. BOTTOM-UP ★</text>
+  <text x="285" y="98" fill="#0F172A" font-size="11" font-weight="bold" font-family="system-ui, sans-serif">Count × Usage × Price</text>
+  <text x="285" y="118" fill="#0056D2" font-size="11" font-weight="semibold" font-family="system-ui, sans-serif">"14,200 clinics × $150/mo × 12"</text>
+  <rect x="285" y="132" width="190" height="20" rx="4" fill="#DCFCE7"/>
+  <text x="380" y="146" fill="#16A34A" font-size="10" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">Defensible: Grounded in reality</text>
+  <text x="285" y="176" fill="#0F172A" font-size="10" font-weight="bold" font-family="system-ui, sans-serif">Stuckhere Standard Standard</text>
+
+  <!-- Value Theory -->
+  <rect x="515" y="48" width="220" height="142" rx="8" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5"/>
+  <rect x="515" y="48" width="220" height="32" rx="8" fill="#0B6B83"/>
+  <text x="625" y="69" fill="#FFFFFF" font-size="12" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">3. VALUE-THEORY</text>
+  <text x="530" y="100" fill="#0F172A" font-size="11" font-weight="bold" font-family="system-ui, sans-serif">Share of Value Created</text>
+  <text x="530" y="120" fill="#64748B" font-size="11" font-family="system-ui, sans-serif">"Save $20k waste, capture 20%"</text>
+  <rect x="530" y="132" width="190" height="20" rx="4" fill="#E0F2FE"/>
+  <text x="625" y="146" fill="#0369A1" font-size="10" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">Best for new novel categories</text>
+  <text x="530" y="174" fill="#94A3B8" font-size="10" font-family="system-ui, sans-serif">Useful when no past market exists</text>
+</svg>
