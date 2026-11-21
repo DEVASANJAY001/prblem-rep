@@ -426,11 +426,15 @@ export default async function handler(req, res) {
   const BASE_URL = "https://stuckhere.davns.com";
   const today = new Date().toISOString().split("T")[0];
 
-  // 1. Core Static Platform Hubs
+  // 1. Core Static Platform Hubs & Stuckhere Academy
   const staticPages = [
     { path: "/", priority: "1.00", changefreq: "daily" },
     { path: "/explore", priority: "0.95", changefreq: "daily" },
     { path: "/explore?filter=startup_mode", priority: "0.90", changefreq: "daily" },
+    { path: "/learn", priority: "0.95", changefreq: "daily" },
+    { path: "/methodology", priority: "0.85", changefreq: "weekly" },
+    { path: "/guides/problem-discovery-framework", priority: "0.85", changefreq: "weekly" },
+    { path: "/open-innovation", priority: "0.85", changefreq: "weekly" },
     { path: "/industries", priority: "0.85", changefreq: "daily" },
     { path: "/community", priority: "0.85", changefreq: "daily" },
     { path: "/submit", priority: "0.85", changefreq: "weekly" },
@@ -444,6 +448,45 @@ export default async function handler(req, res) {
     { path: "/privacy", priority: "0.30", changefreq: "yearly" },
     { path: "/terms", priority: "0.30", changefreq: "yearly" },
     { path: "/cookies", priority: "0.30", changefreq: "yearly" },
+
+    // Course 1: Problem Discovery & Validation (15 Chapters)
+    { path: "/learn/problem-discovery-and-validation", priority: "0.90", changefreq: "weekly" },
+    { path: "/learn/problem-discovery-and-validation/course-overview", priority: "0.85", changefreq: "weekly" },
+    { path: "/learn/problem-discovery-and-validation/what-is-a-problem", priority: "0.85", changefreq: "weekly" },
+    { path: "/learn/problem-discovery-and-validation/why-startups-fail", priority: "0.85", changefreq: "weekly" },
+    { path: "/learn/problem-discovery-and-validation/vitamin-painkiller-surgery", priority: "0.85", changefreq: "weekly" },
+    { path: "/learn/problem-discovery-and-validation/where-to-find-problems", priority: "0.85", changefreq: "weekly" },
+    { path: "/learn/problem-discovery-and-validation/customer-discovery-interviews", priority: "0.85", changefreq: "weekly" },
+    { path: "/learn/problem-discovery-and-validation/the-problem-dossier", priority: "0.85", changefreq: "weekly" },
+    { path: "/learn/problem-discovery-and-validation/measuring-pain", priority: "0.85", changefreq: "weekly" },
+    { path: "/learn/problem-discovery-and-validation/validation-signals", priority: "0.85", changefreq: "weekly" },
+    { path: "/learn/problem-discovery-and-validation/workarounds-and-competitors", priority: "0.85", changefreq: "weekly" },
+    { path: "/learn/problem-discovery-and-validation/sizing-the-opportunity", priority: "0.85", changefreq: "weekly" },
+    { path: "/learn/problem-discovery-and-validation/solution-hypothesis", priority: "0.85", changefreq: "weekly" },
+    { path: "/learn/problem-discovery-and-validation/bias-ethics-and-mistakes", priority: "0.85", changefreq: "weekly" },
+    { path: "/learn/problem-discovery-and-validation/capstone-project", priority: "0.85", changefreq: "weekly" },
+    { path: "/learn/problem-discovery-and-validation/appendices", priority: "0.85", changefreq: "weekly" },
+
+    // Course 2: Market Sizing & Opportunity Analysis (18 Chapters)
+    { path: "/learn/market-sizing-and-opportunity", priority: "0.90", changefreq: "weekly" },
+    { path: "/learn/market-sizing-and-opportunity/course-overview", priority: "0.85", changefreq: "weekly" },
+    { path: "/learn/market-sizing-and-opportunity/why-market-sizing-matters", priority: "0.85", changefreq: "weekly" },
+    { path: "/learn/market-sizing-and-opportunity/core-vocabulary", priority: "0.85", changefreq: "weekly" },
+    { path: "/learn/market-sizing-and-opportunity/three-ways-to-size-a-market", priority: "0.85", changefreq: "weekly" },
+    { path: "/learn/market-sizing-and-opportunity/defining-who-is-in-the-market", priority: "0.85", changefreq: "weekly" },
+    { path: "/learn/market-sizing-and-opportunity/counting-customers", priority: "0.85", changefreq: "weekly" },
+    { path: "/learn/market-sizing-and-opportunity/pricing-and-willingness-to-pay", priority: "0.85", changefreq: "weekly" },
+    { path: "/learn/market-sizing-and-opportunity/usage-frequency-and-revenue-per-customer", priority: "0.85", changefreq: "weekly" },
+    { path: "/learn/market-sizing-and-opportunity/bottom-up-tam-step-by-step", priority: "0.85", changefreq: "weekly" },
+    { path: "/learn/market-sizing-and-opportunity/growth-trends-and-timing", priority: "0.85", changefreq: "weekly" },
+    { path: "/learn/market-sizing-and-opportunity/obtainable-market-and-go-to-market", priority: "0.85", changefreq: "weekly" },
+    { path: "/learn/market-sizing-and-opportunity/unit-economics", priority: "0.85", changefreq: "weekly" },
+    { path: "/learn/market-sizing-and-opportunity/sanity-checks-ranges-and-sensitivity", priority: "0.85", changefreq: "weekly" },
+    { path: "/learn/market-sizing-and-opportunity/sizing-in-india-and-emerging-markets", priority: "0.85", changefreq: "weekly" },
+    { path: "/learn/market-sizing-and-opportunity/communicating-the-opportunity", priority: "0.85", changefreq: "weekly" },
+    { path: "/learn/market-sizing-and-opportunity/common-mistakes-and-honest-practice", priority: "0.85", changefreq: "weekly" },
+    { path: "/learn/market-sizing-and-opportunity/capstone-project", priority: "0.85", changefreq: "weekly" },
+    { path: "/learn/market-sizing-and-opportunity/appendices-and-formula-cheat-sheet", priority: "0.85", changefreq: "weekly" },
   ];
 
   let problemUrls = [];

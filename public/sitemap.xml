@@ -26,174 +26,366 @@
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
-  <!-- Stuckhere Academy (GeeksforGeeks-Style Learning Portal) -->
+    <!-- Stuckhere Academy: Open Learning Portal & Master Curricula (35 Pages) -->
   <url>
     <loc>https://stuckhere.davns.com/learn</loc>
     <lastmod>2026-11-21</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.90</priority>
-  </url>
-  <url>
-    <loc>https://stuckhere.davns.com/learn/the-problem-first-mindset</loc>
-    <lastmod>2026-11-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://stuckhere.davns.com/learn/5-levels-problem-severity</loc>
-    <lastmod>2026-11-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://stuckhere.davns.com/learn/operator-shadowing-protocol</loc>
-    <lastmod>2026-11-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://stuckhere.davns.com/learn/incumbent-workaround-teardown</loc>
-    <lastmod>2026-11-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://stuckhere.davns.com/learn/bottom-up-tam-formula</loc>
-    <lastmod>2026-11-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://stuckhere.davns.com/learn/pain-score-algorithm</loc>
-    <lastmod>2026-11-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://stuckhere.davns.com/learn/willingness-to-pay-experiments</loc>
-    <lastmod>2026-11-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://stuckhere.davns.com/learn/nosql-firestore-modeling-for-startups</loc>
-    <lastmod>2026-11-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://stuckhere.davns.com/learn/securing-serverless-apps-rbac</loc>
-    <lastmod>2026-11-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://stuckhere.davns.com/learn/production-performance-code-splitting</loc>
-    <lastmod>2026-11-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://stuckhere.davns.com/explore</loc>
-    <lastmod>2026-11-13</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.95</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Stuckhere Academy — Problem Discovery, Validation &amp; Market Sizing</image:title>
+    </image:image>
   </url>
   <url>
-    <loc>https://stuckhere.davns.com/explore?filter=startup_mode</loc>
-    <lastmod>2026-11-13</lastmod>
-    <changefreq>daily</changefreq>
+    <loc>https://stuckhere.davns.com/learn/problem-discovery-and-validation</loc>
+    <lastmod>2026-11-21</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/evidence-hierarchy.svg</image:loc>
+      <image:title>Course 1: Problem Discovery &amp; Validation</image:title>
+    </image:image>
   </url>
   <url>
-    <loc>https://stuckhere.davns.com/industries</loc>
-    <lastmod>2026-11-13</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://stuckhere.davns.com/community</loc>
-    <lastmod>2026-11-13</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://stuckhere.davns.com/leaderboard</loc>
-    <lastmod>2026-11-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.80</priority>
-  </url>
-  <url>
-    <loc>https://stuckhere.davns.com/submit</loc>
-    <lastmod>2026-11-13</lastmod>
+    <loc>https://stuckhere.davns.com/learn/problem-discovery-and-validation/course-overview</loc>
+    <lastmod>2026-11-21</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/evidence-hierarchy.svg</image:loc>
+      <image:title>Course Overview</image:title>
+    </image:image>
   </url>
   <url>
-    <loc>https://stuckhere.davns.com/solutions</loc>
-    <lastmod>2026-11-13</lastmod>
+    <loc>https://stuckhere.davns.com/learn/problem-discovery-and-validation/what-is-a-problem</loc>
+    <lastmod>2026-11-21</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.80</priority>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/mom-test-cycle.svg</image:loc>
+      <image:title>Foundations: What Is a Problem?</image:title>
+    </image:image>
   </url>
   <url>
-    <loc>https://stuckhere.davns.com/companies</loc>
-    <lastmod>2026-11-13</lastmod>
+    <loc>https://stuckhere.davns.com/learn/problem-discovery-and-validation/why-startups-fail</loc>
+    <lastmod>2026-11-21</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.80</priority>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/three-tiers-severity.svg</image:loc>
+      <image:title>Why Startups Fail at the Problem Stage</image:title>
+    </image:image>
   </url>
   <url>
-    <loc>https://stuckhere.davns.com/partners</loc>
-    <lastmod>2026-11-13</lastmod>
+    <loc>https://stuckhere.davns.com/learn/problem-discovery-and-validation/vitamin-painkiller-surgery</loc>
+    <lastmod>2026-11-21</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.75</priority>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/three-tiers-severity.svg</image:loc>
+      <image:title>Vitamin, Painkiller, Surgery: The Problem Hierarchy</image:title>
+    </image:image>
   </url>
   <url>
-    <loc>https://stuckhere.davns.com/research</loc>
-    <lastmod>2026-11-13</lastmod>
+    <loc>https://stuckhere.davns.com/learn/problem-discovery-and-validation/where-to-find-problems</loc>
+    <lastmod>2026-11-21</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.80</priority>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/mom-test-cycle.svg</image:loc>
+      <image:title>Where to Find Real Problems</image:title>
+    </image:image>
   </url>
   <url>
-    <loc>https://stuckhere.davns.com/competitions</loc>
-    <lastmod>2026-11-13</lastmod>
+    <loc>https://stuckhere.davns.com/learn/problem-discovery-and-validation/customer-discovery-interviews</loc>
+    <lastmod>2026-11-21</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.80</priority>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/mom-test-cycle.svg</image:loc>
+      <image:title>Customer Discovery Interviews: The Mom Test in Practice</image:title>
+    </image:image>
   </url>
   <url>
-    <loc>https://stuckhere.davns.com/features</loc>
-    <lastmod>2026-11-13</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.75</priority>
+    <loc>https://stuckhere.davns.com/learn/problem-discovery-and-validation/the-problem-dossier</loc>
+    <lastmod>2026-11-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/problem-brief-canvas.svg</image:loc>
+      <image:title>The Problem Dossier: How to Document Pain</image:title>
+    </image:image>
   </url>
   <url>
-    <loc>https://stuckhere.davns.com/about</loc>
-    <lastmod>2026-11-13</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.70</priority>
+    <loc>https://stuckhere.davns.com/learn/problem-discovery-and-validation/measuring-pain</loc>
+    <lastmod>2026-11-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/urgency-frequency-matrix.svg</image:loc>
+      <image:title>Measuring Pain: Frequency, Severity, and Willingness to Pay</image:title>
+    </image:image>
   </url>
   <url>
-    <loc>https://stuckhere.davns.com/contact</loc>
-    <lastmod>2026-11-13</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.60</priority>
+    <loc>https://stuckhere.davns.com/learn/problem-discovery-and-validation/validation-signals</loc>
+    <lastmod>2026-11-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/evidence-hierarchy.svg</image:loc>
+      <image:title>Validation: Evidence and Signals Over Opinions</image:title>
+    </image:image>
   </url>
   <url>
-    <loc>https://stuckhere.davns.com/privacy</loc>
-    <lastmod>2026-11-13</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.30</priority>
+    <loc>https://stuckhere.davns.com/learn/problem-discovery-and-validation/workarounds-and-competitors</loc>
+    <lastmod>2026-11-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/workaround-cost-iceberg.svg</image:loc>
+      <image:title>Workarounds and Competitor Analysis</image:title>
+    </image:image>
   </url>
   <url>
-    <loc>https://stuckhere.davns.com/terms</loc>
-    <lastmod>2026-11-13</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.30</priority>
+    <loc>https://stuckhere.davns.com/learn/problem-discovery-and-validation/sizing-the-opportunity</loc>
+    <lastmod>2026-11-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/wedge-expansion.svg</image:loc>
+      <image:title>Sizing the Opportunity: Rough TAM/SAM Before Sizing Deep</image:title>
+    </image:image>
   </url>
   <url>
-    <loc>https://stuckhere.davns.com/cookies</loc>
-    <lastmod>2026-11-13</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.30</priority>
+    <loc>https://stuckhere.davns.com/learn/problem-discovery-and-validation/solution-hypothesis</loc>
+    <lastmod>2026-11-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/wedge-expansion.svg</image:loc>
+      <image:title>Problem to Solution Hypothesis: Finding the Wedge</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/problem-discovery-and-validation/bias-ethics-and-mistakes</loc>
+    <lastmod>2026-11-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/problem-brief-canvas.svg</image:loc>
+      <image:title>Bias, Ethics and Common Validation Mistakes</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/problem-discovery-and-validation/capstone-project</loc>
+    <lastmod>2026-11-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/problem-brief-canvas.svg</image:loc>
+      <image:title>Capstone Project: The Complete Problem Dossier</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/problem-discovery-and-validation/appendices</loc>
+    <lastmod>2026-11-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/problem-brief-canvas.svg</image:loc>
+      <image:title>Appendices, Templates and Reference Questions</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/market-sizing-and-opportunity</loc>
+    <lastmod>2026-11-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/three-sizing-methods.svg</image:loc>
+      <image:title>Course 2: Market Sizing &amp; Opportunity Analysis</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/market-sizing-and-opportunity/course-overview</loc>
+    <lastmod>2026-11-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/three-sizing-methods.svg</image:loc>
+      <image:title>Course Overview: How Big Is the Problem?</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/market-sizing-and-opportunity/why-market-sizing-matters</loc>
+    <lastmod>2026-11-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/three-sizing-methods.svg</image:loc>
+      <image:title>Why Market Sizing Matters: A Real Problem vs. A Real Market</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/market-sizing-and-opportunity/core-vocabulary</loc>
+    <lastmod>2026-11-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/three-sizing-methods.svg</image:loc>
+      <image:title>Core Vocabulary: TAM, SAM, SOM Demystified</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/market-sizing-and-opportunity/three-ways-to-size-a-market</loc>
+    <lastmod>2026-11-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/three-sizing-methods.svg</image:loc>
+      <image:title>Three Ways to Size a Market: Top-Down vs. Bottom-Up vs. Value-Theory</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/market-sizing-and-opportunity/defining-who-is-in-the-market</loc>
+    <lastmod>2026-11-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/user-buyer-payer.svg</image:loc>
+      <image:title>Defining Who Is in the Market: Segmentation &amp; The Triad</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/market-sizing-and-opportunity/counting-customers</loc>
+    <lastmod>2026-11-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/user-buyer-payer.svg</image:loc>
+      <image:title>Counting Customers: Data Sources &amp; Building a Population</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/market-sizing-and-opportunity/pricing-and-willingness-to-pay</loc>
+    <lastmod>2026-11-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/pricing-value-ladder.svg</image:loc>
+      <image:title>Pricing and Willingness to Pay: Anchoring to Pain</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/market-sizing-and-opportunity/usage-frequency-and-revenue-per-customer</loc>
+    <lastmod>2026-11-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/pricing-value-ladder.svg</image:loc>
+      <image:title>Usage, Frequency and Revenue per Customer (ACV &amp; LTV)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/market-sizing-and-opportunity/bottom-up-tam-step-by-step</loc>
+    <lastmod>2026-11-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/bottom-up-formula.svg</image:loc>
+      <image:title>Bottom-Up TAM: Step by Step with 3 Worked Examples</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/market-sizing-and-opportunity/growth-trends-and-timing</loc>
+    <lastmod>2026-11-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/bottom-up-formula.svg</image:loc>
+      <image:title>Growth, Trends and Timing: Why Now?</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/market-sizing-and-opportunity/obtainable-market-and-go-to-market</loc>
+    <lastmod>2026-11-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/opportunity-one-pager.svg</image:loc>
+      <image:title>Obtainable Market (SOM) and Go-to-Market Realities</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/market-sizing-and-opportunity/unit-economics</loc>
+    <lastmod>2026-11-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/unit-economics-ltv-cac.svg</image:loc>
+      <image:title>Unit Economics: CAC, LTV and Break-Even</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/market-sizing-and-opportunity/sanity-checks-ranges-and-sensitivity</loc>
+    <lastmod>2026-11-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/sensitivity-tornado.svg</image:loc>
+      <image:title>Sanity Checks, Ranges and Sensitivity Analysis</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/market-sizing-and-opportunity/sizing-in-india-and-emerging-markets</loc>
+    <lastmod>2026-11-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/bottom-up-formula.svg</image:loc>
+      <image:title>Sizing in India and Emerging Markets: High Volume, Low ARPU</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/market-sizing-and-opportunity/communicating-the-opportunity</loc>
+    <lastmod>2026-11-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/opportunity-one-pager.svg</image:loc>
+      <image:title>Communicating the Opportunity: The Executive One-Pager</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/market-sizing-and-opportunity/common-mistakes-and-honest-practice</loc>
+    <lastmod>2026-11-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/opportunity-one-pager.svg</image:loc>
+      <image:title>Common Mistakes and Honest Practice</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/market-sizing-and-opportunity/capstone-project</loc>
+    <lastmod>2026-11-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/opportunity-one-pager.svg</image:loc>
+      <image:title>Capstone Project: The Complete Market Sizing Dossier</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/market-sizing-and-opportunity/appendices-and-formula-cheat-sheet</loc>
+    <lastmod>2026-11-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/bottom-up-formula.svg</image:loc>
+      <image:title>Appendices, Formulas and Master Glossary</image:title>
+    </image:image>
   </url>
 
   <!-- Verified Problem Statement Dossiers (67 Live Documents) -->

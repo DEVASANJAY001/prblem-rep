@@ -15,17 +15,22 @@ Sitemap: https://stuckhere.davns.com/sitemap.xml
 - [Problem Verification Methodology & Pain Scoring](https://stuckhere.davns.com/methodology): The 10-point empirical diagnostic protocol, mathematical 0–100 pain scoring formula, and TAM sizing heuristics.
 - [Founder Problem Discovery Guide](https://stuckhere.davns.com/guides/problem-discovery-framework): The definitive guide for founders to discover high-severity problems, avoid the 42% "No Market Need" failure, and test willingness-to-pay.
 - [Open Innovation & Enterprise Challenges](https://stuckhere.davns.com/open-innovation): The global standard connecting corporate bottlenecks and hackathon tracks with verified problem solvers.
-- [Stuckhere Academy & Engineering Curricula](https://stuckhere.davns.com/learn): GeeksforGeeks-style educational tutorials and engineering playbooks covering problem discovery, bottom-up TAM formulas, NoSQL Firestore cost modeling, and serverless RBAC security.
-  - [The Problem-First vs. Idea-First Paradigm](https://stuckhere.davns.com/learn/the-problem-first-mindset)
-  - [The 5 Levels of Problem Severity](https://stuckhere.davns.com/learn/5-levels-problem-severity)
-  - [The Operator Shadowing Protocol](https://stuckhere.davns.com/learn/operator-shadowing-protocol)
-  - [Reverse-Engineering Broken Workarounds](https://stuckhere.davns.com/learn/incumbent-workaround-teardown)
-  - [The Bottom-Up TAM Calculation Formula](https://stuckhere.davns.com/learn/bottom-up-tam-formula)
-  - [Deconstructing the 0–100 Pain Score Algorithm](https://stuckhere.davns.com/learn/pain-score-algorithm)
-  - [Validating Willingness-to-Pay (LOIs & Pilot Deposits)](https://stuckhere.davns.com/learn/willingness-to-pay-experiments)
-  - [Scalable NoSQL Data Modeling in Cloud Firestore](https://stuckhere.davns.com/learn/nosql-firestore-modeling-for-startups)
-  - [Hardened Multi-Route RBAC & Zero-Trust Authentication](https://stuckhere.davns.com/learn/securing-serverless-apps-rbac)
-  - [Resilient Code Splitting & Stale Deployment Handling](https://stuckhere.davns.com/learn/production-performance-code-splitting)
+- [Stuckhere Academy & Master Curricula](https://stuckhere.davns.com/learn): GeeksforGeeks-style educational tutorials and founder playbooks covering problem discovery, Mom Test interviewing, pain scoring, and mathematical market sizing.
+  - [Course 1: Problem Discovery & Validation](https://stuckhere.davns.com/learn/problem-discovery-and-validation): 15 comprehensive chapters covering What is a Problem, Why Startups Fail, Vitamin vs. Painkiller vs. Surgery, Mom Test Interviews, Problem Dossier construction, and Capstone Case Study.
+    - [Foundations: What Is a Problem?](https://stuckhere.davns.com/learn/problem-discovery-and-validation/what-is-a-problem)
+    - [Why Startups Fail at the Problem Stage](https://stuckhere.davns.com/learn/problem-discovery-and-validation/why-startups-fail)
+    - [Vitamin, Painkiller, Surgery: The Problem Hierarchy](https://stuckhere.davns.com/learn/problem-discovery-and-validation/vitamin-painkiller-surgery)
+    - [Customer Discovery Interviews: The Mom Test](https://stuckhere.davns.com/learn/problem-discovery-and-validation/customer-discovery-interviews)
+    - [The Problem Dossier: How to Document Pain](https://stuckhere.davns.com/learn/problem-discovery-and-validation/the-problem-dossier)
+    - [Measuring Pain: Severity, Frequency & WTP](https://stuckhere.davns.com/learn/problem-discovery-and-validation/measuring-pain)
+  - [Course 2: Market Sizing & Opportunity Analysis](https://stuckhere.davns.com/learn/market-sizing-and-opportunity): 18 comprehensive chapters covering Top-Down vs. Bottom-Up vs. Value-Theory, TAM/SAM/SOM definitions, User vs. Buyer vs. Payer triad, unit economics (LTV:CAC), and executive one-pagers.
+    - [Why Market Sizing Matters: Real Problem vs. Real Market](https://stuckhere.davns.com/learn/market-sizing-and-opportunity/why-market-sizing-matters)
+    - [Core Vocabulary: TAM, SAM, SOM Demystified](https://stuckhere.davns.com/learn/market-sizing-and-opportunity/core-vocabulary)
+    - [Three Ways to Size a Market](https://stuckhere.davns.com/learn/market-sizing-and-opportunity/three-ways-to-size-a-market)
+    - [The Operational Triad: User vs. Buyer vs. Payer](https://stuckhere.davns.com/learn/market-sizing-and-opportunity/defining-who-is-in-the-market)
+    - [Bottom-Up TAM Step by Step (Count × Volume × Price)](https://stuckhere.davns.com/learn/market-sizing-and-opportunity/bottom-up-tam-step-by-step)
+    - [Unit Economics: CAC, LTV & Payback Period](https://stuckhere.davns.com/learn/market-sizing-and-opportunity/unit-economics)
+    - [The Executive Opportunity One-Pager](https://stuckhere.davns.com/learn/market-sizing-and-opportunity/communicating-the-opportunity)
 - [Industry Verticals Atlas](https://stuckhere.davns.com/industries): Deep-dive into problem taxonomies across Healthcare, AI, CleanTech, Clean Energy, FinTech, Agriculture, Logistics, and Manufacturing.
 - [Enterprise Directory](https://stuckhere.davns.com/companies): Leading enterprises, health systems, and supply chain operators encountering these operational challenges.
 - [Research & Empirical Dossiers](https://stuckhere.davns.com/research): Academic research, clinical data, and audit reports documenting industry failures.
