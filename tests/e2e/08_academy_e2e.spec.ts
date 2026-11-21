@@ -146,12 +146,15 @@ test.describe("Academy Flow E2E Tests: Course Branching, Layout & Independent Sc
       // Mobile Top Bar should be visible
       const mobileChapterBtn = page.locator("button[aria-label='Open course chapters drawer']");
       await expect(mobileChapterBtn).toBeVisible();
+      await page.screenshot({ path: "C:/Users/devas/.gemini/antigravity/brain/ef1f2699-1dfc-402a-891a-60fd42c360d2/verified_mobile_reader.png" });
+
       await mobileChapterBtn.click();
 
       // Drawer panel open
       const closeBtn = page.locator("button[aria-label='Close chapters menu']");
       await expect(closeBtn).toBeVisible();
       await expect(page.locator("text=COURSE 1 CONTENTS").first()).toBeVisible();
+      await page.screenshot({ path: "C:/Users/devas/.gemini/antigravity/brain/ef1f2699-1dfc-402a-891a-60fd42c360d2/verified_mobile_drawer.png" });
       await closeBtn.click();
     } else {
       // Desktop Left Sidebar: Numbers only
