@@ -48,6 +48,10 @@ test.describe("Academy Flow E2E Tests: Course Branching, Layout & Independent Sc
     await page.locator("button:has-text('All')").click();
     await expect(page.locator("text=Showing 15 of 15")).toBeVisible();
 
+    if (!isMobile) {
+      await page.screenshot({ path: "C:/Users/devas/.gemini/antigravity/brain/ef1f2699-1dfc-402a-891a-60fd42c360d2/verified_learn_home.png" });
+    }
+
     // Click Course 1 card to navigate to Course Page (/learn/problem-discovery-and-validation)
     const courseCard = page.locator("a[href='/learn/problem-discovery-and-validation']").first();
     await courseCard.click();
@@ -88,6 +92,11 @@ test.describe("Academy Flow E2E Tests: Course Branching, Layout & Independent Sc
     const ch5Link = page.locator("a[href='/learn/problem-discovery-and-validation/customer-discovery-interviews']");
     await expect(ch5Link).toBeVisible();
 
+    const isMobile = (page.viewportSize()?.width ?? 1280) < 640;
+    if (!isMobile) {
+      await page.screenshot({ path: "C:/Users/devas/.gemini/antigravity/brain/ef1f2699-1dfc-402a-891a-60fd42c360d2/verified_course_page.png" });
+    }
+
     console.log("✅ [Academy E2E] Subject Page passed 100%");
   });
 
@@ -111,16 +120,16 @@ test.describe("Academy Flow E2E Tests: Course Branching, Layout & Independent Sc
 
     // Section 1.1 Comparison Table
     await expect(page.locator("h2:has-text('1.1 Problem, idea, solution')")).toBeVisible();
-    await expect(page.locator("text=Clinic staff lose part of every week")).toBeVisible();
+    await expect(page.locator("text=Clinic staff lose 6 hours weekly")).toBeVisible();
 
     // Section 1.3 Template
-    await expect(page.locator("h2:has-text('1.3 The template')")).toBeVisible();
+    await expect(page.locator("h2:has-text('1.3 Problem statement template')")).toBeVisible();
 
     // Interactive <details> check yourself question
     const summaryQuestion = page.locator("summary:has-text('we need a mobile app')");
     await expect(summaryQuestion).toBeVisible();
     await summaryQuestion.click();
-    await expect(page.locator("text=It names a solution. Ask what the shop owner cannot do today.")).toBeVisible();
+    await expect(page.locator("text=No. It names a solution. Ask what the shop owner cannot do today")).toBeVisible();
 
     // Checkpoint Quiz
     const quizOptionB = page.locator("button:has-text('Cold-chain vaccine shippers lose $42,000')").first();
@@ -136,6 +145,11 @@ test.describe("Academy Flow E2E Tests: Course Branching, Layout & Independent Sc
     // Next chapter link points to branched URL
     const nextChapterLink = page.locator("a:has-text('Chapter 2: Why Startups Fail →')");
     await expect(nextChapterLink).toBeVisible();
+
+    const isMobile = (page.viewportSize()?.width ?? 1280) < 640;
+    if (!isMobile) {
+      await page.screenshot({ path: "C:/Users/devas/.gemini/antigravity/brain/ef1f2699-1dfc-402a-891a-60fd42c360d2/verified_chapter_reader.png" });
+    }
 
     console.log("✅ [Academy E2E] Chapter Reader passed 100%");
   });

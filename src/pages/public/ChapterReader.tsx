@@ -209,6 +209,30 @@ export const ChapterReader: React.FC = () => {
                 </p>
               ))}
 
+              {/* Diagram or Infographic Image if present */}
+              {sec.image && (
+                <figure className="my-6 border border-[#dae1ed] rounded-xl overflow-hidden bg-[#fafbfc] dark:bg-zinc-950 p-3 sm:p-5 text-center shadow-xs">
+                  {sec.image.svg ? (
+                    <div
+                      className="w-full flex justify-center py-2 overflow-x-auto"
+                      dangerouslySetInnerHTML={{ __html: sec.image.svg }}
+                    />
+                  ) : sec.image.url ? (
+                    <img
+                      src={sec.image.url}
+                      alt={sec.image.alt}
+                      className="w-full max-h-[380px] object-cover rounded-lg shadow-xs mx-auto"
+                      loading="lazy"
+                    />
+                  ) : null}
+                  {sec.image.caption && (
+                    <figcaption className="mt-3 text-xs sm:text-sm text-[#5b606b] font-medium italic">
+                      {sec.image.caption}
+                    </figcaption>
+                  )}
+                </figure>
+              )}
+
               {/* Comparison Table if present */}
               {sec.table && (
                 <table className="w-full border-collapse mt-4 text-base leading-[1.5]">

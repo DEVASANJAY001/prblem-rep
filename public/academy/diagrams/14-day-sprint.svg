@@ -1,0 +1,20 @@
+<svg viewBox="0 0 760 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="760" height="140" rx="12" fill="#F8FAFC"/>
+  <text x="380" y="26" fill="#0F172A" font-size="14" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">The 14-Day Discovery-to-Pilot Sprint Roadmap</text>
+
+  <rect x="24" y="46" width="165" height="66" rx="8" fill="#FFFFFF" stroke="#0056D2" stroke-width="1.5"/>
+  <text x="106" y="72" fill="#0056D2" font-size="13" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">Days 1 - 3</text>
+  <text x="106" y="94" fill="#334155" font-size="11" text-anchor="middle" font-family="system-ui, sans-serif">Problem Lock (5 calls)</text>
+
+  <rect x="201" y="46" width="165" height="66" rx="8" fill="#FFFFFF" stroke="#0284C7" stroke-width="1.5"/>
+  <text x="283" y="72" fill="#0284C7" font-size="13" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">Days 4 - 7</text>
+  <text x="283" y="94" fill="#334155" font-size="11" text-anchor="middle" font-family="system-ui, sans-serif">Wireframe &amp; Concierge</text>
+
+  <rect x="378" y="46" width="165" height="66" rx="8" fill="#FFFFFF" stroke="#D97706" stroke-width="1.5"/>
+  <text x="460" y="72" fill="#D97706" font-size="13" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">Days 8 - 11</text>
+  <text x="460" y="94" fill="#334155" font-size="11" text-anchor="middle" font-family="system-ui, sans-serif">Real User Pilot Test</text>
+
+  <rect x="555" y="46" width="180" height="66" rx="8" fill="#FFFFFF" stroke="#16A34A" stroke-width="2"/>
+  <text x="645" y="72" fill="#16A34A" font-size="13" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">Days 12 - 14</text>
+  <text x="645" y="94" fill="#15803D" font-size="11" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">Commercial Proposal</text>
+</svg>

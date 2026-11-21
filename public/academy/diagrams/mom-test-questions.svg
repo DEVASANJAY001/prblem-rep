@@ -1,0 +1,16 @@
+<svg viewBox="0 0 760 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="760" height="180" rx="12" fill="#F8FAFC"/>
+  <text x="380" y="28" fill="#0F172A" font-size="14" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">Customer Discovery: The Mom Test Rule</text>
+
+  <rect x="24" y="44" width="340" height="120" rx="8" fill="#FFFFFF" stroke="#DC2626" stroke-width="1.5"/>
+  <text x="40" y="70" fill="#DC2626" font-size="13" font-weight="bold" font-family="system-ui, sans-serif">❌ BAD QUESTIONS (Produces Polite Fluff)</text>
+  <text x="40" y="96" fill="#475569" font-size="11" font-family="system-ui, sans-serif">• "Do you think our automated scheduling bot is cool?"</text>
+  <text x="40" y="118" fill="#475569" font-size="11" font-family="system-ui, sans-serif">• "Would you pay $50/month for this if we built it?"</text>
+  <text x="40" y="140" fill="#475569" font-size="11" font-family="system-ui, sans-serif">• "Don't you agree that hospital EHRs are terrible?"</text>
+
+  <rect x="396" y="44" width="340" height="120" rx="8" fill="#FFFFFF" stroke="#16A34A" stroke-width="2"/>
+  <text x="412" y="70" fill="#16A34A" font-size="13" font-weight="bold" font-family="system-ui, sans-serif">✅ GOOD QUESTIONS (Empirical Truth)</text>
+  <text x="412" y="96" fill="#1E293B" font-size="11" font-weight="semibold" font-family="system-ui, sans-serif">• "Walk me through the last time a patient didn't show."</text>
+  <text x="412" y="118" fill="#1E293B" font-size="11" font-weight="semibold" font-family="system-ui, sans-serif">• "What did your staff do about it right then?"</text>
+  <text x="412" y="140" fill="#1E293B" font-size="11" font-weight="semibold" font-family="system-ui, sans-serif">• "What have you already tried or paid for to fix this?"</text>
+</svg>

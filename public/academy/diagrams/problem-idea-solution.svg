@@ -1,0 +1,34 @@
+<svg viewBox="0 0 760 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="760" height="200" rx="12" fill="#F8FAFC"/>
+  <text x="380" y="28" fill="#0F172A" font-size="14" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">The Three Distinct Layers of Discovery</text>
+
+  <rect x="30" y="50" width="210" height="130" rx="8" fill="#FFFFFF" stroke="#0056D2" stroke-width="2"/>
+  <rect x="30" y="50" width="210" height="34" rx="8" fill="#0056D2"/>
+  <text x="135" y="72" fill="#FFFFFF" font-size="13" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">1. PROBLEM</text>
+  <text x="45" y="104" fill="#1E293B" font-size="12" font-weight="bold" font-family="system-ui, sans-serif">The Blocked Goal</text>
+  <text x="45" y="126" fill="#475569" font-size="11" font-family="system-ui, sans-serif">• Observable friction in workflow</text>
+  <text x="45" y="146" fill="#475569" font-size="11" font-family="system-ui, sans-serif">• Costs hours, cash or errors</text>
+  <text x="45" y="166" fill="#0056D2" font-size="11" font-weight="semibold" font-family="system-ui, sans-serif">Example: Doctors idle 3 hrs/wk</text>
+
+  <path d="M246 115H270" stroke="#94A3B8" stroke-width="2" stroke-linecap="round"/>
+  <polygon points="270,111 278,115 270,119" fill="#94A3B8"/>
+
+  <rect x="284" y="50" width="210" height="130" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+  <rect x="284" y="50" width="210" height="34" rx="8" fill="#64748B"/>
+  <text x="389" y="72" fill="#FFFFFF" font-size="13" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">2. IDEA</text>
+  <text x="299" y="104" fill="#1E293B" font-size="12" font-weight="bold" font-family="system-ui, sans-serif">The Speculative Guess</text>
+  <text x="299" y="126" fill="#475569" font-size="11" font-family="system-ui, sans-serif">• Untested hypothesis</text>
+  <text x="299" y="146" fill="#475569" font-size="11" font-family="system-ui, sans-serif">• Arrives faster than evidence</text>
+  <text x="299" y="166" fill="#64748B" font-size="11" font-weight="semibold" font-family="system-ui, sans-serif">Example: "Maybe an AI bot..."</text>
+
+  <path d="M500 115H524" stroke="#94A3B8" stroke-width="2" stroke-linecap="round"/>
+  <polygon points="524,111 532,115 524,119" fill="#94A3B8"/>
+
+  <rect x="538" y="50" width="192" height="130" rx="8" fill="#FFFFFF" stroke="#16A34A" stroke-width="2"/>
+  <rect x="538" y="50" width="192" height="34" rx="8" fill="#16A34A"/>
+  <text x="634" y="72" fill="#FFFFFF" font-size="13" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">3. SOLUTION</text>
+  <text x="552" y="104" fill="#1E293B" font-size="12" font-weight="bold" font-family="system-ui, sans-serif">The Tested Relief</text>
+  <text x="552" y="126" fill="#475569" font-size="11" font-family="system-ui, sans-serif">• Proven to remove the block</text>
+  <text x="552" y="146" fill="#475569" font-size="11" font-family="system-ui, sans-serif">• Verified ROI with operators</text>
+  <text x="552" y="166" fill="#16A34A" font-size="11" font-weight="semibold" font-family="system-ui, sans-serif">Example: 94% recovered hours</text>
+</svg>

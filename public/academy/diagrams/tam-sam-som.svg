@@ -1,0 +1,21 @@
+<svg viewBox="0 0 760 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="760" height="180" rx="12" fill="#F8FAFC"/>
+  <text x="380" y="26" fill="#0F172A" font-size="14" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">Bottom-Up Market Sizing: TAM, SAM, SOM Model</text>
+
+  <circle cx="180" cy="98" r="64" fill="#E2E8F0" stroke="#94A3B8" stroke-width="1.5"/>
+  <circle cx="180" cy="98" r="44" fill="#DBEAFE" stroke="#0056D2" stroke-width="1.5"/>
+  <circle cx="180" cy="98" r="24" fill="#16A34A" stroke="#15803D" stroke-width="1.5"/>
+  <text x="180" y="102" fill="#FFFFFF" font-size="11" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">SOM</text>
+
+  <rect x="300" y="44" width="430" height="34" rx="6" fill="#FFFFFF" stroke="#CBD5E1"/>
+  <text x="314" y="66" fill="#334155" font-size="12" font-weight="bold" font-family="system-ui, sans-serif">TAM:</text>
+  <text x="354" y="66" fill="#64748B" font-size="12" font-family="system-ui, sans-serif">All 42,000 outpatient clinics nationwide ($100M)</text>
+
+  <rect x="300" y="86" width="430" height="34" rx="6" fill="#FFFFFF" stroke="#0056D2"/>
+  <text x="314" y="108" fill="#0056D2" font-size="12" font-weight="bold" font-family="system-ui, sans-serif">SAM:</text>
+  <text x="354" y="108" fill="#1E293B" font-size="12" font-family="system-ui, sans-serif">8,500 private pediatric clinics in Tier 1 cities ($20M)</text>
+
+  <rect x="300" y="128" width="430" height="34" rx="6" fill="#FFFFFF" stroke="#16A34A" stroke-width="1.5"/>
+  <text x="314" y="150" fill="#16A34A" font-size="12" font-weight="bold" font-family="system-ui, sans-serif">SOM:</text>
+  <text x="354" y="150" fill="#15803D" font-size="12" font-weight="bold" font-family="system-ui, sans-serif">120 target clinics captured in Year 1 ($288k ARR)</text>
+</svg>
