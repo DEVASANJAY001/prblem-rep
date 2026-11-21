@@ -194,9 +194,13 @@ export const Navbar: React.FC = () => {
                   ✕
                 </button>
               ) : (
-                <span className="text-[10px] uppercase font-bold tracking-wider text-primary/80 bg-primary/10 px-2 py-0.5 rounded-full shrink-0 hidden lg:inline">
-                  Academy
-                </span>
+                <button
+                  type="submit"
+                  aria-label="Search Academy"
+                  className="w-7 h-7 rounded-full bg-primary/10 hover:bg-primary/20 text-primary flex items-center justify-center shrink-0 transition-colors"
+                >
+                  <Search className="w-3.5 h-3.5" />
+                </button>
               )}
             </form>
           </div>

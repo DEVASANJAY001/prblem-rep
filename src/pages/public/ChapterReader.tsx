@@ -4,24 +4,31 @@ import { SEOHead } from "@/components/common/SEOHead";
 import { ACADEMY_CHAPTERS, AcademyChapter } from "@/data/academyData";
 
 export const ChapterReader: React.FC = () => {
-  const { chapterNum, slug } = useParams<{ chapterNum?: string; slug?: string }>();
+  const { courseSlug, chapterSlug, slug, chapterNum } = useParams<{
+    courseSlug?: string;
+    chapterSlug?: string;
+    slug?: string;
+    chapterNum?: string;
+  }>();
   const navigate = useNavigate();
+
+  const activeSlug = chapterSlug || slug;
 
   // Find active chapter by slug or by index
   const activeChapter: AcademyChapter = useMemo(() => {
-    if (slug) {
-      const found = ACADEMY_CHAPTERS.find((c) => c.slug === slug);
+    if (activeSlug) {
+      const found = ACADEMY_CHAPTERS.find((c) => c.slug === activeSlug);
       if (found) return found;
-      const num = parseInt(slug, 10);
+      const num = parseInt(activeSlug, 10);
       if (!isNaN(num) && ACADEMY_CHAPTERS[num]) return ACADEMY_CHAPTERS[num];
     }
     if (chapterNum) {
       const num = parseInt(chapterNum, 10);
       if (!isNaN(num) && ACADEMY_CHAPTERS[num]) return ACADEMY_CHAPTERS[num];
     }
-    // Default to Chapter 1 ("Foundations: What Is a Problem?") matching Reader.dc.html
+    // Default to Chapter 1 ("Foundations: What Is a Problem?")
     return ACADEMY_CHAPTERS[1];
-  }, [chapterNum, slug]);
+  }, [activeSlug, chapterNum]);
 
   // Quiz state
   const [selectedOption, setSelectedOption] = useState<number>(-1);
@@ -65,21 +72,21 @@ export const ChapterReader: React.FC = () => {
       <SEOHead
         title={`Chapter ${activeChapter.num}: ${activeChapter.title} — Stuckhere Academy`}
         description={activeChapter.lead}
-        canonicalUrl={`https://stuckhere.davns.com/learn/${activeChapter.slug}`}
+        canonicalUrl={`https://stuckhere.davns.com/learn/problem-discovery-and-validation/${activeChapter.slug}`}
       />
 
-      {/* Sub-header Breadcrumb Bar (Sitting under the universal main Navbar) */}
+      {/* Sub-header Breadcrumb Bar (Below universal Navbar) */}
       <div className="border-b border-[#dae1ed] bg-white sticky top-14 sm:top-16 z-30">
         <div className="max-w-[1280px] mx-auto px-4 sm:px-8 py-2.5 box-border flex items-center gap-2 text-sm">
           <Link
             to="/learn"
             className="text-[#0056d2] hover:text-[#00419e] font-semibold no-underline flex items-center gap-1"
           >
-            ← Academy
+            ← Academy Home
           </Link>
           <span className="text-[#5b606b]">/</span>
           <Link
-            to="/learn/module-1"
+            to="/learn/problem-discovery-and-validation"
             className="text-[#5b606b] hover:text-[#0056d2] no-underline truncate hidden sm:inline"
           >
             Problem Discovery &amp; Validation
@@ -91,53 +98,53 @@ export const ChapterReader: React.FC = () => {
         </div>
       </div>
 
-      {/* 3-Column Layout matching Reader.dc.html */}
-      <div className="max-w-[1280px] mx-auto px-4 sm:px-8 py-10 pb-20 box-border flex flex-wrap gap-8 sm:gap-12 items-start">
-        {/* Left Sidebar: Course Navigation (260px) matching Reader.dc.html */}
+      {/* 3-Column Layout with Independent Scrolling Containers */}
+      <div className="max-w-[1280px] mx-auto px-4 sm:px-8 py-8 pb-20 box-border flex flex-wrap lg:flex-nowrap gap-8 sm:gap-10 items-start">
+        {/* Left Sidebar: Independent Vertical Scroll Container (260px) */}
         <nav
           aria-label="Course chapters"
-          className="flex-[0_0_260px] w-full sm:w-[260px] box-border border border-[#dae1ed] rounded-lg p-3 bg-white"
+          className="flex-[0_0_260px] w-full lg:w-[260px] box-border border border-[#dae1ed] rounded-lg p-3 bg-white lg:sticky lg:top-20 lg:h-[calc(100vh-5.5rem)] lg:overflow-y-auto overscroll-contain pr-1.5 scrollbar-thin shrink-0"
         >
           <div className="text-[13px] font-semibold tracking-[1px] text-[#5b606b] py-2 px-2.5 uppercase">
-            MODULE 1 CONTENTS
+            COURSE 1 CONTENTS
           </div>
 
           <div className="flex flex-col gap-0.5 mt-1">
             {ACADEMY_CHAPTERS.map((ch) => {
               const isCur = ch.num === activeChapter.num;
-              const isChapterDone = Boolean(done[ch.num]);
 
               return (
                 <div key={ch.num}>
                   <Link
-                    to={`/learn/${ch.slug}`}
-                    className={`flex gap-1.5 items-baseline py-2.5 px-2.5 rounded-[6px] no-underline text-base min-h-[44px] box-border transition-colors ${
+                    to={`/learn/problem-discovery-and-validation/${ch.slug}`}
+                    className={`flex gap-2 items-baseline py-2.5 px-2.5 rounded-[6px] no-underline text-base min-h-[44px] box-border transition-colors ${
                       isCur
                         ? "bg-[#e8f0fe] font-bold text-[#00419e]"
                         : "text-[#1f1f1f] hover:bg-[#f5f8ff]"
                     }`}
                   >
-                    <span className="w-6 flex-[0_0_24px] text-[#5b606b] text-sm">
-                      {isChapterDone ? "✓" : ch.num}
+                    {/* Numbering only - tick mark removed per user requirement */}
+                    <span className="w-5 flex-[0_0_20px] text-[#5b606b] text-sm font-semibold">
+                      {ch.num}
                     </span>
-                    <span>{ch.title}</span>
+                    <span className="truncate">{ch.title}</span>
                   </Link>
 
-                  {/* Subsection links under active chapter matching Reader.dc.html */}
+                  {/* Subsection links under active chapter */}
                   {isCur && ch.sections.length > 0 && (
-                    <div className="my-0 mr-0 mb-2 ml-[34px] flex flex-col text-sm border-l border-[#dae1ed] pl-2">
+                    <div className="my-0 mr-0 mb-2 ml-[28px] flex flex-col text-sm border-l border-[#dae1ed] pl-2">
                       {ch.sections.map((sec) => (
                         <a
                           key={sec.id}
                           href={`#${sec.id}`}
-                          className="py-2 px-1.5 no-underline text-[#3d424d] hover:text-[#0056d2] transition-colors"
+                          className="py-1.5 px-1.5 no-underline text-[#3d424d] hover:text-[#0056d2] transition-colors truncate"
                         >
                           {sec.sectionNumber} {sec.title}
                         </a>
                       ))}
                       <a
                         href="#quiz"
-                        className="py-2 px-1.5 no-underline text-[#0056d2] font-semibold"
+                        className="py-1.5 px-1.5 no-underline text-[#0056d2] font-semibold"
                       >
                         Checkpoint Quiz
                       </a>
@@ -149,10 +156,10 @@ export const ChapterReader: React.FC = () => {
           </div>
         </nav>
 
-        {/* Center Column: Reading Canvas (720px) matching Reader.dc.html */}
-        <main className="flex-[999_1_520px] min-w-0 max-w-[720px]">
+        {/* Center Column: Reading Canvas (Independent Flexible Container, Max 760px) */}
+        <main className="flex-1 min-w-0 max-w-[760px] pb-16">
           <div className="text-sm text-[#5b606b]">
-            Module 1 · Chapter {activeChapter.num}
+            Course 1 · Chapter {activeChapter.num}
           </div>
 
           <h1 className="m-0 mt-2.5 text-3xl sm:text-[44px] leading-[1.1] tracking-[-1px] font-bold text-[#1f1f1f]">
@@ -163,7 +170,7 @@ export const ChapterReader: React.FC = () => {
             {activeChapter.lead}
           </p>
 
-          {/* In This Chapter Card matching Reader.dc.html */}
+          {/* In This Chapter Card */}
           <div className="mt-5.5 bg-[#f5f8ff] border border-[#dae1ed] rounded-lg p-4.5 sm:p-5.5">
             <div className="font-bold text-[#1f1f1f]">In this chapter</div>
             <div className="text-base leading-[1.6] text-[#3d424d] mt-1.5">
@@ -225,7 +232,7 @@ export const ChapterReader: React.FC = () => {
                   </p>
                 ))}
 
-              {/* Points List if present (e.g. 1.2 Five things) */}
+              {/* Points List if present */}
               {sec.points && (
                 <div className="mt-3 border-t border-[#dae1ed]">
                   {sec.points.map((pt, ptIdx) => (
@@ -239,7 +246,7 @@ export const ChapterReader: React.FC = () => {
                 </div>
               )}
 
-              {/* Template Callout Box if present (e.g. 1.3 The template) */}
+              {/* Template Callout Box if present */}
               {sec.templateBox && (
                 <div className="mt-3.5 border border-[#dae1ed] rounded-lg p-4.5 sm:p-5.5 text-base sm:text-[17px] leading-[1.7] bg-[#f5f8ff] text-[#1f1f1f]">
                   <b>{sec.templateBox}</b>
@@ -261,7 +268,7 @@ export const ChapterReader: React.FC = () => {
                 </p>
               )}
 
-              {/* Interactive <details><summary> Check Yourself Questions matching Reader.dc.html */}
+              {/* Interactive <details><summary> Check Yourself Questions */}
               {sec.detailsQuestions && (
                 <div className="mt-4 border-t border-[#dae1ed]">
                   {sec.detailsQuestions.map((dq, dIdx) => (
@@ -367,11 +374,11 @@ export const ChapterReader: React.FC = () => {
             </button>
           </div>
 
-          {/* Bottom Navigation Links matching Reader.dc.html */}
+          {/* Bottom Navigation Links */}
           <div className="flex flex-wrap justify-between gap-3 sm:gap-6 mt-11 pt-5 border-t border-[#dae1ed]">
             {prevChapter ? (
               <Link
-                to={`/learn/${prevChapter.slug}`}
+                to={`/learn/problem-discovery-and-validation/${prevChapter.slug}`}
                 className="py-3 min-h-[44px] box-border font-semibold text-[#0056d2] hover:text-[#00419e] no-underline"
               >
                 ← Chapter {prevChapter.num}: {prevChapter.shortTitle}
@@ -382,7 +389,7 @@ export const ChapterReader: React.FC = () => {
 
             {nextChapter ? (
               <Link
-                to={`/learn/${nextChapter.slug}`}
+                to={`/learn/problem-discovery-and-validation/${nextChapter.slug}`}
                 className="py-3 min-h-[44px] box-border font-semibold text-[#0056d2] hover:text-[#00419e] no-underline text-right"
               >
                 Chapter {nextChapter.num}: {nextChapter.shortTitle} →
@@ -393,8 +400,8 @@ export const ChapterReader: React.FC = () => {
           </div>
         </main>
 
-        {/* Right Sidebar: ON THIS PAGE (200px) matching Reader.dc.html */}
-        <aside className="hidden lg:block flex-[0_0_200px] w-[200px] box-border sticky top-28">
+        {/* Right Sidebar: ON THIS PAGE (Independent Scroll Container, 200px) */}
+        <aside className="hidden lg:block flex-[0_0_200px] w-[200px] box-border shrink-0 sticky top-20 max-h-[calc(100vh-5.5rem)] overflow-y-auto overscroll-contain pr-1 scrollbar-thin">
           <div className="text-[13px] font-semibold tracking-[1px] text-[#5b606b] mb-1.5 uppercase">
             ON THIS PAGE
           </div>
@@ -403,7 +410,7 @@ export const ChapterReader: React.FC = () => {
               <a
                 key={sec.id}
                 href={`#${sec.id}`}
-                className="py-2.5 border-b border-[#dae1ed] no-underline text-[#3d424d] hover:text-[#0056d2] transition-colors"
+                className="py-2.5 border-b border-[#dae1ed] no-underline text-[#3d424d] hover:text-[#0056d2] transition-colors truncate"
               >
                 {sec.title}
               </a>

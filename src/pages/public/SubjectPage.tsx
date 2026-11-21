@@ -15,14 +15,14 @@ export const SubjectPage: React.FC = () => {
       <SEOHead
         title="Problem Discovery & Validation — Stuckhere Academy"
         description="From raw friction to a verified, buildable problem. Learn to find, document, score and test problems before you write a line of code."
-        canonicalUrl="https://stuckhere.davns.com/learn/module-1"
+        canonicalUrl="https://stuckhere.davns.com/learn/problem-discovery-and-validation"
       />
 
-      {/* Hero Section matching Course.dc.html (#f5f8ff) */}
-      <section className="bg-[#f5f8ff] border-b border-[#dae1ed]">
-        <div className="max-w-[1280px] mx-auto px-4 sm:px-8 py-9 sm:pb-10 box-border flex flex-wrap gap-8 items-start">
+      {/* Hero Section */}
+      <section className="bg-[#f5f8ff] border-b border-[#dae1ed] py-10 sm:py-14">
+        <div className="max-w-[1280px] mx-auto px-4 sm:px-8 box-border flex flex-wrap gap-8 items-start">
           <div className="flex-[2_1_560px] min-w-0">
-            <div className="text-sm text-[#5b606b]">Academy / Module 1</div>
+            <div className="text-sm font-semibold text-[#0056d2]">Academy / Course 1</div>
             <h1 className="m-0 mt-3 text-3xl sm:text-[42px] leading-[1.1] font-bold tracking-[-0.8px] text-[#1f1f1f]">
               Problem Discovery &amp; Validation
             </h1>
@@ -32,7 +32,7 @@ export const SubjectPage: React.FC = () => {
 
             <div className="flex flex-wrap gap-3 mt-5.5">
               <Link
-                to="/learn/what-is-a-problem"
+                to="/learn/problem-discovery-and-validation/course-overview"
                 className="inline-block bg-[#0056d2] hover:bg-[#00419e] text-white font-semibold no-underline py-3.5 px-7 rounded-lg min-h-[44px] box-border transition-colors shadow-sm"
               >
                 Start learning
@@ -218,7 +218,7 @@ export const SubjectPage: React.FC = () => {
                           {partChapters.map((ch) => (
                             <Link
                               key={ch.num}
-                              to={`/learn/${ch.slug}`}
+                              to={`/learn/problem-discovery-and-validation/${ch.slug}`}
                               className="flex items-center justify-between py-2 px-3 rounded hover:bg-[#eef2fb] text-[#1f1f1f] hover:text-[#0056d2] no-underline transition-colors"
                             >
                               <span className="font-medium">

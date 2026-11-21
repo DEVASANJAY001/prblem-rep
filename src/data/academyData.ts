@@ -105,10 +105,23 @@ export const ACADEMY_PARTS: SyllabusPart[] = [
   },
 ];
 
-export const ACADEMY_MODULES = [
+export interface AcademyCourse {
+  id: string;
+  n: number;
+  slug: string;
+  title: string;
+  level: "Beginner" | "Intermediate" | "Advanced";
+  live: boolean;
+  meta: string;
+  chaptersCount: number;
+  sectionsCount: number;
+}
+
+export const ACADEMY_COURSES: AcademyCourse[] = [
   {
-    id: "module-1",
+    id: "course-1",
     n: 1,
+    slug: "problem-discovery-and-validation",
     title: "Problem Discovery & Validation",
     level: "Beginner",
     live: true,
@@ -117,8 +130,9 @@ export const ACADEMY_MODULES = [
     sectionsCount: 78,
   },
   {
-    id: "module-2",
+    id: "course-2",
     n: 2,
+    slug: "market-sizing-and-opportunity",
     title: "Market Sizing & Opportunity",
     level: "Intermediate",
     live: false,
@@ -127,8 +141,9 @@ export const ACADEMY_MODULES = [
     sectionsCount: 36,
   },
   {
-    id: "module-3",
+    id: "course-3",
     n: 3,
+    slug: "full-stack-cloud-for-founders",
     title: "Full-Stack Cloud for Founders",
     level: "Advanced",
     live: false,
@@ -137,6 +152,8 @@ export const ACADEMY_MODULES = [
     sectionsCount: 42,
   },
 ];
+
+export const ACADEMY_MODULES = ACADEMY_COURSES;
 
 export const ACADEMY_CHAPTERS: AcademyChapter[] = [
   {

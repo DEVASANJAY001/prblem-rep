@@ -179,10 +179,17 @@ export default function App() {
                 <Route path="/guides/problem-discovery-framework" element={<PublicLayout><ProblemDiscoveryGuide /></PublicLayout>} />
                 <Route path="/problem-discovery" element={<Navigate to="/guides/problem-discovery-framework" replace />} />
                 <Route path="/open-innovation" element={<PublicLayout><OpenInnovation /></PublicLayout>} />
+                {/* ── Academy Suite (Public) ──────────────────────────────── */}
                 <Route path="/learn" element={<PublicLayout><AcademyHome /></PublicLayout>} />
-                <Route path="/learn/module-1" element={<PublicLayout><SubjectPage /></PublicLayout>} />
-                <Route path="/learn/course" element={<PublicLayout><SubjectPage /></PublicLayout>} />
-                <Route path="/learn/problem-discovery-validation" element={<PublicLayout><SubjectPage /></PublicLayout>} />
+                <Route path="/learn/problem-discovery-and-validation" element={<PublicLayout><SubjectPage /></PublicLayout>} />
+                <Route path="/learn/problem-discovery-and-validation/:chapterSlug" element={<PublicLayout><ChapterReader /></PublicLayout>} />
+                <Route path="/learn/problem-discovery-and-validation/chapter/:chapterNum" element={<PublicLayout><ChapterReader /></PublicLayout>} />
+                <Route path="/learn/module-1" element={<Navigate to="/learn/problem-discovery-and-validation" replace />} />
+                <Route path="/learn/course" element={<Navigate to="/learn/problem-discovery-and-validation" replace />} />
+                <Route path="/learn/problem-discovery-validation" element={<Navigate to="/learn/problem-discovery-and-validation" replace />} />
+                <Route path="/learn/course/:courseSlug" element={<PublicLayout><SubjectPage /></PublicLayout>} />
+                <Route path="/learn/:courseSlug/:chapterSlug" element={<PublicLayout><ChapterReader /></PublicLayout>} />
+                <Route path="/learn/:courseSlug/chapter/:chapterNum" element={<PublicLayout><ChapterReader /></PublicLayout>} />
                 <Route path="/learn/chapter/:chapterNum" element={<PublicLayout><ChapterReader /></PublicLayout>} />
                 <Route path="/learn/:slug" element={<PublicLayout><ChapterReader /></PublicLayout>} />
                 <Route path="/academy" element={<Navigate to="/learn" replace />} />

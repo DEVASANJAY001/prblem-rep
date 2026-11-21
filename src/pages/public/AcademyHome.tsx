@@ -3,7 +3,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import { SEOHead } from "@/components/common/SEOHead";
 import {
   ACADEMY_CHAPTERS,
-  ACADEMY_MODULES,
+  ACADEMY_COURSES,
   ACADEMY_PARTS,
   ACADEMY_COLORS,
 } from "@/data/academyData";
@@ -45,83 +45,74 @@ export const AcademyHome: React.FC = () => {
         canonicalUrl="https://stuckhere.davns.com/learn"
       />
 
-      {/* Sub-nav Tabs matching Main.dc.html (Sitting under the universal main Navbar) */}
-      <div className="border-b border-[#dae1ed] bg-white sticky top-14 sm:top-16 z-30">
-        <div className="max-w-[1280px] mx-auto px-4 sm:px-8 box-border flex flex-wrap items-center gap-x-7 text-[15px]">
-          <span className="py-3 font-bold border-b-[3px] border-[#0056d2] text-[#1f1f1f] cursor-default">
-            Home
-          </span>
-          <a
-            href="#learning-paths"
-            className="py-3 text-[#5b606b] hover:text-[#0056d2] no-underline transition-colors"
-          >
-            Learning paths
-          </a>
-
-          {q && (
-            <div className="ml-auto flex items-center gap-2 py-2 text-sm text-[#5b606b]">
-              <span>Filtering by "{q}"</span>
-              <button
-                type="button"
-                onClick={clearSearch}
-                aria-label="Clear search"
-                className="text-[#0056d2] hover:underline font-semibold cursor-pointer border-0 bg-transparent p-0"
-              >
-                Clear
-              </button>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Hero Section matching Main.dc.html (#f5f8ff) */}
-      <section className="bg-[#f5f8ff] border-b border-[#dae1ed]">
-        <div className="max-w-[1280px] mx-auto px-4 sm:px-8 py-12 box-border flex flex-wrap gap-7 sm:gap-14 items-center">
+      {/* Hero Section with Generous Padding - Zero Clipping */}
+      <section className="bg-[#f5f8ff] border-b border-[#dae1ed] py-10 sm:py-14 md:py-16">
+        <div className="max-w-[1280px] mx-auto px-4 sm:px-8 box-border flex flex-wrap gap-7 sm:gap-14 items-center">
           <div className="flex-[2_1_520px] min-w-0">
+            <div className="inline-flex items-center gap-2 text-xs font-bold tracking-wider text-[#0056d2] uppercase mb-3 bg-[#0056d2]/10 px-2.5 py-1 rounded-full">
+              Academy Curriculum
+            </div>
             <h1 className="m-0 text-3xl sm:text-[44px] leading-[1.1] font-bold tracking-[-1px] text-[#1f1f1f]">
               Learn to find problems worth solving
             </h1>
             <p className="m-0 mt-4 max-w-[600px] text-lg sm:text-[20px] leading-[1.5] text-[#3d424d]">
               Short, readable chapters on problem discovery, market sizing and building. Read them in order, or jump to the concept you need.
             </p>
-            <Link
-              to="/learn/module-1"
-              className="inline-block mt-6 bg-[#0056d2] hover:bg-[#00419e] text-white font-semibold no-underline py-3.5 px-7 rounded-lg min-h-[44px] box-border transition-colors shadow-sm"
-            >
-              Start Module 1
-            </Link>
+            <div className="flex flex-wrap items-center gap-3.5 mt-6">
+              <Link
+                to="/learn/problem-discovery-and-validation"
+                className="inline-block bg-[#0056d2] hover:bg-[#00419e] text-white font-semibold no-underline py-3.5 px-7 rounded-lg min-h-[44px] box-border transition-colors shadow-sm"
+              >
+                Start Course 1
+              </Link>
+              <a
+                href="#courses"
+                className="inline-block bg-white hover:bg-slate-50 text-[#1f1f1f] border border-[#dae1ed] font-semibold no-underline py-3.5 px-6 rounded-lg min-h-[44px] box-border transition-colors shadow-2xs"
+              >
+                Browse All Courses
+              </a>
+            </div>
           </div>
 
-          {/* Module 1 Summary Card matching Main.dc.html */}
+          {/* Course 1 Summary Card */}
           <div className="flex-[1_1_280px] bg-white border border-[#dae1ed] rounded-lg p-5 sm:p-6 box-border shadow-sm">
-            <div className="text-sm text-[#5b606b]">Inside Module 1</div>
-            <div className="text-[20px] font-bold mt-1 text-[#1f1f1f]">
+            <div className="text-sm font-semibold text-[#0056d2]">Inside Course 1</div>
+            <Link
+              to="/learn/problem-discovery-and-validation"
+              className="text-[20px] font-bold mt-1 text-[#1f1f1f] hover:text-[#0056d2] block no-underline transition-colors"
+            >
               Problem Discovery &amp; Validation
-            </div>
+            </Link>
             <div className="text-[15px] text-[#3d424d] mt-2.5 leading-[1.6]">
               15 chapters · 78 sections
               <br />
               Exercises and check-yourself questions in every chapter
             </div>
+            <Link
+              to="/learn/problem-discovery-and-validation"
+              className="inline-block mt-3 text-sm font-semibold text-[#0056d2] hover:underline"
+            >
+              View full course syllabus →
+            </Link>
           </div>
         </div>
       </section>
 
-      {/* Learning Paths Section matching Main.dc.html */}
-      <section id="learning-paths" className="max-w-[1280px] mx-auto px-4 sm:px-8 pt-10 box-border">
-        <h2 className="m-0 text-[26px] font-bold text-[#1f1f1f]">Learning paths</h2>
+      {/* Courses Section */}
+      <section id="courses" className="max-w-[1280px] mx-auto px-4 sm:px-8 pt-12 box-border">
+        <h2 className="m-0 text-[26px] font-bold text-[#1f1f1f]">Courses</h2>
         <div className="text-[15px] text-[#5b606b] mt-1">
-          Start with Module 1, the others open after it.
+          Start with Course 1, the others open after it.
         </div>
 
-        <div className="flex flex-wrap gap-5 mt-4.5">
-          {/* Module 1 (Active) */}
+        <div className="flex flex-wrap gap-5 mt-5">
+          {/* Course 1 (Active) */}
           <Link
-            to="/learn/module-1"
+            to="/learn/problem-discovery-and-validation"
             className="flex-[1_1_280px] no-underline text-[#1f1f1f] border border-[#dae1ed] rounded-lg overflow-hidden bg-white hover:border-[#0056d2] hover:shadow-md transition-all group"
           >
             <div className="h-[88px] bg-[#0056d2] text-white p-4 box-border text-[13px] font-semibold tracking-[1px]">
-              MODULE 1
+              COURSE 1
             </div>
             <div className="p-4">
               <div className="text-[18px] font-bold text-[#1f1f1f] group-hover:text-[#0056d2] transition-colors">
@@ -133,10 +124,10 @@ export const AcademyHome: React.FC = () => {
             </div>
           </Link>
 
-          {/* Module 2 (Coming Soon) */}
+          {/* Course 2 (Coming Soon) */}
           <div className="flex-[1_1_280px] border border-[#dae1ed] rounded-lg overflow-hidden bg-white opacity-85">
             <div className="h-[88px] bg-[#0b6b83] text-white p-4 box-border text-[13px] font-semibold tracking-[1px]">
-              MODULE 2
+              COURSE 2
             </div>
             <div className="p-4">
               <div className="text-[18px] font-bold text-[#1f1f1f]">
@@ -148,10 +139,10 @@ export const AcademyHome: React.FC = () => {
             </div>
           </div>
 
-          {/* Module 3 (Coming Soon) */}
+          {/* Course 3 (Coming Soon) */}
           <div className="flex-[1_1_280px] border border-[#dae1ed] rounded-lg overflow-hidden bg-white opacity-85">
             <div className="h-[88px] bg-[#3c4a9e] text-white p-4 box-border text-[13px] font-semibold tracking-[1px]">
-              MODULE 3
+              COURSE 3
             </div>
             <div className="p-4">
               <div className="text-[18px] font-bold text-[#1f1f1f]">
@@ -165,14 +156,35 @@ export const AcademyHome: React.FC = () => {
         </div>
       </section>
 
-      {/* Chapters in Module 1 Section matching Main.dc.html */}
+      {/* Chapters in Course 1 Section */}
       <section className="max-w-[1280px] mx-auto px-4 sm:px-8 py-12 pb-20 box-border">
-        <h2 className="m-0 text-[26px] font-bold text-[#1f1f1f]">
-          Chapters in Problem Discovery &amp; Validation
-        </h2>
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#dae1ed] pb-4">
+          <div>
+            <h2 className="m-0 text-[26px] font-bold text-[#1f1f1f]">
+              Chapters in Problem Discovery &amp; Validation
+            </h2>
+            <div className="text-sm text-[#5b606b] mt-1">
+              Course 1 Curriculum · 15 interactive reading chapters
+            </div>
+          </div>
 
-        <div className="flex flex-wrap gap-7 mt-5 items-start">
-          {/* Left Column: Browse by part matching Main.dc.html */}
+          {q && (
+            <div className="flex items-center gap-2 bg-[#0056d2]/10 text-[#0056d2] px-3 py-1.5 rounded-full text-xs font-semibold">
+              <span>Filtered by: "{q}"</span>
+              <button
+                type="button"
+                onClick={clearSearch}
+                aria-label="Clear filter"
+                className="hover:underline cursor-pointer border-0 bg-transparent p-0 font-bold ml-1 text-xs"
+              >
+                ✕ Clear
+              </button>
+            </div>
+          )}
+        </div>
+
+        <div className="flex flex-wrap gap-7 mt-6 items-start">
+          {/* Left Column: Browse by part */}
           <aside className="flex-[0_0_220px] w-full sm:w-[220px] box-border">
             <div className="text-base font-bold pb-2 border-b border-[#dae1ed] text-[#1f1f1f]">
               Browse by part
@@ -206,10 +218,10 @@ export const AcademyHome: React.FC = () => {
             </div>
           </aside>
 
-          {/* Right Column: Chapters Grid matching Main.dc.html */}
+          {/* Right Column: Chapters Grid */}
           <main className="flex-[999_1_560px] min-w-0">
             <div className="text-[15px] text-[#5b606b] mb-3.5 flex items-center justify-between">
-              <span>Showing {filteredChapters.length} of 15</span>
+              <span>Showing {filteredChapters.length} of 15 chapters</span>
               {q && (
                 <button
                   type="button"
@@ -225,13 +237,14 @@ export const AcademyHome: React.FC = () => {
               {filteredChapters.map((ch) => {
                 const coverBg = ACADEMY_COLORS[ch.num % 4];
                 const cleanSubs = ch.subs.split(" · ").slice(0, 3).join(", ");
+                const chapterPath = `/learn/problem-discovery-and-validation/${ch.slug}`;
 
                 return (
                   <div
                     key={ch.num}
                     className="border border-[#dae1ed] rounded-lg overflow-hidden bg-white flex flex-col hover:border-[#0056d2] hover:shadow-md transition-all group"
                   >
-                    {/* Chapter Cover Bar matching Main.dc.html */}
+                    {/* Chapter Cover Bar */}
                     <div
                       style={{ background: coverBg }}
                       className="h-[88px] text-white p-3.5 sm:px-4 box-border flex flex-col justify-between"
@@ -247,7 +260,7 @@ export const AcademyHome: React.FC = () => {
                     {/* Chapter Body Content */}
                     <div className="p-4 flex-1">
                       <Link
-                        to={`/learn/${ch.slug}`}
+                        to={chapterPath}
                         className="text-[18px] font-bold leading-[1.25] text-[#1f1f1f] group-hover:text-[#0056d2] no-underline transition-colors block"
                       >
                         {ch.title}
@@ -263,7 +276,7 @@ export const AcademyHome: React.FC = () => {
                     {/* Bottom Action Bar */}
                     <div className="px-4 border-t border-[#dae1ed]">
                       <Link
-                        to={`/learn/${ch.slug}`}
+                        to={chapterPath}
                         className="inline-block py-3 min-h-[44px] box-border font-semibold text-[#0056d2] hover:text-[#00419e] no-underline"
                       >
                         Read chapter →
