@@ -23,9 +23,6 @@ export const Footer: React.FC = () => {
             <Link to="/explore" className="text-body-md text-on-surface-variant hover:text-primary transition-colors">
               Problem Catalog
             </Link>
-            <Link to="/how-to-solve" className="text-body-md text-on-surface-variant hover:text-primary transition-colors font-semibold text-primary">
-              How to Solve Problems
-            </Link>
             <Link to="/methodology" className="text-body-md text-on-surface-variant hover:text-primary transition-colors">
               Methodology & Scoring
             </Link>

@@ -14,7 +14,6 @@ Sitemap: https://stuckhere.davns.com/sitemap.xml
 - [Startup Blueprints & Founder Mode](https://stuckhere.davns.com/explore?filter=startup_mode): Actionable startup opportunities equipped with unit economics, competitor teardowns, and suggested MVP roadmaps.
 - [Problem Verification Methodology & Pain Scoring](https://stuckhere.davns.com/methodology): The 10-point empirical diagnostic protocol, mathematical 0–100 pain scoring formula, and TAM sizing heuristics.
 - [Founder Problem Discovery Guide](https://stuckhere.davns.com/guides/problem-discovery-framework): The definitive guide for founders to discover high-severity problems, avoid the 42% "No Market Need" failure, and test willingness-to-pay.
-- [How to Solve Problems on Stuckhere (The Solver Roadmap)](https://stuckhere.davns.com/how-to-solve): The complete 5-stage human-centered playbook for turning verified problems into working products, tech stacks, and enterprise pilots.
 - [Open Innovation & Enterprise Challenges](https://stuckhere.davns.com/open-innovation): The global standard connecting corporate bottlenecks and hackathon tracks with verified problem solvers.
 - [Stuckhere Academy & Engineering Curricula](https://stuckhere.davns.com/learn): GeeksforGeeks-style educational tutorials and engineering playbooks covering problem discovery, bottom-up TAM formulas, NoSQL Firestore cost modeling, and serverless RBAC security.
   - [The Problem-First vs. Idea-First Paradigm](https://stuckhere.davns.com/learn/the-problem-first-mindset)
