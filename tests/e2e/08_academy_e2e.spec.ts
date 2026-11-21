@@ -15,15 +15,27 @@ test.describe("Academy Flow E2E Tests: Home, Subject Page & Reader", () => {
     await expect(page.locator("text=Market Sizing & Opportunity")).toBeVisible();
     await expect(page.locator("text=Full-Stack Cloud for Founders")).toBeVisible();
 
-    // Search bar functionality
-    const searchInput = page.locator("input[placeholder='What do you want to learn?']");
-    await expect(searchInput).toBeVisible();
-    await searchInput.fill("surgery");
-    await expect(page.locator("text=Vitamin, Painkiller, Surgery")).toBeVisible();
+    // Search bar functionality in universal header
+    const isMobile = (page.viewportSize()?.width ?? 1280) < 640;
+    if (isMobile) {
+      await page.locator("button[aria-label*='navigation menu']").click();
+      const mobileSearchInput = page.locator("input[placeholder='What do you want to learn?']").last();
+      await expect(mobileSearchInput).toBeVisible();
+      await mobileSearchInput.fill("surgery");
+      await mobileSearchInput.press("Enter");
+      await expect(page.locator("text=Vitamin, Painkiller, Surgery")).toBeVisible();
+      // Clear filter on page
+      await page.locator("button:has-text('Clear filter')").click();
+    } else {
+      const searchInput = page.locator("input[placeholder='What do you want to learn?']").first();
+      await expect(searchInput).toBeVisible();
+      await searchInput.fill("surgery");
+      await expect(page.locator("text=Vitamin, Painkiller, Surgery")).toBeVisible();
 
-    // Clear search
-    await page.locator("button[aria-label='Clear search']").click();
-    await expect(searchInput).toHaveValue("");
+      // Clear search
+      await page.locator("button[aria-label='Clear search']").first().click();
+      await expect(searchInput).toHaveValue("");
+    }
 
     // Part filter: click 'Foundations'
     await page.locator("button:has-text('Foundations')").click();

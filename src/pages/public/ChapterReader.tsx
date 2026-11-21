@@ -68,29 +68,28 @@ export const ChapterReader: React.FC = () => {
         canonicalUrl={`https://stuckhere.davns.com/learn/${activeChapter.slug}`}
       />
 
-      {/* Top Header Bar matching Reader.dc.html */}
-      <header className="border-b border-[#dae1ed] bg-white sticky top-0 z-40">
-        <div className="max-w-[1280px] mx-auto px-4 sm:px-8 py-3.5 box-border flex flex-wrap items-center gap-2.5 sm:gap-6 text-base">
+      {/* Sub-header Breadcrumb Bar (Sitting under the universal main Navbar) */}
+      <div className="border-b border-[#dae1ed] bg-white sticky top-14 sm:top-16 z-30">
+        <div className="max-w-[1280px] mx-auto px-4 sm:px-8 py-2.5 box-border flex items-center gap-2 text-sm">
           <Link
             to="/learn"
-            className="text-[24px] font-bold text-[#1f1f1f] no-underline mr-1"
+            className="text-[#0056d2] hover:text-[#00419e] font-semibold no-underline flex items-center gap-1"
           >
-            Stuck<span className="text-[#0056d2] font-semibold">here</span>
+            ← Academy
           </Link>
-          <Link
-            to="/learn"
-            className="font-semibold py-2.5 min-h-[44px] box-border text-[#0056d2] hover:text-[#00419e] no-underline"
-          >
-            Academy
-          </Link>
+          <span className="text-[#5b606b]">/</span>
           <Link
             to="/learn/module-1"
-            className="py-2.5 min-h-[44px] box-border text-[#1f1f1f] hover:text-[#0056d2] no-underline hidden sm:inline"
+            className="text-[#5b606b] hover:text-[#0056d2] no-underline truncate hidden sm:inline"
           >
             Problem Discovery &amp; Validation
           </Link>
+          <span className="text-[#5b606b] hidden sm:inline">/</span>
+          <span className="text-[#1f1f1f] font-medium truncate">
+            Chapter {activeChapter.num}: {activeChapter.shortTitle}
+          </span>
         </div>
-      </header>
+      </div>
 
       {/* 3-Column Layout matching Reader.dc.html */}
       <div className="max-w-[1280px] mx-auto px-4 sm:px-8 py-10 pb-20 box-border flex flex-wrap gap-8 sm:gap-12 items-start">
@@ -418,27 +417,6 @@ export const ChapterReader: React.FC = () => {
           </div>
         </aside>
       </div>
-
-      {/* Footer matching standard */}
-      <footer className="border-t border-[#dae1ed] bg-white py-12 text-[#5b606b] text-sm">
-        <div className="max-w-[1280px] mx-auto px-4 sm:px-8 flex flex-wrap justify-between items-center gap-4">
-          <div>© {new Date().getFullYear()} Stuckhere Intelligence. All rights reserved.</div>
-          <div className="flex gap-6">
-            <Link to="/explore" className="hover:text-[#0056d2] text-[#5b606b] no-underline">
-              Problems
-            </Link>
-            <Link to="/industries" className="hover:text-[#0056d2] text-[#5b606b] no-underline">
-              Industries
-            </Link>
-            <Link to="/privacy" className="hover:text-[#0056d2] text-[#5b606b] no-underline">
-              Privacy
-            </Link>
-            <Link to="/terms" className="hover:text-[#0056d2] text-[#5b606b] no-underline">
-              Terms
-            </Link>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 };

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { Menu, X, Shield, Sparkles, User as UserIcon, Bookmark, Plus } from "lucide-react";
+import { Menu, X, Shield, Sparkles, User as UserIcon, Bookmark, Plus, Search } from "lucide-react";
 import { UserAvatar } from "@/components/ui/UserAvatar";
 
 export const Navbar: React.FC = () => {
@@ -10,6 +10,57 @@ export const Navbar: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const isLearnPage = location.pathname.startsWith("/learn") || location.pathname.startsWith("/academy");
+  const [academyQuery, setAcademyQuery] = useState(searchParams.get("q") || "");
+
+  // Sync search input if URL search params change
+  useEffect(() => {
+    if (isLearnPage) {
+      setAcademyQuery(searchParams.get("q") || "");
+    }
+  }, [searchParams, isLearnPage]);
+
+  const handleAcademyQueryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setAcademyQuery(val);
+    if (location.pathname === "/learn") {
+      setSearchParams(
+        (prev) => {
+          const next = new URLSearchParams(prev);
+          if (val.trim()) {
+            next.set("q", val);
+          } else {
+            next.delete("q");
+          }
+          return next;
+        },
+        { replace: true }
+      );
+    }
+  };
+
+  const handleAcademySearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (location.pathname !== "/learn") {
+      navigate(`/learn?q=${encodeURIComponent(academyQuery.trim())}`);
+    }
+  };
+
+  const handleClearAcademyQuery = () => {
+    setAcademyQuery("");
+    if (location.pathname === "/learn") {
+      setSearchParams(
+        (prev) => {
+          const next = new URLSearchParams(prev);
+          next.delete("q");
+          return next;
+        },
+        { replace: true }
+      );
+    }
+  };
 
   // Close mobile menu on route change (handles browser back button)
   useEffect(() => {
@@ -116,6 +167,40 @@ export const Navbar: React.FC = () => {
             })}
           </nav>
         </div>
+
+        {/* Center: Academy Search Bar with smooth fade-in animation */}
+        {isLearnPage && (
+          <div className="flex-1 max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg mx-2 sm:mx-4 hidden sm:flex items-center animate-fade-in">
+            <form
+              onSubmit={handleAcademySearchSubmit}
+              className="w-full flex items-center bg-surface-container-low/90 dark:bg-zinc-900/90 border border-outline-variant/40 hover:border-primary/50 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 rounded-full py-1 pr-1.5 pl-3.5 transition-all duration-300 shadow-xs"
+            >
+              <Search className="w-4 h-4 text-on-surface-variant/70 shrink-0 mr-2" />
+              <input
+                type="text"
+                value={academyQuery}
+                onChange={handleAcademyQueryChange}
+                aria-label="Search Academy chapters and concepts"
+                placeholder="What do you want to learn?"
+                className="flex-1 min-w-0 bg-transparent border-0 outline-none text-xs sm:text-sm text-on-surface placeholder:text-on-surface-variant/60 font-body-md"
+              />
+              {academyQuery ? (
+                <button
+                  type="button"
+                  onClick={handleClearAcademyQuery}
+                  aria-label="Clear search"
+                  className="w-6 h-6 rounded-full hover:bg-black/10 dark:hover:bg-white/10 flex items-center justify-center text-xs text-on-surface-variant cursor-pointer transition-colors"
+                >
+                  ✕
+                </button>
+              ) : (
+                <span className="text-[10px] uppercase font-bold tracking-wider text-primary/80 bg-primary/10 px-2 py-0.5 rounded-full shrink-0 hidden lg:inline">
+                  Academy
+                </span>
+              )}
+            </form>
+          </div>
+        )}
 
         {/* Right Actions & User Profile */}
         <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0 pr-0.5 sm:pr-1">
@@ -272,6 +357,36 @@ export const Navbar: React.FC = () => {
             onClick={() => setMobileMenuOpen(false)}
           />
           <div className="fixed top-14 sm:top-16 inset-x-0 border-b border-outline-variant/30 bg-surface-container-lowest/98 backdrop-blur-2xl px-4 py-4 md:hidden shadow-2xl pointer-events-auto max-h-[calc(100vh-3.5rem)] sm:max-h-[calc(100vh-4rem)] overflow-y-auto z-50 animate-in slide-in-from-top-2 duration-200">
+            {/* Mobile Academy Search Bar */}
+            {isLearnPage && (
+              <form
+                onSubmit={(e) => {
+                  handleAcademySearchSubmit(e);
+                  setMobileMenuOpen(false);
+                }}
+                className="flex items-center bg-surface-container-low border border-outline-variant/40 rounded-full py-1.5 px-3 mb-3 animate-fade-in"
+              >
+                <Search className="w-4 h-4 text-on-surface-variant/70 shrink-0 mr-2" />
+                <input
+                  type="text"
+                  value={academyQuery}
+                  onChange={handleAcademyQueryChange}
+                  aria-label="Search Academy chapters and concepts"
+                  placeholder="What do you want to learn?"
+                  className="flex-1 min-w-0 bg-transparent border-0 outline-none text-sm text-on-surface placeholder:text-on-surface-variant/60"
+                />
+                {academyQuery && (
+                  <button
+                    type="button"
+                    onClick={handleClearAcademyQuery}
+                    aria-label="Clear search"
+                    className="w-5 h-5 rounded-full hover:bg-black/10 flex items-center justify-center text-xs text-on-surface-variant"
+                  >
+                    ✕
+                  </button>
+                )}
+              </form>
+            )}
             <div className="flex flex-col gap-1.5">
               <Link
                 to="/explore"

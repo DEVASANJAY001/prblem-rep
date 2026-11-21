@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { SEOHead } from "@/components/common/SEOHead";
 import {
   ACADEMY_CHAPTERS,
@@ -9,8 +9,8 @@ import {
 } from "@/data/academyData";
 
 export const AcademyHome: React.FC = () => {
-  const navigate = useNavigate();
-  const [q, setQ] = useState("");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const q = searchParams.get("q") || "";
   const [part, setPart] = useState("All");
 
   const ql = q.trim().toLowerCase();
@@ -26,8 +26,15 @@ export const AcademyHome: React.FC = () => {
     });
   }, [currentPart, ql]);
 
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const clearSearch = () => {
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev);
+        next.delete("q");
+        return next;
+      },
+      { replace: true }
+    );
   };
 
   return (
@@ -38,97 +45,9 @@ export const AcademyHome: React.FC = () => {
         canonicalUrl="https://stuckhere.davns.com/learn"
       />
 
-      {/* Top Header Bar matching Main.dc.html */}
-      <header className="border-b border-[#dae1ed] bg-white sticky top-0 z-40">
-        <div className="max-w-[1280px] mx-auto px-4 sm:px-8 py-3 box-border flex flex-wrap items-center gap-3 sm:gap-6">
-          <Link
-            to="/"
-            className="text-[26px] font-bold tracking-[-0.5px] text-[#1f1f1f] no-underline shrink-0"
-          >
-            Stuck<span className="text-[#0056d2] font-semibold">here</span>
-          </Link>
-
-          <nav className="flex items-center gap-4 sm:gap-5 text-base text-[#1f1f1f]">
-            <Link to="/explore" className="text-[#1f1f1f] hover:text-[#0056d2] no-underline">
-              Explore
-            </Link>
-            <Link to="/industries" className="text-[#1f1f1f] hover:text-[#0056d2] no-underline">
-              Industries
-            </Link>
-            <Link
-              to="/learn"
-              className="font-bold text-[#0056d2] no-underline"
-            >
-              Academy
-            </Link>
-            <Link to="/community" className="text-[#1f1f1f] hover:text-[#0056d2] no-underline">
-              Community
-            </Link>
-          </nav>
-
-          {/* Centered Search Bar matching Main.dc.html */}
-          <form
-            onSubmit={handleSearchSubmit}
-            className="flex-1 basis-[280px] flex items-center border border-[#5b6670] rounded-full py-[3px] pr-[3px] pl-[18px] max-w-[560px] mx-auto"
-          >
-            <input
-              type="text"
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              aria-label="Search chapters and concepts"
-              placeholder="What do you want to learn?"
-              className="flex-1 min-w-0 border-0 outline-none text-base font-inherit bg-transparent text-[#1f1f1f] py-2"
-            />
-            {q ? (
-              <button
-                type="button"
-                onClick={() => setQ("")}
-                aria-label="Clear search"
-                className="w-11 h-11 rounded-full border-0 bg-[#0056d2] hover:bg-[#00419e] flex items-center justify-center shrink-0 text-white cursor-pointer transition-colors"
-              >
-                ✕
-              </button>
-            ) : (
-              <button
-                type="submit"
-                aria-label="Search"
-                className="w-11 h-11 rounded-full border-0 bg-[#0056d2] hover:bg-[#00419e] flex items-center justify-center shrink-0 cursor-pointer transition-colors"
-              >
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="#fff"
-                  strokeWidth="2.4"
-                  aria-hidden="true"
-                >
-                  <circle cx="11" cy="11" r="7" />
-                  <path d="m20 20-4-4" />
-                </svg>
-              </button>
-            )}
-          </form>
-
-          {/* Right Action Links */}
-          <div className="flex items-center gap-4 sm:gap-5 ml-auto">
-            <Link
-              to="/dashboard"
-              className="text-[#1f1f1f] hover:text-[#0056d2] no-underline text-base hidden sm:inline-block"
-            >
-              Dashboard
-            </Link>
-            <Link
-              to="/submit"
-              className="bg-[#1e2530] hover:bg-black text-white font-semibold py-[11px] px-[18px] rounded-lg no-underline text-sm sm:text-base transition-colors"
-            >
-              + Submit Problem
-            </Link>
-          </div>
-        </div>
-
-        {/* Sub-nav Tabs matching Main.dc.html */}
-        <div className="max-w-[1280px] mx-auto px-4 sm:px-8 box-border flex flex-wrap gap-x-7 text-[15px]">
+      {/* Sub-nav Tabs matching Main.dc.html (Sitting under the universal main Navbar) */}
+      <div className="border-b border-[#dae1ed] bg-white sticky top-14 sm:top-16 z-30">
+        <div className="max-w-[1280px] mx-auto px-4 sm:px-8 box-border flex flex-wrap items-center gap-x-7 text-[15px]">
           <span className="py-3 font-bold border-b-[3px] border-[#0056d2] text-[#1f1f1f] cursor-default">
             Home
           </span>
@@ -138,8 +57,22 @@ export const AcademyHome: React.FC = () => {
           >
             Learning paths
           </a>
+
+          {q && (
+            <div className="ml-auto flex items-center gap-2 py-2 text-sm text-[#5b606b]">
+              <span>Filtering by "{q}"</span>
+              <button
+                type="button"
+                onClick={clearSearch}
+                aria-label="Clear search"
+                className="text-[#0056d2] hover:underline font-semibold cursor-pointer border-0 bg-transparent p-0"
+              >
+                Clear
+              </button>
+            </div>
+          )}
         </div>
-      </header>
+      </div>
 
       {/* Hero Section matching Main.dc.html (#f5f8ff) */}
       <section className="bg-[#f5f8ff] border-b border-[#dae1ed]">
@@ -275,12 +208,21 @@ export const AcademyHome: React.FC = () => {
 
           {/* Right Column: Chapters Grid matching Main.dc.html */}
           <main className="flex-[999_1_560px] min-w-0">
-            <div className="text-[15px] text-[#5b606b] mb-3.5">
-              Showing {filteredChapters.length} of 15
+            <div className="text-[15px] text-[#5b606b] mb-3.5 flex items-center justify-between">
+              <span>Showing {filteredChapters.length} of 15</span>
+              {q && (
+                <button
+                  type="button"
+                  onClick={clearSearch}
+                  className="text-xs text-[#0056d2] hover:underline cursor-pointer border-0 bg-transparent font-medium"
+                >
+                  Clear filter
+                </button>
+              )}
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-              {filteredChapters.map((ch, idx) => {
+              {filteredChapters.map((ch) => {
                 const coverBg = ACADEMY_COLORS[ch.num % 4];
                 const cleanSubs = ch.subs.split(" · ").slice(0, 3).join(", ");
 
@@ -334,36 +276,12 @@ export const AcademyHome: React.FC = () => {
 
             {filteredChapters.length === 0 && (
               <div className="py-8 text-[17px] text-[#5b606b]">
-                No chapters match. Try another search or part.
+                No chapters match "{q}". Try another search or select "All".
               </div>
             )}
           </main>
         </div>
       </section>
-
-      {/* Footer matching Stuckhere standard */}
-      <footer className="border-t border-[#dae1ed] bg-white py-12 text-[#5b606b] text-sm">
-        <div className="max-w-[1280px] mx-auto px-4 sm:px-8 flex flex-wrap justify-between items-center gap-4">
-          <div>© {new Date().getFullYear()} Stuckhere Intelligence. All rights reserved.</div>
-          <div className="flex gap-6">
-            <Link to="/explore" className="hover:text-[#0056d2] text-[#5b606b] no-underline">
-              Problems
-            </Link>
-            <Link to="/industries" className="hover:text-[#0056d2] text-[#5b606b] no-underline">
-              Industries
-            </Link>
-            <Link to="/community" className="hover:text-[#0056d2] text-[#5b606b] no-underline">
-              Community
-            </Link>
-            <Link to="/privacy" className="hover:text-[#0056d2] text-[#5b606b] no-underline">
-              Privacy
-            </Link>
-            <Link to="/terms" className="hover:text-[#0056d2] text-[#5b606b] no-underline">
-              Terms
-            </Link>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 };

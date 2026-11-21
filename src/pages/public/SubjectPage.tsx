@@ -18,24 +18,6 @@ export const SubjectPage: React.FC = () => {
         canonicalUrl="https://stuckhere.davns.com/learn/module-1"
       />
 
-      {/* Top Header Bar matching Course.dc.html */}
-      <header className="border-b border-[#dae1ed] bg-white sticky top-0 z-40">
-        <div className="max-w-[1280px] mx-auto px-4 sm:px-8 py-3.5 box-border flex flex-wrap items-center gap-3 sm:gap-7">
-          <Link
-            to="/learn"
-            className="text-[24px] font-bold text-[#1f1f1f] no-underline"
-          >
-            Stuck<span className="text-[#0056d2] font-semibold">here</span>
-          </Link>
-          <Link
-            to="/learn"
-            className="font-semibold py-2.5 min-h-[44px] box-border text-[#0056d2] hover:text-[#00419e] no-underline flex items-center"
-          >
-            ← Academy Home
-          </Link>
-        </div>
-      </header>
-
       {/* Hero Section matching Course.dc.html (#f5f8ff) */}
       <section className="bg-[#f5f8ff] border-b border-[#dae1ed]">
         <div className="max-w-[1280px] mx-auto px-4 sm:px-8 py-9 sm:pb-10 box-border flex flex-wrap gap-8 items-start">
@@ -101,7 +83,7 @@ export const SubjectPage: React.FC = () => {
       {/* Anchor Navigation Bar matching Course.dc.html */}
       <nav
         aria-label="Module sections"
-        className="max-w-[1280px] mx-auto px-4 sm:px-8 box-border border-b border-[#dae1ed] flex flex-wrap gap-x-7 text-base sticky top-[57px] bg-white z-30"
+        className="max-w-[1280px] mx-auto px-4 sm:px-8 box-border border-b border-[#dae1ed] flex flex-wrap gap-x-7 text-base sticky top-14 sm:top-16 bg-white z-30"
       >
         <a
           href="#about"
@@ -312,27 +294,6 @@ export const SubjectPage: React.FC = () => {
           </div>
         </aside>
       </div>
-
-      {/* Footer */}
-      <footer className="border-t border-[#dae1ed] bg-white py-12 text-[#5b606b] text-sm">
-        <div className="max-w-[1280px] mx-auto px-4 sm:px-8 flex flex-wrap justify-between items-center gap-4">
-          <div>© {new Date().getFullYear()} Stuckhere Intelligence. All rights reserved.</div>
-          <div className="flex gap-6">
-            <Link to="/explore" className="hover:text-[#0056d2] text-[#5b606b] no-underline">
-              Problems
-            </Link>
-            <Link to="/industries" className="hover:text-[#0056d2] text-[#5b606b] no-underline">
-              Industries
-            </Link>
-            <Link to="/privacy" className="hover:text-[#0056d2] text-[#5b606b] no-underline">
-              Privacy
-            </Link>
-            <Link to="/terms" className="hover:text-[#0056d2] text-[#5b606b] no-underline">
-              Terms
-            </Link>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 };

@@ -179,12 +179,12 @@ export default function App() {
                 <Route path="/guides/problem-discovery-framework" element={<PublicLayout><ProblemDiscoveryGuide /></PublicLayout>} />
                 <Route path="/problem-discovery" element={<Navigate to="/guides/problem-discovery-framework" replace />} />
                 <Route path="/open-innovation" element={<PublicLayout><OpenInnovation /></PublicLayout>} />
-                <Route path="/learn" element={<AcademyHome />} />
-                <Route path="/learn/module-1" element={<SubjectPage />} />
-                <Route path="/learn/course" element={<SubjectPage />} />
-                <Route path="/learn/problem-discovery-validation" element={<SubjectPage />} />
-                <Route path="/learn/chapter/:chapterNum" element={<ChapterReader />} />
-                <Route path="/learn/:slug" element={<ChapterReader />} />
+                <Route path="/learn" element={<PublicLayout><AcademyHome /></PublicLayout>} />
+                <Route path="/learn/module-1" element={<PublicLayout><SubjectPage /></PublicLayout>} />
+                <Route path="/learn/course" element={<PublicLayout><SubjectPage /></PublicLayout>} />
+                <Route path="/learn/problem-discovery-validation" element={<PublicLayout><SubjectPage /></PublicLayout>} />
+                <Route path="/learn/chapter/:chapterNum" element={<PublicLayout><ChapterReader /></PublicLayout>} />
+                <Route path="/learn/:slug" element={<PublicLayout><ChapterReader /></PublicLayout>} />
                 <Route path="/academy" element={<Navigate to="/learn" replace />} />
                 <Route path="/tutorials" element={<Navigate to="/learn" replace />} />
 
