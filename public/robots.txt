@@ -30,6 +30,7 @@ Allow: /about/
 Allow: /methodology
 Allow: /guides/
 Allow: /open-innovation
+Allow: /how-to-solve
 Allow: /learn
 Allow: /learn/
 Allow: /llms.txt
@@ -56,6 +57,7 @@ Allow: /about/
 Allow: /methodology
 Allow: /guides/
 Allow: /open-innovation
+Allow: /how-to-solve
 Allow: /learn
 Allow: /learn/
 Allow: /llms.txt

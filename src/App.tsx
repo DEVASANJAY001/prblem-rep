@@ -68,6 +68,7 @@ const Methodology = lazyWithRetry(() => import("@/pages/public/Methodology").the
 const ProblemDiscoveryGuide = lazyWithRetry(() => import("@/pages/public/ProblemDiscoveryGuide").then((m) => ({ default: m.ProblemDiscoveryGuide })));
 const OpenInnovation = lazyWithRetry(() => import("@/pages/public/OpenInnovation").then((m) => ({ default: m.OpenInnovation })));
 const Learn = lazyWithRetry(() => import("@/pages/public/Learn").then((m) => ({ default: m.Learn })));
+const HowToSolve = lazyWithRetry(() => import("@/pages/public/HowToSolve").then((m) => ({ default: m.HowToSolve })));
 
 // Admin Console Modules (Loaded on-demand only for authorized administrators)
 const AdminLogin = lazyWithRetry(() => import("@/pages/admin/AdminLogin").then((m) => ({ default: m.AdminLogin })));
@@ -149,7 +150,9 @@ export default function App() {
                 <Route path="/" element={<Home />} />
                 <Route path="/explore" element={<PublicLayout><Explore /></PublicLayout>} />
                 <Route path="/problem/:id" element={<PublicLayout><ProblemDetail /></PublicLayout>} />
-                <Route path="/startup-mode/:problemId" element={<ProtectedRoute><PublicLayout><StartupMode /></PublicLayout></ProtectedRoute>} />
+                <Route path="/startup-mode/:problemId" element={<PublicLayout><StartupMode /></PublicLayout>} />
+                <Route path="/how-to-solve" element={<PublicLayout><HowToSolve /></PublicLayout>} />
+                <Route path="/solver-guide" element={<Navigate to="/how-to-solve" replace />} />
                 <Route path="/industries" element={<PublicLayout><Industries /></PublicLayout>} />
                 <Route path="/industries/:slug" element={<PublicLayout><IndustryDetail /></PublicLayout>} />
                 <Route path="/companies" element={<PublicLayout><Companies /></PublicLayout>} />

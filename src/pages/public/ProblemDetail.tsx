@@ -29,6 +29,7 @@ import { UserAvatar } from "@/components/ui/UserAvatar";
 import { CompanyLogo } from "@/components/ui/CompanyLogo";
 import { TrendingProblemCard } from "@/components/ui/TrendingProblemCard";
 import { CreditSourceBadge, CreditLogoCircle } from "@/components/ui/CreditSourceBadge";
+import { SolverCopilot } from "@/components/solver/SolverCopilot";
 import {
   Bookmark,
   Share2,
@@ -58,6 +59,7 @@ import {
   X,
   Globe,
   ChevronDown,
+  Sparkles,
 } from "lucide-react";
 
 
@@ -97,7 +99,7 @@ export const ProblemDetail: React.FC = () => {
   const [userInterested, setUserInterested] = useState(false);
 
   const [activeTab, setActiveTab] = useState<
-    "description" | "evidence" | "discussion" | "research" | "competitors" | "suggested_mvp" | "related"
+    "description" | "solver" | "evidence" | "discussion" | "research" | "competitors" | "suggested_mvp" | "related"
   >("description");
 
   const [bookmarked, setBookmarked] = useState(false);
@@ -1187,6 +1189,7 @@ export const ProblemDetail: React.FC = () => {
           <nav className="flex overflow-x-auto gap-5 sm:gap-8 w-full hide-scrollbar">
             {[
               { id: "description", label: "Description" },
+              { id: "solver", label: "⚡ How to Solve (AI Copilot)", highlight: true },
               { id: "evidence", label: "Evidence" },
               { id: "discussion", label: "Discussion" },
               { id: "research", label: "Research" },
@@ -1197,12 +1200,12 @@ export const ProblemDetail: React.FC = () => {
               <button
                 key={tab.id}
                 onClick={() => handleTabClick(tab.id as any)}
-                className={`pb-3 border-b-2 text-xs md:text-sm font-semibold whitespace-nowrap transition-colors cursor-pointer ${activeTab === tab.id
+                className={`pb-3 border-b-2 text-xs md:text-sm font-semibold whitespace-nowrap transition-colors cursor-pointer flex items-center gap-1.5 ${activeTab === tab.id
                   ? "text-primary border-primary font-bold"
                   : "text-on-surface-variant border-transparent hover:text-on-surface"
-                  }`}
+                  } ${tab.highlight && activeTab !== tab.id ? "text-primary/90 font-bold" : ""}`}
               >
-                {tab.label}
+                <span>{tab.label}</span>
               </button>
             ))}
           </nav>
@@ -1221,6 +1224,26 @@ export const ProblemDetail: React.FC = () => {
                   <p className="text-xs md:text-sm text-on-surface-variant leading-relaxed font-normal">
                     {problem.description}
                   </p>
+                </div>
+
+                {/* Quick Solver Callout Banner */}
+                <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-primary/10 via-primary/5 to-transparent border border-primary/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <div className="space-y-0.5">
+                    <span className="text-xs font-bold text-primary uppercase tracking-wider flex items-center gap-1.5">
+                      <Sparkles className="w-3.5 h-3.5" />
+                      <span>Ready to Solve This Problem?</span>
+                    </span>
+                    <p className="text-xs text-on-surface-variant font-normal">
+                      Generate tech stacks, interview scripts, and a 14-day rapid sprint roadmap.
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setActiveTab("solver")}
+                    className="px-4 py-2 rounded-xl bg-primary text-white text-xs font-bold hover:bg-primary-container shadow-xs transition-all flex items-center gap-1.5 shrink-0 cursor-pointer"
+                  >
+                    <span>Open Solver Copilot</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </button>
                 </div>
 
                 {/* Split Fade Divider Line */}
@@ -1583,6 +1606,13 @@ export const ProblemDetail: React.FC = () => {
                   </div>
                 </div>
 
+              </div>
+            )}
+
+            {/* Solver Playbook & AI Copilot Tab */}
+            {activeTab === "solver" && (
+              <div className="flex flex-col gap-6 animate-fade-in">
+                <SolverCopilot problem={problem} />
               </div>
             )}
 

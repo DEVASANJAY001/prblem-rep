@@ -30,6 +30,7 @@ export const Navbar: React.FC = () => {
 
   const navItems = [
     { label: "Explore", path: "/explore" },
+    { label: "How to Solve", path: "/how-to-solve" },
     { label: "Industries", path: "/industries" },
     { label: "Academy", path: "/learn" },
     { label: "Community", path: "/community" },
