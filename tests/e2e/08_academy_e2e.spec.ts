@@ -225,4 +225,31 @@ test.describe("Academy Flow E2E Tests: Course Branching, Layout & Independent Sc
 
     console.log("✅ [Academy E2E] Course 2 Chapter Reader passed 100%");
   });
+
+  test("6. Universal Navbar on Main Page shows Academy in mobile drawer", async ({ page }) => {
+    console.log("📱 [Mobile Nav E2E] Testing main page mobile side nav for Academy link...");
+    await page.goto("/");
+    await page.waitForLoadState("domcontentloaded");
+
+    const isMobile = (page.viewportSize()?.width ?? 1280) < 640;
+    if (isMobile) {
+      const menuBtn = page.locator("button[aria-label*='navigation menu']");
+      await expect(menuBtn).toBeVisible();
+      await menuBtn.click();
+
+      // Verify Academy link exists in mobile drawer
+      const academyLink = page.getByRole("link", { name: /Academy/i }).last();
+      await expect(academyLink).toBeVisible();
+      await page.screenshot({ path: "C:/Users/devas/.gemini/antigravity/brain/ef1f2699-1dfc-402a-891a-60fd42c360d2/verified_mobile_navbar_academy.png" });
+
+      await academyLink.click();
+      await expect(page).toHaveURL(/\/learn/);
+      await expect(page.locator("h1")).toContainText("Learn to find problems worth solving");
+    } else {
+      // Desktop navbar has Academy link
+      const academyLink = page.locator("nav a[href='/learn']:has-text('Academy')");
+      await expect(academyLink).toBeVisible();
+    }
+    console.log("✅ [Mobile Nav E2E] Mobile nav bar shows Academy link successfully!");
+  });
 });

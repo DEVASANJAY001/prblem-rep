@@ -97,6 +97,9 @@ export const Navbar: React.FC = () => {
       case "/community":
         import("@/pages/public/Community");
         break;
+      case "/learn":
+        import("@/pages/public/AcademyHome");
+        break;
       case "/dashboard":
         import("@/pages/public/Dashboard");
         break;
@@ -437,15 +440,44 @@ export const Navbar: React.FC = () => {
                 Explore Problems
               </Link>
               <Link
-                to="/features"
+                to="/industries"
                 onClick={() => setMobileMenuOpen(false)}
                 className={`rounded-xl px-3.5 py-2.5 text-sm font-semibold transition-colors ${
-                  isActive("/features")
+                  isActive("/industries")
                     ? "bg-primary/10 text-primary font-bold"
                     : "text-on-surface hover:bg-surface-container-low"
                 }`}
               >
-                Features
+                Industries
+              </Link>
+              <Link
+                to="/learn"
+                onClick={() => setMobileMenuOpen(false)}
+                onTouchStart={() => preloadRoute("/learn")}
+                onMouseEnter={() => preloadRoute("/learn")}
+                className={`rounded-xl px-3.5 py-2.5 text-sm font-semibold transition-colors flex items-center justify-between ${
+                  isActive("/learn")
+                    ? "bg-primary/10 text-primary font-bold"
+                    : "text-on-surface hover:bg-surface-container-low"
+                }`}
+              >
+                <div className="flex items-center gap-2">
+                  <span>Academy</span>
+                </div>
+                <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-[#0056d2]/10 text-[#0056d2] dark:bg-blue-400/20 dark:text-blue-300">
+                  Curriculum
+                </span>
+              </Link>
+              <Link
+                to="/community"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`rounded-xl px-3.5 py-2.5 text-sm font-semibold transition-colors ${
+                  isActive("/community")
+                    ? "bg-primary/10 text-primary font-bold"
+                    : "text-on-surface hover:bg-surface-container-low"
+                }`}
+              >
+                Community
               </Link>
               <Link
                 to="/solutions"
@@ -459,26 +491,15 @@ export const Navbar: React.FC = () => {
                 Solutions
               </Link>
               <Link
-                to="/industries"
+                to="/features"
                 onClick={() => setMobileMenuOpen(false)}
                 className={`rounded-xl px-3.5 py-2.5 text-sm font-semibold transition-colors ${
-                  isActive("/industries")
+                  isActive("/features")
                     ? "bg-primary/10 text-primary font-bold"
                     : "text-on-surface hover:bg-surface-container-low"
                 }`}
               >
-                Industries
-              </Link>
-              <Link
-                to="/community"
-                onClick={() => setMobileMenuOpen(false)}
-                className={`rounded-xl px-3.5 py-2.5 text-sm font-semibold transition-colors ${
-                  isActive("/community")
-                    ? "bg-primary/10 text-primary font-bold"
-                    : "text-on-surface hover:bg-surface-container-low"
-                }`}
-              >
-                Community
+                Features
               </Link>
               <Link
                 to="/companies"
