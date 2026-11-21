@@ -168,40 +168,53 @@ export const Navbar: React.FC = () => {
           </nav>
         </div>
 
-        {/* Center: Academy Search Bar with smooth fade-in animation */}
+        {/* Center: Academy Search Bar matching Main.dc.html exactly */}
         {isLearnPage && (
-          <div className="flex-1 max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg mx-2 sm:mx-4 hidden sm:flex items-center animate-fade-in">
+          <div className="flex-1 max-w-[560px] mx-2 sm:mx-4 hidden sm:flex items-center animate-fade-in">
             <form
               onSubmit={handleAcademySearchSubmit}
-              className="w-full flex items-center bg-surface-container-low/90 dark:bg-zinc-900/90 border border-outline-variant/40 hover:border-primary/50 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 rounded-full py-1 pr-1.5 pl-3.5 transition-all duration-300 shadow-xs"
+              role="search"
+              aria-label="Search chapters and concepts"
+              className="w-full flex items-center bg-white dark:bg-zinc-900 border border-[#5b6670] dark:border-zinc-500 rounded-[24px] p-[3px] pl-[18px] transition-colors"
+              style={{ borderColor: "#5b6670" }}
             >
-              <Search className="w-4 h-4 text-on-surface-variant/70 shrink-0 mr-2" />
               <input
                 type="text"
                 value={academyQuery}
                 onChange={handleAcademyQueryChange}
-                aria-label="Search Academy chapters and concepts"
+                aria-label="Search chapters and concepts"
                 placeholder="What do you want to learn?"
-                className="flex-1 min-w-0 bg-transparent border-0 outline-none text-xs sm:text-sm text-on-surface placeholder:text-on-surface-variant/60 font-body-md"
+                className="flex-1 min-w-0 border-0 outline-none text-[15px] sm:text-[16px] text-[#1f1f1f] dark:text-zinc-100 placeholder-[#5b606b] dark:placeholder-zinc-400 bg-transparent py-1 sm:py-1.5 font-sans"
               />
-              {academyQuery ? (
+              {academyQuery && (
                 <button
                   type="button"
                   onClick={handleClearAcademyQuery}
                   aria-label="Clear search"
-                  className="w-6 h-6 rounded-full hover:bg-black/10 dark:hover:bg-white/10 flex items-center justify-center text-xs text-on-surface-variant cursor-pointer transition-colors"
+                  className="w-7 h-7 mr-1 rounded-full hover:bg-black/5 dark:hover:bg-white/10 flex items-center justify-center text-xs text-[#5b606b] dark:text-zinc-400 cursor-pointer transition-colors"
                 >
                   ✕
                 </button>
-              ) : (
-                <button
-                  type="submit"
-                  aria-label="Search Academy"
-                  className="w-7 h-7 rounded-full bg-primary/10 hover:bg-primary/20 text-primary flex items-center justify-center shrink-0 transition-colors"
-                >
-                  <Search className="w-3.5 h-3.5" />
-                </button>
               )}
+              <button
+                type="submit"
+                aria-label="Search Academy"
+                className="w-[38px] h-[38px] sm:w-[42px] sm:h-[42px] rounded-full bg-[#0056d2] hover:bg-[#00419e] flex items-center justify-center shrink-0 border-0 cursor-pointer transition-colors active:scale-95 shadow-sm"
+              >
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#ffffff"
+                  strokeWidth="2.4"
+                  aria-hidden="true"
+                  className="w-[18px] h-[18px] sm:w-[20px] sm:h-[20px]"
+                >
+                  <circle cx="11" cy="11" r="7" />
+                  <path d="m20 20-4-4" />
+                </svg>
+              </button>
             </form>
           </div>
         )}
@@ -361,34 +374,54 @@ export const Navbar: React.FC = () => {
             onClick={() => setMobileMenuOpen(false)}
           />
           <div className="fixed top-14 sm:top-16 inset-x-0 border-b border-outline-variant/30 bg-surface-container-lowest/98 backdrop-blur-2xl px-4 py-4 md:hidden shadow-2xl pointer-events-auto max-h-[calc(100vh-3.5rem)] sm:max-h-[calc(100vh-4rem)] overflow-y-auto z-50 animate-in slide-in-from-top-2 duration-200">
-            {/* Mobile Academy Search Bar */}
+            {/* Mobile Academy Search Bar matching Main.dc.html */}
             {isLearnPage && (
               <form
                 onSubmit={(e) => {
                   handleAcademySearchSubmit(e);
                   setMobileMenuOpen(false);
                 }}
-                className="flex items-center bg-surface-container-low border border-outline-variant/40 rounded-full py-1.5 px-3 mb-3 animate-fade-in"
+                role="search"
+                aria-label="Search chapters and concepts"
+                className="flex items-center bg-white dark:bg-zinc-900 border border-[#5b6670] dark:border-zinc-500 rounded-[24px] p-[3px] pl-[16px] mb-3 animate-fade-in shadow-xs"
+                style={{ borderColor: "#5b6670" }}
               >
-                <Search className="w-4 h-4 text-on-surface-variant/70 shrink-0 mr-2" />
                 <input
                   type="text"
                   value={academyQuery}
                   onChange={handleAcademyQueryChange}
-                  aria-label="Search Academy chapters and concepts"
+                  aria-label="Search chapters and concepts"
                   placeholder="What do you want to learn?"
-                  className="flex-1 min-w-0 bg-transparent border-0 outline-none text-sm text-on-surface placeholder:text-on-surface-variant/60"
+                  className="flex-1 min-w-0 border-0 outline-none text-[15px] text-[#1f1f1f] dark:text-zinc-100 placeholder-[#5b606b] dark:placeholder-zinc-400 bg-transparent py-1.5 font-sans"
                 />
                 {academyQuery && (
                   <button
                     type="button"
                     onClick={handleClearAcademyQuery}
                     aria-label="Clear search"
-                    className="w-5 h-5 rounded-full hover:bg-black/10 flex items-center justify-center text-xs text-on-surface-variant"
+                    className="w-7 h-7 mr-1 rounded-full hover:bg-black/5 dark:hover:bg-white/10 flex items-center justify-center text-xs text-[#5b606b] dark:text-zinc-400 cursor-pointer"
                   >
                     ✕
                   </button>
                 )}
+                <button
+                  type="submit"
+                  aria-label="Search Academy"
+                  className="w-[38px] h-[38px] rounded-full bg-[#0056d2] hover:bg-[#00419e] flex items-center justify-center shrink-0 border-0 cursor-pointer text-white shadow-sm"
+                >
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#ffffff"
+                    strokeWidth="2.4"
+                    aria-hidden="true"
+                  >
+                    <circle cx="11" cy="11" r="7" />
+                    <path d="m20 20-4-4" />
+                  </svg>
+                </button>
               </form>
             )}
             <div className="flex flex-col gap-1.5">
