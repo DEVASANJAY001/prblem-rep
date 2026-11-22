@@ -16,6 +16,7 @@ import {
 } from "@/data/academyData";
 import { CourseCardBanner } from "@/components/learning/CourseCardBanners";
 import { ChapterCoverPattern } from "@/components/learning/ChapterCoverPattern";
+import { HeroAnimatedVector } from "@/components/learning/HeroAnimatedVector";
 
 export const AcademyHome: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -154,52 +155,8 @@ export const AcademyHome: React.FC = () => {
             </div>
           </div>
 
-          {/* Quick Active Course Feature Card */}
-          <div className="w-full lg:w-[340px] xl:w-[360px] bg-white border border-[#dae1ed] rounded-lg p-5 sm:p-6 box-border shadow-sm shrink-0">
-            <div className="text-xs font-bold uppercase tracking-wider text-[#0056d2]">
-              Course Highlights
-            </div>
-            <Link
-              to="/learn/problem-discovery-and-validation"
-              className="text-[19px] sm:text-[20px] font-bold mt-1 text-[#1f1f1f] hover:text-[#0056d2] block no-underline transition-colors"
-            >
-              Problem Discovery &amp; Validation
-            </Link>
-            <div className="text-sm text-[#3d424d] mt-2 leading-[1.6]">
-              15 chapters · 78 sections · Pain Scoring
-            </div>
-
-            <div className="mt-3 pt-3 border-t border-[#dae1ed]">
-              <Link
-                to="/learn/market-sizing-and-opportunity"
-                className="text-[17px] font-bold text-[#1f1f1f] hover:text-[#0b6b83] block no-underline transition-colors"
-              >
-                Market Sizing &amp; Opportunity Analysis
-              </Link>
-              <div className="text-xs text-[#5b606b] mt-1 leading-[1.5]">
-                18 chapters · 76 sections · TAM, SAM, SOM &amp; Unit Economics
-              </div>
-            </div>
-
-            <div className="mt-3 pt-3 border-t border-[#dae1ed]">
-              <Link
-                to="/learn/full-stack-cloud-development"
-                className="text-[17px] font-bold text-[#1f1f1f] hover:text-[#1e40af] block no-underline transition-colors"
-              >
-                Full-Stack Cloud Development
-              </Link>
-              <div className="text-xs text-[#5b606b] mt-1 leading-[1.5]">
-                18 chapters · 99 sections · React, Firestore, AI Copilots &amp; Vercel
-              </div>
-            </div>
-
-            <Link
-              to="/learn/problem-discovery-and-validation"
-              className="inline-block mt-4 text-xs sm:text-sm font-semibold text-[#0056d2] hover:underline"
-            >
-              Start reading syllabus →
-            </Link>
-          </div>
+          {/* Animated Interactive Vector Pipeline Graphic (Replacing static Course Highlights) */}
+          <HeroAnimatedVector />
         </div>
       </section>
 
