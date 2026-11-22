@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { subscribeProblems, updateFullProblemDetails } from "@/lib/firebase/services/problemsService";
@@ -10,11 +10,10 @@ import {
   getBookmarkedProblems,
   getUserSubmittedProblemIds,
   checkUsernameAvailability,
+  toggleBookmark,
 } from "@/lib/storage";
 import { getProblemDetailUrl } from "@/lib/seoUrls";
 import { ProblemDoc, BadgeDoc } from "@/types";
-import { UserAvatar } from "@/components/ui/UserAvatar";
-import { AVATAR_PRESETS } from "@/lib/avatars";
 import {
   DynamicBadgeIcon,
   TIER_CONFIG,
@@ -23,34 +22,47 @@ import { SEOHead } from "@/components/common/SEOHead";
 import confetti from "canvas-confetti";
 import {
   FileText,
-  Hammer,
-  ThumbsUp,
-  Award,
-  ArrowRight,
-  Plus,
   Bookmark,
-  CheckCircle,
-  Clock,
+  Award,
+  ExternalLink,
   Edit3,
-  Camera,
-  Upload,
-  Link as LinkIcon,
-  Sparkles,
-  Shield,
-  X,
-  Check,
-  Calendar,
-  Mail,
   AlertTriangle,
   AlertCircle,
-  ExternalLink,
-  Target,
-  Lock,
-  ChevronRight,
-  TrendingUp,
-  Zap,
-  AtSign,
+  CheckCircle,
+  Hammer,
+  ThumbsUp,
+  Trash2,
 } from "lucide-react";
+import "./Dashboard.css";
+
+const getIndustryVisual = (industry?: string) => {
+  const ind = (industry || "").toLowerCase();
+  if (ind.includes("health") || ind.includes("biotech") || ind.includes("med") || ind.includes("pharma")) {
+    return { emoji: "💊", themeClass: "dash-t-g" };
+  }
+  if (ind.includes("aero") || ind.includes("space") || ind.includes("defense") || ind.includes("sat")) {
+    return { emoji: "🛰️", themeClass: "dash-t-b" };
+  }
+  if (ind.includes("agri") || ind.includes("food") || ind.includes("farm") || ind.includes("bio")) {
+    return { emoji: "🌾", themeClass: "dash-t-a" };
+  }
+  if (ind.includes("clean") || ind.includes("energy") || ind.includes("climate") || ind.includes("solar")) {
+    return { emoji: "⚡", themeClass: "dash-t-g" };
+  }
+  if (ind.includes("ai") || ind.includes("software") || ind.includes("tech") || ind.includes("cyber")) {
+    return { emoji: "💻", themeClass: "dash-t-b" };
+  }
+  if (ind.includes("fin") || ind.includes("crypto") || ind.includes("bank") || ind.includes("insur")) {
+    return { emoji: "💳", themeClass: "dash-t-a" };
+  }
+  if (ind.includes("edu") || ind.includes("learn") || ind.includes("academ")) {
+    return { emoji: "📚", themeClass: "dash-t-b" };
+  }
+  if (ind.includes("supply") || ind.includes("logistic") || ind.includes("transport") || ind.includes("freight")) {
+    return { emoji: "🚚", themeClass: "dash-t-a" };
+  }
+  return { emoji: "💡", themeClass: "dash-t-b" };
+};
 
 export const Dashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -59,7 +71,7 @@ export const Dashboard: React.FC = () => {
 
   const [allProblems, setAllProblems] = useState<ProblemDoc[]>([]);
   const [allBadges, setAllBadges] = useState<BadgeDoc[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [, setLoading] = useState(true);
   const [newlyUnlockedBadge, setNewlyUnlockedBadge] = useState<string | null>(null);
 
   // Profile Edit Modal State
@@ -72,10 +84,8 @@ export const Dashboard: React.FC = () => {
   const [editHeadline, setEditHeadline] = useState(userDoc?.headline || "Problem Explorer & Innovator");
   const [editBio, setEditBio] = useState(userDoc?.bio || "Researching verified real-world problems.");
   const [editPhotoURL, setEditPhotoURL] = useState(userDoc?.photoURL || user?.photoURL || "");
-  const [selectedPreset, setSelectedPreset] = useState<string | null>(null);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   // User Submission Edit Modal State
   const [editingProblem, setEditingProblem] = useState<ProblemDoc | null>(null);
@@ -88,6 +98,9 @@ export const Dashboard: React.FC = () => {
   const [editProbTam, setEditProbTam] = useState("");
   const [editProbWastedCost, setEditProbWastedCost] = useState("");
   const [isUpdatingProblem, setIsUpdatingProblem] = useState(false);
+
+  // Bookmarks State
+  const [bookmarkedRefresh, setBookmarkedRefresh] = useState(0);
 
   useEffect(() => {
     const unsubProblems = subscribeProblems({ status: "all" }, (list) => {
@@ -123,11 +136,12 @@ export const Dashboard: React.FC = () => {
     );
   }, [allProblems, currentUid, userDoc?.displayName, userDoc?.username, userDoc?.name, user?.displayName, userSubmittedIds]);
 
-  const bookmarkedProblems = getBookmarkedProblems(currentUid || "guest");
+  const bookmarkedProblems = useMemo(() => {
+    return getBookmarkedProblems(currentUid || "guest");
+  }, [currentUid, bookmarkedRefresh]);
 
   const displayName = userDoc?.displayName || userDoc?.name || user?.displayName || "Innovator";
-  const userHandle = userDoc?.username;
-  const userRole = userDoc?.role || "user";
+  const userHandle = userDoc?.username || (user?.email ? user.email.split("@")[0] : "innovator");
   const earnedBadgesNames = (userDoc?.badges || []).filter(
     (b) =>
       !b.toLowerCase().includes("google verified") &&
@@ -196,7 +210,6 @@ export const Dashboard: React.FC = () => {
     setEditHeadline(userDoc?.headline || "Problem Explorer & Innovator");
     setEditBio(userDoc?.bio || "Researching verified real-world problems.");
     setEditPhotoURL(userDoc?.photoURL || user?.photoURL || "");
-    setSelectedPreset(null);
     setSaveSuccess(false);
     setIsEditOpen(true);
   };
@@ -263,18 +276,25 @@ export const Dashboard: React.FC = () => {
         username: cleanUsername,
         headline: editHeadline.trim(),
         bio: editBio.trim(),
+        photoURL: editPhotoURL.trim() || undefined,
       });
       setSaveSuccess(true);
       setTimeout(() => {
         setIsEditOpen(false);
         setSaveSuccess(false);
-      }, 1200);
+      }, 1000);
     } catch (err) {
       console.error("Profile update failed:", err);
       alert("Failed to update profile. Please try again.");
     } finally {
       setIsSaving(false);
     }
+  };
+
+  const handleToggleBookmark = (probId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    toggleBookmark(probId, currentUid || "guest");
+    setBookmarkedRefresh((prev) => prev + 1);
   };
 
   // Badge Progress Calculation Helper
@@ -306,771 +326,534 @@ export const Dashboard: React.FC = () => {
         current = 0;
         break;
     }
-    const percent = Math.min(100, Math.round((current / (b.taskThreshold || 1)) * 100));
-    return { current, target: b.taskThreshold, percent };
+    const target = b.taskThreshold || 1;
+    const isUnlocked = earnedBadgesNames.includes(b.name) || current >= target;
+    const percent = isUnlocked ? 100 : Math.min(100, Math.round((current / target) * 100));
+    return { current: isUnlocked ? target : current, target, percent, isUnlocked };
   };
 
-  const earnedBadgesList = useMemo(() => {
-    return allBadges.filter((b) => earnedBadgesNames.includes(b.name));
-  }, [allBadges, earnedBadgesNames]);
-
-  const lockedBadgesList = useMemo(() => {
-    return allBadges.filter((b) => !earnedBadgesNames.includes(b.name));
-  }, [allBadges, earnedBadgesNames]);
+  const pageTitle =
+    activeTab === "problems"
+      ? "My submissions"
+      : activeTab === "bookmarks"
+      ? "Saved problems"
+      : "Badges & Credentials";
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 md:px-8 py-8 md:py-12 font-['Poppins',sans-serif] text-on-surface">
-      {/* noindex: private user dashboard */}
-      <SEOHead title="User Dashboard" description="Your personal Stuckhere activity, submissions, and badges." noindex />
-      {/* ── New Badge Achievement Toast Notification ─────────────────────── */}
-      {newlyUnlockedBadge && (
-        <div className="mb-6 p-4 rounded-2xl bg-linear-to-r from-amber-500/15 via-purple-500/15 to-primary/15 border border-amber-500/30 flex items-center justify-between gap-4 animate-fade-in shadow-md">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center shadow-sm">
-              <Sparkles className="w-5 h-5" />
-            </div>
-            <div>
-              <span className="text-[11px] font-extrabold uppercase tracking-widest text-amber-600 dark:text-amber-400">
-                Tough Task Completed!
-              </span>
-              <h4 className="text-sm font-bold text-on-surface">
-                You just unlocked the <span className="text-primary font-black">"{newlyUnlockedBadge}"</span> badge!
-              </h4>
-            </div>
-          </div>
-          <button
-            onClick={() => setNewlyUnlockedBadge(null)}
-            className="p-1 rounded-full hover:bg-surface-container text-on-surface-variant cursor-pointer"
-          >
-            <X className="w-4 h-4" />
-          </button>
-        </div>
-      )}
+    <div className="w-full">
+      <SEOHead title="Dashboard — Stuckhere" description="Your personal Stuckhere activity, submissions, and badges." noindex />
 
-      {/* ── User Hero Card ───────────────────────────────────────────── */}
-      <div className="bg-surface-container-lowest rounded-3xl border border-outline-variant/30 p-6 md:p-8 shadow-sm mb-8 relative overflow-hidden">
-        <div className="absolute right-0 top-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20" />
-
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative z-10">
-          <div className="flex items-center gap-5">
-            <UserAvatar
-              src={userDoc?.photoURL || user?.photoURL}
-              name={displayName}
-              email={userDoc?.email || user?.email}
-              role={userRole}
-              size="2xl"
-              showRoleBadge
-              className="ring-4 ring-surface-container shadow-md"
+      <div className="dash-shell">
+        {/* ── Left Sticky Sidebar ───────────────────────────────────── */}
+        <aside className="dash-side">
+          <div className="dash-me">
+            <img
+              src={userDoc?.photoURL || user?.photoURL || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80"}
+              alt={displayName}
+              className="dash-avatar"
             />
-            <div className="flex flex-col gap-1">
-              <div className="flex items-center gap-2.5 flex-wrap">
-                <h1 className="text-2xl md:text-3xl font-extrabold text-on-surface tracking-tight">
-                  {displayName}
-                </h1>
-                {userHandle && (
-                  <span className="font-mono text-xs font-semibold px-2.5 py-0.5 rounded-full bg-surface-container text-primary border border-outline-variant/40 flex items-center gap-0.5">
-                    <AtSign className="w-3 h-3 text-primary/70" />
-                    <span>{userHandle}</span>
-                  </span>
-                )}
-                <span className="capitalize px-2.5 py-0.5 rounded-full text-xs font-bold bg-primary-fixed text-on-primary-fixed border border-primary/20">
-                  {userRole}
-                </span>
-              </div>
-              <p className="text-xs md:text-sm text-on-surface-variant max-w-xl line-clamp-2">
-                {userDoc?.bio || "Domain explorer researching verified empirical friction points."}
-              </p>
-              <div className="flex flex-wrap items-center gap-3 pt-1 text-xs text-on-surface-variant">
-                <span className="flex items-center gap-1 font-mono">
-                  <Mail className="h-3.5 w-3.5 text-outline" />
-                  {userDoc?.email || user?.email || "verified@stuckhere.com"}
-                </span>
-                <span className="text-outline">•</span>
-                <span className="flex items-center gap-1">
-                  <Calendar className="h-3.5 w-3.5 text-outline" />
-                  Member since {userDoc?.createdAt ? new Date(userDoc.createdAt).toLocaleDateString(undefined, { month: "short", year: "numeric" }) : "2026"}
-                </span>
-              </div>
+            <div>
+              <h2>{displayName}</h2>
+              <small>@{userHandle}</small>
             </div>
           </div>
 
-          {/* Action CTAs */}
-          <div className="flex sm:flex-row md:flex-col items-center gap-3 self-stretch sm:self-auto shrink-0">
-            <button
-              onClick={handleOpenEdit}
-              className="w-full sm:w-auto flex items-center justify-center gap-2 bg-surface-container border border-outline-variant/50 hover:bg-surface-container-high text-on-surface px-4 py-2.5 rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer hover:-translate-y-0.5"
-            >
-              <Edit3 className="h-3.5 w-3.5 text-primary" />
-              <span>Edit Profile</span>
+          <p className="dash-bio">
+            {userDoc?.bio || "Clinical health systems researcher focused on rural hospital cold chains and diagnostic software."}
+          </p>
+
+          <div className="dash-side-btns">
+            <button className="dash-btn dash-btn-soft" onClick={handleOpenEdit}>
+              Edit profile
             </button>
-            <Link
-              to="/submit"
-              className="w-full sm:w-auto flex items-center justify-center gap-2 bg-primary text-white hover:bg-primary-container px-5 py-2.5 rounded-xl text-xs font-bold transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5"
-            >
-              <Plus className="h-4 w-4" />
-              <span>Submit Problem</span>
+            <Link className="dash-btn dash-btn-main" to="/submit">
+              Submit problem
             </Link>
           </div>
-        </div>
 
-        {/* Badges Strip */}
-        <div className="mt-6 pt-5 border-t border-outline-variant/20 flex flex-wrap items-center gap-2">
-          <span className="text-xs font-bold uppercase tracking-wider text-on-surface-variant mr-1 flex items-center gap-1">
-            <Award className="w-3.5 h-3.5 text-primary" />
-            <span>Credentials:</span>
-          </span>
-          {earnedBadgesNames.length === 0 ? (
-            <span className="text-xs text-outline italic">No badges earned yet. Complete tough tasks below to unlock!</span>
-          ) : (
-            earnedBadgesNames.map((bName) => {
-              const badgeObj = allBadges.find((b) => b.name === bName);
-              const tierStyle = badgeObj ? TIER_CONFIG[badgeObj.tier] : TIER_CONFIG.bronze;
-              return (
-                <span
-                  key={bName}
-                  className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border shadow-xs ${tierStyle.bg} ${tierStyle.border}`}
-                >
-                  <DynamicBadgeIcon
-                    name={badgeObj?.iconName || "Award"}
-                    className="h-3.5 w-3.5"
-                    color={badgeObj?.color}
-                  />
-                  <span>{bName}</span>
-                </span>
-              );
-            })
-          )}
-        </div>
-      </div>
-
-      {/* ── 4 Real-Time Stat Tiles (No Mocks) ─────────────────────────────── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-        {/* Stat Card 1: Problems Submitted */}
-        <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 p-6 shadow-sm flex flex-col gap-4 relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300">
-          <div className="absolute -right-8 -top-8 w-24 h-24 bg-primary/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500 pointer-events-none" />
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
-                <FileText className="h-5 w-5" />
-              </div>
-              <span className="text-xs font-bold text-on-surface uppercase tracking-wider">
-                Problems Submitted
-              </span>
-            </div>
-            <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-full">
-              Live
-            </span>
-          </div>
-          <div className="text-3xl font-black text-on-surface font-mono">
-            {realStats.problemsSubmitted}
-          </div>
-        </div>
-
-        {/* Stat Card 2: Solutions Built */}
-        <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 p-6 shadow-sm flex flex-col gap-4 relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300">
-          <div className="absolute -right-8 -top-8 w-24 h-24 bg-secondary/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500 pointer-events-none" />
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-xl bg-secondary/10 text-secondary flex items-center justify-center">
-                <Hammer className="h-5 w-5" />
-              </div>
-              <span className="text-xs font-bold text-on-surface uppercase tracking-wider">
-                Solutions Built
-              </span>
-            </div>
-            <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-full">
-              Live
-            </span>
-          </div>
-          <div className="text-3xl font-black text-on-surface font-mono">
-            {realStats.solutionsBuilt}
-          </div>
-        </div>
-
-        {/* Stat Card 3: Votes Received */}
-        <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 p-6 shadow-sm flex flex-col gap-4 relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300">
-          <div className="absolute -right-8 -top-8 w-24 h-24 bg-tertiary/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500 pointer-events-none" />
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-xl bg-tertiary/10 text-tertiary flex items-center justify-center">
-                <ThumbsUp className="h-5 w-5" />
-              </div>
-              <span className="text-xs font-bold text-on-surface uppercase tracking-wider">
-                Votes Received
-              </span>
-            </div>
-            <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-full">
-              Live
-            </span>
-          </div>
-          <div className="text-3xl font-black text-on-surface font-mono">
-            {realStats.votesReceived}
-          </div>
-        </div>
-
-        {/* Stat Card 4: Badges Earned */}
-        <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 p-6 shadow-sm flex flex-col gap-4 relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300">
-          <div className="absolute -right-8 -top-8 w-24 h-24 bg-purple-500/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500 pointer-events-none" />
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-xl bg-purple-500/10 text-purple-600 flex items-center justify-center">
-                <Award className="h-5 w-5" />
-              </div>
-              <span className="text-xs font-bold text-on-surface uppercase tracking-wider">
-                Badges Earned
-              </span>
-            </div>
-            <span className="text-[10px] font-bold text-purple-600 bg-purple-50 dark:bg-purple-950/40 px-2 py-0.5 rounded-full">
-              {allBadges.length} Total
-            </span>
-          </div>
-          <div className="text-3xl font-black text-on-surface font-mono">
-            {realStats.badgesCount}
-          </div>
-        </div>
-      </div>
-
-      {/* ── Tabs & Problem / Badge Lists ─────────────────────────────────────── */}
-      <div className="flex flex-col gap-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-outline-variant/20 pb-4">
-          <div className="flex items-center gap-2 bg-surface-container-low p-1 rounded-2xl border border-outline-variant/20">
+          <div className="dash-vnav" role="tablist" aria-orientation="vertical" aria-label="Dashboard navigation">
             <button
+              role="tab"
+              id="dash-tab-problems"
+              aria-selected={activeTab === "problems"}
               onClick={() => setActiveTab("problems")}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                activeTab === "problems"
-                  ? "bg-primary text-white shadow-xs"
-                  : "text-on-surface-variant hover:text-on-surface hover:bg-surface-container"
-              }`}
             >
-              My Submissions ({mySubmissions.length})
+              <FileText size={18} />
+              <span>Submissions</span>
+              <em>{mySubmissions.length}</em>
             </button>
+
             <button
+              role="tab"
+              id="dash-tab-bookmarks"
+              aria-selected={activeTab === "bookmarks"}
               onClick={() => setActiveTab("bookmarks")}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
-                activeTab === "bookmarks"
-                  ? "bg-primary text-white shadow-xs"
-                  : "text-on-surface-variant hover:text-on-surface hover:bg-surface-container"
-              }`}
             >
-              <Bookmark className="h-3.5 w-3.5" />
-              <span>Bookmarks ({bookmarkedProblems.length})</span>
+              <Bookmark size={18} />
+              <span>Saved</span>
+              <em>{bookmarkedProblems.length}</em>
             </button>
+
             <button
-              onClick={() => setActiveTab("badges")}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
-                activeTab === "badges"
-                  ? "bg-primary text-white shadow-xs"
-                  : "text-on-surface-variant hover:text-on-surface hover:bg-surface-container"
-              }`}
+              role="tab"
+              id="dash-tab-badges"
+              aria-selected={activeTab === "badges"}
+              onClick={() => {
+                setActiveTab("badges");
+                setNewlyUnlockedBadge(null);
+              }}
             >
-              <Award className="h-3.5 w-3.5" />
-              <span>Credentials & Badges ({realStats.badgesCount}/{allBadges.length})</span>
+              <Award size={18} />
+              <span>Badges</span>
+              {newlyUnlockedBadge && <span className="dash-new-badge" title="New badge unlocked" />}
+              <em>
+                {realStats.badgesCount}/{allBadges.length || 14}
+              </em>
             </button>
           </div>
 
-          <Link
-            to="/explore"
-            className="text-xs font-bold text-primary hover:text-primary-container transition-colors flex items-center gap-1 group"
-          >
-            Explore all problems{" "}
-            <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-1 transition-transform" />
-          </Link>
-        </div>
+          <div className="dash-creds">
+            {earnedBadgesNames.length > 0 ? (
+              earnedBadgesNames.slice(0, 4).map((bName) => {
+                const bObj = allBadges.find((b) => b.name === bName);
+                return (
+                  <span key={bName}>
+                    <i style={{ background: bObj?.color || "var(--primary)" }}>★</i>
+                    <span>{bName}</span>
+                  </span>
+                );
+              })
+            ) : (
+              <>
+                <span>
+                  <i style={{ background: "var(--purple)" }}>★</i>
+                  Diagnostic Master
+                </span>
+                <span>
+                  <i style={{ background: "#f59e0b" }}>★</i>
+                  Health Authority
+                </span>
+                <span>
+                  <i style={{ background: "var(--emerald)" }}>✓</i>
+                  Verified Submitter
+                </span>
+              </>
+            )}
+          </div>
+        </aside>
 
-        {/* ── TAB 1: MY SUBMISSIONS ────────────────────────────────────────── */}
-        {activeTab === "problems" && (
-          <div className="space-y-4">
-            {/* Submission Status & Verification Lifecycle Banner */}
-            <div className="w-full bg-gradient-to-r from-primary/5 via-amber-500/5 to-emerald-500/5 border border-outline-variant/30 rounded-2xl p-4 sm:p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-2xs">
-              <div className="flex items-start gap-3">
-                <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0 mt-0.5">
-                  <Shield className="w-5 h-5" />
-                </div>
-                <div className="space-y-1">
-                  <h4 className="text-xs sm:text-sm font-bold text-on-surface">
-                    Problem Submission & Verification Pipeline
-                  </h4>
-                  <p className="text-[11px] sm:text-xs text-on-surface-variant max-w-2xl leading-relaxed">
-                    When you submit a problem statement, it is queued for admin review. Once an administrator verifies the empirical data and clicks <span className="font-semibold text-primary">Publish</span>, your statement goes live in the public Explore directory with the Verified badge.
-                  </p>
-                </div>
+        {/* ── Main Content Area ─────────────────────────────────────── */}
+        <main className="dash-main">
+          {/* Header Row */}
+          <div className="dash-head">
+            <h1>{pageTitle}</h1>
+            <Link to="/explore">Explore all problems →</Link>
+          </div>
+
+          {/* Connected Metrics Strip (4 Cells) */}
+          <section className="dash-strip" aria-label="Your numbers">
+            <div className="dash-cell">
+              <div className="dash-ic dash-bl">
+                <FileText size={20} />
               </div>
-
-              <div className="flex items-center gap-2 self-stretch md:self-auto shrink-0 text-[11px] font-semibold text-on-surface-variant bg-surface-container-low/80 px-3 py-2 rounded-xl border border-outline-variant/20">
-                <span className="flex items-center gap-1 text-amber-700">
-                  <Clock className="w-3.5 h-3.5 animate-pulse" /> 1. Submitted
-                </span>
-                <span>→</span>
-                <span className="flex items-center gap-1 text-primary">
-                  <Shield className="w-3.5 h-3.5" /> 2. Admin Verifies
-                </span>
-                <span>→</span>
-                <span className="flex items-center gap-1 text-emerald-700">
-                  <CheckCircle className="w-3.5 h-3.5" /> 3. Published Live
-                </span>
+              <div>
+                <b>{realStats.problemsSubmitted}</b>
+                <span>Problems</span>
               </div>
             </div>
 
-            <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 shadow-sm overflow-x-auto">
+            <div className="dash-cell">
+              <div className="dash-ic dash-gr">
+                <Hammer size={20} />
+              </div>
+              <div>
+                <b>{realStats.solutionsBuilt}</b>
+                <span>Solutions</span>
+              </div>
+            </div>
+
+            <div className="dash-cell">
+              <div className="dash-ic dash-am">
+                <ThumbsUp size={20} />
+              </div>
+              <div>
+                <b>{realStats.votesReceived}</b>
+                <span>Votes</span>
+              </div>
+            </div>
+
+            <div className="dash-cell">
+              <div className="dash-ic dash-pu">
+                <Award size={20} />
+              </div>
+              <div>
+                <b>
+                  {realStats.badgesCount}
+                  <small>/{allBadges.length || 14}</small>
+                </b>
+                <span>Badges</span>
+              </div>
+            </div>
+          </section>
+
+          {/* ── TAB 1: SUBMISSIONS ──────────────────────────────────── */}
+          {activeTab === "problems" && (
+            <div className="dash-box">
+              <p className="dash-note">Each problem is reviewed by an industry specialist before it goes live.</p>
+
               {mySubmissions.length === 0 ? (
-                <div className="p-12 text-center flex flex-col items-center gap-3 max-w-md mx-auto">
-                  <FileText className="h-10 w-10 text-outline opacity-40" />
-                  <h3 className="text-base font-bold text-on-surface">No submitted problem statements yet</h3>
-                  <p className="text-xs text-on-surface-variant">
-                    Contribute real-world friction, diagnostic insights, and market pain points to the open registry.
+                <div className="dash-empty">
+                  <div className="dash-big-ic">
+                    <FileText size={30} />
+                  </div>
+                  <h3>No submitted problems yet</h3>
+                  <p className="text-muted text-xs max-w-sm">
+                    Contribute empirical friction points, diagnostic hurdles, and market pain points to the open registry.
                   </p>
-                  <Link
-                    to="/submit"
-                    className="mt-2 inline-flex items-center gap-1.5 bg-primary text-white px-5 py-2.5 rounded-xl text-xs font-bold hover:bg-primary-container shadow-sm cursor-pointer"
-                  >
-                    <Plus className="h-4 w-4" />
-                    <span>Submit Problem Statement</span>
+                  <Link to="/submit" className="dash-btn dash-btn-main mt-2">
+                    Submit problem
                   </Link>
                 </div>
               ) : (
-                <table className="w-full text-left border-collapse min-w-[800px]">
-                  <thead>
-                    <tr className="border-b border-outline-variant/30 bg-surface-container-low/50">
-                      <th className="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider">
-                        Problem Title & Narrative
-                      </th>
-                      <th className="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider">
-                        Industry
-                      </th>
-                      <th className="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider">
-                        Status & Admin Verification
-                      </th>
-                      <th className="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider text-right">
-                        Actions
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-outline-variant/20 text-xs">
-                    {mySubmissions.map((prob) => {
-                      const isPending = prob.status === "pending";
-                      const isNeedsInfo = prob.status === "needs_info";
-                      const isApproved = prob.status === "approved" || !prob.status;
-                      const isRejected = prob.status === "rejected";
+                <>
+                  <div className="dash-th">
+                    <span>Problem</span>
+                    <span>Industry</span>
+                    <span>Status</span>
+                    <span></span>
+                  </div>
 
-                      return (
-                        <tr
-                          key={prob.id}
-                          onClick={() => navigate(getProblemDetailUrl(prob))}
-                          className="hover:bg-surface-container-low/60 transition-colors cursor-pointer group"
-                        >
-                          <td className="px-6 py-4">
-                            <div className="flex flex-col gap-1 max-w-md">
-                              <span className="font-bold text-on-surface group-hover:text-primary transition-colors text-sm">
-                                {prob.title}
-                              </span>
-                              <span className="text-on-surface-variant line-clamp-1 text-xs">
-                                {prob.description}
-                              </span>
-                              {(prob.reviewNote || (prob as any).adminReviewNote) && (
-                                <div className="mt-1 inline-flex items-center gap-1.5 text-[11px] text-amber-900 bg-amber-500/10 px-2.5 py-1 rounded-lg border border-amber-500/20 max-w-fit">
-                                  <AlertCircle className="w-3 h-3 text-amber-600 shrink-0" />
-                                  <span>
-                                    <strong>Admin Note:</strong> {prob.reviewNote || (prob as any).adminReviewNote}
-                                  </span>
-                                </div>
-                              )}
-                            </div>
-                          </td>
-                          <td className="px-6 py-4">
-                            <span className="inline-flex px-2.5 py-1 rounded-full font-semibold bg-surface-container text-on-surface border border-outline-variant/30">
-                              {prob.industry}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4">
-                            {isPending && (
-                              <div className="flex flex-col gap-1">
-                                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full font-bold bg-amber-500/10 text-amber-700 border border-amber-500/30 w-fit">
-                                  <Clock className="w-3.5 h-3.5 text-amber-600 animate-pulse" />
-                                  <span>Pending Admin Review</span>
-                                </span>
-                                <span className="text-[10px] text-on-surface-variant">
-                                  Submitted · Awaiting admin verification
-                                </span>
-                              </div>
-                            )}
-                            {isApproved && (
-                              <div className="flex flex-col gap-1">
-                                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full font-bold bg-emerald-500/10 text-emerald-700 border border-emerald-500/30 w-fit">
-                                  <CheckCircle className="w-3.5 h-3.5 text-emerald-600" />
-                                  <span>Published & Live</span>
-                                </span>
-                                <span className="text-[10px] text-emerald-600 font-medium">
-                                  Verified by Admin · Active in Explore
-                                </span>
-                              </div>
-                            )}
-                            {isNeedsInfo && (
-                              <div className="flex flex-col gap-1">
-                                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full font-bold bg-blue-500/10 text-blue-700 border border-blue-500/30 w-fit">
-                                  <AlertCircle className="w-3.5 h-3.5 text-blue-600" />
-                                  <span>Modifications Requested</span>
-                                </span>
-                                <span className="text-[10px] text-blue-600 font-medium">
-                                  Review admin notes and update details
-                                </span>
-                              </div>
-                            )}
-                            {isRejected && (
-                              <div className="flex flex-col gap-1">
-                                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full font-bold bg-rose-500/10 text-rose-700 border border-rose-500/30 w-fit">
-                                  <X className="w-3.5 h-3.5 text-rose-600" />
-                                  <span>Rejected / Archived</span>
-                                </span>
-                                <span className="text-[10px] text-rose-600">
-                                  Did not meet verification standards
-                                </span>
-                              </div>
-                            )}
-                          </td>
-                          <td className="px-6 py-4 text-right">
-                            <div className="flex items-center justify-end gap-1.5">
-                              <Link
-                                to={getProblemDetailUrl(prob)}
-                                onClick={(e) => e.stopPropagation()}
-                                className="p-2 rounded-xl hover:bg-surface-container text-on-surface-variant hover:text-primary transition-colors cursor-pointer"
-                                title="View Problem Dossier"
-                              >
-                                <ExternalLink className="w-4 h-4" />
-                              </Link>
-                              <button
-                                type="button"
-                                onClick={(e) => handleOpenProblemEdit(prob, e)}
-                                className="p-2 rounded-xl hover:bg-surface-container text-on-surface-variant hover:text-primary transition-colors cursor-pointer"
-                                title="Edit Problem Details"
-                              >
-                                <Edit3 className="w-4 h-4" />
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              )}
-            </div>
-          </div>
-        )}
+                  {mySubmissions.map((prob) => {
+                    const visual = getIndustryVisual(prob.industry);
+                    const isPending = prob.status === "pending";
+                    const isNeedsInfo = prob.status === "needs_info";
+                    const isRejected = prob.status === "rejected";
+                    const isLive = prob.status === "approved" || !prob.status;
 
-        {/* ── TAB 2: BOOKMARKS ─────────────────────────────────────────────── */}
-        {activeTab === "bookmarks" && (
-          <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 shadow-sm p-6">
-            {bookmarkedProblems.length === 0 ? (
-              <div className="py-12 text-center flex flex-col items-center gap-3">
-                <Bookmark className="h-10 w-10 text-outline opacity-40" />
-                <h3 className="text-base font-bold text-on-surface">No bookmarked problems</h3>
-                <p className="text-xs text-on-surface-variant max-w-sm">
-                  Save problems you want to reference or build solutions for later.
-                </p>
-                <Link
-                  to="/explore"
-                  className="mt-2 text-xs font-bold text-primary hover:underline"
-                >
-                  Explore problems to bookmark
-                </Link>
-              </div>
-            ) : (
-              <p className="text-xs text-on-surface-variant">Showing {bookmarkedProblems.length} bookmarked problems.</p>
-            )}
-          </div>
-        )}
-
-        {/* ── TAB 3: CREDENTIALS & BADGES (REAL-TIME ENGINE) ────────────────── */}
-        {activeTab === "badges" && (
-          <div className="flex flex-col gap-8">
-            {/* Section 1: Unlocked Badges */}
-            <div className="flex flex-col gap-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-base font-bold text-on-surface flex items-center gap-2">
-                    <Award className="w-4 h-4 text-primary" />
-                    <span>Earned Credentials ({earnedBadgesList.length})</span>
-                  </h3>
-                  <p className="text-xs text-on-surface-variant">
-                    Verified gamification credentials awarded for empirical problem intelligence.
-                  </p>
-                </div>
-                <span className="text-xs font-mono font-bold text-primary">
-                  {earnedBadgesList.length} / {allBadges.length} Total
-                </span>
-              </div>
-
-              {earnedBadgesList.length === 0 ? (
-                <div className="p-8 rounded-2xl bg-surface-container-lowest border border-dashed border-gray-300 text-center flex flex-col items-center gap-2">
-                  <Award className="w-8 h-8 text-outline opacity-40" />
-                  <p className="text-xs text-on-surface-variant">
-                    You haven't earned any credentials yet. Complete the tough challenges below to earn your first badge!
-                  </p>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {earnedBadgesList.map((badge) => {
-                    const tierStyle = TIER_CONFIG[badge.tier] || TIER_CONFIG.bronze;
                     return (
                       <div
-                        key={badge.id}
-                        className={`bg-surface-container-lowest border rounded-3xl p-5 shadow-xs flex flex-col justify-between gap-3 ${tierStyle.border}`}
+                        key={prob.id}
+                        className="dash-tr cursor-pointer"
+                        onClick={() => navigate(getProblemDetailUrl(prob))}
                       >
-                        <div className="flex items-start gap-3.5">
-                          <div
-                            className={`w-12 h-12 rounded-2xl flex items-center justify-center border shrink-0 ${tierStyle.bg} ${tierStyle.border}`}
-                          >
-                            <DynamicBadgeIcon
-                              name={badge.iconName}
-                              className="w-6 h-6"
-                              tier={badge.tier}
-                              color={badge.color}
-                            />
+                        <div className="dash-who">
+                          <div className={`dash-thumb ${visual.themeClass}`} aria-hidden="true">
+                            {visual.emoji}
                           </div>
-                          <div className="flex flex-col min-w-0">
-                            <div className="flex items-center gap-2">
-                              <h4 className="text-sm font-bold text-on-surface truncate">{badge.name}</h4>
-                              <span
-                                className={`text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-full border ${tierStyle.bg} ${tierStyle.border}`}
-                              >
-                                {badge.tier}
-                              </span>
-                            </div>
-                            <p className="text-xs text-on-surface-variant mt-1 leading-relaxed line-clamp-2">
-                              {badge.description}
-                            </p>
+                          <div>
+                            <h3>{prob.title}</h3>
+                            <p>{prob.description}</p>
+                            {(prob.reviewNote || (prob as any).adminReviewNote) && (
+                              <div className="mt-1 flex items-center gap-1.5 text-[11px] text-amber-700">
+                                <AlertCircle size={13} className="shrink-0" />
+                                <span>Note: {prob.reviewNote || (prob as any).adminReviewNote}</span>
+                              </div>
+                            )}
                           </div>
                         </div>
 
-                        <div className="pt-2 border-t border-gray-200/50 flex items-center justify-between text-[11px] text-emerald-600 font-bold">
-                          <span className="flex items-center gap-1">
-                            <CheckCircle className="w-3.5 h-3.5" />
-                            <span>Milestone Achieved</span>
-                          </span>
-                          <span className="text-outline font-normal">Unlocked</span>
+                        <div className="dash-meta">
+                          <span className="dash-tag">{prob.industry || "General"}</span>
+
+                          {isLive && <span className="dash-pill dash-p-live">Live</span>}
+                          {isPending && <span className="dash-pill dash-p-wait">In review</span>}
+                          {isNeedsInfo && <span className="dash-pill dash-p-edit">Needs changes</span>}
+                          {isRejected && <span className="dash-pill dash-p-reject">Rejected</span>}
+                        </div>
+
+                        <div className="dash-acts">
+                          <Link
+                            to={getProblemDetailUrl(prob)}
+                            className="dash-ib"
+                            aria-label="View problem"
+                            onClick={(e) => e.stopPropagation()}
+                            title="View Problem"
+                          >
+                            <ExternalLink size={17} />
+                          </Link>
+                          <button
+                            type="button"
+                            className="dash-ib"
+                            aria-label="Edit problem"
+                            onClick={(e) => handleOpenProblemEdit(prob, e)}
+                            title="Edit Problem"
+                          >
+                            <Edit3 size={17} />
+                          </button>
                         </div>
                       </div>
                     );
                   })}
-                </div>
+                </>
               )}
             </div>
+          )}
 
-            {/* Section 2: Locked Tough Tasks & Challenges */}
-            <div className="flex flex-col gap-4 pt-4 border-t border-outline-variant/20">
-              <div>
-                <h3 className="text-base font-bold text-on-surface flex items-center gap-2">
-                  <Target className="w-4 h-4 text-purple-600" />
-                  <span>Available Tough Challenges ({lockedBadgesList.length})</span>
-                </h3>
-                <p className="text-xs text-on-surface-variant">
-                  High-difficulty milestones. When you satisfy the target criteria, the system awards the badge automatically.
-                </p>
-              </div>
+          {/* ── TAB 2: SAVED PROBLEMS ───────────────────────────────── */}
+          {activeTab === "bookmarks" && (
+            <div className="dash-box">
+              <p className="dash-note">High-signal problem dossiers you bookmarked for research or venture building.</p>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {lockedBadgesList.map((badge) => {
-                  const tierStyle = TIER_CONFIG[badge.tier] || TIER_CONFIG.bronze;
-                  const progress = getBadgeProgress(badge);
+              {bookmarkedProblems.length === 0 ? (
+                <div className="dash-empty">
+                  <div className="dash-big-ic">
+                    <Bookmark size={30} />
+                  </div>
+                  <h3>No saved problems</h3>
+                  <p className="text-muted text-xs max-w-sm">
+                    Bookmark interesting real-world problems from the open directory to track solutions and research updates.
+                  </p>
+                  <button
+                    className="dash-btn dash-btn-main mt-2"
+                    onClick={() => setActiveTab("problems")}
+                  >
+                    Back to submissions
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <div className="dash-th">
+                    <span>Problem</span>
+                    <span>Industry</span>
+                    <span>Market TAM</span>
+                    <span></span>
+                  </div>
 
-                  return (
-                    <div
-                      key={badge.id}
-                      className="bg-surface-container-lowest border border-outline-variant/30 rounded-3xl p-5 shadow-2xs flex flex-col justify-between gap-4 opacity-85 hover:opacity-100 transition-opacity"
-                    >
-                      <div className="flex flex-col gap-3">
-                        <div className="flex items-start justify-between gap-3">
-                          <div
-                            className={`w-11 h-11 rounded-2xl flex items-center justify-center border shrink-0 bg-surface-container/60 ${tierStyle.border}`}
+                  {bookmarkedProblems.map((prob) => {
+                    const visual = getIndustryVisual(prob.industry);
+                    return (
+                      <div
+                        key={prob.id}
+                        className="dash-tr cursor-pointer"
+                        onClick={() => navigate(getProblemDetailUrl(prob))}
+                      >
+                        <div className="dash-who">
+                          <div className={`dash-thumb ${visual.themeClass}`} aria-hidden="true">
+                            {visual.emoji}
+                          </div>
+                          <div>
+                            <h3>{prob.title}</h3>
+                            <p>{prob.description}</p>
+                          </div>
+                        </div>
+
+                        <div className="dash-meta">
+                          <span className="dash-tag">{prob.industry || "General"}</span>
+                          <span className="dash-tag font-mono text-[11px]">
+                            {prob.marketData?.tam || prob.estimatedValue || "$1.0B+ TAM"}
+                          </span>
+                        </div>
+
+                        <div className="dash-acts">
+                          <Link
+                            to={getProblemDetailUrl(prob)}
+                            className="dash-ib"
+                            aria-label="View problem"
+                            onClick={(e) => e.stopPropagation()}
+                            title="View Problem"
                           >
-                            <DynamicBadgeIcon
-                              name={badge.iconName}
-                              className="w-5 h-5 opacity-60"
-                              tier={badge.tier}
-                              color={badge.color}
-                            />
-                          </div>
-
-                          <div className="flex items-center gap-1.5">
-                            <span
-                              className={`text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-full border ${tierStyle.bg} ${tierStyle.border}`}
-                            >
-                              {badge.tier}
-                            </span>
-                            <span className="p-1 rounded-full bg-surface-container text-outline" title="Locked challenge">
-                              <Lock className="w-3 h-3" />
-                            </span>
-                          </div>
-                        </div>
-
-                        <div>
-                          <h4 className="text-sm font-bold text-on-surface">{badge.name}</h4>
-                          <p className="text-xs text-on-surface-variant mt-1 leading-relaxed line-clamp-2">
-                            {badge.description}
-                          </p>
-                        </div>
-
-                        {/* Tough Task Requirement Box */}
-                        <div className="p-3 rounded-2xl bg-surface-container/40 border border-outline-variant/20 flex flex-col gap-2">
-                          <div className="flex items-center justify-between text-[11px]">
-                            <span className="font-bold text-on-surface">Target Challenge</span>
-                            <span className="font-mono font-bold text-primary">
-                              {progress.current} / {progress.target}
-                            </span>
-                          </div>
-
-                          {/* Progress Bar */}
-                          <div className="w-full bg-surface-container h-2 rounded-full overflow-hidden border border-outline-variant/20">
-                            <div
-                              className="bg-primary h-full rounded-full transition-all duration-500"
-                              style={{ width: `${progress.percent}%` }}
-                            />
-                          </div>
-
-                          <p className="text-[10px] text-on-surface-variant italic">
-                            "{badge.taskDescription}"
-                          </p>
+                            <ExternalLink size={17} />
+                          </Link>
+                          <button
+                            type="button"
+                            className="dash-ib text-rose-500 hover:text-rose-600"
+                            aria-label="Remove bookmark"
+                            onClick={(e) => handleToggleBookmark(prob.id, e)}
+                            title="Remove Bookmark"
+                          >
+                            <Trash2 size={17} />
+                          </button>
                         </div>
                       </div>
+                    );
+                  })}
+                </>
+              )}
+            </div>
+          )}
 
-                      <div className="pt-2 border-t border-gray-200/50 flex items-center justify-between text-[11px] text-outline">
-                        <span>Progress: {progress.percent}%</span>
-                        <Link
-                          to="/submit"
-                          className="text-primary font-bold hover:underline flex items-center gap-0.5 text-[10px]"
+          {/* ── TAB 3: BADGES & CREDENTIALS ─────────────────────────── */}
+          {activeTab === "badges" && (
+            <div className="dash-box">
+              <p className="dash-note">Track your progress towards tough milestones, verified badges, and platform credentials.</p>
+
+              {allBadges.map((badge) => {
+                const progress = getBadgeProgress(badge);
+                const tierStyle = TIER_CONFIG[badge.tier] || TIER_CONFIG.bronze;
+                const badgeColor = badge.color || "#003bcb";
+
+                let actionLabel = "Take Action";
+                let actionLink = "/submit";
+                if (badge.taskType === "evidence_attached") {
+                  actionLabel = "Add evidence";
+                  actionLink = "/explore";
+                } else if (badge.taskType === "solutions_built") {
+                  actionLabel = "Build a plan";
+                  actionLink = "/explore";
+                } else if (badge.taskType === "votes_received") {
+                  actionLabel = "Share profile";
+                  actionLink = "/dashboard";
+                }
+
+                return (
+                  <div key={badge.id} className="dash-brow">
+                    <div
+                      className="dash-em"
+                      style={{
+                        background: progress.isUnlocked ? `${badgeColor}22` : "var(--subtle)",
+                        border: `1px solid ${badgeColor}44`,
+                      }}
+                    >
+                      <DynamicBadgeIcon
+                        name={badge.iconName}
+                        className="w-5 h-5"
+                        color={badgeColor}
+                        tier={badge.tier}
+                      />
+                    </div>
+
+                    <div>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h3>{badge.name}</h3>
+                        <span
+                          className={`text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-full border ${tierStyle.bg} ${tierStyle.border}`}
                         >
-                          <span>Take Action</span>
-                          <ChevronRight className="w-3 h-3" />
-                        </Link>
+                          {badge.tier}
+                        </span>
+                      </div>
+                      <p className="text-muted text-xs mt-0.5 line-clamp-1">{badge.description}</p>
+                      <div className="dash-bar">
+                        <i
+                          style={{
+                            width: `${progress.percent}%`,
+                            background: badgeColor,
+                          }}
+                        />
                       </div>
                     </div>
-                  );
-                })}
-              </div>
+
+                    <div className="dash-end">
+                      <span className="dash-n" style={{ color: badgeColor }}>
+                        {progress.current} / {progress.target}
+                      </span>
+                      {progress.isUnlocked ? (
+                        <span
+                          className="dash-go"
+                          style={{
+                            background: "var(--emerald-bg)",
+                            color: "var(--emerald)",
+                          }}
+                        >
+                          <CheckCircle size={14} />
+                          <span>Unlocked</span>
+                        </span>
+                      ) : (
+                        <Link className="dash-go" to={actionLink}>
+                          {actionLabel}
+                        </Link>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-          </div>
-        )}
+          )}
+        </main>
       </div>
 
-      {/* ── Edit Profile & Avatar Modal ──────────────────────────────── */}
+      {/* ── Edit Profile Dialog ─────────────────────────────────────── */}
       {isEditOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
-          <div className="relative w-full max-w-xl bg-surface-container-lowest rounded-3xl shadow-2xl border border-outline-variant/40 p-6 md:p-8 flex flex-col gap-6 max-h-[90vh] overflow-y-auto">
-            {/* Modal Header */}
-            <div className="flex items-center justify-between border-b border-outline-variant/20 pb-4">
-              <div>
-                <h2 className="text-xl font-extrabold text-on-surface">Edit Profile Details</h2>
-                <p className="text-xs text-on-surface-variant">Update your public name, professional headline, and domain bio</p>
-              </div>
-              <button
-                onClick={() => setIsEditOpen(false)}
-                className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-surface-container text-on-surface-variant transition-colors cursor-pointer"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
+        <div className="dash-dialog-overlay" onClick={() => setIsEditOpen(false)}>
+          <div className="dash-dialog" onClick={(e) => e.stopPropagation()}>
+            <form onSubmit={handleSaveProfile}>
+              <header>
+                <h2>Edit profile</h2>
+                <button
+                  type="button"
+                  className="dash-x"
+                  aria-label="Close"
+                  onClick={() => setIsEditOpen(false)}
+                >
+                  ✕
+                </button>
+              </header>
 
-            <form onSubmit={handleSaveProfile} className="flex flex-col gap-5">
-
-              {/* Display Name Input */}
-              <div className="flex flex-col gap-1.5">
-                <div className="flex items-center justify-between">
-                  <label className="text-xs font-bold text-on-surface">Display Name (Public Author Name)</label>
-                  <span className="text-[11px] text-primary font-bold">Shown under "Posted by"</span>
-                </div>
+              <label className="dash-label">
+                Name
                 <input
-                  type="text"
-                  required
+                  className="dash-f"
                   value={editDisplayName}
                   onChange={(e) => setEditDisplayName(e.target.value)}
-                  placeholder="e.g. Dr. Sarah Chen, MD"
-                  className="w-full bg-surface-container/40 rounded-xl px-4 py-2.5 text-xs font-bold text-on-surface outline-none border border-outline-variant/30 focus:border-primary/50 transition-colors"
+                  placeholder="Dr. Sarah Chen, MD"
+                  required
                 />
-                <p className="text-[11px] text-on-surface-variant">
-                  This public name represents you as the author on all published problem statements and dossiers.
-                </p>
-              </div>
+              </label>
 
-              {/* Username Input (Unique @Handle) */}
-              <div className="flex flex-col gap-1.5">
-                <div className="flex items-center justify-between">
-                  <label className="text-xs font-bold text-on-surface">Username (Unique Handle)</label>
-                  <span className="text-[11px] text-on-surface-variant font-medium">Identifier</span>
-                </div>
-                <div className="relative flex items-center">
-                  <span className="absolute left-3 text-outline font-mono text-xs font-bold pointer-events-none select-none">@</span>
-                  <input
-                    type="text"
-                    value={editUsername}
-                    onChange={(e) => {
-                      const val = e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, "");
-                      setEditUsername(val);
-                      if (usernameError) setUsernameError(null);
-                    }}
-                    placeholder="sarah_chen"
-                    maxLength={20}
-                    className={`w-full bg-surface-container/40 rounded-xl pl-8 pr-4 py-2.5 text-xs font-mono font-bold text-on-surface outline-none border transition-colors ${
-                      usernameError ? "border-red-500 focus:border-red-500" : "border-outline-variant/30 focus:border-primary/50"
-                    }`}
-                  />
-                </div>
-                {usernameError ? (
-                  <p className="text-[11px] font-bold text-red-500 flex items-center gap-1 mt-0.5">
-                    <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
-                    <span>{usernameError}</span>
-                  </p>
-                ) : (
-                  <p className="text-[11px] text-on-surface-variant">
-                    3-20 lowercase letters, numbers, or underscores. Must be unique across all innovators.
-                  </p>
-                )}
-              </div>
-
-              {/* Headline */}
-              <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-bold text-on-surface">Professional Headline</label>
+              <label className="dash-label">
+                Handle
                 <input
-                  type="text"
+                  className="dash-f font-mono"
+                  value={editUsername}
+                  onChange={(e) => {
+                    const clean = e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, "");
+                    setEditUsername(clean);
+                    if (usernameError) setUsernameError(null);
+                  }}
+                  placeholder="sarah_chen"
+                  required
+                />
+                {usernameError && (
+                  <span className="text-xs text-rose-500 font-semibold">{usernameError}</span>
+                )}
+              </label>
+
+              <label className="dash-label">
+                Headline
+                <input
+                  className="dash-f"
                   value={editHeadline}
                   onChange={(e) => setEditHeadline(e.target.value)}
-                  placeholder="e.g. Senior Epidemiologist & Health Systems Researcher"
-                  className="w-full bg-surface-container/40 rounded-xl px-4 py-2.5 text-xs text-on-surface outline-none border border-outline-variant/30"
+                  placeholder="Senior Clinical Health Systems Researcher"
                 />
-              </div>
+              </label>
 
-              {/* Bio */}
-              <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-bold text-on-surface">Bio</label>
+              <label className="dash-label">
+                Bio
                 <textarea
-                  rows={3}
+                  className="dash-f"
                   value={editBio}
                   onChange={(e) => setEditBio(e.target.value)}
-                  placeholder="Share your domain expertise and areas of investigation..."
-                  className="w-full bg-surface-container/40 rounded-xl p-3 text-xs text-on-surface outline-none border border-outline-variant/30"
+                  placeholder="Senior clinical health systems researcher focused on rural hospital cold-chain failures and diagnostic software interoperability."
                 />
-              </div>
+              </label>
+
+              <label className="dash-label">
+                Avatar Photo URL
+                <input
+                  className="dash-f"
+                  value={editPhotoURL}
+                  onChange={(e) => setEditPhotoURL(e.target.value)}
+                  placeholder="https://..."
+                />
+              </label>
 
               {saveSuccess && (
-                <div className="p-3 rounded-xl bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300 text-xs font-bold flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4" />
+                <div className="p-3 rounded-xl bg-emerald-50 text-emerald-700 text-xs font-bold flex items-center gap-2">
+                  <CheckCircle size={15} />
                   <span>Profile updated successfully!</span>
                 </div>
               )}
 
-              <div className="flex justify-end gap-2 pt-2 border-t border-outline-variant/20">
+              <div className="dash-dact">
                 <button
                   type="button"
+                  className="dash-btn dash-btn-soft"
                   onClick={() => setIsEditOpen(false)}
-                  className="px-4 py-2 text-xs font-bold text-on-surface-variant hover:bg-surface-container rounded-xl cursor-pointer"
                 >
                   Cancel
                 </button>
-                <button
-                  type="submit"
-                  disabled={isSaving}
-                  className="bg-primary text-white px-5 py-2 rounded-xl text-xs font-bold hover:bg-primary-container shadow-xs cursor-pointer disabled:opacity-50"
-                >
-                  {isSaving ? "Saving..." : "Save Profile"}
+                <button type="submit" className="dash-btn dash-btn-main" disabled={isSaving}>
+                  {isSaving ? "Saving..." : "Save changes"}
                 </button>
               </div>
             </form>
@@ -1078,109 +861,82 @@ export const Dashboard: React.FC = () => {
         </div>
       )}
 
-      {/* ── Edit Problem Modal ────────────────────────────────────────── */}
+      {/* ── Edit Problem Dialog ─────────────────────────────────────── */}
       {editingProblem && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
-          <div className="relative w-full max-w-2xl bg-surface-container-lowest rounded-3xl shadow-2xl border border-outline-variant/40 p-6 md:p-8 flex flex-col gap-6 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-outline-variant/20 pb-4">
-              <div>
-                <span className="text-[11px] font-extrabold uppercase tracking-widest text-primary">
-                  Revise Problem Statement
-                </span>
-                <h2 className="text-xl font-extrabold text-on-surface">Edit Problem Dossier</h2>
-              </div>
-              <button
-                onClick={() => setEditingProblem(null)}
-                className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-surface-container text-on-surface-variant transition-colors cursor-pointer"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-
-            <form onSubmit={handleSaveProblemEdit} className="flex flex-col gap-4">
-              <div className="flex flex-col gap-1">
-                <label className="text-xs font-bold text-on-surface">Problem Title</label>
-                <input
-                  type="text"
-                  required
-                  value={editProbTitle}
-                  onChange={(e) => setEditProbTitle(e.target.value)}
-                  className="w-full bg-surface-container/40 rounded-xl px-4 py-2.5 text-xs font-bold text-on-surface outline-none border border-outline-variant/30"
-                />
-              </div>
-
-              <div className="flex flex-col gap-1">
-                <label className="text-xs font-bold text-on-surface">Core Issue Summary</label>
-                <textarea
-                  rows={3}
-                  required
-                  value={editProbDesc}
-                  onChange={(e) => setEditProbDesc(e.target.value)}
-                  className="w-full bg-surface-container/40 rounded-xl p-3 text-xs text-on-surface outline-none border border-outline-variant/30"
-                />
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="flex flex-col gap-1">
-                  <label className="text-xs font-bold text-on-surface">Why It's Frustrating</label>
-                  <textarea
-                    rows={2}
-                    value={editProbWhy}
-                    onChange={(e) => setEditProbWhy(e.target.value)}
-                    className="w-full bg-surface-container/40 rounded-xl p-3 text-xs text-on-surface outline-none border border-outline-variant/30"
-                  />
-                </div>
-                <div className="flex flex-col gap-1">
-                  <label className="text-xs font-bold text-on-surface">Who Faces It</label>
-                  <textarea
-                    rows={2}
-                    value={editProbWho}
-                    onChange={(e) => setEditProbWho(e.target.value)}
-                    className="w-full bg-surface-container/40 rounded-xl p-3 text-xs text-on-surface outline-none border border-outline-variant/30"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="flex flex-col gap-1">
-                  <label className="text-xs font-bold text-on-surface">TAM Market Sizing</label>
-                  <input
-                    type="text"
-                    value={editProbTam}
-                    onChange={(e) => setEditProbTam(e.target.value)}
-                    className="w-full bg-surface-container/40 rounded-xl px-4 py-2 text-xs font-mono text-on-surface outline-none border border-outline-variant/30"
-                  />
-                </div>
-                <div className="flex flex-col gap-1">
-                  <label className="text-xs font-bold text-on-surface">Annual Wasted Cost</label>
-                  <input
-                    type="text"
-                    value={editProbWastedCost}
-                    onChange={(e) => setEditProbWastedCost(e.target.value)}
-                    className="w-full bg-surface-container/40 rounded-xl px-4 py-2 text-xs font-mono text-on-surface outline-none border border-outline-variant/30"
-                  />
-                </div>
-              </div>
-
-              <div className="p-3 rounded-xl bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-300 text-xs flex items-center gap-2 border border-amber-200">
-                <AlertTriangle className="w-4 h-4 shrink-0" />
-                <span>Editing a problem resets its status to "Pending" for admin re-verification.</span>
-              </div>
-
-              <div className="flex justify-end gap-2 pt-2 border-t border-outline-variant/20">
+        <div className="dash-dialog-overlay" onClick={() => setEditingProblem(null)}>
+          <div className="dash-dialog" onClick={(e) => e.stopPropagation()}>
+            <form onSubmit={handleSaveProblemEdit}>
+              <header>
+                <h2>Edit problem</h2>
                 <button
                   type="button"
+                  className="dash-x"
+                  aria-label="Close"
                   onClick={() => setEditingProblem(null)}
-                  className="px-4 py-2 text-xs font-bold text-on-surface-variant hover:bg-surface-container rounded-xl cursor-pointer"
+                >
+                  ✕
+                </button>
+              </header>
+
+              <label className="dash-label">
+                Title
+                <input
+                  className="dash-f"
+                  value={editProbTitle}
+                  onChange={(e) => setEditProbTitle(e.target.value)}
+                  required
+                />
+              </label>
+
+              <label className="dash-label">
+                Issue Summary
+                <textarea
+                  className="dash-f"
+                  value={editProbDesc}
+                  onChange={(e) => setEditProbDesc(e.target.value)}
+                  required
+                />
+              </label>
+
+              <label className="dash-label">
+                Market size (TAM)
+                <input
+                  className="dash-f font-mono"
+                  value={editProbTam}
+                  onChange={(e) => setEditProbTam(e.target.value)}
+                  placeholder="$2.4B global LEO protection market"
+                />
+              </label>
+
+              <label className="dash-label">
+                Annual Wasted Cost
+                <input
+                  className="dash-f font-mono"
+                  value={editProbWastedCost}
+                  onChange={(e) => setEditProbWastedCost(e.target.value)}
+                  placeholder="$180M annual operator loss"
+                />
+              </label>
+
+              <div className="dash-warn">
+                <AlertTriangle size={16} className="shrink-0" />
+                <span>Saving sends this problem back to review by an industry specialist.</span>
+              </div>
+
+              <div className="dash-dact">
+                <button
+                  type="button"
+                  className="dash-btn dash-btn-soft"
+                  onClick={() => setEditingProblem(null)}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
+                  className="dash-btn dash-btn-main"
                   disabled={isUpdatingProblem}
-                  className="bg-primary text-white px-5 py-2 rounded-xl text-xs font-bold hover:bg-primary-container shadow-xs cursor-pointer disabled:opacity-50"
                 >
-                  {isUpdatingProblem ? "Updating..." : "Save & Resubmit"}
+                  {isUpdatingProblem ? "Updating..." : "Save and resubmit"}
                 </button>
               </div>
             </form>
