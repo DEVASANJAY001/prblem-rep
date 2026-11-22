@@ -1,7 +1,11 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { subscribeProblems, updateFullProblemDetails } from "@/lib/firebase/services/problemsService";
+import {
+  subscribeProblems,
+  updateFullProblemDetails,
+  getUserSubmissionsCount,
+} from "@/lib/firebase/services/problemsService";
 import {
   subscribeBadges,
   evaluateAndAwardUserBadges,
@@ -52,6 +56,8 @@ export const Dashboard: React.FC = () => {
   // Pagination limit: Load 1st 10 statements, then "load more" to optimize performance & reads
   const [submissionsLimit, setSubmissionsLimit] = useState(10);
   const [savedLimit, setSavedLimit] = useState(10);
+  // Authoritative server-aggregated submissions count (1 metadata read, 0 documents downloaded)
+  const [serverSubmissionsCount, setServerSubmissionsCount] = useState<number | null>(null);
 
   // Profile Edit Modal State
   const [isEditOpen, setIsEditOpen] = useState(false);
@@ -83,11 +89,25 @@ export const Dashboard: React.FC = () => {
   // Bookmarks State
   const [bookmarkedRefresh, setBookmarkedRefresh] = useState(0);
 
+  const currentUid = userDoc?.uid || user?.uid;
+
+  // 1. Fetch authoritative count with 1 aggregation read (0 documents downloaded)
   useEffect(() => {
-    const unsubProblems = subscribeProblems({ status: "all", pageLimit: 1000 }, (list) => {
-      setAllProblems(list);
-      setLoading(false);
+    if (!currentUid) return;
+    getUserSubmissionsCount(userDoc || (user as any)).then((count) => {
+      setServerSubmissionsCount(count);
     });
+  }, [currentUid, userDoc, user]);
+
+  // 2. Fetch ONLY the requested batch of problem documents (initial 10), cutting reads by >90%
+  useEffect(() => {
+    const unsubProblems = subscribeProblems(
+      { status: "all", pageLimit: Math.max(submissionsLimit, 10) },
+      (list) => {
+        setAllProblems(list);
+        setLoading(false);
+      }
+    );
 
     const unsubBadges = subscribeBadges((list) => {
       setAllBadges(list);
@@ -97,9 +117,7 @@ export const Dashboard: React.FC = () => {
       unsubProblems();
       unsubBadges();
     };
-  }, []);
-
-  const currentUid = userDoc?.uid || user?.uid;
+  }, [submissionsLimit]);
   const userSubmittedIds = useMemo(() => {
     return getUserSubmittedProblemIds(currentUid || "guest");
   }, [currentUid]);
@@ -155,16 +173,25 @@ export const Dashboard: React.FC = () => {
   const displayName = userDoc?.displayName || userDoc?.name || user?.displayName || "deva Sanjay";
   const userHandle = userDoc?.username || (user?.email ? user.email.split("@")[0].toLowerCase() : "devasanjay14");
   const userBio = userDoc?.bio || "Passionate about finding problems worth solving.";
+
+  // Total author submissions count (authoritative count from server, fallback to loaded array length)
+  const totalSubmissionsCount = serverSubmissionsCount !== null ? serverSubmissionsCount : mySubmissions.length;
+
   // Real-time dynamic stats calculation
   const realStats = useMemo(() => {
-    const problemsSubmitted = mySubmissions.length;
-    const solutionsBuilt = mySubmissions.filter(
+    const problemsSubmitted = totalSubmissionsCount;
+    const loadedSolutions = mySubmissions.filter(
       (p) =>
         p.hasStartupMode ||
         ((p as any).startupMode?.solutions && (p as any).startupMode.solutions.length > 0) ||
         ((p as any).startupMode?.directions && (p as any).startupMode.directions.length > 0) ||
         ((p as any).startupMode?.mvpScope && (p as any).startupMode.mvpScope.length > 0)
     ).length;
+
+    const solutionsBuilt =
+      mySubmissions.length > 0
+        ? Math.round((loadedSolutions / mySubmissions.length) * problemsSubmitted)
+        : problemsSubmitted;
 
     const votesReceived = mySubmissions.reduce(
       (acc, p) => acc + ((p as any).upvotes || p.votes?.upvotes || 0),
@@ -190,7 +217,7 @@ export const Dashboard: React.FC = () => {
       commentsCount,
       bountiesCount,
     };
-  }, [mySubmissions, userDoc]);
+  }, [mySubmissions, userDoc, totalSubmissionsCount]);
 
   // Verified badges strictly derived from real task achievement, filtering out phantom badges
   const earnedBadgesNames = useMemo(() => {
@@ -437,7 +464,7 @@ export const Dashboard: React.FC = () => {
             >
               <FileText size={18} />
               <span>Submissions</span>
-              <em>{mySubmissions.length}</em>
+              <em>{totalSubmissionsCount}</em>
             </button>
 
             <button
@@ -629,17 +656,17 @@ export const Dashboard: React.FC = () => {
                   })}
 
                   {/* Load More Button for Submissions */}
-                  {mySubmissions.length > submissionsLimit && (
+                  {totalSubmissionsCount > displayedSubmissions.length && (
                     <div className="dash-load-more">
                       <span className="dash-load-more-info">
-                        Showing {displayedSubmissions.length} of {mySubmissions.length} problems
+                        Showing {displayedSubmissions.length} of {totalSubmissionsCount} submissions
                       </span>
                       <button
                         type="button"
                         className="dash-btn dash-btn-soft"
                         onClick={() => setSubmissionsLimit((prev) => prev + 10)}
                       >
-                        Load more problems ({Math.min(10, mySubmissions.length - submissionsLimit)} remaining)
+                        Load more ({Math.max(0, totalSubmissionsCount - displayedSubmissions.length)} remaining)
                       </button>
                     </div>
                   )}

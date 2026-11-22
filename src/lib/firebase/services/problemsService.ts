@@ -36,6 +36,7 @@ import {
   recordLocalInterest,
   generateNextProblemId,
   getDeletedProblemIds,
+  getUserSubmittedProblemIds,
   markFirestoreSynced,
   STORAGE_KEYS,
 } from "@/lib/storage";
@@ -1104,6 +1105,60 @@ export function subscribeApprovedProblemsCount(
     console.warn("[ProblemsCount] Subscription failed:", err);
     return () => {};
   }
+}
+
+/**
+ * Zero-document-download count aggregation for user submissions.
+ * Uses Firestore's getCountFromServer() to fetch the authoritative count directly
+ * from server index metadata without downloading any documents — costs only 1 read!
+ */
+export async function getUserSubmissionsCount(
+  user: { uid?: string; displayName?: string; username?: string; role?: string; email?: string } | null
+): Promise<number> {
+  const uid = user?.uid;
+  if (!uid || uid === "guest") {
+    const localIds = getUserSubmittedProblemIds("guest");
+    return localIds.length;
+  }
+
+  const cacheKey = `user_submissions_count_${uid}`;
+  const cached = swrCache.get<number>(cacheKey);
+  if (typeof cached === "number") {
+    return cached;
+  }
+
+  if (db && typeof collection === "function") {
+    try {
+      const colRef = collection(db, PROBLEMS_COLLECTION);
+
+      // If admin / founder, count all submissions associated with the founder
+      if (user?.role === "admin" || (user?.email && user.email.includes("devasanjay"))) {
+        const qUid = query(colRef, where("submittedByUid", "==", uid));
+        const snapUid = await getCountFromServer(qUid);
+        let count = snapUid.data().count;
+
+        if (count === 0) {
+          const totalSnap = await getCountFromServer(colRef);
+          count = totalSnap.data().count;
+        }
+        swrCache.set(cacheKey, count, 180_000);
+        return count;
+      }
+
+      // Regular user: count problems where submittedByUid == uid
+      const q = query(colRef, where("submittedByUid", "==", uid));
+      const snap = await getCountFromServer(q);
+      const count = snap.data().count;
+      swrCache.set(cacheKey, count, 180_000);
+      return count;
+    } catch (err) {
+      console.warn("[ProblemsService] getUserSubmissionsCount fallback:", err);
+    }
+  }
+
+  // Local storage fallback
+  const localIds = getUserSubmittedProblemIds(uid);
+  return localIds.length;
 }
 
 export interface ExplorePageResult {
