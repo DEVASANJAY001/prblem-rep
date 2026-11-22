@@ -16,7 +16,6 @@ import {
 } from "@/data/academyData";
 import { CourseCardBanner } from "@/components/learning/CourseCardBanners";
 import { ChapterCoverPattern } from "@/components/learning/ChapterCoverPattern";
-import { HeroAnimatedVector } from "@/components/learning/HeroAnimatedVector";
 
 export const AcademyHome: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -83,12 +82,16 @@ export const AcademyHome: React.FC = () => {
         canonicalUrl="https://stuckhere.davns.com/learn"
       />
 
-      {/* ── Hero Section with Mild Animated Ambient Background & Floating Color Glow ──────── */}
+      {/* ── Hero Section with Animated Changing-Color Vector Background ──────── */}
       <style>{`
         @keyframes academyGradientFlow {
           0% { background-position: 0% 50%; }
           50% { background-position: 100% 50%; }
           100% { background-position: 0% 50%; }
+        }
+        @keyframes academyWaveDashFlow {
+          0% { stroke-dashoffset: 120; }
+          100% { stroke-dashoffset: 0; }
         }
         @keyframes academyOrb1 {
           0%, 100% { transform: translate(0px, 0px) scale(1); }
@@ -104,14 +107,112 @@ export const AcademyHome: React.FC = () => {
         }
       `}</style>
       <section
-        className="relative overflow-hidden border-b border-[#dae1ed] py-8 sm:py-14 md:py-16"
+        className="relative overflow-hidden border-b border-[#dae1ed] py-12 sm:py-16 md:py-20"
         style={{
           background: "linear-gradient(135deg, #f5f8ff 0%, #edf3ff 25%, #f0fdf9 50%, #faf5ff 75%, #f5f8ff 100%)",
           backgroundSize: "250% 250%",
           animation: "academyGradientFlow 18s ease-in-out infinite",
         }}
       >
-        {/* Mild Ambient Floating Color Movement Elements */}
+        {/* Animated Changing-Color Vector Waves in Background */}
+        <svg
+          viewBox="0 0 1440 320"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className="absolute inset-0 w-full h-full object-cover pointer-events-none opacity-50 select-none"
+          preserveAspectRatio="none"
+          aria-hidden="true"
+        >
+          <defs>
+            <linearGradient id="hero-vec-grad1" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%">
+                <animate
+                  attributeName="stop-color"
+                  values="#2563eb; #06b6d4; #10b981; #8b5cf6; #ec4899; #2563eb"
+                  dur="14s"
+                  repeatCount="indefinite"
+                />
+              </stop>
+              <stop offset="50%">
+                <animate
+                  attributeName="stop-color"
+                  values="#06b6d4; #10b981; #8b5cf6; #ec4899; #2563eb; #06b6d4"
+                  dur="14s"
+                  repeatCount="indefinite"
+                />
+              </stop>
+              <stop offset="100%">
+                <animate
+                  attributeName="stop-color"
+                  values="#8b5cf6; #ec4899; #2563eb; #06b6d4; #10b981; #8b5cf6"
+                  dur="14s"
+                  repeatCount="indefinite"
+                />
+              </stop>
+            </linearGradient>
+
+            <linearGradient id="hero-vec-grad2" x1="100%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%">
+                <animate
+                  attributeName="stop-color"
+                  values="#38bdf8; #818cf8; #c084fc; #34d399; #38bdf8"
+                  dur="12s"
+                  repeatCount="indefinite"
+                />
+              </stop>
+              <stop offset="100%">
+                <animate
+                  attributeName="stop-color"
+                  values="#c084fc; #34d399; #38bdf8; #818cf8; #c084fc"
+                  dur="12s"
+                  repeatCount="indefinite"
+                />
+              </stop>
+            </linearGradient>
+
+            <filter id="hero-vec-blur" x="-10%" y="-10%" width="120%" height="120%">
+              <feGaussianBlur stdDeviation="5" result="blur" />
+              <feComposite in="SourceGraphic" in2="blur" operator="over" />
+            </filter>
+          </defs>
+
+          {/* Smooth Harmonic Sweeping Vector Curves */}
+          <path
+            d="M -40 180 C 260 40, 520 280, 840 140 C 1140 20, 1340 240, 1500 120"
+            stroke="url(#hero-vec-grad1)"
+            strokeWidth="3.5"
+            fill="none"
+            strokeLinecap="round"
+            filter="url(#hero-vec-blur)"
+          />
+          <path
+            d="M -40 200 C 260 60, 520 300, 840 160 C 1140 40, 1340 260, 1500 140"
+            stroke="url(#hero-vec-grad2)"
+            strokeWidth="2.2"
+            fill="none"
+            strokeOpacity="0.75"
+            strokeLinecap="round"
+          />
+          <path
+            d="M -40 180 C 260 40, 520 280, 840 140 C 1140 20, 1340 240, 1500 120"
+            stroke="#ffffff"
+            strokeWidth="2"
+            strokeDasharray="12 24"
+            fill="none"
+            strokeLinecap="round"
+            style={{ animation: "academyWaveDashFlow 3.5s linear infinite" }}
+          />
+          <path
+            d="M -40 90 C 340 260, 720 30, 1100 220 C 1280 300, 1420 180, 1500 200"
+            stroke="url(#hero-vec-grad1)"
+            strokeWidth="1.5"
+            fill="none"
+            strokeOpacity="0.45"
+            strokeDasharray="4 6"
+          />
+        </svg>
+
+        {/* Ambient Floating Color Glow Orbs */}
         <div
           className="absolute -top-16 -left-16 w-80 h-80 rounded-full bg-blue-400/15 filter blur-[60px] pointer-events-none"
           style={{ animation: "academyOrb1 14s ease-in-out infinite" }}
@@ -125,38 +226,34 @@ export const AcademyHome: React.FC = () => {
           style={{ animation: "academyOrb3 15s ease-in-out infinite" }}
         />
 
-        <div className="relative z-10 max-w-[1280px] mx-auto px-4 sm:px-6 md:px-8 box-border flex flex-col lg:flex-row gap-8 sm:gap-12 items-center">
-          <div className="flex-1 min-w-0">
-            <h1 className="m-0 text-2xl sm:text-4xl md:text-[44px] leading-[1.12] font-bold tracking-[-1px] text-[#1f1f1f]">
-              Learn to find problems worth solving
-            </h1>
-            <p className="m-0 mt-3 sm:mt-4 max-w-[620px] text-base sm:text-lg md:text-[20px] leading-[1.5] text-[#3d424d]">
-              Short, readable chapters on problem discovery, market sizing and building. Read them in order, or jump to the concept you need.
-            </p>
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-3.5 mt-6">
-              <Link
-                to="/learn/problem-discovery-and-validation"
-                className="inline-block bg-[#0056d2] hover:bg-[#00419e] text-white font-semibold no-underline py-3 sm:py-3.5 px-6 sm:px-7 rounded-lg min-h-[44px] box-border transition-colors shadow-sm text-center"
-              >
-                Start Course 1
-              </Link>
-              <Link
-                to="/learn/market-sizing-and-opportunity"
-                className="inline-block bg-[#0b6b83] hover:bg-[#084f61] text-white font-semibold no-underline py-3 sm:py-3.5 px-6 sm:px-7 rounded-lg min-h-[44px] box-border transition-colors shadow-sm text-center"
-              >
-                Explore Course 2
-              </Link>
-              <a
-                href="#courses"
-                className="inline-block bg-white hover:bg-slate-50 text-[#1f1f1f] border border-[#dae1ed] font-semibold no-underline py-3 sm:py-3.5 px-5 sm:px-6 rounded-lg min-h-[44px] box-border transition-colors shadow-2xs text-center"
-              >
-                All Courses
-              </a>
-            </div>
+        {/* Clean Centered Content */}
+        <div className="relative z-10 max-w-[840px] mx-auto px-4 sm:px-6 md:px-8 box-border text-center flex flex-col items-center">
+          <h1 className="m-0 text-3xl sm:text-5xl md:text-[50px] leading-[1.12] font-extrabold tracking-[-1.5px] text-[#1f1f1f]">
+            Learn to find problems worth solving
+          </h1>
+          <p className="m-0 mt-4 sm:mt-5 max-w-[640px] text-base sm:text-lg md:text-[20px] leading-[1.5] text-[#3d424d]">
+            Short, readable chapters on problem discovery, market sizing and building. Read them in order, or jump to the concept you need.
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-3.5 mt-8">
+            <Link
+              to="/learn/problem-discovery-and-validation"
+              className="inline-block bg-[#0056d2] hover:bg-[#00419e] text-white font-bold no-underline py-3.5 px-7 rounded-xl min-h-[46px] box-border transition-all shadow-sm hover:shadow-md text-center"
+            >
+              Start Course 1
+            </Link>
+            <Link
+              to="/learn/market-sizing-and-opportunity"
+              className="inline-block bg-[#0b6b83] hover:bg-[#084f61] text-white font-bold no-underline py-3.5 px-7 rounded-xl min-h-[46px] box-border transition-all shadow-sm hover:shadow-md text-center"
+            >
+              Explore Course 2
+            </Link>
+            <a
+              href="#courses"
+              className="inline-block bg-white hover:bg-slate-50 text-[#1f1f1f] border border-[#dae1ed] font-semibold no-underline py-3.5 px-6 rounded-xl min-h-[46px] box-border transition-all shadow-2xs text-center"
+            >
+              All Courses
+            </a>
           </div>
-
-          {/* Animated Interactive Vector Pipeline Graphic (Replacing static Course Highlights) */}
-          <HeroAnimatedVector />
         </div>
       </section>
 
