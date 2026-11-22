@@ -5,8 +5,10 @@ import {
   ACADEMY_COURSES,
   COURSE_1_CHAPTERS,
   COURSE_2_CHAPTERS,
+  COURSE_3_CHAPTERS,
   COURSE_1_PARTS,
   COURSE_2_PARTS,
+  COURSE_3_PARTS,
   ACADEMY_COLORS,
   AcademyChapter,
   AcademyPart,
@@ -29,10 +31,23 @@ export const AcademyHome: React.FC = () => {
   );
   const [part, setPart] = useState("All");
 
-  const isCourse2 = selectedCourseSlug === "market-sizing-and-opportunity";
-  const activeCourse = isCourse2 ? ACADEMY_COURSES[1] : ACADEMY_COURSES[0];
-  const chapters: AcademyChapter[] = isCourse2 ? COURSE_2_CHAPTERS : COURSE_1_CHAPTERS;
-  const parts: AcademyPart[] = isCourse2 ? COURSE_2_PARTS : COURSE_1_PARTS;
+  const isCourse3 =
+    selectedCourseSlug === "full-stack-cloud-development" ||
+    selectedCourseSlug === "full-stack-cloud-for-founders" ||
+    selectedCourseSlug === "course-3";
+  const isCourse2 = !isCourse3 && selectedCourseSlug === "market-sizing-and-opportunity";
+
+  const activeCourse = isCourse3 ? ACADEMY_COURSES[2] : isCourse2 ? ACADEMY_COURSES[1] : ACADEMY_COURSES[0];
+  const chapters: AcademyChapter[] = isCourse3
+    ? COURSE_3_CHAPTERS
+    : isCourse2
+    ? COURSE_2_CHAPTERS
+    : COURSE_1_CHAPTERS;
+  const parts: AcademyPart[] = isCourse3
+    ? COURSE_3_PARTS
+    : isCourse2
+    ? COURSE_2_PARTS
+    : COURSE_1_PARTS;
 
   const ql = q.trim().toLowerCase();
   const currentPart = parts.find((p) => p.name === part) || parts[0];
@@ -133,6 +148,18 @@ export const AcademyHome: React.FC = () => {
               </div>
             </div>
 
+            <div className="mt-3 pt-3 border-t border-[#dae1ed]">
+              <Link
+                to="/learn/full-stack-cloud-development"
+                className="text-[17px] font-bold text-[#1f1f1f] hover:text-[#1e40af] block no-underline transition-colors"
+              >
+                Full-Stack Cloud Development
+              </Link>
+              <div className="text-xs text-[#5b606b] mt-1 leading-[1.5]">
+                18 chapters · 99 sections · React, Firestore, AI Copilots &amp; Vercel
+              </div>
+            </div>
+
             <Link
               to="/learn/problem-discovery-and-validation"
               className="inline-block mt-4 text-xs sm:text-sm font-semibold text-[#0056d2] hover:underline"
@@ -199,26 +226,29 @@ export const AcademyHome: React.FC = () => {
             </div>
           </Link>
 
-          {/* Course 3 (Coming Soon) */}
-          <div className="border border-[#dae1ed] rounded-lg overflow-hidden bg-white opacity-80 flex flex-col">
-            <div className="h-[88px] bg-[#3c4a9e] text-white p-4 box-border text-[13px] font-semibold tracking-[1px] flex items-center justify-between">
+          {/* Course 3 (Active) */}
+          <Link
+            to="/learn/full-stack-cloud-development"
+            className="no-underline text-[#1f1f1f] border border-[#dae1ed] rounded-lg overflow-hidden bg-white hover:border-[#1e40af] hover:shadow-md transition-all group flex flex-col"
+          >
+            <div className="h-[88px] bg-[#1e40af] text-white p-4 box-border text-[13px] font-semibold tracking-[1px] flex items-center justify-between">
               <span>COURSE 3</span>
-              <span className="text-xs bg-white/20 px-2 py-0.5 rounded-full font-medium">Coming Soon</span>
+              <span className="text-xs bg-white/20 px-2 py-0.5 rounded-full font-medium">New</span>
             </div>
             <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between">
               <div>
-                <div className="text-[18px] font-bold text-[#1f1f1f] leading-[1.3]">
-                  Full-Stack Cloud for Founders
+                <div className="text-[18px] font-bold text-[#1f1f1f] group-hover:text-[#1e40af] transition-colors leading-[1.3]">
+                  Full-Stack Cloud Development
                 </div>
                 <div className="text-xs sm:text-sm text-[#5b606b] mt-2 leading-[1.5]">
-                  Deploy scalable cloud architectures, databases, and microservices for your validated solution.
+                  Deploy scalable cloud architectures, Firestore databases, and AI copilots for your validated solution.
                 </div>
               </div>
-              <div className="text-xs sm:text-sm text-[#5b606b] mt-4 pt-3 border-t border-[#dae1ed]/70">
-                Advanced · 10 chapters
+              <div className="text-xs sm:text-sm font-semibold text-[#1e40af] mt-4 pt-3 border-t border-[#dae1ed]/70">
+                Advanced · 18 chapters
               </div>
             </div>
-          </div>
+          </Link>
         </div>
       </section>
 
@@ -240,7 +270,7 @@ export const AcademyHome: React.FC = () => {
               type="button"
               onClick={() => handleCourseSwitch("problem-discovery-and-validation")}
               className={`py-2 px-3.5 rounded-lg text-xs sm:text-sm font-bold transition-all whitespace-nowrap cursor-pointer ${
-                !isCourse2
+                !isCourse2 && !isCourse3
                   ? "bg-[#0056d2] text-white shadow-xs"
                   : "bg-gray-100 text-[#5b606b] hover:bg-gray-200"
               }`}
@@ -257,6 +287,17 @@ export const AcademyHome: React.FC = () => {
               }`}
             >
               Course 2: Sizing (18)
+            </button>
+            <button
+              type="button"
+              onClick={() => handleCourseSwitch("full-stack-cloud-development")}
+              className={`py-2 px-3.5 rounded-lg text-xs sm:text-sm font-bold transition-all whitespace-nowrap cursor-pointer ${
+                isCourse3
+                  ? "bg-[#1e40af] text-white shadow-xs"
+                  : "bg-gray-100 text-[#5b606b] hover:bg-gray-200"
+              }`}
+            >
+              Course 3: Cloud Dev (18)
             </button>
           </div>
         </div>
@@ -328,7 +369,11 @@ export const AcademyHome: React.FC = () => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
               {filteredChapters.map((ch) => {
-                const coverBg = isCourse2 ? "#0b6b83" : CHAPTER_COLOR_PALETTES[ch.num % 6];
+                const coverBg = isCourse3
+                  ? "#1e40af"
+                  : isCourse2
+                  ? "#0b6b83"
+                  : CHAPTER_COLOR_PALETTES[ch.num % 6];
                 const cleanSubs = ch.subs.split(" · ").slice(0, 3).join(", ");
                 const chapterPath = `/learn/${activeCourse.slug}/${ch.slug}`;
 

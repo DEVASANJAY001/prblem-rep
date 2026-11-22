@@ -187,8 +187,14 @@ export default function App() {
                 <Route path="/learn/market-sizing-and-opportunity" element={<PublicLayout><SubjectPage /></PublicLayout>} />
                 <Route path="/learn/market-sizing-and-opportunity/:chapterSlug" element={<PublicLayout><ChapterReader /></PublicLayout>} />
                 <Route path="/learn/market-sizing-and-opportunity/chapter/:chapterNum" element={<PublicLayout><ChapterReader /></PublicLayout>} />
+                <Route path="/learn/full-stack-cloud-development" element={<PublicLayout><SubjectPage /></PublicLayout>} />
+                <Route path="/learn/full-stack-cloud-development/:chapterSlug" element={<PublicLayout><ChapterReader /></PublicLayout>} />
+                <Route path="/learn/full-stack-cloud-development/chapter/:chapterNum" element={<PublicLayout><ChapterReader /></PublicLayout>} />
+                <Route path="/learn/full-stack-cloud-for-founders" element={<Navigate to="/learn/full-stack-cloud-development" replace />} />
+                <Route path="/learn/full-stack-cloud-for-founders/:chapterSlug" element={<PublicLayout><ChapterReader /></PublicLayout>} />
                 <Route path="/learn/module-1" element={<Navigate to="/learn/problem-discovery-and-validation" replace />} />
                 <Route path="/learn/module-2" element={<Navigate to="/learn/market-sizing-and-opportunity" replace />} />
+                <Route path="/learn/module-3" element={<Navigate to="/learn/full-stack-cloud-development" replace />} />
                 <Route path="/learn/course" element={<Navigate to="/learn/problem-discovery-and-validation" replace />} />
                 <Route path="/learn/problem-discovery-validation" element={<Navigate to="/learn/problem-discovery-and-validation" replace />} />
                 <Route path="/learn/course/:courseSlug" element={<PublicLayout><SubjectPage /></PublicLayout>} />

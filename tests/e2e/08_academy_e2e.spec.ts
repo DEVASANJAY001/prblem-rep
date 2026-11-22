@@ -252,4 +252,30 @@ test.describe("Academy Flow E2E Tests: Course Branching, Layout & Independent Sc
     }
     console.log("✅ [Mobile Nav E2E] Mobile nav bar shows Academy link successfully!");
   });
+
+  test("7. Course 3 (Full-Stack Cloud Development) Subject Page and Chapter Reader", async ({ page }) => {
+    console.log("☁️ [Academy E2E] Testing Course 3 Subject Page & Reader...");
+    await page.goto("/learn/full-stack-cloud-development");
+    await page.waitForLoadState("domcontentloaded");
+
+    await expect(page.locator("h1")).toContainText("Full-Stack Cloud Development");
+    await expect(page.locator("body")).toContainText("18 chapters");
+
+    // Click Start learning
+    const startBtn = page.getByRole("link", { name: /Start learning/i });
+    await expect(startBtn).toBeVisible();
+    await startBtn.click();
+    await expect(page).toHaveURL(/\/learn\/full-stack-cloud-development\/course-overview/);
+
+    // Verify Chapter 0 content
+    await expect(page.locator("h1")).toContainText("Course Overview");
+    await expect(page.locator("body")).toContainText("0.1 What this subject covers");
+
+    // Navigate to Chapter 7
+    await page.goto("/learn/full-stack-cloud-development/data-modelling-with-cloud-firestore");
+    await page.waitForLoadState("domcontentloaded");
+    await expect(page.locator("h1")).toContainText("Data Modelling with Cloud Firestore");
+    await expect(page.locator("body")).toContainText("7.1 NoSQL document basics");
+    console.log("✅ [Academy E2E] Course 3 Subject Page & Reader passed 100%");
+  });
 });

@@ -5,6 +5,7 @@ import {
   ACADEMY_COURSES,
   COURSE_1_CHAPTERS,
   COURSE_2_CHAPTERS,
+  COURSE_3_CHAPTERS,
   AcademyChapter,
 } from "@/data/academyData";
 import { Menu, X, ChevronRight, CheckCircle2 } from "lucide-react";
@@ -20,13 +21,21 @@ export const ChapterReader: React.FC = () => {
   const navigate = useNavigate();
 
   // Determine active course
-  const isCourse2 =
-    location.pathname.includes("market-sizing") ||
-    courseSlug?.includes("market-sizing") ||
-    courseSlug === "course-2";
+  const isCourse3 =
+    location.pathname.includes("full-stack") ||
+    location.pathname.includes("cloud") ||
+    courseSlug?.includes("full-stack") ||
+    courseSlug?.includes("cloud") ||
+    courseSlug === "course-3";
 
-  const activeCourse = isCourse2 ? ACADEMY_COURSES[1] : ACADEMY_COURSES[0];
-  const chapters: AcademyChapter[] = isCourse2 ? COURSE_2_CHAPTERS : COURSE_1_CHAPTERS;
+  const isCourse2 =
+    !isCourse3 &&
+    (location.pathname.includes("market-sizing") ||
+      courseSlug?.includes("market-sizing") ||
+      courseSlug === "course-2");
+
+  const activeCourse = isCourse3 ? ACADEMY_COURSES[2] : isCourse2 ? ACADEMY_COURSES[1] : ACADEMY_COURSES[0];
+  const chapters: AcademyChapter[] = isCourse3 ? COURSE_3_CHAPTERS : isCourse2 ? COURSE_2_CHAPTERS : COURSE_1_CHAPTERS;
 
   const activeSlug = chapterSlug || slug;
 
@@ -42,7 +51,7 @@ export const ChapterReader: React.FC = () => {
       const num = parseInt(chapterNum, 10);
       if (!isNaN(num) && chapters[num]) return chapters[num];
     }
-    // Default to Chapter 1 ("Foundations: What Is a Problem?" or "Why Sizing Matters")
+    // Default to Chapter 1 ("Foundations: What Is a Problem?", "Why Sizing Matters", or "Cloud Web Architecture")
     return chapters[1] || chapters[0];
   }, [activeSlug, chapterNum, chapters]);
 
@@ -54,7 +63,11 @@ export const ChapterReader: React.FC = () => {
   const [sectionsDrawerOpen, setSectionsDrawerOpen] = useState(false);
 
   // Completion state in localStorage per course
-  const storageKey = isCourse2 ? "stuckhere_academy_done_c2" : "stuckhere_academy_done_c1";
+  const storageKey = isCourse3
+    ? "stuckhere_academy_done_c3"
+    : isCourse2
+    ? "stuckhere_academy_done_c2"
+    : "stuckhere_academy_done_c1";
   const [done, setDone] = useState<Record<number, boolean>>(() => {
     try {
       const saved = localStorage.getItem(storageKey);
@@ -75,7 +88,7 @@ export const ChapterReader: React.FC = () => {
       mainScroll.scrollTo({ top: 0, behavior: "smooth" });
     }
     window.scrollTo({ top: 0, behavior: "smooth" });
-  }, [activeChapter.num, isCourse2]);
+  }, [activeChapter.num, isCourse2, isCourse3]);
 
   const toggleDone = () => {
     const updated = { ...done, [activeChapter.num]: !done[activeChapter.num] };

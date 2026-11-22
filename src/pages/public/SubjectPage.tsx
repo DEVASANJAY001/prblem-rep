@@ -5,8 +5,10 @@ import {
   ACADEMY_COURSES,
   COURSE_1_CHAPTERS,
   COURSE_2_CHAPTERS,
+  COURSE_3_CHAPTERS,
   COURSE_1_PARTS,
   COURSE_2_PARTS,
+  COURSE_3_PARTS,
   AcademyChapter,
   AcademyPart,
 } from "@/data/academyData";
@@ -16,21 +18,43 @@ export const SubjectPage: React.FC = () => {
   const location = useLocation();
 
   // Determine active course
-  const isCourse2 =
-    location.pathname.includes("market-sizing") ||
-    courseSlug?.includes("market-sizing") ||
-    courseSlug === "course-2";
+  const isCourse3 =
+    location.pathname.includes("full-stack") ||
+    location.pathname.includes("cloud") ||
+    courseSlug?.includes("full-stack") ||
+    courseSlug?.includes("cloud") ||
+    courseSlug === "course-3";
 
-  const course = isCourse2 ? ACADEMY_COURSES[1] : ACADEMY_COURSES[0];
-  const chapters: AcademyChapter[] = isCourse2 ? COURSE_2_CHAPTERS : COURSE_1_CHAPTERS;
-  const parts: AcademyPart[] = (isCourse2 ? COURSE_2_PARTS : COURSE_1_PARTS).filter(
-    (p) => p.name !== "All"
-  );
+  const isCourse2 =
+    !isCourse3 &&
+    (location.pathname.includes("market-sizing") ||
+      courseSlug?.includes("market-sizing") ||
+      courseSlug === "course-2");
+
+  const course = isCourse3 ? ACADEMY_COURSES[2] : isCourse2 ? ACADEMY_COURSES[1] : ACADEMY_COURSES[0];
+  const chapters: AcademyChapter[] = isCourse3
+    ? COURSE_3_CHAPTERS
+    : isCourse2
+    ? COURSE_2_CHAPTERS
+    : COURSE_1_CHAPTERS;
+  const parts: AcademyPart[] = (
+    isCourse3 ? COURSE_3_PARTS : isCourse2 ? COURSE_2_PARTS : COURSE_1_PARTS
+  ).filter((p) => p.name !== "All");
 
   // Active syllabus accordion part (default to part 0: Foundations)
   const [openPart, setOpenPart] = useState<number>(0);
 
   const whatYouWillLearn = useMemo(() => {
+    if (isCourse3) {
+      return [
+        "Architect scalable cloud web apps using React 18, TypeScript, and Vite",
+        "Design query-first Firestore schemas and write zero-trust security rules",
+        "Implement secure Firebase Auth with multi-role RBAC and guest onboarding",
+        "Connect Claude and Gemini LLM models with structured JSON streaming",
+        "Automate continuous deployment on Vercel with instant rollback capability",
+        "Build Playwright E2E browser test suites and optimize Core Web Vitals",
+      ];
+    }
     if (isCourse2) {
       return [
         "Estimate TAM, SAM and SOM bottom-up from real operational inputs",
@@ -49,9 +73,20 @@ export const SubjectPage: React.FC = () => {
       "Test a problem with cheap validation experiments",
       "Decide objectively to go, pivot or stop",
     ];
-  }, [isCourse2]);
+  }, [isCourse2, isCourse3]);
 
   const skills = useMemo(() => {
+    if (isCourse3) {
+      return [
+        "React 18 & TypeScript",
+        "Cloud Firestore NoSQL",
+        "Firebase Auth & RBAC",
+        "LLM Copilot Streaming",
+        "Vercel Edge CI/CD",
+        "Playwright E2E Testing",
+        "Core Web Vitals & Costing",
+      ];
+    }
     if (isCourse2) {
       return [
         "Bottom-Up Sizing",
@@ -69,7 +104,7 @@ export const SubjectPage: React.FC = () => {
       "Bottom-up sizing",
       "Validation experiments",
     ];
-  }, [isCourse2]);
+  }, [isCourse2, isCourse3]);
 
   return (
     <div className="font-source-sans w-full min-h-screen bg-white text-[#1f1f1f] text-base antialiased">
@@ -118,7 +153,11 @@ export const SubjectPage: React.FC = () => {
               <div>
                 <div className="font-bold text-[17px] sm:text-[18px] text-[#1f1f1f]">{course.level}</div>
                 <div className="text-xs sm:text-sm text-[#5b606b]">
-                  {isCourse2 ? "Prerequisite: Course 1" : "No prior experience"}
+                  {isCourse3
+                    ? "Prerequisite: Courses 1 & 2"
+                    : isCourse2
+                    ? "Prerequisite: Course 1"
+                    : "No prior experience"}
                 </div>
               </div>
               <div>
