@@ -6,7 +6,9 @@ import { fetchTrendingProblemsPage, TrendingCursor } from "@/lib/firebase/servic
 import { ProblemDoc } from "@/types";
 import { ProblemCardSkeleton } from "@/components/common/LoadingContainer";
 import { ShaderBackground } from "@/components/ui/ShaderBackground";
-import { OrganicAtlasSection } from "@/components/ui/OrganicAtlasSection";
+const OrganicAtlasSection = React.lazy(() =>
+  import("@/components/ui/OrganicAtlasSection").then((m) => ({ default: m.OrganicAtlasSection }))
+);
 import { TrendingProblemCard } from "@/components/ui/TrendingProblemCard";
 import { SEOHead } from "@/components/common/SEOHead";
 import { ChevronLeft, ChevronRight, ArrowRight, CheckCircle2, Sparkles, Dices } from "lucide-react";
@@ -897,8 +899,10 @@ export const Home: React.FC = () => {
             </div>
           </section>
 
-          {/* Section 3: The Organic Stuckhere */}
-          <OrganicAtlasSection />
+          {/* Section 3: The Organic Stuckhere (Lazy Loaded for Initial Bundle Optimization) */}
+          <React.Suspense fallback={<div className="w-full min-h-[300px] flex items-center justify-center text-xs text-on-surface-variant/40" />}>
+            <OrganicAtlasSection />
+          </React.Suspense>
 
           {/* Section 4: Trending Problems */}
           <section className="w-full max-w-[1400px] mx-auto px-4 md:px-8 pt-16 md:pt-20 pb-8 md:pb-10 flex flex-col gap-6 font-['Poppins',sans-serif]">
