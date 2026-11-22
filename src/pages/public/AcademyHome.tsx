@@ -269,38 +269,29 @@ export const AcademyHome: React.FC = () => {
             const providerInfo =
               course.n === 1
                 ? {
-                    name: "Stuckhere",
                     tag: "Recently updated",
                     tagClass: "bg-[#e6f4ea] text-[#137333] border-[#ceead6]",
                     rating: "4.8",
-                    reviews: "12.4K",
                     level: "Beginner",
                     badgeText: "COURSE 1",
-                    iconColor: "bg-[#003bcb] text-white",
-                    iconInitials: "SH",
+                    badgeColor: "text-blue-700 bg-blue-50 border-blue-200",
                   }
                 : course.n === 2
                 ? {
-                    name: "Venture Studio",
                     tag: "New",
                     tagClass: "bg-[#f1f3f4] text-[#3c4043] border-[#dadce0]",
                     rating: "4.9",
-                    reviews: "8.6K",
                     level: "Intermediate",
                     badgeText: "COURSE 2",
-                    iconColor: "bg-[#059669] text-white",
-                    iconInitials: "VS",
+                    badgeColor: "text-emerald-700 bg-emerald-50 border-emerald-200",
                   }
                 : {
-                    name: "Cloud Engineering",
                     tag: "Top AI program",
                     tagClass: "bg-[#f3e8ff] text-[#6b21a8] border-[#e9d5ff]",
                     rating: "4.9",
-                    reviews: "14.2K",
                     level: "Advanced",
                     badgeText: "COURSE 3",
-                    iconColor: "bg-[#7c3aed] text-white",
-                    iconInitials: "CE",
+                    badgeColor: "text-purple-700 bg-purple-50 border-purple-200",
                   };
 
             return (
@@ -315,26 +306,25 @@ export const AcademyHome: React.FC = () => {
                     handleCourseSwitch(course.slug);
                   }
                 }}
-                className="text-[#1f1f1f] border border-[#dae1ed] rounded-2xl overflow-hidden bg-white shadow-2xs hover:shadow-xl hover:border-gray-300 hover:-translate-y-1 transition-all duration-300 group flex flex-col cursor-pointer text-left select-none relative"
+                className="text-[#1f1f1f] border border-[#dae1ed] rounded-2xl p-3 sm:p-3.5 bg-white shadow-2xs hover:shadow-xl hover:border-gray-300 hover:-translate-y-1 transition-all duration-300 group flex flex-col cursor-pointer text-left select-none relative"
               >
-                {/* Visual Coursera-style Banner Illustration (No Active Badge) */}
-                <CourseCardBanner courseNum={course.n} />
+                {/* 65% - 70% Inner Rounded-Corner Cut Image Frame */}
+                <div className="w-full h-[225px] sm:h-[245px] rounded-xl overflow-hidden shrink-0 relative bg-slate-950">
+                  <CourseCardBanner courseNum={course.n} />
+                </div>
 
-                {/* Card Body matching Coursera reference image */}
-                <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between">
+                {/* 30% - 35% Content Details Below Image */}
+                <div className="pt-3 pb-1 px-1 flex-1 flex flex-col justify-between">
                   <div>
-                    {/* Organization / Provider Row */}
-                    <div className="flex items-center gap-2">
-                      <div
-                        className={`w-5 h-5 rounded flex items-center justify-center text-[10px] font-black shrink-0 ${providerInfo.iconColor}`}
-                      >
-                        {providerInfo.iconInitials}
-                      </div>
-                      <span className="text-xs font-semibold text-gray-700">
-                        {providerInfo.name}
-                      </span>
-                      <span className="text-[10px] font-bold tracking-wider text-gray-500 uppercase ml-auto">
+                    {/* Header line with Course Badge and Status Pill */}
+                    <div className="flex items-center justify-between">
+                      <span className={`text-[10.5px] font-extrabold tracking-wider border rounded px-2 py-0.5 uppercase ${providerInfo.badgeColor}`}>
                         {providerInfo.badgeText}
+                      </span>
+                      <span
+                        className={`inline-block text-[11px] font-semibold px-2 py-0.5 rounded border ${providerInfo.tagClass}`}
+                      >
+                        {providerInfo.tag}
                       </span>
                     </div>
 
@@ -343,31 +333,21 @@ export const AcademyHome: React.FC = () => {
                       {course.title}
                     </h3>
 
-                    {/* Compact Description (Small font as requested) */}
-                    <p className="text-[12px] sm:text-[12.5px] text-[#5b606b] mt-1.5 mb-0 leading-[1.55] line-clamp-2">
+                    {/* Compact Description */}
+                    <p className="text-[12px] text-[#5b606b] mt-1 mb-0 leading-[1.45] line-clamp-2">
                       {course.description}
                     </p>
                   </div>
 
-                  <div className="mt-4 pt-3 border-t border-[#dae1ed]/70">
-                    {/* Rating & Meta Row (Coursera style: ★ 4.8 (12.4K) · Beginner · 15 chapters) */}
+                  <div className="mt-3 pt-2.5 border-t border-[#dae1ed]/70 flex items-center justify-between">
+                    {/* Rating & Meta Row (Clean rating with NO review count parentheses) */}
                     <div className="text-[12px] text-gray-600 flex items-center gap-1.5 flex-wrap">
                       <span className="text-amber-500 font-bold text-[13px]">★</span>
                       <span className="font-bold text-gray-900">{providerInfo.rating}</span>
-                      <span className="text-gray-500">({providerInfo.reviews})</span>
                       <span className="text-gray-400">·</span>
                       <span className="text-gray-700 font-medium">{providerInfo.level}</span>
                       <span className="text-gray-400">·</span>
                       <span className="text-gray-700 font-medium">{course.chaptersCount} chapters</span>
-                    </div>
-
-                    {/* Pill Tag (Coursera style: Recently updated / New / Top AI program) */}
-                    <div className="mt-3">
-                      <span
-                        className={`inline-block text-[11px] font-semibold px-2.5 py-0.5 rounded-full border ${providerInfo.tagClass}`}
-                      >
-                        {providerInfo.tag}
-                      </span>
                     </div>
                   </div>
                 </div>
