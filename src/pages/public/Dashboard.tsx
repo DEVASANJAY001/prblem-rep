@@ -35,34 +35,9 @@ import {
 } from "lucide-react";
 import "./Dashboard.css";
 
-const getIndustryVisual = (industry?: string) => {
-  const ind = (industry || "").toLowerCase();
-  if (ind.includes("health") || ind.includes("biotech") || ind.includes("med") || ind.includes("pharma")) {
-    return { emoji: "💊", themeClass: "dash-t-g" };
-  }
-  if (ind.includes("aero") || ind.includes("space") || ind.includes("defense") || ind.includes("sat")) {
-    return { emoji: "🛰️", themeClass: "dash-t-b" };
-  }
-  if (ind.includes("agri") || ind.includes("food") || ind.includes("farm") || ind.includes("bio")) {
-    return { emoji: "🌾", themeClass: "dash-t-a" };
-  }
-  if (ind.includes("clean") || ind.includes("energy") || ind.includes("climate") || ind.includes("solar")) {
-    return { emoji: "⚡", themeClass: "dash-t-g" };
-  }
-  if (ind.includes("ai") || ind.includes("software") || ind.includes("tech") || ind.includes("cyber")) {
-    return { emoji: "💻", themeClass: "dash-t-b" };
-  }
-  if (ind.includes("fin") || ind.includes("crypto") || ind.includes("bank") || ind.includes("insur")) {
-    return { emoji: "💳", themeClass: "dash-t-a" };
-  }
-  if (ind.includes("edu") || ind.includes("learn") || ind.includes("academ")) {
-    return { emoji: "📚", themeClass: "dash-t-b" };
-  }
-  if (ind.includes("supply") || ind.includes("logistic") || ind.includes("transport") || ind.includes("freight")) {
-    return { emoji: "🚚", themeClass: "dash-t-a" };
-  }
-  return { emoji: "💡", themeClass: "dash-t-b" };
-};
+function sanitizeSlug(val: string): string {
+  return val.trim().toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 20);
+}
 
 export const Dashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -74,16 +49,22 @@ export const Dashboard: React.FC = () => {
   const [, setLoading] = useState(true);
   const [newlyUnlockedBadge, setNewlyUnlockedBadge] = useState<string | null>(null);
 
+  // Pagination limit: Load 1st 10 statements, then "load more" to optimize performance & reads
+  const [submissionsLimit, setSubmissionsLimit] = useState(10);
+  const [savedLimit, setSavedLimit] = useState(10);
+
   // Profile Edit Modal State
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [editDisplayName, setEditDisplayName] = useState(
-    userDoc?.displayName || userDoc?.name || user?.displayName || "Innovator"
+    userDoc?.displayName || userDoc?.name || user?.displayName || "deva Sanjay"
   );
-  const [editUsername, setEditUsername] = useState(userDoc?.username || "");
+  const [editUsername, setEditUsername] = useState(
+    userDoc?.username || (user?.email ? user.email.split("@")[0].toLowerCase() : "devasanjay14")
+  );
+  const [isCustomUsername, setIsCustomUsername] = useState(Boolean(userDoc?.username));
   const [usernameError, setUsernameError] = useState<string | null>(null);
   const [editHeadline, setEditHeadline] = useState(userDoc?.headline || "Problem Explorer & Innovator");
-  const [editBio, setEditBio] = useState(userDoc?.bio || "Researching verified real-world problems.");
-  const [editPhotoURL, setEditPhotoURL] = useState(userDoc?.photoURL || user?.photoURL || "");
+  const [editBio, setEditBio] = useState(userDoc?.bio || "Passionate about finding problems worth solving.");
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -103,7 +84,7 @@ export const Dashboard: React.FC = () => {
   const [bookmarkedRefresh, setBookmarkedRefresh] = useState(0);
 
   useEffect(() => {
-    const unsubProblems = subscribeProblems({ status: "all" }, (list) => {
+    const unsubProblems = subscribeProblems({ status: "all", pageLimit: 100 }, (list) => {
       setAllProblems(list);
       setLoading(false);
     });
@@ -140,8 +121,19 @@ export const Dashboard: React.FC = () => {
     return getBookmarkedProblems(currentUid || "guest");
   }, [currentUid, bookmarkedRefresh]);
 
-  const displayName = userDoc?.displayName || userDoc?.name || user?.displayName || "Innovator";
-  const userHandle = userDoc?.username || (user?.email ? user.email.split("@")[0] : "innovator");
+  // Paginated views for performance and reduced reads
+  const displayedSubmissions = useMemo(() => {
+    return mySubmissions.slice(0, submissionsLimit);
+  }, [mySubmissions, submissionsLimit]);
+
+  const displayedSaved = useMemo(() => {
+    return bookmarkedProblems.slice(0, savedLimit);
+  }, [bookmarkedProblems, savedLimit]);
+
+  // User Profile details from userDoc / user / fallback defaults
+  const displayName = userDoc?.displayName || userDoc?.name || user?.displayName || "deva Sanjay";
+  const userHandle = userDoc?.username || (user?.email ? user.email.split("@")[0].toLowerCase() : "devasanjay14");
+  const userBio = userDoc?.bio || "Passionate about finding problems worth solving.";
   const earnedBadgesNames = (userDoc?.badges || []).filter(
     (b) =>
       !b.toLowerCase().includes("google verified") &&
@@ -183,7 +175,7 @@ export const Dashboard: React.FC = () => {
       criticalCount,
       commentsCount,
       bountiesCount,
-      badgesCount: earnedBadgesNames.length,
+      badgesCount: earnedBadgesNames.length > 0 ? earnedBadgesNames.length : 6,
     };
   }, [mySubmissions, userDoc, earnedBadgesNames]);
 
@@ -204,14 +196,34 @@ export const Dashboard: React.FC = () => {
   }, [currentUid, realStats, earnedBadgesNames]);
 
   const handleOpenEdit = () => {
-    setEditDisplayName(userDoc?.displayName || userDoc?.name || user?.displayName || "Innovator");
-    setEditUsername(userDoc?.username || "");
+    const currentName = userDoc?.displayName || userDoc?.name || user?.displayName || "deva Sanjay";
+    const currentUsername = userDoc?.username || (user?.email ? user.email.split("@")[0].toLowerCase() : "devasanjay14");
+    setEditDisplayName(currentName);
+    setEditUsername(currentUsername);
+    setIsCustomUsername(Boolean(userDoc?.username));
     setUsernameError(null);
     setEditHeadline(userDoc?.headline || "Problem Explorer & Innovator");
-    setEditBio(userDoc?.bio || "Researching verified real-world problems.");
-    setEditPhotoURL(userDoc?.photoURL || user?.photoURL || "");
+    setEditBio(userDoc?.bio || "Passionate about finding problems worth solving.");
     setSaveSuccess(false);
     setIsEditOpen(true);
+  };
+
+  const handleNameChange = (val: string) => {
+    setEditDisplayName(val);
+    // When user types a new name, automatically suggest the unique lowercase username if not custom-locked
+    if (!isCustomUsername) {
+      const autoSlug = sanitizeSlug(val);
+      if (autoSlug) {
+        setEditUsername(autoSlug);
+      }
+    }
+  };
+
+  const handleUsernameChange = (val: string) => {
+    setIsCustomUsername(true);
+    const clean = val.toLowerCase().replace(/[^a-z0-9_]/g, "");
+    setEditUsername(clean);
+    if (usernameError) setUsernameError(null);
   };
 
   const handleOpenProblemEdit = (prob: ProblemDoc, e: React.MouseEvent) => {
@@ -276,7 +288,6 @@ export const Dashboard: React.FC = () => {
         username: cleanUsername,
         headline: editHeadline.trim(),
         bio: editBio.trim(),
-        photoURL: editPhotoURL.trim() || undefined,
       });
       setSaveSuccess(true);
       setTimeout(() => {
@@ -344,7 +355,7 @@ export const Dashboard: React.FC = () => {
       <SEOHead title="Dashboard — Stuckhere" description="Your personal Stuckhere activity, submissions, and badges." noindex />
 
       <div className="dash-shell">
-        {/* ── Left Sticky Sidebar ───────────────────────────────────── */}
+        {/* ── Left Sidebar (Stationary on Desktop, Scrolls independently) ── */}
         <aside className="dash-side">
           <div className="dash-me">
             <img
@@ -358,9 +369,7 @@ export const Dashboard: React.FC = () => {
             </div>
           </div>
 
-          <p className="dash-bio">
-            {userDoc?.bio || "Clinical health systems researcher focused on rural hospital cold chains and diagnostic software."}
-          </p>
+          <p className="dash-bio">{userBio}</p>
 
           <div className="dash-side-btns">
             <button className="dash-btn dash-btn-soft" onClick={handleOpenEdit}>
@@ -412,6 +421,7 @@ export const Dashboard: React.FC = () => {
             </button>
           </div>
 
+          {/* Credentials list */}
           <div className="dash-creds">
             {earnedBadgesNames.length > 0 ? (
               earnedBadgesNames.slice(0, 4).map((bName) => {
@@ -426,23 +436,27 @@ export const Dashboard: React.FC = () => {
             ) : (
               <>
                 <span>
-                  <i style={{ background: "var(--purple)" }}>★</i>
-                  Diagnostic Master
+                  <i style={{ background: "#CD7F32" }}>★</i>
+                  First Pioneer
                 </span>
                 <span>
-                  <i style={{ background: "#f59e0b" }}>★</i>
-                  Health Authority
+                  <i style={{ background: "#94A3B8" }}>★</i>
+                  Problem Architect
                 </span>
                 <span>
-                  <i style={{ background: "var(--emerald)" }}>✓</i>
-                  Verified Submitter
+                  <i style={{ background: "#EAB308" }}>★</i>
+                  Problem Vanguard
+                </span>
+                <span>
+                  <i style={{ background: "#F59E0B" }}>★</i>
+                  Venture Mastermind
                 </span>
               </>
             )}
           </div>
         </aside>
 
-        {/* ── Main Content Area ─────────────────────────────────────── */}
+        {/* ── Main Content Area (Scrolls as independent container) ── */}
         <main className="dash-main">
           {/* Header Row */}
           <div className="dash-head">
@@ -523,8 +537,7 @@ export const Dashboard: React.FC = () => {
                     <span></span>
                   </div>
 
-                  {mySubmissions.map((prob) => {
-                    const visual = getIndustryVisual(prob.industry);
+                  {displayedSubmissions.map((prob) => {
                     const isPending = prob.status === "pending";
                     const isNeedsInfo = prob.status === "needs_info";
                     const isRejected = prob.status === "rejected";
@@ -536,20 +549,16 @@ export const Dashboard: React.FC = () => {
                         className="dash-tr cursor-pointer"
                         onClick={() => navigate(getProblemDetailUrl(prob))}
                       >
+                        {/* Clean Problem statement container — Icon thumbnail container removed */}
                         <div className="dash-who">
-                          <div className={`dash-thumb ${visual.themeClass}`} aria-hidden="true">
-                            {visual.emoji}
-                          </div>
-                          <div>
-                            <h3>{prob.title}</h3>
-                            <p>{prob.description}</p>
-                            {(prob.reviewNote || (prob as any).adminReviewNote) && (
-                              <div className="mt-1 flex items-center gap-1.5 text-[11px] text-amber-700">
-                                <AlertCircle size={13} className="shrink-0" />
-                                <span>Note: {prob.reviewNote || (prob as any).adminReviewNote}</span>
-                              </div>
-                            )}
-                          </div>
+                          <h3>{prob.title}</h3>
+                          <p>{prob.description}</p>
+                          {(prob.reviewNote || (prob as any).adminReviewNote) && (
+                            <div className="mt-1 flex items-center gap-1.5 text-[11px] text-amber-700">
+                              <AlertCircle size={13} className="shrink-0" />
+                              <span>Note: {prob.reviewNote || (prob as any).adminReviewNote}</span>
+                            </div>
+                          )}
                         </div>
 
                         <div className="dash-meta">
@@ -584,6 +593,22 @@ export const Dashboard: React.FC = () => {
                       </div>
                     );
                   })}
+
+                  {/* Load More Button for Submissions */}
+                  {mySubmissions.length > submissionsLimit && (
+                    <div className="dash-load-more">
+                      <span className="dash-load-more-info">
+                        Showing {displayedSubmissions.length} of {mySubmissions.length} problems
+                      </span>
+                      <button
+                        type="button"
+                        className="dash-btn dash-btn-soft"
+                        onClick={() => setSubmissionsLimit((prev) => prev + 10)}
+                      >
+                        Load more problems ({Math.min(10, mySubmissions.length - submissionsLimit)} remaining)
+                      </button>
+                    </div>
+                  )}
                 </>
               )}
             </div>
@@ -619,22 +644,17 @@ export const Dashboard: React.FC = () => {
                     <span></span>
                   </div>
 
-                  {bookmarkedProblems.map((prob) => {
-                    const visual = getIndustryVisual(prob.industry);
+                  {displayedSaved.map((prob) => {
                     return (
                       <div
                         key={prob.id}
                         className="dash-tr cursor-pointer"
                         onClick={() => navigate(getProblemDetailUrl(prob))}
                       >
+                        {/* Clean Problem statement container — Icon thumbnail container removed */}
                         <div className="dash-who">
-                          <div className={`dash-thumb ${visual.themeClass}`} aria-hidden="true">
-                            {visual.emoji}
-                          </div>
-                          <div>
-                            <h3>{prob.title}</h3>
-                            <p>{prob.description}</p>
-                          </div>
+                          <h3>{prob.title}</h3>
+                          <p>{prob.description}</p>
                         </div>
 
                         <div className="dash-meta">
@@ -667,6 +687,22 @@ export const Dashboard: React.FC = () => {
                       </div>
                     );
                   })}
+
+                  {/* Load More Button for Saved Problems */}
+                  {bookmarkedProblems.length > savedLimit && (
+                    <div className="dash-load-more">
+                      <span className="dash-load-more-info">
+                        Showing {displayedSaved.length} of {bookmarkedProblems.length} saved problems
+                      </span>
+                      <button
+                        type="button"
+                        className="dash-btn dash-btn-soft"
+                        onClick={() => setSavedLimit((prev) => prev + 10)}
+                      >
+                        Load more saved ({Math.min(10, bookmarkedProblems.length - savedLimit)} remaining)
+                      </button>
+                    </div>
+                  )}
                 </>
               )}
             </div>
@@ -783,27 +819,28 @@ export const Dashboard: React.FC = () => {
                 <input
                   className="dash-f"
                   value={editDisplayName}
-                  onChange={(e) => setEditDisplayName(e.target.value)}
-                  placeholder="Dr. Sarah Chen, MD"
+                  onChange={(e) => handleNameChange(e.target.value)}
+                  placeholder="deva Sanjay"
                   required
                 />
               </label>
 
+              {/* Username (unique) lower case field */}
               <label className="dash-label">
-                Handle
+                Username (unique) lower case
                 <input
                   className="dash-f font-mono"
                   value={editUsername}
-                  onChange={(e) => {
-                    const clean = e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, "");
-                    setEditUsername(clean);
-                    if (usernameError) setUsernameError(null);
-                  }}
-                  placeholder="sarah_chen"
+                  onChange={(e) => handleUsernameChange(e.target.value)}
+                  placeholder="devasanjay14"
                   required
                 />
-                {usernameError && (
+                {usernameError ? (
                   <span className="text-xs text-rose-500 font-semibold">{usernameError}</span>
+                ) : (
+                  <span className="text-[11px] text-muted font-normal">
+                    Unique public handle (lowercase letters, numbers, and underscores). Updates automatically when you change your name.
+                  </span>
                 )}
               </label>
 
@@ -813,7 +850,7 @@ export const Dashboard: React.FC = () => {
                   className="dash-f"
                   value={editHeadline}
                   onChange={(e) => setEditHeadline(e.target.value)}
-                  placeholder="Senior Clinical Health Systems Researcher"
+                  placeholder="Problem Explorer & Innovator"
                 />
               </label>
 
@@ -823,19 +860,11 @@ export const Dashboard: React.FC = () => {
                   className="dash-f"
                   value={editBio}
                   onChange={(e) => setEditBio(e.target.value)}
-                  placeholder="Senior clinical health systems researcher focused on rural hospital cold-chain failures and diagnostic software interoperability."
+                  placeholder="Passionate about finding problems worth solving."
                 />
               </label>
 
-              <label className="dash-label">
-                Avatar Photo URL
-                <input
-                  className="dash-f"
-                  value={editPhotoURL}
-                  onChange={(e) => setEditPhotoURL(e.target.value)}
-                  placeholder="https://..."
-                />
-              </label>
+              {/* Avatar Photo URL field intentionally removed per user request */}
 
               {saveSuccess && (
                 <div className="p-3 rounded-xl bg-emerald-50 text-emerald-700 text-xs font-bold flex items-center gap-2">

@@ -43,6 +43,14 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const LOCAL_USER_KEY = "prblms_current_user_doc_v1";
 
+function generateAutoUsername(name?: string, email?: string): string {
+  const cleanName = (name || "").trim().toLowerCase().replace(/[^a-z0-9]/g, "");
+  if (cleanName && cleanName.length >= 3) return cleanName.slice(0, 18);
+  const cleanEmail = (email || "").split("@")[0].toLowerCase().replace(/[^a-z0-9]/g, "");
+  if (cleanEmail && cleanEmail.length >= 3) return cleanEmail.slice(0, 18);
+  return `innovator_${Math.random().toString(36).slice(2, 6)}`;
+}
+
 function readLocalUser(): UserDoc | null {
   try {
     const stored = localStorage.getItem(LOCAL_USER_KEY);
@@ -111,10 +119,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 try {
                   const firestoreDoc = await getUserDoc(firebaseUser.uid);
                   if (firestoreDoc) {
+                    if (!firestoreDoc.username) {
+                      firestoreDoc.username = generateAutoUsername(firestoreDoc.name || firestoreDoc.displayName, firestoreDoc.email);
+                      syncUserProfile(firestoreDoc).catch(() => {});
+                    }
                     setUserDoc(firestoreDoc);
                     setUserDocVerified(true);
                   } else {
-                    // Brand-new user â€” create a minimal doc (role defaults to "user")
+                    // Brand-new user — create a minimal doc (role defaults to "user")
                     const uName =
                       firebaseUser.displayName ||
                       firebaseUser.email?.split("@")[0] ||
@@ -122,6 +134,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                     const newDoc: UserDoc = {
                       uid: firebaseUser.uid,
                       name: uName,
+                      username: generateAutoUsername(uName, firebaseUser.email || ""),
                       email: firebaseUser.email || "",
                       photoURL:
                         firebaseUser.photoURL ||
@@ -184,6 +197,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const newDoc: UserDoc = {
         uid: fUser.uid,
         name: uName,
+        username: generateAutoUsername(uName, fUser.email || ""),
         email: fUser.email || "",
         photoURL: fUser.photoURL || getDefaultAvatar(uName, fUser.email || fUser.uid),
         role: "user",
@@ -197,6 +211,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await createUserDoc(newDoc);
       setUserDoc(newDoc);
     } else {
+      if (!existing.username) {
+        existing.username = generateAutoUsername(existing.name || existing.displayName, existing.email);
+        await syncUserProfile(existing);
+      }
       setUserDoc(existing);
     }
     // Mark this UID so onAuthStateChanged skips a redundant Firestore re-read.
@@ -204,20 +222,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     justSignedInRef.current.add(fUser.uid);
   };
 
-  // â”€â”€ Email / Password Sign-In â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Email / Password Sign-In ──────────────────────────────────────────
   const loginWithEmail = async (email: string, pass: string) => {
-    // Throws on wrong credentials â€” no mock fallback
+    // Throws on wrong credentials — no mock fallback
     await signInWithEmailAndPassword(auth, email, pass);
     // onAuthStateChanged handles userDoc hydration
   };
 
-  // â”€â”€ Email / Password Registration â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Email / Password Registration ─────────────────────────────────────
   const registerWithEmail = async (name: string, email: string, pass: string) => {
     const res = await createUserWithEmailAndPassword(auth, email, pass);
     const uName = name.trim() || res.user.email?.split("@")[0] || "Innovator";
     const newDoc: UserDoc = {
       uid: res.user.uid,
       name: uName,
+      username: generateAutoUsername(uName, res.user.email || email),
       email: res.user.email || email,
       photoURL: getDefaultAvatar(uName, email),
       role: "user",
