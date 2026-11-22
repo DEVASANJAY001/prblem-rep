@@ -89,10 +89,6 @@ export const AcademyHome: React.FC = () => {
           50% { background-position: 100% 50%; }
           100% { background-position: 0% 50%; }
         }
-        @keyframes academyWaveDashFlow {
-          0% { stroke-dashoffset: 120; }
-          100% { stroke-dashoffset: 0; }
-        }
         @keyframes academyOrb1 {
           0%, 100% { transform: translate(0px, 0px) scale(1); }
           50% { transform: translate(40px, -25px) scale(1.1); }
@@ -114,102 +110,80 @@ export const AcademyHome: React.FC = () => {
           animation: "academyGradientFlow 18s ease-in-out infinite",
         }}
       >
-        {/* Animated Changing-Color Vector Waves in Background */}
+        {/* Simple single lines on both sides that fade towards the center */}
         <svg
           viewBox="0 0 1440 320"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          className="absolute inset-0 w-full h-full object-cover pointer-events-none opacity-50 select-none"
+          className="absolute inset-0 w-full h-full pointer-events-none select-none"
           preserveAspectRatio="none"
           aria-hidden="true"
         >
           <defs>
-            <linearGradient id="hero-vec-grad1" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%">
-                <animate
-                  attributeName="stop-color"
-                  values="#2563eb; #06b6d4; #10b981; #8b5cf6; #ec4899; #2563eb"
-                  dur="14s"
-                  repeatCount="indefinite"
-                />
-              </stop>
-              <stop offset="50%">
-                <animate
-                  attributeName="stop-color"
-                  values="#06b6d4; #10b981; #8b5cf6; #ec4899; #2563eb; #06b6d4"
-                  dur="14s"
-                  repeatCount="indefinite"
-                />
-              </stop>
-              <stop offset="100%">
-                <animate
-                  attributeName="stop-color"
-                  values="#8b5cf6; #ec4899; #2563eb; #06b6d4; #10b981; #8b5cf6"
-                  dur="14s"
-                  repeatCount="indefinite"
-                />
-              </stop>
+            {/* Left side fading to center gradients */}
+            <linearGradient id="hero-line-left-1" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="400" y2="0">
+              <stop offset="0%" stopColor="#0056d2" stopOpacity="0.55" />
+              <stop offset="45%" stopColor="#0284c7" stopOpacity="0.25" />
+              <stop offset="80%" stopColor="#38bdf8" stopOpacity="0.06" />
+              <stop offset="100%" stopColor="#38bdf8" stopOpacity="0" />
+            </linearGradient>
+            <linearGradient id="hero-line-left-2" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="400" y2="0">
+              <stop offset="0%" stopColor="#0284c7" stopOpacity="0.5" />
+              <stop offset="50%" stopColor="#06b6d4" stopOpacity="0.2" />
+              <stop offset="85%" stopColor="#06b6d4" stopOpacity="0.05" />
+              <stop offset="100%" stopColor="#06b6d4" stopOpacity="0" />
+            </linearGradient>
+            <linearGradient id="hero-line-left-3" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="400" y2="0">
+              <stop offset="0%" stopColor="#2563eb" stopOpacity="0.6" />
+              <stop offset="50%" stopColor="#60a5fa" stopOpacity="0.25" />
+              <stop offset="85%" stopColor="#60a5fa" stopOpacity="0.06" />
+              <stop offset="100%" stopColor="#60a5fa" stopOpacity="0" />
             </linearGradient>
 
-            <linearGradient id="hero-vec-grad2" x1="100%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%">
-                <animate
-                  attributeName="stop-color"
-                  values="#38bdf8; #818cf8; #c084fc; #34d399; #38bdf8"
-                  dur="12s"
-                  repeatCount="indefinite"
-                />
-              </stop>
-              <stop offset="100%">
-                <animate
-                  attributeName="stop-color"
-                  values="#c084fc; #34d399; #38bdf8; #818cf8; #c084fc"
-                  dur="12s"
-                  repeatCount="indefinite"
-                />
-              </stop>
+            {/* Right side fading to center gradients */}
+            <linearGradient id="hero-line-right-1" gradientUnits="userSpaceOnUse" x1="1440" y1="0" x2="1040" y2="0">
+              <stop offset="0%" stopColor="#0056d2" stopOpacity="0.55" />
+              <stop offset="45%" stopColor="#0284c7" stopOpacity="0.25" />
+              <stop offset="80%" stopColor="#06b6d4" stopOpacity="0.06" />
+              <stop offset="100%" stopColor="#06b6d4" stopOpacity="0" />
             </linearGradient>
-
-            <filter id="hero-vec-blur" x="-10%" y="-10%" width="120%" height="120%">
-              <feGaussianBlur stdDeviation="5" result="blur" />
-              <feComposite in="SourceGraphic" in2="blur" operator="over" />
-            </filter>
+            <linearGradient id="hero-line-right-2" gradientUnits="userSpaceOnUse" x1="1440" y1="0" x2="1040" y2="0">
+              <stop offset="0%" stopColor="#0891b2" stopOpacity="0.5" />
+              <stop offset="50%" stopColor="#059669" stopOpacity="0.2" />
+              <stop offset="85%" stopColor="#34d399" stopOpacity="0.05" />
+              <stop offset="100%" stopColor="#34d399" stopOpacity="0" />
+            </linearGradient>
+            <linearGradient id="hero-line-right-3" gradientUnits="userSpaceOnUse" x1="1440" y1="0" x2="1040" y2="0">
+              <stop offset="0%" stopColor="#2563eb" stopOpacity="0.6" />
+              <stop offset="50%" stopColor="#7c3aed" stopOpacity="0.25" />
+              <stop offset="85%" stopColor="#a855f7" stopOpacity="0.06" />
+              <stop offset="100%" stopColor="#a855f7" stopOpacity="0" />
+            </linearGradient>
           </defs>
 
-          {/* Smooth Harmonic Sweeping Vector Curves */}
-          <path
-            d="M -40 180 C 260 40, 520 280, 840 140 C 1140 20, 1340 240, 1500 120"
-            stroke="url(#hero-vec-grad1)"
-            strokeWidth="3.5"
-            fill="none"
-            strokeLinecap="round"
-            filter="url(#hero-vec-blur)"
-          />
-          <path
-            d="M -40 200 C 260 60, 520 300, 840 160 C 1140 40, 1340 260, 1500 140"
-            stroke="url(#hero-vec-grad2)"
-            strokeWidth="2.2"
-            fill="none"
-            strokeOpacity="0.75"
-            strokeLinecap="round"
-          />
-          <path
-            d="M -40 180 C 260 40, 520 280, 840 140 C 1140 20, 1340 240, 1500 120"
-            stroke="#ffffff"
-            strokeWidth="2"
-            strokeDasharray="12 24"
-            fill="none"
-            strokeLinecap="round"
-            style={{ animation: "academyWaveDashFlow 3.5s linear infinite" }}
-          />
-          <path
-            d="M -40 90 C 340 260, 720 30, 1100 220 C 1280 300, 1420 180, 1500 200"
-            stroke="url(#hero-vec-grad1)"
-            strokeWidth="1.5"
-            fill="none"
-            strokeOpacity="0.45"
-            strokeDasharray="4 6"
-          />
+          {/* Left Side Lines (starting at edge x=0 and fading towards center) */}
+          <g>
+            <line x1="0" y1="32" x2="310" y2="32" stroke="url(#hero-line-left-1)" strokeWidth="1.4" strokeLinecap="round" />
+            <line x1="0" y1="65" x2="375" y2="65" stroke="url(#hero-line-left-2)" strokeWidth="1.8" strokeLinecap="round" />
+            <line x1="0" y1="100" x2="330" y2="100" stroke="url(#hero-line-left-3)" strokeWidth="1.2" strokeLinecap="round" />
+            <line x1="0" y1="138" x2="390" y2="138" stroke="url(#hero-line-left-1)" strokeWidth="1.8" strokeLinecap="round" />
+            <line x1="0" y1="178" x2="340" y2="178" stroke="url(#hero-line-left-2)" strokeWidth="1.4" strokeLinecap="round" />
+            <line x1="0" y1="218" x2="385" y2="218" stroke="url(#hero-line-left-3)" strokeWidth="1.8" strokeLinecap="round" />
+            <line x1="0" y1="258" x2="320" y2="258" stroke="url(#hero-line-left-1)" strokeWidth="1.2" strokeLinecap="round" />
+            <line x1="0" y1="292" x2="360" y2="292" stroke="url(#hero-line-left-2)" strokeWidth="1.5" strokeLinecap="round" />
+          </g>
+
+          {/* Right Side Lines (starting at edge x=1440 and fading towards center) */}
+          <g>
+            <line x1="1440" y1="32" x2="1130" y2="32" stroke="url(#hero-line-right-1)" strokeWidth="1.4" strokeLinecap="round" />
+            <line x1="1440" y1="65" x2="1065" y2="65" stroke="url(#hero-line-right-2)" strokeWidth="1.8" strokeLinecap="round" />
+            <line x1="1440" y1="100" x2="1110" y2="100" stroke="url(#hero-line-right-3)" strokeWidth="1.2" strokeLinecap="round" />
+            <line x1="1440" y1="138" x2="1050" y2="138" stroke="url(#hero-line-right-1)" strokeWidth="1.8" strokeLinecap="round" />
+            <line x1="1440" y1="178" x2="1100" y2="178" stroke="url(#hero-line-right-2)" strokeWidth="1.4" strokeLinecap="round" />
+            <line x1="1440" y1="218" x2="1055" y2="218" stroke="url(#hero-line-right-3)" strokeWidth="1.8" strokeLinecap="round" />
+            <line x1="1440" y1="258" x2="1120" y2="258" stroke="url(#hero-line-right-1)" strokeWidth="1.2" strokeLinecap="round" />
+            <line x1="1440" y1="292" x2="1080" y2="292" stroke="url(#hero-line-right-2)" strokeWidth="1.5" strokeLinecap="round" />
+          </g>
         </svg>
 
         {/* Ambient Floating Color Glow Orbs */}
