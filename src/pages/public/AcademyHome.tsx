@@ -20,9 +20,7 @@ import { ChapterCoverPattern } from "@/components/learning/ChapterCoverPattern";
 export const AcademyHome: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const q = searchParams.get("q") || "";
-  const [selectedCourseSlug, setSelectedCourseSlug] = useState<string>(
-    "problem-discovery-and-validation"
-  );
+  const [selectedCourseSlug, setSelectedCourseSlug] = useState<string | null>(null);
   const [part, setPart] = useState("All");
 
   const isCourse3 =
@@ -84,9 +82,49 @@ export const AcademyHome: React.FC = () => {
         canonicalUrl="https://stuckhere.davns.com/learn"
       />
 
-      {/* ── Hero Section (Responsive on Mobile & Desktop) ──────── */}
-      <section className="bg-[#f5f8ff] border-b border-[#dae1ed] py-8 sm:py-14 md:py-16">
-        <div className="max-w-[1280px] mx-auto px-4 sm:px-6 md:px-8 box-border flex flex-col lg:flex-row gap-8 sm:gap-12 items-center">
+      {/* ── Hero Section with Mild Animated Ambient Background & Floating Color Glow ──────── */}
+      <style>{`
+        @keyframes academyGradientFlow {
+          0% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
+        }
+        @keyframes academyOrb1 {
+          0%, 100% { transform: translate(0px, 0px) scale(1); }
+          50% { transform: translate(40px, -25px) scale(1.1); }
+        }
+        @keyframes academyOrb2 {
+          0%, 100% { transform: translate(0px, 0px) scale(1); }
+          50% { transform: translate(-35px, 30px) scale(0.95); }
+        }
+        @keyframes academyOrb3 {
+          0%, 100% { transform: translate(0px, 0px) scale(1); }
+          50% { transform: translate(30px, 35px) scale(1.08); }
+        }
+      `}</style>
+      <section
+        className="relative overflow-hidden border-b border-[#dae1ed] py-8 sm:py-14 md:py-16"
+        style={{
+          background: "linear-gradient(135deg, #f5f8ff 0%, #edf3ff 25%, #f0fdf9 50%, #faf5ff 75%, #f5f8ff 100%)",
+          backgroundSize: "250% 250%",
+          animation: "academyGradientFlow 18s ease-in-out infinite",
+        }}
+      >
+        {/* Mild Ambient Floating Color Movement Elements */}
+        <div
+          className="absolute -top-16 -left-16 w-80 h-80 rounded-full bg-blue-400/15 filter blur-[60px] pointer-events-none"
+          style={{ animation: "academyOrb1 14s ease-in-out infinite" }}
+        />
+        <div
+          className="absolute top-1/4 -right-16 w-96 h-96 rounded-full bg-teal-300/15 filter blur-[70px] pointer-events-none"
+          style={{ animation: "academyOrb2 16s ease-in-out infinite" }}
+        />
+        <div
+          className="absolute -bottom-16 left-1/3 w-80 h-80 rounded-full bg-purple-400/12 filter blur-[60px] pointer-events-none"
+          style={{ animation: "academyOrb3 15s ease-in-out infinite" }}
+        />
+
+        <div className="relative z-10 max-w-[1280px] mx-auto px-4 sm:px-6 md:px-8 box-border flex flex-col lg:flex-row gap-8 sm:gap-12 items-center">
           <div className="flex-1 min-w-0">
             <h1 className="m-0 text-2xl sm:text-4xl md:text-[44px] leading-[1.12] font-bold tracking-[-1px] text-[#1f1f1f]">
               Learn to find problems worth solving
@@ -165,20 +203,51 @@ export const AcademyHome: React.FC = () => {
         </div>
       </section>
 
-      {/* ── Courses Section ──────── */}
+      {/* ── Courses Section (Coursera-style Cards matching user reference) ──────── */}
       <section id="courses" className="max-w-[1280px] mx-auto px-4 sm:px-6 md:px-8 pt-10 sm:pt-14 box-border">
         <h2 className="m-0 text-2xl sm:text-[28px] font-bold text-[#1f1f1f]">Courses</h2>
         <div className="text-sm sm:text-[15px] text-[#5b606b] mt-1">
           Master the full pipeline: discover authentic problems, size the market, and build solutions. Click any course to view its chapters.
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mt-5">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6 mt-6">
           {ACADEMY_COURSES.map((course) => {
-            const isSelected =
-              selectedCourseSlug === course.slug ||
-              (course.id === "course-3" && isCourse3) ||
-              (course.id === "course-2" && isCourse2) ||
-              (course.id === "course-1" && !isCourse2 && !isCourse3);
+            const providerInfo =
+              course.n === 1
+                ? {
+                    name: "Stuckhere",
+                    tag: "Recently updated",
+                    tagClass: "bg-[#e6f4ea] text-[#137333] border-[#ceead6]",
+                    rating: "4.8",
+                    reviews: "12.4K",
+                    level: "Beginner",
+                    badgeText: "COURSE 1",
+                    iconColor: "bg-[#003bcb] text-white",
+                    iconInitials: "SH",
+                  }
+                : course.n === 2
+                ? {
+                    name: "Venture Studio",
+                    tag: "New",
+                    tagClass: "bg-[#f1f3f4] text-[#3c4043] border-[#dadce0]",
+                    rating: "4.9",
+                    reviews: "8.6K",
+                    level: "Intermediate",
+                    badgeText: "COURSE 2",
+                    iconColor: "bg-[#059669] text-white",
+                    iconInitials: "VS",
+                  }
+                : {
+                    name: "Cloud Engineering",
+                    tag: "Top AI program",
+                    tagClass: "bg-[#f3e8ff] text-[#6b21a8] border-[#e9d5ff]",
+                    rating: "4.9",
+                    reviews: "14.2K",
+                    level: "Advanced",
+                    badgeText: "COURSE 3",
+                    iconColor: "bg-[#7c3aed] text-white",
+                    iconInitials: "CE",
+                  };
 
             return (
               <div
@@ -192,39 +261,58 @@ export const AcademyHome: React.FC = () => {
                     handleCourseSwitch(course.slug);
                   }
                 }}
-                className={`text-[#1f1f1f] border rounded-xl overflow-hidden bg-white transition-all duration-300 group flex flex-col cursor-pointer text-left select-none relative ${
-                  isSelected
-                    ? "border-[#0056d2] ring-3 ring-[#0056d2]/25 shadow-lg scale-[1.01]"
-                    : "border-[#dae1ed] hover:border-[#0056d2]/60 hover:shadow-md hover:-translate-y-0.5"
-                }`}
+                className="text-[#1f1f1f] border border-[#dae1ed] rounded-2xl overflow-hidden bg-white shadow-2xs hover:shadow-xl hover:border-gray-300 hover:-translate-y-1 transition-all duration-300 group flex flex-col cursor-pointer text-left select-none relative"
               >
-                {/* Visual Matching Website Banner Graphic */}
-                <CourseCardBanner courseNum={course.n} isSelected={isSelected} />
+                {/* Visual Coursera-style Banner Illustration (No Active Badge) */}
+                <CourseCardBanner courseNum={course.n} />
 
-                {/* Card Body */}
+                {/* Card Body matching Coursera reference image */}
                 <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between">
                   <div>
-                    <div className="text-[18px] font-bold text-[#1f1f1f] group-hover:text-[#0056d2] transition-colors leading-[1.3]">
+                    {/* Organization / Provider Row */}
+                    <div className="flex items-center gap-2">
+                      <div
+                        className={`w-5 h-5 rounded flex items-center justify-center text-[10px] font-black shrink-0 ${providerInfo.iconColor}`}
+                      >
+                        {providerInfo.iconInitials}
+                      </div>
+                      <span className="text-xs font-semibold text-gray-700">
+                        {providerInfo.name}
+                      </span>
+                      <span className="text-[10px] font-bold tracking-wider text-gray-500 uppercase ml-auto">
+                        {providerInfo.badgeText}
+                      </span>
+                    </div>
+
+                    {/* Course Title */}
+                    <h3 className="text-[16px] sm:text-[17px] font-bold text-gray-900 group-hover:text-[#0056d2] transition-colors leading-[1.3] mt-2 mb-0">
                       {course.title}
-                    </div>
-                    <div className="text-xs sm:text-sm text-[#5b606b] mt-2 leading-[1.5]">
+                    </h3>
+
+                    {/* Compact Description (Small font as requested) */}
+                    <p className="text-[12px] sm:text-[12.5px] text-[#5b606b] mt-1.5 mb-0 leading-[1.55] line-clamp-2">
                       {course.description}
-                    </div>
+                    </p>
                   </div>
 
                   <div className="mt-4 pt-3 border-t border-[#dae1ed]/70">
-                    <div className="flex items-center justify-between text-xs sm:text-sm">
-                      <span className="font-semibold text-[#5b606b]">
-                        {course.level} · {course.chaptersCount} chapters
-                      </span>
+                    {/* Rating & Meta Row (Coursera style: ★ 4.8 (12.4K) · Beginner · 15 chapters) */}
+                    <div className="text-[12px] text-gray-600 flex items-center gap-1.5 flex-wrap">
+                      <span className="text-amber-500 font-bold text-[13px]">★</span>
+                      <span className="font-bold text-gray-900">{providerInfo.rating}</span>
+                      <span className="text-gray-500">({providerInfo.reviews})</span>
+                      <span className="text-gray-400">·</span>
+                      <span className="text-gray-700 font-medium">{providerInfo.level}</span>
+                      <span className="text-gray-400">·</span>
+                      <span className="text-gray-700 font-medium">{course.chaptersCount} chapters</span>
+                    </div>
+
+                    {/* Pill Tag (Coursera style: Recently updated / New / Top AI program) */}
+                    <div className="mt-3">
                       <span
-                        className={`font-bold transition-colors inline-flex items-center gap-1 ${
-                          isSelected
-                            ? "text-[#0056d2]"
-                            : "text-[#5b606b] group-hover:text-[#0056d2]"
-                        }`}
+                        className={`inline-block text-[11px] font-semibold px-2.5 py-0.5 rounded-full border ${providerInfo.tagClass}`}
                       >
-                        {isSelected ? "Viewing chapters ↓" : "View chapters →"}
+                        {providerInfo.tag}
                       </span>
                     </div>
                   </div>
