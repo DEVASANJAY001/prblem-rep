@@ -564,7 +564,7 @@ export async function getProblemById(idOrSlug: string): Promise<ProblemDoc | nul
       } else if (!targetId.startsWith("prob-") && typeof collection === "function") {
         // Fallback query for slug resolution in Firestore
         const colRef = collection(db, PROBLEMS_COLLECTION);
-        const q = query(colRef, where("status", "==", "approved"), limit(100));
+        const q = query(colRef, where("status", "==", "approved"), limit(1000));
         const querySnap = await getDocs(q);
         const match = querySnap.docs.find((d) => {
           const dData = d.data() as ProblemDoc;
@@ -728,7 +728,7 @@ export function subscribeProblemById(
               } else if (db && typeof collection === "function" && !id.startsWith("prob-")) {
                 // Cold-start slug lookup: resolve clean slug to approved document in Firestore
                 const colRef = collection(db, PROBLEMS_COLLECTION);
-                const q = query(colRef, where("status", "==", "approved"), limit(100));
+                const q = query(colRef, where("status", "==", "approved"), limit(1000));
                 getDocs(q).then((querySnap) => {
                   const match = querySnap.docs.find((d) => {
                     const dData = d.data() as ProblemDoc;
@@ -1214,10 +1214,11 @@ export function subscribeProblems(
   callback: (problems: ProblemDoc[]) => void
 ): () => void {
   // Stable query cache key
+  const queryLimit = filter.pageLimit || 1000;
   const queryKey = JSON.stringify({
     status: filter.status || "all",
     industry: filter.industry || "",
-    limit: filter.pageLimit || 100,
+    limit: queryLimit,
   });
 
   // 1. Immediately emit authoritative merged state with 0ms latency
@@ -1249,7 +1250,11 @@ export function subscribeProblems(
     if (filter.status && filter.status !== "all") {
       constraints.push(where("status", "==", filter.status));
     }
-    constraints.push(limit(filter.pageLimit || 150));
+    if (filter.pageLimit) {
+      constraints.push(limit(filter.pageLimit));
+    } else {
+      constraints.push(limit(1000));
+    }
 
     const q = query(colRef, ...constraints);
 
@@ -1757,7 +1762,7 @@ export async function recordProblemView(problemId: string): Promise<number> {
       if (!canonicalId.startsWith("prob-")) {
         try {
           const colRef = collection(db, PROBLEMS_COLLECTION);
-          const q = query(colRef, where("status", "==", "approved"), limit(100));
+          const q = query(colRef, where("status", "==", "approved"), limit(1000));
           const querySnap = await getDocs(q);
           const match = querySnap.docs.find((d) => {
             const dData = d.data() as ProblemDoc;
@@ -2253,16 +2258,21 @@ export async function saveUserStartupNotes(
 // Never opens a new Firestore listener — all features preserved.
 // ─────────────────────────────────────────────────────────────────────────────
 export function getApprovedProblemsSnapshot(): ProblemDoc[] {
-  // 1. Check in-memory multiplexed stream (already populated if /explore was open)
-  const approvedKey = JSON.stringify({ status: "approved", industry: "", limit: 100 });
-  const allKey = JSON.stringify({ status: "all", industry: "", limit: 100 });
-  const streamData =
-    queryStreams.get(approvedKey)?.latestData ||
-    queryStreams.get(allKey)?.latestData?.filter((p) => p.status === 'approved');
-  if (streamData && streamData.length > 0) return streamData;
+  // 1. Check in-memory multiplexed stream (already populated if /explore or /dashboard was open)
+  for (const [key, stream] of queryStreams.entries()) {
+    if (stream.latestData && stream.latestData.length > 0) {
+      if (key.includes('"status":"approved"')) {
+        return stream.latestData;
+      }
+      if (key.includes('"status":"all"')) {
+        const approved = stream.latestData.filter((p) => p.status === 'approved');
+        if (approved.length > 0) return approved;
+      }
+    }
+  }
 
   // 2. SWR memory cache
-  const swrData = swrCache.get<ProblemDoc[]>(`query_${approvedKey}`);
+  const swrData = swrCache.get<ProblemDoc[]>("approved_problems_pool");
   if (swrData && swrData.length > 0) return swrData;
 
   // 3. Local storage fallback (always available, no network required)

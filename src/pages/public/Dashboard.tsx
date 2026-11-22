@@ -84,7 +84,7 @@ export const Dashboard: React.FC = () => {
   const [bookmarkedRefresh, setBookmarkedRefresh] = useState(0);
 
   useEffect(() => {
-    const unsubProblems = subscribeProblems({ status: "all", pageLimit: 100 }, (list) => {
+    const unsubProblems = subscribeProblems({ status: "all", pageLimit: 1000 }, (list) => {
       setAllProblems(list);
       setLoading(false);
     });
@@ -123,13 +123,20 @@ export const Dashboard: React.FC = () => {
       if (
         userDoc?.displayName &&
         userDoc.displayName !== "Innovator" &&
-        (p.submitterName === userDoc.displayName || (p as any).submittedByName === userDoc.displayName)
+        (p.submitterName === userDoc.displayName || (p as any).submittedByName === userDoc.displayName || p.submittedBy === userDoc.displayName)
+      ) {
+        return true;
+      }
+      // 5. Admin / Creator match: If user is admin (or founder deva Sanjay), include platform desk submissions ("Stuckhere Research Desk") posted by the founder
+      if (
+        (userDoc?.role === "admin" || (userDoc?.email && userDoc.email.includes("devasanjay"))) &&
+        (p.submittedBy === "Stuckhere Research Desk" || p.submitterName === "Stuckhere Research Desk" || p.submittedByUid === "etiuVNpw09eKEBjuEAQSLlWhTLt2")
       ) {
         return true;
       }
       return false;
     });
-  }, [allProblems, currentUid, userDoc?.displayName, userDoc?.username, userSubmittedIds]);
+  }, [allProblems, currentUid, userDoc?.displayName, userDoc?.username, userDoc?.role, userDoc?.email, userSubmittedIds]);
 
   const bookmarkedProblems = useMemo(() => {
     return getBookmarkedProblems(currentUid || "guest");
