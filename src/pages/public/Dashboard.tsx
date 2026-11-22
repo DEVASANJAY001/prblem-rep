@@ -104,18 +104,32 @@ export const Dashboard: React.FC = () => {
     return getUserSubmittedProblemIds(currentUid || "guest");
   }, [currentUid]);
 
-  // Real Submissions without any mock fallback
+  // Real Submissions strictly filtered to this user's contributions
   const mySubmissions = useMemo(() => {
-    return allProblems.filter(
-      (p) =>
-        userSubmittedIds.includes(p.id) ||
-        (currentUid && (p.submittedByUid === currentUid || p.submittedBy === currentUid)) ||
-        (userDoc?.displayName && (p.submitterName === userDoc.displayName || p.submittedBy === userDoc.displayName || (p as any).submittedByName === userDoc.displayName)) ||
-        (userDoc?.username && (p.submitterUsername === userDoc.username || p.authorUsername === userDoc.username)) ||
-        (userDoc?.name && ((p as any).submittedByName === userDoc.name || p.submittedBy === userDoc.name)) ||
-        (user?.displayName && ((p as any).submittedByName === user.displayName || p.submittedBy === user.displayName))
-    );
-  }, [allProblems, currentUid, userDoc?.displayName, userDoc?.username, userDoc?.name, user?.displayName, userSubmittedIds]);
+    return allProblems.filter((p) => {
+      // 1. Direct UID match
+      if (currentUid && (p.submittedByUid === currentUid || p.submittedBy === currentUid)) {
+        return true;
+      }
+      // 2. Locally recorded submissions for this UID
+      if (userSubmittedIds.includes(p.id)) {
+        return true;
+      }
+      // 3. Username match
+      if (userDoc?.username && (p.submitterUsername === userDoc.username || p.authorUsername === userDoc.username)) {
+        return true;
+      }
+      // 4. Exact Display Name match (only if displayName is not generic "Innovator")
+      if (
+        userDoc?.displayName &&
+        userDoc.displayName !== "Innovator" &&
+        (p.submitterName === userDoc.displayName || (p as any).submittedByName === userDoc.displayName)
+      ) {
+        return true;
+      }
+      return false;
+    });
+  }, [allProblems, currentUid, userDoc?.displayName, userDoc?.username, userSubmittedIds]);
 
   const bookmarkedProblems = useMemo(() => {
     return getBookmarkedProblems(currentUid || "guest");
@@ -134,13 +148,6 @@ export const Dashboard: React.FC = () => {
   const displayName = userDoc?.displayName || userDoc?.name || user?.displayName || "deva Sanjay";
   const userHandle = userDoc?.username || (user?.email ? user.email.split("@")[0].toLowerCase() : "devasanjay14");
   const userBio = userDoc?.bio || "Passionate about finding problems worth solving.";
-  const earnedBadgesNames = (userDoc?.badges || []).filter(
-    (b) =>
-      !b.toLowerCase().includes("google verified") &&
-      !b.toLowerCase().includes("new member") &&
-      !b.toLowerCase().includes("early member")
-  );
-
   // Real-time dynamic stats calculation
   const realStats = useMemo(() => {
     const problemsSubmitted = mySubmissions.length;
@@ -175,9 +182,43 @@ export const Dashboard: React.FC = () => {
       criticalCount,
       commentsCount,
       bountiesCount,
-      badgesCount: earnedBadgesNames.length > 0 ? earnedBadgesNames.length : 6,
     };
-  }, [mySubmissions, userDoc, earnedBadgesNames]);
+  }, [mySubmissions, userDoc]);
+
+  // Verified badges strictly derived from real task achievement, filtering out phantom badges
+  const earnedBadgesNames = useMemo(() => {
+    const rawBadges = (userDoc?.badges || []).filter(
+      (b) =>
+        !b.toLowerCase().includes("google verified") &&
+        !b.toLowerCase().includes("new member") &&
+        !b.toLowerCase().includes("early member")
+    );
+
+    return rawBadges.filter((badgeName) => {
+      const badgeObj = allBadges.find((b) => b.name === badgeName);
+      if (!badgeObj) return true; // keep non-task custom badges
+      switch (badgeObj.taskType) {
+        case "problems_submitted":
+          return realStats.problemsSubmitted >= (badgeObj.taskThreshold || 1);
+        case "solutions_built":
+          return realStats.solutionsBuilt >= (badgeObj.taskThreshold || 1);
+        case "votes_received":
+          return realStats.votesReceived >= (badgeObj.taskThreshold || 1);
+        case "evidence_attached":
+          return (realStats.dataPointsCount || 0) >= (badgeObj.taskThreshold || 1);
+        case "critical_problems":
+          return (realStats.criticalCount || 0) >= (badgeObj.taskThreshold || 1);
+        case "comments_posted":
+          return (realStats.commentsCount || 0) >= (badgeObj.taskThreshold || 1);
+        case "bounties_joined":
+          return (realStats.bountiesCount || 0) >= (badgeObj.taskThreshold || 1);
+        default:
+          return true;
+      }
+    });
+  }, [userDoc?.badges, allBadges, realStats]);
+
+  const badgesCount = earnedBadgesNames.length;
 
   // Automatic Real-Time Tough Task Badge Evaluation Engine
   useEffect(() => {
@@ -416,7 +457,7 @@ export const Dashboard: React.FC = () => {
               <span>Badges</span>
               {newlyUnlockedBadge && <span className="dash-new-badge" title="New badge unlocked" />}
               <em>
-                {realStats.badgesCount}/{allBadges.length || 14}
+                {badgesCount}/{allBadges.length || 14}
               </em>
             </button>
           </div>
@@ -434,24 +475,10 @@ export const Dashboard: React.FC = () => {
                 );
               })
             ) : (
-              <>
-                <span>
-                  <i style={{ background: "#CD7F32" }}>★</i>
-                  First Pioneer
-                </span>
-                <span>
-                  <i style={{ background: "#94A3B8" }}>★</i>
-                  Problem Architect
-                </span>
-                <span>
-                  <i style={{ background: "#EAB308" }}>★</i>
-                  Problem Vanguard
-                </span>
-                <span>
-                  <i style={{ background: "#F59E0B" }}>★</i>
-                  Venture Mastermind
-                </span>
-              </>
+              <div className="dash-creds-empty">
+                <span>0 Badges unlocked</span>
+                <small>Submit problems to earn credentials</small>
+              </div>
             )}
           </div>
         </aside>
@@ -464,13 +491,13 @@ export const Dashboard: React.FC = () => {
             <Link to="/explore">Explore all problems →</Link>
           </div>
 
-          {/* Connected Metrics Strip (4 Cells) */}
+          {/* Connected Metrics Strip (4 Robust Cells) */}
           <section className="dash-strip" aria-label="Your numbers">
             <div className="dash-cell">
               <div className="dash-ic dash-bl">
                 <FileText size={20} />
               </div>
-              <div>
+              <div className="dash-cell-content">
                 <b>{realStats.problemsSubmitted}</b>
                 <span>Problems</span>
               </div>
@@ -480,7 +507,7 @@ export const Dashboard: React.FC = () => {
               <div className="dash-ic dash-gr">
                 <Hammer size={20} />
               </div>
-              <div>
+              <div className="dash-cell-content">
                 <b>{realStats.solutionsBuilt}</b>
                 <span>Solutions</span>
               </div>
@@ -490,7 +517,7 @@ export const Dashboard: React.FC = () => {
               <div className="dash-ic dash-am">
                 <ThumbsUp size={20} />
               </div>
-              <div>
+              <div className="dash-cell-content">
                 <b>{realStats.votesReceived}</b>
                 <span>Votes</span>
               </div>
@@ -500,9 +527,9 @@ export const Dashboard: React.FC = () => {
               <div className="dash-ic dash-pu">
                 <Award size={20} />
               </div>
-              <div>
+              <div className="dash-cell-content">
                 <b>
-                  {realStats.badgesCount}
+                  {badgesCount}
                   <small>/{allBadges.length || 14}</small>
                 </b>
                 <span>Badges</span>

@@ -743,11 +743,12 @@ export function recordUserSubmission(problemId: string, userUid: string = "guest
 }
 
 export function getUserSubmittedProblemIds(userUid: string = "guest"): string[] {
+  if (!userUid || userUid === "guest") {
+    const guestKey = `${STORAGE_KEYS.USER_SUBMISSIONS}_guest`;
+    return load<string[]>(guestKey, []);
+  }
   const userKey = `${STORAGE_KEYS.USER_SUBMISSIONS}_${userUid}`;
-  const globalKey = STORAGE_KEYS.USER_SUBMISSIONS;
-  const userSubs = load<string[]>(userKey, []);
-  const globalSubs = load<string[]>(globalKey, []);
-  return Array.from(new Set([...userSubs, ...globalSubs]));
+  return load<string[]>(userKey, []);
 }
 
 /**
@@ -1558,6 +1559,19 @@ export function deleteBadgeFromStorage(badgeId: string): boolean {
   return true;
 }
 
+function syncCurrentUserDoc(doc: UserDoc): void {
+  try {
+    const localUserKey = "prblms_current_user_doc_v1";
+    const stored = localStorage.getItem(localUserKey);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      if (parsed && parsed.uid === doc.uid) {
+        localStorage.setItem(localUserKey, JSON.stringify({ ...parsed, ...doc }));
+      }
+    }
+  } catch {}
+}
+
 export function grantBadgeToUserInStorage(uid: string, badgeName: string): UserDoc | null {
   initializeStorage();
   const users = load<UserDoc[]>(STORAGE_KEYS.USERS, []).filter((u) => !isMockUser(u));
@@ -1569,6 +1583,7 @@ export function grantBadgeToUserInStorage(uid: string, badgeName: string): UserD
       users[index].updatedAt = new Date().toISOString();
       save(STORAGE_KEYS.USERS, users);
     }
+    syncCurrentUserDoc(users[index]);
     return users[index];
   }
   return null;
@@ -1583,6 +1598,7 @@ export function revokeBadgeFromUserInStorage(uid: string, badgeName: string): Us
     users[index].badges = currentBadges.filter((b) => b !== badgeName);
     users[index].updatedAt = new Date().toISOString();
     save(STORAGE_KEYS.USERS, users);
+    syncCurrentUserDoc(users[index]);
     return users[index];
   }
   return null;
