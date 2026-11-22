@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { Link, useSearchParams } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import { SEOHead } from "@/components/common/SEOHead";
 import {
   ACADEMY_COURSES,
@@ -13,6 +14,7 @@ import {
   AcademyChapter,
   AcademyPart,
 } from "@/data/academyData";
+import { CourseCardBanner } from "@/components/learning/CourseCardBanners";
 
 const CHAPTER_COLOR_PALETTES = [
   "#0056d2",
@@ -65,6 +67,10 @@ export const AcademyHome: React.FC = () => {
   const handleCourseSwitch = (slug: string) => {
     setSelectedCourseSlug(slug);
     setPart("All");
+    const el = document.getElementById("chapters-section");
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
   };
 
   const clearSearch = () => {
@@ -90,9 +96,6 @@ export const AcademyHome: React.FC = () => {
       <section className="bg-[#f5f8ff] border-b border-[#dae1ed] py-8 sm:py-14 md:py-16">
         <div className="max-w-[1280px] mx-auto px-4 sm:px-6 md:px-8 box-border flex flex-col lg:flex-row gap-8 sm:gap-12 items-center">
           <div className="flex-1 min-w-0">
-            <div className="inline-flex items-center gap-2 text-xs font-bold tracking-wider text-[#0056d2] uppercase mb-3 bg-[#0056d2]/10 px-2.5 py-1 rounded-full">
-              Academy Curriculum
-            </div>
             <h1 className="m-0 text-2xl sm:text-4xl md:text-[44px] leading-[1.12] font-bold tracking-[-1px] text-[#1f1f1f]">
               Learn to find problems worth solving
             </h1>
@@ -124,7 +127,7 @@ export const AcademyHome: React.FC = () => {
           {/* Quick Active Course Feature Card */}
           <div className="w-full lg:w-[340px] xl:w-[360px] bg-white border border-[#dae1ed] rounded-lg p-5 sm:p-6 box-border shadow-sm shrink-0">
             <div className="text-xs font-bold uppercase tracking-wider text-[#0056d2]">
-              Inside Course 1 &amp; 2
+              Course Highlights
             </div>
             <Link
               to="/learn/problem-discovery-and-validation"
@@ -174,266 +177,243 @@ export const AcademyHome: React.FC = () => {
       <section id="courses" className="max-w-[1280px] mx-auto px-4 sm:px-6 md:px-8 pt-10 sm:pt-14 box-border">
         <h2 className="m-0 text-2xl sm:text-[28px] font-bold text-[#1f1f1f]">Courses</h2>
         <div className="text-sm sm:text-[15px] text-[#5b606b] mt-1">
-          Master the full pipeline: discover authentic problems, size the market, and build solutions.
+          Master the full pipeline: discover authentic problems, size the market, and build solutions. Click any course to view its chapters.
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mt-5">
-          {/* Course 1 (Active) */}
-          <Link
-            to="/learn/problem-discovery-and-validation"
-            className="no-underline text-[#1f1f1f] border border-[#dae1ed] rounded-lg overflow-hidden bg-white hover:border-[#0056d2] hover:shadow-md transition-all group flex flex-col"
-          >
-            <div className="h-[88px] bg-[#0056d2] text-white p-4 box-border text-[13px] font-semibold tracking-[1px] flex items-center justify-between">
-              <span>COURSE 1</span>
-              <span className="text-xs bg-white/20 px-2 py-0.5 rounded-full font-medium">Active</span>
-            </div>
-            <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between">
-              <div>
-                <div className="text-[18px] font-bold text-[#1f1f1f] group-hover:text-[#0056d2] transition-colors leading-[1.3]">
-                  Problem Discovery &amp; Validation
-                </div>
-                <div className="text-xs sm:text-sm text-[#5b606b] mt-2 leading-[1.5]">
-                  From raw friction to a verified dossier. Pain scoring, Mom Test interviews, and 14-day sprints.
-                </div>
-              </div>
-              <div className="text-xs sm:text-sm font-semibold text-[#0056d2] mt-4 pt-3 border-t border-[#dae1ed]/70">
-                Beginner · 15 chapters
-              </div>
-            </div>
-          </Link>
+          {ACADEMY_COURSES.map((course) => {
+            const isSelected =
+              selectedCourseSlug === course.slug ||
+              (course.id === "course-3" && isCourse3) ||
+              (course.id === "course-2" && isCourse2) ||
+              (course.id === "course-1" && !isCourse2 && !isCourse3);
 
-          {/* Course 2 (Active) */}
-          <Link
-            to="/learn/market-sizing-and-opportunity"
-            className="no-underline text-[#1f1f1f] border border-[#dae1ed] rounded-lg overflow-hidden bg-white hover:border-[#0b6b83] hover:shadow-md transition-all group flex flex-col"
-          >
-            <div className="h-[88px] bg-[#0b6b83] text-white p-4 box-border text-[13px] font-semibold tracking-[1px] flex items-center justify-between">
-              <span>COURSE 2</span>
-              <span className="text-xs bg-white/20 px-2 py-0.5 rounded-full font-medium">New</span>
-            </div>
-            <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between">
-              <div>
-                <div className="text-[18px] font-bold text-[#1f1f1f] group-hover:text-[#0b6b83] transition-colors leading-[1.3]">
-                  Market Sizing &amp; Opportunity Analysis
-                </div>
-                <div className="text-xs sm:text-sm text-[#5b606b] mt-2 leading-[1.5]">
-                  Turn pain scores into defendable revenue numbers. Bottom-up TAM/SAM/SOM, pricing models &amp; unit economics.
-                </div>
-              </div>
-              <div className="text-xs sm:text-sm font-semibold text-[#0b6b83] mt-4 pt-3 border-t border-[#dae1ed]/70">
-                Intermediate · 18 chapters
-              </div>
-            </div>
-          </Link>
+            return (
+              <div
+                key={course.id}
+                role="button"
+                tabIndex={0}
+                onClick={() => handleCourseSwitch(course.slug)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    handleCourseSwitch(course.slug);
+                  }
+                }}
+                className={`text-[#1f1f1f] border rounded-xl overflow-hidden bg-white transition-all duration-300 group flex flex-col cursor-pointer text-left select-none relative ${
+                  isSelected
+                    ? "border-[#0056d2] ring-3 ring-[#0056d2]/25 shadow-lg scale-[1.01]"
+                    : "border-[#dae1ed] hover:border-[#0056d2]/60 hover:shadow-md hover:-translate-y-0.5"
+                }`}
+              >
+                {/* Visual Matching Website Banner Graphic */}
+                <CourseCardBanner courseNum={course.n} isSelected={isSelected} />
 
-          {/* Course 3 (Active) */}
-          <Link
-            to="/learn/full-stack-cloud-development"
-            className="no-underline text-[#1f1f1f] border border-[#dae1ed] rounded-lg overflow-hidden bg-white hover:border-[#1e40af] hover:shadow-md transition-all group flex flex-col"
-          >
-            <div className="h-[88px] bg-[#1e40af] text-white p-4 box-border text-[13px] font-semibold tracking-[1px] flex items-center justify-between">
-              <span>COURSE 3</span>
-              <span className="text-xs bg-white/20 px-2 py-0.5 rounded-full font-medium">New</span>
-            </div>
-            <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between">
-              <div>
-                <div className="text-[18px] font-bold text-[#1f1f1f] group-hover:text-[#1e40af] transition-colors leading-[1.3]">
-                  Full-Stack Cloud Development
-                </div>
-                <div className="text-xs sm:text-sm text-[#5b606b] mt-2 leading-[1.5]">
-                  Deploy scalable cloud architectures, Firestore databases, and AI copilots for your validated solution.
+                {/* Card Body */}
+                <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between">
+                  <div>
+                    <div className="text-[18px] font-bold text-[#1f1f1f] group-hover:text-[#0056d2] transition-colors leading-[1.3]">
+                      {course.title}
+                    </div>
+                    <div className="text-xs sm:text-sm text-[#5b606b] mt-2 leading-[1.5]">
+                      {course.description}
+                    </div>
+                  </div>
+
+                  <div className="mt-4 pt-3 border-t border-[#dae1ed]/70">
+                    <div className="flex items-center justify-between text-xs sm:text-sm">
+                      <span className="font-semibold text-[#5b606b]">
+                        {course.level} · {course.chaptersCount} chapters
+                      </span>
+                      <span
+                        className={`font-bold transition-colors inline-flex items-center gap-1 ${
+                          isSelected
+                            ? "text-[#0056d2]"
+                            : "text-[#5b606b] group-hover:text-[#0056d2]"
+                        }`}
+                      >
+                        {isSelected ? "Viewing chapters ↓" : "View chapters →"}
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div className="text-xs sm:text-sm font-semibold text-[#1e40af] mt-4 pt-3 border-t border-[#dae1ed]/70">
-                Advanced · 18 chapters
-              </div>
-            </div>
-          </Link>
+            );
+          })}
         </div>
       </section>
 
       {/* ── Chapters Exploration Section ──────── */}
-      <section className="max-w-[1280px] mx-auto px-4 sm:px-6 md:px-8 py-10 sm:py-14 pb-20 box-border">
-        {/* Course Switcher Pills */}
+      <section
+        id="chapters-section"
+        className="max-w-[1280px] mx-auto px-4 sm:px-6 md:px-8 py-10 sm:py-14 pb-20 box-border scroll-mt-20"
+      >
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#dae1ed] pb-4">
           <div>
             <div className="text-xs font-bold text-[#0056d2] uppercase tracking-wider mb-1">
-              Course Chapters
+              COURSE CHAPTERS
             </div>
-            <h2 className="m-0 text-xl sm:text-2xl md:text-[26px] font-bold text-[#1f1f1f]">
+            <h2 className="m-0 text-xl sm:text-2xl md:text-[28px] font-bold text-[#1f1f1f]">
               {activeCourse.title}
             </h2>
+            <div className="text-xs sm:text-sm text-[#5b606b] mt-0.5">
+              Explore all {activeCourse.chaptersCount} chapters ({activeCourse.sectionsCount} sections). Click any chapter to read.
+            </div>
           </div>
 
-          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar w-full sm:w-auto">
-            <button
-              type="button"
-              onClick={() => handleCourseSwitch("problem-discovery-and-validation")}
-              className={`py-2 px-3.5 rounded-lg text-xs sm:text-sm font-bold transition-all whitespace-nowrap cursor-pointer ${
-                !isCourse2 && !isCourse3
-                  ? "bg-[#0056d2] text-white shadow-xs"
-                  : "bg-gray-100 text-[#5b606b] hover:bg-gray-200"
-              }`}
-            >
-              Course 1: Discovery (15)
-            </button>
-            <button
-              type="button"
-              onClick={() => handleCourseSwitch("market-sizing-and-opportunity")}
-              className={`py-2 px-3.5 rounded-lg text-xs sm:text-sm font-bold transition-all whitespace-nowrap cursor-pointer ${
-                isCourse2
-                  ? "bg-[#0b6b83] text-white shadow-xs"
-                  : "bg-gray-100 text-[#5b606b] hover:bg-gray-200"
-              }`}
-            >
-              Course 2: Sizing (18)
-            </button>
-            <button
-              type="button"
-              onClick={() => handleCourseSwitch("full-stack-cloud-development")}
-              className={`py-2 px-3.5 rounded-lg text-xs sm:text-sm font-bold transition-all whitespace-nowrap cursor-pointer ${
-                isCourse3
-                  ? "bg-[#1e40af] text-white shadow-xs"
-                  : "bg-gray-100 text-[#5b606b] hover:bg-gray-200"
-              }`}
-            >
-              Course 3: Cloud Dev (18)
-            </button>
-          </div>
+          <Link
+            to={`/learn/${activeCourse.slug}`}
+            className="text-xs sm:text-sm font-semibold text-[#0056d2] hover:text-[#00419e] hover:underline inline-flex items-center gap-1.5 bg-[#0056d2]/5 hover:bg-[#0056d2]/10 px-3.5 py-2 rounded-lg transition-colors"
+          >
+            <span>Full Syllabus Overview</span>
+            <span aria-hidden="true">→</span>
+          </Link>
         </div>
 
-        {/* Filter Indicator on active search */}
-        {q && (
-          <div className="flex items-center gap-2 bg-[#0056d2]/10 text-[#0056d2] px-3.5 py-1.5 rounded-full text-xs font-semibold my-4 self-start inline-flex">
-            <span>Filtered by: "{q}"</span>
-            <button
-              type="button"
-              onClick={clearSearch}
-              aria-label="Clear filter"
-              className="hover:underline cursor-pointer border-0 bg-transparent p-0 font-bold ml-1 text-xs"
-            >
-              ✕ Clear
-            </button>
-          </div>
-        )}
-
-        <div className="flex flex-col sm:flex-row gap-6 sm:gap-8 mt-6 items-start">
-          {/* Left Column: Browse by part (Horizontal Chips on Mobile, Vertical list on desktop) */}
-          <aside className="w-full sm:w-[220px] shrink-0 box-border">
-            <div className="text-xs sm:text-sm font-bold uppercase tracking-wider text-[#5b606b] pb-2 border-b border-[#dae1ed] hidden sm:block">
-              Browse by Part
-            </div>
-
-            {/* Mobile Horizontal Scrolling Chips */}
-            <div className="flex sm:flex-col gap-1.5 sm:gap-1 overflow-x-auto no-scrollbar pb-2 sm:pb-0 sm:mt-2">
-              {parts.map((p) => {
-                const on = part === p.name;
-                const count = p.endChapter - p.startChapter + 1;
-
-                return (
-                  <button
-                    key={p.name}
-                    type="button"
-                    onClick={() => setPart(p.name)}
-                    aria-pressed={on}
-                    className={`flex items-center gap-2 text-left py-2 px-3 rounded-lg text-xs sm:text-sm font-medium transition-colors shrink-0 cursor-pointer ${
-                      on
-                        ? "bg-[#0056d2]/10 text-[#0056d2] font-bold border border-[#0056d2]/20"
-                        : "text-[#3d424d] hover:bg-gray-100"
-                    }`}
-                  >
-                    <span className="truncate">{p.name}</span>
-                    <span className="ml-auto text-xs text-[#5b606b] font-normal">({count})</span>
-                  </button>
-                );
-              })}
-            </div>
-          </aside>
-
-          {/* Right Column: Chapters Grid */}
-          <main className="flex-1 min-w-0 w-full">
-            <div className="text-xs sm:text-sm text-[#5b606b] mb-4 flex items-center justify-between">
-              <span>
-                Showing {filteredChapters.length} of {chapters.length} chapters
-              </span>
-              {q && (
+        {/* Animated Chapters Extraction Container */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={selectedCourseSlug}
+            initial={{ opacity: 0, y: 22 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -14 }}
+            transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+            className="w-full"
+          >
+            {/* Filter Indicator on active search */}
+            {q && (
+              <div className="flex items-center gap-2 bg-[#0056d2]/10 text-[#0056d2] px-3.5 py-1.5 rounded-full text-xs font-semibold my-4 self-start inline-flex">
+                <span>Filtered by: "{q}"</span>
                 <button
                   type="button"
                   onClick={clearSearch}
-                  className="text-xs text-[#0056d2] hover:underline cursor-pointer border-0 bg-transparent font-medium"
+                  aria-label="Clear filter"
+                  className="hover:underline cursor-pointer border-0 bg-transparent p-0 font-bold ml-1 text-xs"
                 >
-                  Clear search
+                  ✕ Clear
                 </button>
-              )}
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
-              {filteredChapters.map((ch) => {
-                const coverBg = isCourse3
-                  ? "#1e40af"
-                  : isCourse2
-                  ? "#0b6b83"
-                  : CHAPTER_COLOR_PALETTES[ch.num % 6];
-                const cleanSubs = ch.subs.split(" · ").slice(0, 3).join(", ");
-                const chapterPath = `/learn/${activeCourse.slug}/${ch.slug}`;
-
-                return (
-                  <div
-                    key={ch.num}
-                    className="border border-[#dae1ed] rounded-lg overflow-hidden bg-white flex flex-col hover:border-[#0056d2] hover:shadow-md transition-all group"
-                  >
-                    {/* Chapter Cover Bar */}
-                    <div
-                      style={{ background: coverBg }}
-                      className="h-[80px] sm:h-[88px] text-white p-3 sm:px-4 box-border flex flex-col justify-between"
-                    >
-                      <span className="text-[11px] sm:text-[13px] font-semibold tracking-[1px]">
-                        CHAPTER
-                      </span>
-                      <span className="text-[34px] sm:text-[40px] font-bold leading-none">
-                        {ch.num}
-                      </span>
-                    </div>
-
-                    {/* Chapter Body Content */}
-                    <div className="p-3.5 sm:p-4 flex-1 flex flex-col justify-between">
-                      <div>
-                        <Link
-                          to={chapterPath}
-                          className="text-[16px] sm:text-[18px] font-bold leading-[1.25] text-[#1f1f1f] group-hover:text-[#0056d2] no-underline transition-colors block"
-                        >
-                          {ch.title}
-                        </Link>
-                        <div className="text-xs sm:text-sm text-[#5b606b] mt-1.5 leading-[1.5]">
-                          {ch.sectionsCount} sections · Quiz
-                        </div>
-                        <div className="text-xs sm:text-sm leading-[1.5] text-[#5b606b] mt-1.5 line-clamp-2">
-                          {cleanSubs}
-                        </div>
-                      </div>
-
-                      {/* Bottom Action Bar */}
-                      <div className="mt-4 pt-3 border-t border-[#dae1ed]">
-                        <Link
-                          to={chapterPath}
-                          className="inline-block font-semibold text-xs sm:text-sm text-[#0056d2] hover:text-[#00419e] no-underline"
-                        >
-                          Read chapter →
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            {filteredChapters.length === 0 && (
-              <div className="py-12 text-center text-sm sm:text-base text-[#5b606b]">
-                No chapters match "{q}" in {activeCourse.title}. Try another keyword or switch parts.
               </div>
             )}
-          </main>
-        </div>
+
+            <div className="flex flex-col sm:flex-row gap-6 sm:gap-8 mt-6 items-start">
+              {/* Left Column: Browse by part (Horizontal Chips on Mobile, Vertical list on desktop) */}
+              <aside className="w-full sm:w-[220px] shrink-0 box-border">
+                <div className="text-xs sm:text-sm font-bold uppercase tracking-wider text-[#5b606b] pb-2 border-b border-[#dae1ed] hidden sm:block">
+                  Browse by Part
+                </div>
+
+                {/* Mobile Horizontal Scrolling Chips */}
+                <div className="flex sm:flex-col gap-1.5 sm:gap-1 overflow-x-auto no-scrollbar pb-2 sm:pb-0 sm:mt-2">
+                  {parts.map((p) => {
+                    const on = part === p.name;
+                    const count = p.endChapter - p.startChapter + 1;
+
+                    return (
+                      <button
+                        key={p.name}
+                        type="button"
+                        onClick={() => setPart(p.name)}
+                        aria-pressed={on}
+                        className={`flex items-center gap-2 text-left py-2 px-3 rounded-lg text-xs sm:text-sm font-medium transition-colors shrink-0 cursor-pointer ${
+                          on
+                            ? "bg-[#0056d2]/10 text-[#0056d2] font-bold border border-[#0056d2]/20"
+                            : "text-[#3d424d] hover:bg-gray-100"
+                        }`}
+                      >
+                        <span className="truncate">{p.name}</span>
+                        <span className="ml-auto text-xs text-[#5b606b] font-normal">({count})</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </aside>
+
+              {/* Right Column: Chapters Grid */}
+              <main className="flex-1 min-w-0 w-full">
+                <div className="text-xs sm:text-sm text-[#5b606b] mb-4 flex items-center justify-between">
+                  <span>
+                    Showing {filteredChapters.length} of {chapters.length} chapters
+                  </span>
+                  {q && (
+                    <button
+                      type="button"
+                      onClick={clearSearch}
+                      className="text-xs text-[#0056d2] hover:underline cursor-pointer border-0 bg-transparent font-medium"
+                    >
+                      Clear search
+                    </button>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+                  {filteredChapters.map((ch) => {
+                    const coverBg = isCourse3
+                      ? "#1e40af"
+                      : isCourse2
+                      ? "#0b6b83"
+                      : CHAPTER_COLOR_PALETTES[ch.num % 6];
+                    const cleanSubs = ch.subs.split(" · ").slice(0, 3).join(", ");
+                    const chapterPath = `/learn/${activeCourse.slug}/${ch.slug}`;
+
+                    return (
+                      <div
+                        key={ch.num}
+                        className="border border-[#dae1ed] rounded-lg overflow-hidden bg-white flex flex-col hover:border-[#0056d2] hover:shadow-md transition-all group"
+                      >
+                        {/* Chapter Cover Bar */}
+                        <div
+                          style={{ background: coverBg }}
+                          className="h-[80px] sm:h-[88px] text-white p-3 sm:px-4 box-border flex flex-col justify-between"
+                        >
+                          <span className="text-[11px] sm:text-[13px] font-semibold tracking-[1px]">
+                            CHAPTER
+                          </span>
+                          <span className="text-[34px] sm:text-[40px] font-bold leading-none">
+                            {ch.num}
+                          </span>
+                        </div>
+
+                        {/* Chapter Body Content */}
+                        <div className="p-3.5 sm:p-4 flex-1 flex flex-col justify-between">
+                          <div>
+                            <Link
+                              to={chapterPath}
+                              className="text-[16px] sm:text-[18px] font-bold leading-[1.25] text-[#1f1f1f] group-hover:text-[#0056d2] no-underline transition-colors block"
+                            >
+                              {ch.title}
+                            </Link>
+                            <div className="text-xs sm:text-sm text-[#5b606b] mt-1.5 leading-[1.5]">
+                              {ch.sectionsCount} sections · Quiz
+                            </div>
+                            <div className="text-xs sm:text-sm leading-[1.5] text-[#5b606b] mt-1.5 line-clamp-2">
+                              {cleanSubs}
+                            </div>
+                          </div>
+
+                          {/* Bottom Action Bar */}
+                          <div className="mt-4 pt-3 border-t border-[#dae1ed]">
+                            <Link
+                              to={chapterPath}
+                              className="inline-block font-semibold text-xs sm:text-sm text-[#0056d2] hover:text-[#00419e] no-underline"
+                            >
+                              Read chapter →
+                            </Link>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {filteredChapters.length === 0 && (
+                  <div className="py-12 text-center text-sm sm:text-base text-[#5b606b]">
+                    No chapters match "{q}" in {activeCourse.title}. Try another keyword or switch parts.
+                  </div>
+                )}
+              </main>
+            </div>
+          </motion.div>
+        </AnimatePresence>
       </section>
     </div>
   );

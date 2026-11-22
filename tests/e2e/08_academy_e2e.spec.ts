@@ -41,16 +41,16 @@ test.describe("Academy Flow E2E Tests: Course Branching, Layout & Independent Sc
       await expect(searchInput).toHaveValue("");
     }
 
-    // Switch to Course 2 chapters via course switcher pill
-    const course2Btn = page.locator("button:has-text('Course 2: Sizing')");
-    await expect(course2Btn).toBeVisible();
-    await course2Btn.click();
+    // Switch to Course 2 chapters via interactive Course 2 Card in #courses
+    const course2Card = page.locator("#courses [role='button']").nth(1);
+    await expect(course2Card).toBeVisible();
+    await course2Card.click();
     await expect(page.locator("text=Showing 18 of 18 chapters")).toBeVisible();
 
-    // Switch back to Course 1
-    const course1Btn = page.locator("button:has-text('Course 1: Discovery')");
-    await expect(course1Btn).toBeVisible();
-    await course1Btn.click();
+    // Switch back to Course 1 via interactive Course 1 Card in #courses
+    const course1Card = page.locator("#courses [role='button']").nth(0);
+    await expect(course1Card).toBeVisible();
+    await course1Card.click();
     await expect(page.locator("text=Showing 15 of 15 chapters")).toBeVisible();
 
     if (!isMobile) {
