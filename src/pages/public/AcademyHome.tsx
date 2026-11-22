@@ -15,15 +15,7 @@ import {
   AcademyPart,
 } from "@/data/academyData";
 import { CourseCardBanner } from "@/components/learning/CourseCardBanners";
-
-const CHAPTER_COLOR_PALETTES = [
-  "#0056d2",
-  "#00419e",
-  "#0b6b83",
-  "#3c4a9e",
-  "#0d6832",
-  "#0056d2",
-];
+import { ChapterCoverPattern } from "@/components/learning/ChapterCoverPattern";
 
 export const AcademyHome: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -347,11 +339,6 @@ export const AcademyHome: React.FC = () => {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
                   {filteredChapters.map((ch) => {
-                    const coverBg = isCourse3
-                      ? "#1e40af"
-                      : isCourse2
-                      ? "#0b6b83"
-                      : CHAPTER_COLOR_PALETTES[ch.num % 6];
                     const cleanSubs = ch.subs.split(" · ").slice(0, 3).join(", ");
                     const chapterPath = `/learn/${activeCourse.slug}/${ch.slug}`;
 
@@ -360,18 +347,11 @@ export const AcademyHome: React.FC = () => {
                         key={ch.num}
                         className="border border-[#dae1ed] rounded-lg overflow-hidden bg-white flex flex-col hover:border-[#0056d2] hover:shadow-md transition-all group"
                       >
-                        {/* Chapter Cover Bar */}
-                        <div
-                          style={{ background: coverBg }}
-                          className="h-[80px] sm:h-[88px] text-white p-3 sm:px-4 box-border flex flex-col justify-between"
-                        >
-                          <span className="text-[11px] sm:text-[13px] font-semibold tracking-[1px]">
-                            CHAPTER
-                          </span>
-                          <span className="text-[34px] sm:text-[40px] font-bold leading-none">
-                            {ch.num}
-                          </span>
-                        </div>
+                        {/* Chapter Cover with Diverse Multi-Colored Vector Lines & Curves Pattern */}
+                        <ChapterCoverPattern
+                          chapterNum={ch.num}
+                          courseNum={activeCourse.n}
+                        />
 
                         {/* Chapter Body Content */}
                         <div className="p-3.5 sm:p-4 flex-1 flex flex-col justify-between">
