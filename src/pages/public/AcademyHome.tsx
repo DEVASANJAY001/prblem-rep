@@ -264,8 +264,6 @@ export const AcademyHome: React.FC = () => {
                     tagClass: "bg-[#e6f4ea] text-[#137333] border-[#ceead6]",
                     rating: "4.8",
                     level: "Beginner",
-                    badgeText: "COURSE 1",
-                    badgeColor: "text-blue-700 bg-blue-50 border-blue-200",
                   }
                 : course.n === 2
                 ? {
@@ -273,8 +271,6 @@ export const AcademyHome: React.FC = () => {
                     tagClass: "bg-[#f1f3f4] text-[#3c4043] border-[#dadce0]",
                     rating: "4.9",
                     level: "Intermediate",
-                    badgeText: "COURSE 2",
-                    badgeColor: "text-emerald-700 bg-emerald-50 border-emerald-200",
                   }
                 : course.n === 3
                 ? {
@@ -282,16 +278,12 @@ export const AcademyHome: React.FC = () => {
                     tagClass: "bg-[#f3e8ff] text-[#6b21a8] border-[#e9d5ff]",
                     rating: "4.9",
                     level: "Advanced",
-                    badgeText: "COURSE 3",
-                    badgeColor: "text-purple-700 bg-purple-50 border-purple-200",
                   }
                 : {
                     tag: "Hands-on Capstone",
                     tagClass: "bg-[#fff7ed] text-[#c2410c] border-[#ffedd5]",
                     rating: "4.9",
                     level: "Builder",
-                    badgeText: "COURSE 4",
-                    badgeColor: "text-orange-700 bg-orange-50 border-orange-200",
                   };
 
             return (
