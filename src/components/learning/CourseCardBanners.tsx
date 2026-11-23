@@ -6,16 +6,17 @@ interface CourseCardBannerProps {
 
 /**
  * CourseCardBanner
- * Simple, static, elegant vector illustrations (no animated video/spinning effects).
- * Designed for the inner rounded-corner cut container (occupying 65-70% of the card).
+ * Coursera-style course artwork banners inspired by top enterprise credentials.
+ * Clean, modern vector graphics with centered focal subjects and rich gradients.
+ * No edge-clipping badges; perfectly framed within the 65-70% rounded container cut.
  */
 export const CourseCardBanner: React.FC<CourseCardBannerProps> = ({ courseNum }) => {
-  // Course 1: Problem Discovery & Validation (Royal Navy & Sapphire)
+  // Course 1: Problem Discovery & Validation (Deep Navy & Sapphire, Certificate Card motif like IBM Data Science)
   if (courseNum === 1) {
     return (
-      <div className="relative w-full h-full min-h-[220px] overflow-hidden select-none bg-[#050e1f]">
+      <div className="relative w-full h-full min-h-[210px] overflow-hidden select-none bg-[#030914]">
         <svg
-          viewBox="0 0 360 240"
+          viewBox="0 0 360 225"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
           className="w-full h-full object-cover"
@@ -23,109 +24,156 @@ export const CourseCardBanner: React.FC<CourseCardBannerProps> = ({ courseNum })
           aria-hidden="true"
         >
           <defs>
-            <linearGradient id="c1-static-bg" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#040914" />
-              <stop offset="50%" stopColor="#0a1d3d" />
-              <stop offset="100%" stopColor="#061226" />
+            <linearGradient id="c1-bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#020914" />
+              <stop offset="50%" stopColor="#091b38" />
+              <stop offset="100%" stopColor="#031024" />
             </linearGradient>
 
-            <radialGradient id="c1-static-glow" cx="50%" cy="45%" r="65%">
-              <stop offset="0%" stopColor="#38bdf8" stopOpacity="0.3" />
-              <stop offset="60%" stopColor="#003bcb" stopOpacity="0.18" />
-              <stop offset="100%" stopColor="#040914" stopOpacity="0" />
+            <radialGradient id="c1-glow" cx="50%" cy="46%" r="62%">
+              <stop offset="0%" stopColor="#38bdf8" stopOpacity="0.32" />
+              <stop offset="60%" stopColor="#0056d2" stopOpacity="0.18" />
+              <stop offset="100%" stopColor="#020914" stopOpacity="0" />
             </radialGradient>
 
-            <linearGradient id="c1-static-gold" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#fde047" />
-              <stop offset="50%" stopColor="#eab308" />
-              <stop offset="100%" stopColor="#ca8a04" />
-            </linearGradient>
-
-            <filter id="c1-static-shadow" x="-10%" y="-10%" width="120%" height="120%">
-              <feDropShadow dx="0" dy="4" stdDeviation="6" floodColor="#000000" floodOpacity="0.4" />
+            <filter id="c1-card-shadow" x="-10%" y="-10%" width="125%" height="130%">
+              <feDropShadow dx="0" dy="8" stdDeviation="10" floodColor="#000000" floodOpacity="0.55" />
+            </filter>
+            
+            <filter id="c1-seal-shadow" x="-15%" y="-15%" width="130%" height="130%">
+              <feDropShadow dx="0" dy="3" stdDeviation="4" floodColor="#001845" floodOpacity="0.4" />
             </filter>
           </defs>
 
           {/* Background & Ambient Glow */}
-          <rect width="360" height="240" fill="url(#c1-static-bg)" />
-          <circle cx="180" cy="115" r="115" fill="url(#c1-static-glow)" />
+          <rect width="360" height="225" fill="url(#c1-bg-grad)" />
+          <circle cx="180" cy="112" r="120" fill="url(#c1-glow)" />
 
-          {/* Perspective Grid Accent */}
-          <g stroke="#1e3a8a" strokeWidth="0.8" strokeOpacity="0.25">
-            <line x1="0" y1="200" x2="360" y2="200" />
-            <line x1="0" y1="165" x2="360" y2="165" />
-            <line x1="0" y1="130" x2="360" y2="130" />
-            <line x1="60" y1="0" x2="140" y2="240" />
-            <line x1="140" y1="0" x2="190" y2="240" />
-            <line x1="220" y1="0" x2="170" y2="240" />
-            <line x1="300" y1="0" x2="220" y2="240" />
+          {/* Perspective Coordinate Grid Lines */}
+          <g stroke="#1d4ed8" strokeWidth="0.8" strokeOpacity="0.22">
+            <line x1="20" y1="190" x2="340" y2="190" />
+            <line x1="30" y1="155" x2="330" y2="155" />
+            <line x1="45" y1="120" x2="315" y2="120" />
+            <line x1="80" y1="20" x2="135" y2="215" />
+            <line x1="145" y1="20" x2="175" y2="215" />
+            <line x1="215" y1="20" x2="185" y2="215" />
+            <line x1="280" y1="20" x2="225" y2="215" />
           </g>
 
-          {/* Flowing Harmonic Contour Ribbon */}
+          {/* Flowing Discovery Signal Wave */}
           <path
-            d="M -20 170 C 80 80, 140 190, 240 70 C 290 10, 330 90, 380 50"
+            d="M 10 160 C 85 90, 140 175, 230 85 C 280 35, 315 95, 350 70"
             stroke="#00f0ff"
-            strokeWidth="2.5"
-            strokeOpacity="0.75"
-            fill="none"
-            strokeLinecap="round"
-          />
-          <path
-            d="M -20 188 C 80 98, 140 208, 240 88 C 290 28, 330 108, 380 68"
-            stroke="#3b82f6"
-            strokeWidth="1.8"
-            strokeOpacity="0.5"
+            strokeWidth="2.2"
+            strokeOpacity="0.65"
             fill="none"
             strokeLinecap="round"
           />
 
-          {/* Center Discovery Radar Lens */}
-          <g transform="translate(180, 115)" filter="url(#c1-static-shadow)">
-            <circle cx="0" cy="0" r="64" stroke="#60a5fa" strokeWidth="1" strokeOpacity="0.25" strokeDasharray="4 4" />
-            <circle cx="0" cy="0" r="50" stroke="#38bdf8" strokeWidth="1.5" strokeOpacity="0.4" />
-            <circle cx="0" cy="0" r="34" stroke="#93c5fd" strokeWidth="1.8" strokeOpacity="0.6" />
-            <circle cx="0" cy="0" r="18" fill="#003bcb" fillOpacity="0.45" stroke="#00f0ff" strokeWidth="2" />
-
-            {/* Crosshair Coordinates */}
-            <line x1="-70" y1="0" x2="70" y2="0" stroke="#60a5fa" strokeWidth="0.8" strokeOpacity="0.35" />
-            <line x1="0" y1="-70" x2="0" y2="70" stroke="#60a5fa" strokeWidth="0.8" strokeOpacity="0.35" />
-
-            {/* Sweep Ray & Target Nodes */}
-            <line x1="0" y1="0" x2="48" y2="-36" stroke="#00f0ff" strokeWidth="2" strokeLinecap="round" />
-            <circle cx="48" cy="-36" r="4.5" fill="#ffffff" />
-            <circle cx="-28" cy="-24" r="3.5" fill="#fde047" />
-            <circle cx="32" cy="22" r="3" fill="#00f0ff" />
-          </g>
-
-          {/* Validation Shield Crest on Top Right */}
-          <g transform="translate(290, 26)">
-            <path
-              d="M 16 0 L 32 6 C 32 20, 26 34, 16 40 C 6 34, 0 20, 0 6 Z"
-              fill="#002d9c"
-              stroke="url(#c1-static-gold)"
-              strokeWidth="2"
+          {/* 3D Certificate / Problem Dossier Card (Centered Coursera Motif) */}
+          <g transform="translate(180, 112)" filter="url(#c1-card-shadow)">
+            {/* Back Accent Card */}
+            <rect
+              x="-114"
+              y="-66"
+              width="236"
+              height="136"
+              rx="12"
+              fill="#0a2558"
+              fillOpacity="0.65"
             />
-            <path d="M 10 18 L 14 23 L 23 13" stroke="#fde047" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-          </g>
-
-          {/* Course Badge in Top Left */}
-          <g transform="translate(20, 24)">
-            <rect width="84" height="24" rx="6" fill="#003bcb" fillOpacity="0.8" stroke="#38bdf8" strokeWidth="1" />
-            <text x="42" y="16" fill="#ffffff" fontSize="10.5" fontWeight="800" textAnchor="middle" letterSpacing="1" fontFamily="sans-serif">
-              COURSE 1
+            {/* Front Crisp White Card */}
+            <rect
+              x="-118"
+              y="-70"
+              width="236"
+              height="136"
+              rx="12"
+              fill="#ffffff"
+            />
+            
+            {/* Card Content - Top Organization Stamp */}
+            <text
+              x="-96"
+              y="-44"
+              fill="#1e293b"
+              fontSize="10"
+              fontWeight="800"
+              fontFamily="system-ui, -apple-system, sans-serif"
+              letterSpacing="0.8"
+            >
+              PROBLEM DOSSIER
             </text>
+
+            {/* Course Title on Card */}
+            <text
+              x="-96"
+              y="-16"
+              fill="#0f172a"
+              fontSize="16"
+              fontWeight="800"
+              fontFamily="system-ui, -apple-system, sans-serif"
+            >
+              Problem Discovery
+            </text>
+            <text
+              x="-96"
+              y="5"
+              fill="#0f172a"
+              fontSize="16"
+              fontWeight="800"
+              fontFamily="system-ui, -apple-system, sans-serif"
+            >
+              &amp; Validation
+            </text>
+
+            {/* Credential Subtitle */}
+            <text
+              x="-96"
+              y="32"
+              fill="#0056d2"
+              fontSize="9.5"
+              fontWeight="700"
+              fontFamily="system-ui, -apple-system, sans-serif"
+              letterSpacing="1.2"
+            >
+              FOUNDATION PROGRAM
+            </text>
+
+            {/* Verification Ribbon Bar */}
+            <rect x="-96" y="44" width="70" height="3" rx="1.5" fill="#0056d2" />
+            <rect x="-22" y="44" width="40" height="3" rx="1.5" fill="#38bdf8" />
+
+            {/* Blue Rosette Seal with Ribbon (Coursera IBM-style rosette) */}
+            <g transform="translate(86, -42)" filter="url(#c1-seal-shadow)">
+              {/* Ribbon Tails */}
+              <path d="M -8 18 L -14 36 L -5 32 L 2 36 L -2 18 Z" fill="#00419e" />
+              <path d="M 6 18 L 1 36 L 8 32 L 15 36 L 10 18 Z" fill="#003580" />
+              {/* Rosette Outer Scallop Circle */}
+              <circle cx="0" cy="8" r="16" fill="#0056d2" />
+              <circle cx="0" cy="8" r="13" fill="#00419e" />
+              {/* Rosette Inner Emblem Checkmark */}
+              <circle cx="0" cy="8" r="9" fill="#0056d2" />
+              <path
+                d="M -3.5 8 L -0.5 11 L 4.5 5.5"
+                stroke="#ffffff"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </g>
           </g>
         </svg>
       </div>
     );
   }
 
-  // Course 2: Market Sizing & Opportunity Analysis (Emerald & Aqua)
+  // Course 2: Market Sizing & Opportunity Analysis (Emerald & Aqua, Excel-style 3D tile & chart motif)
   if (courseNum === 2) {
     return (
-      <div className="relative w-full h-full min-h-[220px] overflow-hidden select-none bg-[#021f18]">
+      <div className="relative w-full h-full min-h-[210px] overflow-hidden select-none bg-[#011711]">
         <svg
-          viewBox="0 0 360 240"
+          viewBox="0 0 360 225"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
           className="w-full h-full object-cover"
@@ -133,110 +181,231 @@ export const CourseCardBanner: React.FC<CourseCardBannerProps> = ({ courseNum })
           aria-hidden="true"
         >
           <defs>
-            <linearGradient id="c2-static-bg" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#01140f" />
-              <stop offset="50%" stopColor="#033829" />
-              <stop offset="100%" stopColor="#011b15" />
+            <linearGradient id="c2-bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#01140e" />
+              <stop offset="50%" stopColor="#033827" />
+              <stop offset="100%" stopColor="#011912" />
             </linearGradient>
 
-            <radialGradient id="c2-static-glow" cx="50%" cy="45%" r="65%">
-              <stop offset="0%" stopColor="#10b981" stopOpacity="0.32" />
-              <stop offset="60%" stopColor="#047857" stopOpacity="0.18" />
-              <stop offset="100%" stopColor="#01140f" stopOpacity="0" />
+            <radialGradient id="c2-glow" cx="50%" cy="46%" r="62%">
+              <stop offset="0%" stopColor="#10b981" stopOpacity="0.4" />
+              <stop offset="60%" stopColor="#059669" stopOpacity="0.2" />
+              <stop offset="100%" stopColor="#01140e" stopOpacity="0" />
             </radialGradient>
 
-            <linearGradient id="c2-static-curve-fill" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#34d399" stopOpacity="0.35" />
-              <stop offset="100%" stopColor="#059669" stopOpacity="0" />
+            <linearGradient id="c2-tile-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#10b981" />
+              <stop offset="50%" stopColor="#059669" />
+              <stop offset="100%" stopColor="#047857" />
             </linearGradient>
 
-            <linearGradient id="c2-static-growth" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#10b981" />
-              <stop offset="50%" stopColor="#34d399" />
-              <stop offset="100%" stopColor="#fde047" />
-            </linearGradient>
+            <filter id="c2-tile-shadow" x="-20%" y="-20%" width="140%" height="140%">
+              <feDropShadow dx="0" dy="10" stdDeviation="12" floodColor="#01100b" floodOpacity="0.65" />
+            </filter>
           </defs>
 
-          {/* Background & Ambient Glow */}
-          <rect width="360" height="240" fill="url(#c2-static-bg)" />
-          <circle cx="180" cy="115" r="115" fill="url(#c2-static-glow)" />
+          {/* Background & Ambient Emerald Glow */}
+          <rect width="360" height="225" fill="url(#c2-bg-grad)" />
+          <circle cx="180" cy="112" r="115" fill="url(#c2-glow)" />
 
-          {/* Isometric Perspective Floor Grid */}
-          <g stroke="#065f46" strokeWidth="0.8" strokeOpacity="0.35">
-            <line x1="0" y1="200" x2="360" y2="200" />
-            <line x1="0" y1="165" x2="360" y2="165" />
-            <line x1="0" y1="130" x2="360" y2="130" />
-            <line x1="40" y1="240" x2="160" y2="100" />
-            <line x1="120" y1="240" x2="230" y2="100" />
-            <line x1="200" y1="240" x2="300" y2="100" />
+          {/* Top Left: Spreadsheet Grid Icon (like Microsoft Excel card) */}
+          <g transform="translate(52, 38)" stroke="#6ee7b7" strokeWidth="1.6" opacity="0.65">
+            <rect x="0" y="0" width="28" height="22" rx="3.5" fill="#047857" fillOpacity="0.35" />
+            <line x1="9" y1="0" x2="9" y2="22" />
+            <line x1="18" y1="0" x2="18" y2="22" />
+            <line x1="0" y1="11" x2="28" y2="11" />
           </g>
 
-          {/* 3D Isometric Opportunity Pillars (SOM, SAM, TAM) */}
-          <g transform="translate(60, 160)">
-            {/* Pillar 1: SOM */}
-            <g transform="translate(0, 0)">
-              <rect x="0" y="-30" width="26" height="42" rx="3" fill="#047857" stroke="#34d399" strokeWidth="1" />
-              <ellipse cx="13" cy="-30" rx="13" ry="6" fill="#10b981" stroke="#34d399" strokeWidth="1" />
-              <text x="13" y="-8" fill="#ffffff" fontSize="9" fontWeight="800" textAnchor="middle" fontFamily="sans-serif">SOM</text>
-            </g>
-
-            {/* Pillar 2: SAM */}
-            <g transform="translate(42, -18)">
-              <rect x="0" y="-42" width="28" height="60" rx="3" fill="#059669" stroke="#34d399" strokeWidth="1.2" />
-              <ellipse cx="14" cy="-42" rx="14" ry="7" fill="#34d399" stroke="#a7f3d0" strokeWidth="1.2" />
-              <text x="14" y="-12" fill="#ffffff" fontSize="10" fontWeight="800" textAnchor="middle" fontFamily="sans-serif">SAM</text>
-            </g>
-
-            {/* Pillar 3: TAM */}
-            <g transform="translate(86, -40)">
-              <rect x="0" y="-56" width="32" height="82" rx="4" fill="#047857" stroke="#6ee7b7" strokeWidth="1.5" />
-              <ellipse cx="16" cy="-56" rx="16" ry="8" fill="#6ee7b7" stroke="#ffffff" strokeWidth="1.5" />
-              <text x="16" y="-18" fill="#064e3b" fontSize="11" fontWeight="900" textAnchor="middle" fontFamily="sans-serif">TAM</text>
-            </g>
+          {/* Top Right: Multi-bar Growth Chart */}
+          <g transform="translate(280, 36)" fill="#6ee7b7" opacity="0.65">
+            <rect x="0" y="16" width="5" height="12" rx="1.5" />
+            <rect x="8" y="9" width="5" height="19" rx="1.5" fill="#34d399" />
+            <rect x="16" y="2" width="5" height="26" rx="1.5" fill="#a7f3d0" />
           </g>
 
-          {/* Exponential Growth Curve Ascending Across Market */}
+          {/* Upward Trending Market Curve with Nodes */}
           <path
-            d="M 50 180 Q 150 170, 210 115 T 325 36"
-            fill="none"
-            stroke="url(#c2-static-growth)"
-            strokeWidth="3.5"
+            d="M 35 178 Q 130 170 180 120 T 325 58"
+            stroke="#a7f3d0"
+            strokeWidth="2.5"
             strokeLinecap="round"
+            fill="none"
           />
-          <path
-            d="M 50 180 Q 150 170, 210 115 T 325 36 L 325 210 L 50 210 Z"
-            fill="url(#c2-static-curve-fill)"
-          />
+          <circle cx="45" cy="176" r="3.5" fill="#34d399" />
+          <circle cx="115" cy="168" r="3.5" fill="#34d399" />
+          <circle cx="180" cy="120" r="4.5" fill="#ffffff" />
+          <circle cx="250" cy="85" r="3.5" fill="#34d399" />
+          <circle cx="318" cy="62" r="4.5" fill="#ffffff" />
 
-          {/* Golden Apex Star */}
-          <g transform="translate(325, 36)">
-            <circle cx="0" cy="0" r="5" fill="#fde047" />
-            <circle cx="0" cy="0" r="10" stroke="#fde047" strokeWidth="1.2" strokeOpacity="0.6" />
-            <line x1="-12" y1="0" x2="12" y2="0" stroke="#ffffff" strokeWidth="1.5" strokeLinecap="round" />
-            <line x1="0" y1="-12" x2="0" y2="12" stroke="#ffffff" strokeWidth="1.5" strokeLinecap="round" />
+          {/* Center 3D Excel-style Green Tile with TAM / Sizing Motif */}
+          <g transform="translate(180, 112)" filter="url(#c2-tile-shadow)">
+            {/* Tile Body */}
+            <rect
+              x="-36"
+              y="-36"
+              width="72"
+              height="72"
+              rx="18"
+              fill="url(#c2-tile-grad)"
+              stroke="#6ee7b7"
+              strokeWidth="1.5"
+            />
+            {/* Top Gloss Highlight */}
+            <path
+              d="M -34 -20 C -34 -30 -26 -34 -16 -34 L 16 -34 C 26 -34 34 -30 34 -20 C 20 -20 5 -12 -34 -20 Z"
+              fill="#ffffff"
+              fillOpacity="0.25"
+            />
+            {/* Center Sizing Lettermark */}
+            <text
+              x="0"
+              y="8"
+              fill="#ffffff"
+              fontSize="21"
+              fontWeight="900"
+              textAnchor="middle"
+              fontFamily="system-ui, -apple-system, sans-serif"
+              letterSpacing="0.8"
+            >
+              TAM
+            </text>
           </g>
 
-          {/* Sigma and Dollar Multipliers */}
-          <text x="245" y="195" fill="#34d399" fontSize="26" fontWeight="800" fillOpacity="0.75" fontFamily="serif">∑</text>
-          <text x="285" y="180" fill="#fde047" fontSize="20" fontWeight="800" fillOpacity="0.85" fontFamily="sans-serif">$</text>
+          {/* Mathematical Sigma Symbol in Bottom Right (Coursera Excel reference) */}
+          <text
+            x="276"
+            y="196"
+            fill="#a7f3d0"
+            fontSize="30"
+            fontWeight="600"
+            opacity="0.8"
+            fontFamily="serif"
+          >
+            ∑
+          </text>
 
-          {/* Course Badge in Top Left */}
-          <g transform="translate(20, 24)">
-            <rect width="84" height="24" rx="6" fill="#059669" fillOpacity="0.8" stroke="#34d399" strokeWidth="1" />
-            <text x="42" y="16" fill="#ffffff" fontSize="10.5" fontWeight="800" textAnchor="middle" letterSpacing="1" fontFamily="sans-serif">
-              COURSE 2
-            </text>
+          {/* Dollar Symbol in Bottom Left */}
+          <text
+            x="58"
+            y="194"
+            fill="#34d399"
+            fontSize="24"
+            fontWeight="700"
+            opacity="0.75"
+            fontFamily="system-ui, -apple-system, sans-serif"
+          >
+            $
+          </text>
+        </svg>
+      </div>
+    );
+  }
+
+  // Course 3: Full-Stack Cloud Development (Violet & Magenta, OpenAI/Prompt Engineering flower motif)
+  if (courseNum === 3) {
+    return (
+      <div className="relative w-full h-full min-h-[210px] overflow-hidden select-none bg-[#140322]">
+        <svg
+          viewBox="0 0 360 225"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className="w-full h-full object-cover"
+          preserveAspectRatio="xMidYMid slice"
+          aria-hidden="true"
+        >
+          <defs>
+            <linearGradient id="c3-bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#10021c" />
+              <stop offset="45%" stopColor="#430752" />
+              <stop offset="100%" stopColor="#25053b" />
+            </linearGradient>
+
+            <radialGradient id="c3-glow" cx="50%" cy="46%" r="62%">
+              <stop offset="0%" stopColor="#d946ef" stopOpacity="0.45" />
+              <stop offset="50%" stopColor="#9333ea" stopOpacity="0.25" />
+              <stop offset="100%" stopColor="#10021c" stopOpacity="0" />
+            </radialGradient>
+
+            <filter id="c3-flower-shadow" x="-20%" y="-20%" width="140%" height="140%">
+              <feDropShadow dx="0" dy="8" stdDeviation="10" floodColor="#000000" floodOpacity="0.6" />
+            </filter>
+          </defs>
+
+          {/* Background & Ambient Violet-Magenta Glow */}
+          <rect width="360" height="225" fill="url(#c3-bg-grad)" />
+          <circle cx="180" cy="112" r="115" fill="url(#c3-glow)" />
+
+          {/* Bottom Left: Code Tag Bracket < > (exact Coursera prompt engineering motif) */}
+          <g
+            transform="translate(54, 182)"
+            stroke="#f0abfc"
+            strokeWidth="2.4"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            opacity="0.85"
+          >
+            <path d="M 8 0 L 0 7 L 8 14" />
+            <path d="M 16 0 L 24 7 L 16 14" />
+          </g>
+
+          {/* Top Right: AI Sparkle Brain Icon (exact Coursera reference motif) */}
+          <g transform="translate(285, 36)" fill="#f0abfc" opacity="0.85">
+            {/* Sparkle 4-point star */}
+            <path d="M 12 0 Q 12 12 24 12 Q 12 12 12 24 Q 12 12 0 12 Q 12 12 12 0 Z" />
+            <circle cx="2" cy="22" r="2" fill="#e879f9" />
+          </g>
+
+          {/* Harmonic Orbital Rings in Background */}
+          <ellipse
+            cx="180"
+            cy="112"
+            rx="115"
+            ry="45"
+            stroke="#c084fc"
+            strokeWidth="1.2"
+            opacity="0.3"
+            transform="rotate(-18 180 112)"
+          />
+          <ellipse
+            cx="180"
+            cy="112"
+            rx="115"
+            ry="45"
+            stroke="#f472b6"
+            strokeWidth="1.2"
+            opacity="0.25"
+            transform="rotate(22 180 112)"
+          />
+
+          {/* Centerpiece: Symmetrical Luminous White OpenAI / Neural Flower Motif */}
+          <g transform="translate(180, 112)" filter="url(#c3-flower-shadow)">
+            {/* 6 Radial Symmetrical Petal Loops (Coursera Prompt Engineering Emblem) */}
+            {[0, 60, 120, 180, 240, 300].map((angle, idx) => (
+              <path
+                key={idx}
+                d="M 0 0 C 14 -22, 34 -22, 36 -4 C 38 14, 20 28, 0 0 Z"
+                stroke="#ffffff"
+                strokeWidth="4"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                fill="none"
+                transform={`rotate(${angle})`}
+              />
+            ))}
+            {/* Inner Core Glow Orb */}
+            <circle cx="0" cy="0" r="10" fill="#ffffff" />
+            <circle cx="0" cy="0" r="6" fill="#a855f7" />
           </g>
         </svg>
       </div>
     );
   }
 
-  // Course 3: Full-Stack Cloud Development (Cosmic Violet & Indigo)
+  // Course 4: Solution Design & MVP Building (Warm Sunset Amber & Coral, Mobile Prototype & Rocket motif)
   return (
-    <div className="relative w-full h-full min-h-[220px] overflow-hidden select-none bg-[#120726]">
+    <div className="relative w-full h-full min-h-[210px] overflow-hidden select-none bg-[#1a0601]">
       <svg
-        viewBox="0 0 360 240"
+        viewBox="0 0 360 225"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
         className="w-full h-full object-cover"
@@ -244,91 +413,104 @@ export const CourseCardBanner: React.FC<CourseCardBannerProps> = ({ courseNum })
         aria-hidden="true"
       >
         <defs>
-          <linearGradient id="c3-static-bg" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#0b0318" />
-            <stop offset="50%" stopColor="#220743" />
-            <stop offset="100%" stopColor="#0e0420" />
+          <linearGradient id="c4-bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#170501" />
+            <stop offset="50%" stopColor="#4a1506" />
+            <stop offset="100%" stopColor="#210802" />
           </linearGradient>
 
-          <radialGradient id="c3-static-glow" cx="50%" cy="45%" r="65%">
-            <stop offset="0%" stopColor="#c084fc" stopOpacity="0.35" />
-            <stop offset="60%" stopColor="#7c3aed" stopOpacity="0.18" />
-            <stop offset="100%" stopColor="#0b0318" stopOpacity="0" />
+          <radialGradient id="c4-glow" cx="50%" cy="46%" r="62%">
+            <stop offset="0%" stopColor="#f97316" stopOpacity="0.4" />
+            <stop offset="60%" stopColor="#c2410c" stopOpacity="0.22" />
+            <stop offset="100%" stopColor="#170501" stopOpacity="0" />
           </radialGradient>
 
-          <linearGradient id="c3-static-laser" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#38bdf8" />
-            <stop offset="50%" stopColor="#a855f7" />
-            <stop offset="100%" stopColor="#ec4899" />
-          </linearGradient>
+          <filter id="c4-phone-shadow" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="10" stdDeviation="12" floodColor="#0d0300" floodOpacity="0.7" />
+          </filter>
         </defs>
 
-        {/* Background & Ambient Glow */}
-        <rect width="360" height="240" fill="url(#c3-static-bg)" />
-        <circle cx="180" cy="115" r="115" fill="url(#c3-static-glow)" />
+        {/* Background & Ambient Coral-Amber Glow */}
+        <rect width="360" height="225" fill="url(#c4-bg-grad)" />
+        <circle cx="180" cy="112" r="115" fill="url(#c4-glow)" />
 
-        {/* Cyber Network Grid Matrix */}
-        <g stroke="#4c1d95" strokeWidth="0.8" strokeOpacity="0.3">
-          <line x1="0" y1="200" x2="360" y2="200" />
-          <line x1="0" y1="155" x2="360" y2="155" />
-          <line x1="0" y1="110" x2="360" y2="110" />
-          <circle cx="70" cy="155" r="2" fill="#a855f7" />
-          <circle cx="150" cy="200" r="2" fill="#38bdf8" />
-          <circle cx="230" cy="110" r="2" fill="#ec4899" />
-          <circle cx="300" cy="155" r="2" fill="#c084fc" />
-        </g>
-
-        {/* Intersecting Laser Waveform Streams */}
+        {/* Double Diamond Framework Geometry in Background */}
         <path
-          d="M -10 180 Q 100 50, 200 145 T 370 60"
-          stroke="url(#c3-static-laser)"
-          strokeWidth="2.8"
+          d="M 50 112 L 105 75 L 160 112 L 105 149 Z"
+          stroke="#fdba74"
+          strokeWidth="1.2"
+          opacity="0.3"
           fill="none"
-          strokeLinecap="round"
+        />
+        <path
+          d="M 200 112 L 255 75 L 310 112 L 255 149 Z"
+          stroke="#fdba74"
+          strokeWidth="1.2"
+          opacity="0.3"
+          fill="none"
         />
 
-        {/* Center 3D Cloud Architecture Nexus */}
-        <g transform="translate(180, 115)">
-          {/* Orbital Acceleration Rings */}
-          <ellipse cx="0" cy="0" rx="68" ry="28" stroke="#c084fc" strokeWidth="1.2" strokeOpacity="0.45" fill="none" />
-          <circle cx="68" cy="0" r="4" fill="#38bdf8" />
-          <circle cx="-68" cy="0" r="4" fill="#ec4899" />
-          <ellipse cx="0" cy="0" rx="54" ry="42" stroke="#38bdf8" strokeWidth="1" strokeOpacity="0.35" strokeDasharray="4 4" fill="none" />
-          <circle cx="0" cy="42" r="3.5" fill="#f43f5e" />
+        {/* Bottom Left: User Journey Node Network */}
+        <g transform="translate(52, 178)" stroke="#fdba74" strokeWidth="1.6" fill="none" opacity="0.8">
+          <circle cx="6" cy="12" r="4" fill="#ea580c" />
+          <circle cx="22" cy="4" r="4" fill="#f97316" />
+          <circle cx="36" cy="14" r="4" fill="#fed7aa" />
+          <line x1="10" y1="10" x2="18" y2="6" />
+          <line x1="26" y1="6" x2="32" y2="12" />
+        </g>
 
-          {/* Central Hexagonal Cloud Core */}
-          <polygon
-            points="0,-22 19,-11 19,11 0,22 -19,11 -19,-11"
-            fill="#2e1065"
-            stroke="#00f0ff"
-            strokeWidth="2.2"
-          />
-          {/* Cloud Icon Inside Hexagon */}
+        {/* Top Right: Launch Rocket Trajectory */}
+        <g transform="translate(285, 34)">
           <path
-            d="M -8 5 C -10 5, -12 3, -12 1 C -12 -1, -10 -2, -8 -2 C -8 -5, -4 -7, 0 -5 C 2 -7, 7 -6, 7 -3 C 9 -3, 10 -1, 10 1 C 10 4, 8 5, 6 5 Z"
-            fill="#ffffff"
+            d="M 14 0 C 20 6, 22 14, 20 20 L 16 18 L 12 22 L 8 18 L 4 20 C 2 14, 4 6, 10 0 Z"
+            fill="#ea580c"
+            stroke="#fde047"
+            strokeWidth="1.5"
           />
+          <circle cx="12" cy="8" r="2.5" fill="#ffffff" />
+          <path d="M 9 21 L 12 28 L 15 21 Z" fill="#facc15" />
         </g>
 
-        {/* Code Brackets on Left `< / >` */}
-        <g transform="translate(42, 34)" stroke="#38bdf8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none">
-          <polyline points="8,0 2,7 8,14" />
-          <line x1="12" y1="14" x2="16" y2="0" stroke="#c084fc" />
-          <polyline points="20,0 26,7 20,14" />
-        </g>
+        {/* Centerpiece: 3D MVP Mobile Prototype Frame */}
+        <g transform="translate(180, 112)" filter="url(#c4-phone-shadow)">
+          {/* Phone Body */}
+          <rect
+            x="-34"
+            y="-48"
+            width="68"
+            height="96"
+            rx="14"
+            fill="#1c1917"
+            stroke="#fb923c"
+            strokeWidth="1.6"
+          />
+          {/* Speaker / Notch */}
+          <rect x="-9" y="-42" width="18" height="2.5" rx="1.2" fill="#7c2d12" />
 
-        {/* Neural AI Copilot Node on Right */}
-        <g transform="translate(290, 34)" stroke="#ec4899" strokeWidth="1.8" fill="none">
-          <circle cx="12" cy="12" r="10" stroke="#f43f5e" strokeWidth="1.2" strokeDasharray="3 3" />
-          <circle cx="12" cy="12" r="4" fill="#ec4899" />
-          <path d="M 12 2 L 12 6 M 12 18 L 12 22 M 2 12 L 6 12 M 18 12 L 22 12" stroke="#ec4899" strokeWidth="1.5" strokeLinecap="round" />
-        </g>
+          {/* Wireframe UI Header & Skeleton */}
+          <rect x="-24" y="-32" width="34" height="5" rx="2" fill="#fbbf24" fillOpacity="0.9" />
+          <rect x="-24" y="-22" width="48" height="3.5" rx="1.5" fill="#fdba74" fillOpacity="0.45" />
+          <rect x="-24" y="-14" width="40" height="3.5" rx="1.5" fill="#fdba74" fillOpacity="0.3" />
 
-        {/* Course Badge in Top Left */}
-        <g transform="translate(20, 24)">
-          <rect width="84" height="24" rx="6" fill="#7c3aed" fillOpacity="0.8" stroke="#c084fc" strokeWidth="1" />
-          <text x="42" y="16" fill="#ffffff" fontSize="10.5" fontWeight="800" textAnchor="middle" letterSpacing="1" fontFamily="sans-serif">
-            COURSE 3
+          {/* MVP Interactive Card */}
+          <rect x="-24" y="-5" width="48" height="24" rx="4.5" fill="#431407" stroke="#ea580c" strokeWidth="1" />
+          <circle cx="-15" cy="7" r="4.5" fill="#f97316" />
+          <line x1="-6" y1="4" x2="16" y2="4" stroke="#fde047" strokeWidth="1.8" strokeLinecap="round" />
+          <line x1="-6" y1="10" x2="8" y2="10" stroke="#fdba74" strokeWidth="1.2" strokeLinecap="round" strokeOpacity="0.6" />
+
+          {/* Primary Action Button */}
+          <rect x="-24" y="24" width="48" height="12" rx="3.5" fill="#ea580c" />
+          <text
+            x="0"
+            y="33"
+            fill="#ffffff"
+            fontSize="6.5"
+            fontWeight="bold"
+            textAnchor="middle"
+            fontFamily="system-ui, -apple-system, sans-serif"
+            letterSpacing="0.5"
+          >
+            LAUNCH MVP
           </text>
         </g>
       </svg>

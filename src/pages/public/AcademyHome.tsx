@@ -7,9 +7,11 @@ import {
   COURSE_1_CHAPTERS,
   COURSE_2_CHAPTERS,
   COURSE_3_CHAPTERS,
+  COURSE_4_CHAPTERS,
   COURSE_1_PARTS,
   COURSE_2_PARTS,
   COURSE_3_PARTS,
+  COURSE_4_PARTS,
   ACADEMY_COLORS,
   AcademyChapter,
   AcademyPart,
@@ -23,19 +25,34 @@ export const AcademyHome: React.FC = () => {
   const [selectedCourseSlug, setSelectedCourseSlug] = useState<string | null>(null);
   const [part, setPart] = useState("All");
 
+  const isCourse4 =
+    selectedCourseSlug === "solution-design-and-mvp-building" ||
+    selectedCourseSlug === "solution-design" ||
+    selectedCourseSlug === "course-4";
   const isCourse3 =
-    selectedCourseSlug === "full-stack-cloud-development" ||
-    selectedCourseSlug === "full-stack-cloud-for-founders" ||
-    selectedCourseSlug === "course-3";
-  const isCourse2 = !isCourse3 && selectedCourseSlug === "market-sizing-and-opportunity";
+    !isCourse4 &&
+    (selectedCourseSlug === "full-stack-cloud-development" ||
+      selectedCourseSlug === "full-stack-cloud-for-founders" ||
+      selectedCourseSlug === "course-3");
+  const isCourse2 = !isCourse4 && !isCourse3 && selectedCourseSlug === "market-sizing-and-opportunity";
 
-  const activeCourse = isCourse3 ? ACADEMY_COURSES[2] : isCourse2 ? ACADEMY_COURSES[1] : ACADEMY_COURSES[0];
-  const chapters: AcademyChapter[] = isCourse3
+  const activeCourse = isCourse4
+    ? ACADEMY_COURSES[3]
+    : isCourse3
+    ? ACADEMY_COURSES[2]
+    : isCourse2
+    ? ACADEMY_COURSES[1]
+    : ACADEMY_COURSES[0];
+  const chapters: AcademyChapter[] = isCourse4
+    ? COURSE_4_CHAPTERS
+    : isCourse3
     ? COURSE_3_CHAPTERS
     : isCourse2
     ? COURSE_2_CHAPTERS
     : COURSE_1_CHAPTERS;
-  const parts: AcademyPart[] = isCourse3
+  const parts: AcademyPart[] = isCourse4
+    ? COURSE_4_PARTS
+    : isCourse3
     ? COURSE_3_PARTS
     : isCourse2
     ? COURSE_2_PARTS
@@ -238,7 +255,7 @@ export const AcademyHome: React.FC = () => {
           Master the full pipeline: discover authentic problems, size the market, and build solutions. Click any course to view its chapters.
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6 mt-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6 mt-6">
           {ACADEMY_COURSES.map((course) => {
             const providerInfo =
               course.n === 1
@@ -259,13 +276,22 @@ export const AcademyHome: React.FC = () => {
                     badgeText: "COURSE 2",
                     badgeColor: "text-emerald-700 bg-emerald-50 border-emerald-200",
                   }
-                : {
+                : course.n === 3
+                ? {
                     tag: "Top AI program",
                     tagClass: "bg-[#f3e8ff] text-[#6b21a8] border-[#e9d5ff]",
                     rating: "4.9",
                     level: "Advanced",
                     badgeText: "COURSE 3",
                     badgeColor: "text-purple-700 bg-purple-50 border-purple-200",
+                  }
+                : {
+                    tag: "Hands-on Capstone",
+                    tagClass: "bg-[#fff7ed] text-[#c2410c] border-[#ffedd5]",
+                    rating: "4.9",
+                    level: "Builder",
+                    badgeText: "COURSE 4",
+                    badgeColor: "text-orange-700 bg-orange-50 border-orange-200",
                   };
 
             return (
@@ -280,49 +306,39 @@ export const AcademyHome: React.FC = () => {
                     handleCourseSwitch(course.slug);
                   }
                 }}
-                className="text-[#1f1f1f] border border-[#dae1ed] rounded-2xl p-3 sm:p-3.5 bg-white shadow-2xs hover:shadow-xl hover:border-gray-300 hover:-translate-y-1 transition-all duration-300 group flex flex-col cursor-pointer text-left select-none relative"
+                className="text-[#1f1f1f] border border-[#dae1ed] rounded-2xl p-3 sm:p-3.5 bg-white shadow-2xs hover:shadow-xl hover:border-gray-300 hover:-translate-y-1 transition-all duration-300 group flex flex-col justify-between cursor-pointer text-left select-none relative"
               >
                 {/* 65% - 70% Inner Rounded-Corner Cut Image Frame */}
-                <div className="w-full h-[225px] sm:h-[245px] rounded-xl overflow-hidden shrink-0 relative bg-slate-950">
+                <div className="w-full h-[210px] sm:h-[225px] rounded-xl overflow-hidden shrink-0 relative bg-slate-950">
                   <CourseCardBanner courseNum={course.n} />
                 </div>
 
-                {/* 30% - 35% Content Details Below Image */}
-                <div className="pt-3 pb-1 px-1 flex-1 flex flex-col justify-between">
+                {/* 30% - 35% Content Details Below Image (Coursera Layout Hierarchy) */}
+                <div className="pt-3 pb-0.5 px-0.5 flex-1 flex flex-col justify-between">
                   <div>
-                    {/* Header line with Course Badge and Status Pill */}
-                    <div className="flex items-center justify-between">
-                      <span className={`text-[10.5px] font-extrabold tracking-wider border rounded px-2 py-0.5 uppercase ${providerInfo.badgeColor}`}>
-                        {providerInfo.badgeText}
-                      </span>
-                      <span
-                        className={`inline-block text-[11px] font-semibold px-2 py-0.5 rounded border ${providerInfo.tagClass}`}
-                      >
-                        {providerInfo.tag}
-                      </span>
-                    </div>
-
                     {/* Course Title */}
-                    <h3 className="text-[16px] sm:text-[17px] font-bold text-gray-900 group-hover:text-[#0056d2] transition-colors leading-[1.3] mt-2 mb-0">
+                    <h3 className="text-[16.5px] sm:text-[17px] font-bold text-[#1f1f1f] group-hover:text-[#0056d2] transition-colors leading-[1.3] m-0 line-clamp-2">
                       {course.title}
                     </h3>
 
-                    {/* Compact Description */}
-                    <p className="text-[12px] text-[#5b606b] mt-1 mb-0 leading-[1.45] line-clamp-2">
-                      {course.description}
-                    </p>
+                    {/* Rating & Meta Row (Clean Coursera-style: ★ 4.8 · Beginner · 15 chapters) */}
+                    <div className="text-[12.5px] text-[#5b606b] flex items-center gap-1.5 flex-wrap mt-2">
+                      <span className="text-[#f59e0b] font-bold text-[13.5px]">★</span>
+                      <span className="font-bold text-[#1f1f1f]">{providerInfo.rating}</span>
+                      <span className="text-[#cbd5e1]">·</span>
+                      <span className="text-[#475569] font-medium">{providerInfo.level}</span>
+                      <span className="text-[#cbd5e1]">·</span>
+                      <span className="text-[#475569] font-medium">{course.chaptersCount} chapters</span>
+                    </div>
                   </div>
 
-                  <div className="mt-3 pt-2.5 border-t border-[#dae1ed]/70 flex items-center justify-between">
-                    {/* Rating & Meta Row (Clean rating with NO review count parentheses) */}
-                    <div className="text-[12px] text-gray-600 flex items-center gap-1.5 flex-wrap">
-                      <span className="text-amber-500 font-bold text-[13px]">★</span>
-                      <span className="font-bold text-gray-900">{providerInfo.rating}</span>
-                      <span className="text-gray-400">·</span>
-                      <span className="text-gray-700 font-medium">{providerInfo.level}</span>
-                      <span className="text-gray-400">·</span>
-                      <span className="text-gray-700 font-medium">{course.chaptersCount} chapters</span>
-                    </div>
+                  {/* Pill Badge at the very bottom (Directly matching Coursera reference) */}
+                  <div className="mt-3.5 pt-1">
+                    <span
+                      className={`inline-block text-[11px] font-semibold px-2.5 py-0.5 rounded-full border ${providerInfo.tagClass}`}
+                    >
+                      {providerInfo.tag}
+                    </span>
                   </div>
                 </div>
               </div>

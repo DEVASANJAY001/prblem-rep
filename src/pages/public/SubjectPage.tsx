@@ -6,9 +6,11 @@ import {
   COURSE_1_CHAPTERS,
   COURSE_2_CHAPTERS,
   COURSE_3_CHAPTERS,
+  COURSE_4_CHAPTERS,
   COURSE_1_PARTS,
   COURSE_2_PARTS,
   COURSE_3_PARTS,
+  COURSE_4_PARTS,
   AcademyChapter,
   AcademyPart,
 } from "@/data/academyData";
@@ -18,33 +20,66 @@ export const SubjectPage: React.FC = () => {
   const location = useLocation();
 
   // Determine active course
+  const isCourse4 =
+    location.pathname.includes("solution-design") ||
+    location.pathname.includes("mvp") ||
+    courseSlug?.includes("solution-design") ||
+    courseSlug?.includes("mvp") ||
+    courseSlug === "course-4";
+
   const isCourse3 =
-    location.pathname.includes("full-stack") ||
-    location.pathname.includes("cloud") ||
-    courseSlug?.includes("full-stack") ||
-    courseSlug?.includes("cloud") ||
-    courseSlug === "course-3";
+    !isCourse4 &&
+    (location.pathname.includes("full-stack") ||
+      location.pathname.includes("cloud") ||
+      courseSlug?.includes("full-stack") ||
+      courseSlug?.includes("cloud") ||
+      courseSlug === "course-3");
 
   const isCourse2 =
+    !isCourse4 &&
     !isCourse3 &&
     (location.pathname.includes("market-sizing") ||
       courseSlug?.includes("market-sizing") ||
       courseSlug === "course-2");
 
-  const course = isCourse3 ? ACADEMY_COURSES[2] : isCourse2 ? ACADEMY_COURSES[1] : ACADEMY_COURSES[0];
-  const chapters: AcademyChapter[] = isCourse3
+  const course = isCourse4
+    ? ACADEMY_COURSES[3]
+    : isCourse3
+    ? ACADEMY_COURSES[2]
+    : isCourse2
+    ? ACADEMY_COURSES[1]
+    : ACADEMY_COURSES[0];
+  const chapters: AcademyChapter[] = isCourse4
+    ? COURSE_4_CHAPTERS
+    : isCourse3
     ? COURSE_3_CHAPTERS
     : isCourse2
     ? COURSE_2_CHAPTERS
     : COURSE_1_CHAPTERS;
   const parts: AcademyPart[] = (
-    isCourse3 ? COURSE_3_PARTS : isCourse2 ? COURSE_2_PARTS : COURSE_1_PARTS
+    isCourse4
+      ? COURSE_4_PARTS
+      : isCourse3
+      ? COURSE_3_PARTS
+      : isCourse2
+      ? COURSE_2_PARTS
+      : COURSE_1_PARTS
   ).filter((p) => p.name !== "All");
 
   // Active syllabus accordion part (default to part 0: Foundations)
   const [openPart, setOpenPart] = useState<number>(0);
 
   const whatYouWillLearn = useMemo(() => {
+    if (isCourse4) {
+      return [
+        "Synthesize customer interviews into actionable personas and journey maps",
+        "Reframe raw problem statements into high-leverage How Might We challenges",
+        "Execute rapid ideation using Crazy 8s, SCAMPER, and AI technical copilots",
+        "Prioritize core functionality using RICE scoring and riskiest assumption tests",
+        "Design interactive mobile and web prototypes in 14-day rapid build sprints",
+        "Negotiate, run, and convert customer pilot agreements into paid contracts",
+      ];
+    }
     if (isCourse3) {
       return [
         "Architect scalable cloud web apps using React 18, TypeScript, and Vite",
@@ -73,9 +108,21 @@ export const SubjectPage: React.FC = () => {
       "Test a problem with cheap validation experiments",
       "Decide objectively to go, pivot or stop",
     ];
-  }, [isCourse2, isCourse3]);
+  }, [isCourse2, isCourse3, isCourse4]);
 
   const skills = useMemo(() => {
+    if (isCourse4) {
+      return [
+        "Human-Centered Design",
+        "User Journey Mapping",
+        "How Might We Reframing",
+        "RICE Prioritisation",
+        "Clickable Prototyping",
+        "Usability Testing (SUS)",
+        "Pilot Agreement Drafting",
+        "Pitch & Demo Execution",
+      ];
+    }
     if (isCourse3) {
       return [
         "React 18 & TypeScript",
@@ -104,7 +151,7 @@ export const SubjectPage: React.FC = () => {
       "Bottom-up sizing",
       "Validation experiments",
     ];
-  }, [isCourse2, isCourse3]);
+  }, [isCourse2, isCourse3, isCourse4]);
 
   return (
     <div className="font-source-sans w-full min-h-screen bg-white text-[#1f1f1f] text-base antialiased">
@@ -153,7 +200,9 @@ export const SubjectPage: React.FC = () => {
               <div>
                 <div className="font-bold text-[17px] sm:text-[18px] text-[#1f1f1f]">{course.level}</div>
                 <div className="text-xs sm:text-sm text-[#5b606b]">
-                  {isCourse3
+                  {isCourse4
+                    ? "Prerequisite: Courses 1 & 2 (Course 3 optional)"
+                    : isCourse3
                     ? "Prerequisite: Courses 1 & 2"
                     : isCourse2
                     ? "Prerequisite: Course 1"

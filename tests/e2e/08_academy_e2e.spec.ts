@@ -278,4 +278,30 @@ test.describe("Academy Flow E2E Tests: Course Branching, Layout & Independent Sc
     await expect(page.locator("body")).toContainText("7.1 NoSQL document basics");
     console.log("✅ [Academy E2E] Course 3 Subject Page & Reader passed 100%");
   });
+
+  test("8. Course 4 (Solution Design & MVP Building) Subject Page and Chapter Reader", async ({ page }) => {
+    console.log("🚀 [Academy E2E] Testing Course 4 Subject Page & Reader...");
+    await page.goto("/learn/solution-design-and-mvp-building");
+    await page.waitForLoadState("domcontentloaded");
+
+    await expect(page.locator("h1")).toContainText("Solution Design & MVP Building");
+    await expect(page.locator("body")).toContainText("18 chapters");
+
+    // Click Start learning
+    const startBtn = page.getByRole("link", { name: /Start learning/i });
+    await expect(startBtn).toBeVisible();
+    await startBtn.click();
+    await expect(page).toHaveURL(/\/learn\/solution-design-and-mvp-building\/course-overview/);
+
+    // Verify Chapter 0 content
+    await expect(page.locator("h1")).toContainText("Course Overview");
+    await expect(page.locator("body")).toContainText(/0\.1 What/i);
+
+    // Navigate to Chapter 8 (Defining the MVP)
+    await page.goto("/learn/solution-design-and-mvp-building/defining-the-mvp");
+    await page.waitForLoadState("domcontentloaded");
+    await expect(page.locator("h1")).toContainText("Defining the MVP");
+    await expect(page.locator("body")).toContainText(/8\.1 What an MVP/i);
+    console.log("✅ [Academy E2E] Course 4 Subject Page & Reader passed 100%");
+  });
 });

@@ -155,7 +155,8 @@ export const COURSE_2_PARTS: AcademyPart[] = [
 ];
 
 import { COURSE_3_PARTS, COURSE_3_CHAPTERS } from "./course3Data";
-export { COURSE_3_PARTS, COURSE_3_CHAPTERS };
+import { COURSE_4_PARTS, COURSE_4_CHAPTERS } from "./course4Data";
+export { COURSE_3_PARTS, COURSE_3_CHAPTERS, COURSE_4_PARTS, COURSE_4_CHAPTERS };
 
 export const ACADEMY_PARTS = COURSE_1_PARTS;
 
@@ -211,6 +212,19 @@ export const ACADEMY_COURSES: AcademyCourse[] = [
     sectionsCount: 99,
     description: "Build, secure, ship and scale the production web solution to a verified problem using React, TypeScript, Firestore, and AI copilots.",
     parts: COURSE_3_PARTS,
+  },
+  {
+    id: "course-4",
+    n: 4,
+    slug: "solution-design-and-mvp-building",
+    title: "Solution Design & MVP Building",
+    level: "Builder",
+    live: true,
+    meta: "18 chapters · 101 sections",
+    chaptersCount: 18,
+    sectionsCount: 101,
+    description: "Turn a validated, sized problem into a tested product people will actually use. Master user flows, rapid prototyping, MVP scoping, pilots, and pitch execution.",
+    parts: COURSE_4_PARTS,
   },
 ];
 
@@ -4041,8 +4055,9 @@ export function getCourse(slugOrId?: string): AcademyCourse {
     (c) =>
       c.slug.toLowerCase() === cleaned ||
       c.id.toLowerCase() === cleaned ||
-      (cleaned.includes("market") && c.id === "course-2") ||
+      ((cleaned.includes("solution") || cleaned.includes("mvp")) && c.id === "course-4") ||
       ((cleaned.includes("cloud") || cleaned.includes("full-stack")) && c.id === "course-3") ||
+      (cleaned.includes("market") && c.id === "course-2") ||
       (cleaned.includes("discovery") && c.id === "course-1")
   );
   return found || ACADEMY_COURSES[0];
@@ -4051,6 +4066,9 @@ export function getCourse(slugOrId?: string): AcademyCourse {
 export function getCourseChapters(courseSlug?: string): AcademyChapter[] {
   if (!courseSlug) return COURSE_1_CHAPTERS;
   const cleaned = courseSlug.toLowerCase().trim();
+  if (cleaned.includes("solution") || cleaned.includes("mvp") || cleaned === "course-4") {
+    return COURSE_4_CHAPTERS;
+  }
   if (cleaned.includes("cloud") || cleaned.includes("full-stack") || cleaned === "course-3") {
     return COURSE_3_CHAPTERS;
   }
@@ -4063,6 +4081,9 @@ export function getCourseChapters(courseSlug?: string): AcademyChapter[] {
 export function getCourseParts(courseSlug?: string): AcademyPart[] {
   if (!courseSlug) return COURSE_1_PARTS;
   const cleaned = courseSlug.toLowerCase().trim();
+  if (cleaned.includes("solution") || cleaned.includes("mvp") || cleaned === "course-4") {
+    return COURSE_4_PARTS;
+  }
   if (cleaned.includes("cloud") || cleaned.includes("full-stack") || cleaned === "course-3") {
     return COURSE_3_PARTS;
   }
