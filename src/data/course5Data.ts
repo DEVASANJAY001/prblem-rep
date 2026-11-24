@@ -71,6 +71,11 @@ export const COURSE_5_CHAPTERS: AcademyChapter[] = [
         "callout": {
           "boldPrefix": "Builder's Heuristic:",
           "text": "Never deploy generative models without automated evaluation gates. The true test of what this subject covers is measured accuracy on real domain edge cases."
+        },
+        "image": {
+          "url": "/academy/diagrams/ai-builder-pipeline.svg",
+          "caption": "Figure 0.1: The 6-Stage Production AI Builder Architecture from verified problem dossier to evaluated copilot.",
+          "alt": "6-Stage AI Builder Architecture Diagram"
         }
       },
       {
@@ -284,7 +289,12 @@ export const COURSE_5_CHAPTERS: AcademyChapter[] = [
             "bold": "The cost of being wrong:",
             "text": "Production best practices on the cost of being wrong to ensure reliable, high-performance AI deployment."
           }
-        ]
+        ],
+        "image": {
+          "url": "/academy/diagrams/ai-triage-matrix.svg",
+          "caption": "Figure 1.1: Architecture Triage Matrix: Choosing between deterministic code, classical ML, and generative LLMs.",
+          "alt": "AI Architecture Triage Matrix"
+        }
       },
       {
         "id": "c5-ch1-s04",
@@ -387,6 +397,11 @@ export const COURSE_5_CHAPTERS: AcademyChapter[] = [
         "callout": {
           "boldPrefix": "Builder's Heuristic:",
           "text": "Never deploy generative models without automated evaluation gates. The true test of text as tokens is measured accuracy on real domain edge cases."
+        },
+        "image": {
+          "url": "/academy/diagrams/llm-token-pipeline.svg",
+          "caption": "Figure 2.1: Next-Token Prediction Pipeline: From raw characters and subword tokens through attention layers and temperature sampling.",
+          "alt": "LLM Token Pipeline Diagram"
         }
       },
       {
@@ -618,6 +633,11 @@ export const COURSE_5_CHAPTERS: AcademyChapter[] = [
         "callout": {
           "boldPrefix": "Builder's Heuristic:",
           "text": "Never deploy generative models without automated evaluation gates. The true test of anatomy of a prompt is measured accuracy on real domain edge cases."
+        },
+        "image": {
+          "url": "/academy/diagrams/structured-prompt-anatomy.svg",
+          "caption": "Figure 3.1: The 5-Layer Structured Prompt Architecture for guaranteed JSON schema generation.",
+          "alt": "Structured Prompt Anatomy Diagram"
         }
       },
       {
@@ -877,6 +897,11 @@ export const COURSE_5_CHAPTERS: AcademyChapter[] = [
               "text2": "> 95% Golden Eval Pass"
             }
           ]
+        },
+        "image": {
+          "url": "/academy/diagrams/model-api-architecture.svg",
+          "caption": "Figure 4.1: Secure Serverless Model Gateway with zero client secret exposure and Server-Sent Event (SSE) streaming.",
+          "alt": "Model API Gateway Architecture Diagram"
         }
       },
       {
@@ -1060,7 +1085,12 @@ export const COURSE_5_CHAPTERS: AcademyChapter[] = [
             "bold": "Cosine similarity in plain language:",
             "text": "Production best practices on cosine similarity in plain language to ensure reliable, high-performance AI deployment."
           }
-        ]
+        ],
+        "image": {
+          "url": "/academy/diagrams/rag-architecture.svg",
+          "caption": "Figure 5.1: The Dual-Path RAG Pipeline: Ingestion chunking and cosine similarity query retrieval.",
+          "alt": "RAG Architecture Diagram"
+        }
       },
       {
         "id": "c5-ch5-s03",
@@ -1287,6 +1317,11 @@ export const COURSE_5_CHAPTERS: AcademyChapter[] = [
               "text2": "> 95% Golden Eval Pass"
             }
           ]
+        },
+        "image": {
+          "url": "/academy/diagrams/react-agent-loop.svg",
+          "caption": "Figure 6.1: The Bounded ReAct (Reason + Act) Agent Execution Loop with guardrails.",
+          "alt": "ReAct Agent Loop Diagram"
         }
       },
       {
@@ -1417,6 +1452,11 @@ export const COURSE_5_CHAPTERS: AcademyChapter[] = [
         "callout": {
           "boldPrefix": "Builder's Heuristic:",
           "text": "Never deploy generative models without automated evaluation gates. The true test of define the copilot's job is measured accuracy on real domain edge cases."
+        },
+        "image": {
+          "url": "/academy/diagrams/copilot-anatomy.svg",
+          "caption": "Figure 7.1: Component Architecture of the Production Problem Solver Copilot.",
+          "alt": "Problem Solver Copilot Anatomy Diagram"
         }
       },
       {
@@ -1695,7 +1735,12 @@ export const COURSE_5_CHAPTERS: AcademyChapter[] = [
             "bold": "Comparing versions side by side:",
             "text": "Production best practices on comparing versions side by side to ensure reliable, high-performance AI deployment."
           }
-        ]
+        ],
+        "image": {
+          "url": "/academy/diagrams/ai-evals-pyramid.svg",
+          "caption": "Figure 8.1: The AI Quality Assurance Pyramid: Golden test datasets, LLM-as-a-judge rubrics, and CI/CD deploy gates.",
+          "alt": "AI Evaluation Pyramid Diagram"
+        }
       },
       {
         "id": "c5-ch8-s04",
@@ -1829,6 +1874,11 @@ export const COURSE_5_CHAPTERS: AcademyChapter[] = [
         "callout": {
           "boldPrefix": "Builder's Heuristic:",
           "text": "Never deploy generative models without automated evaluation gates. The true test of risks specific to ai features is measured accuracy on real domain edge cases."
+        },
+        "image": {
+          "url": "/academy/diagrams/ai-safety-defense.svg",
+          "caption": "Figure 9.1: Defense-in-Depth Generative AI Security Framework: From input sanitization to output shields.",
+          "alt": "AI Safety Defense Framework Diagram"
         }
       },
       {
@@ -2080,6 +2130,11 @@ export const COURSE_5_CHAPTERS: AcademyChapter[] = [
               "text2": "> 95% Golden Eval Pass"
             }
           ]
+        },
+        "image": {
+          "url": "/academy/diagrams/cost-latency-cascade.svg",
+          "caption": "Figure 10.1: Tiered Model Routing Cascade with Semantic Caching for 85% cost reduction.",
+          "alt": "Cost Latency Cascade Diagram"
         }
       },
       {
@@ -2402,6 +2457,11 @@ export const COURSE_5_CHAPTERS: AcademyChapter[] = [
         "callout": {
           "boldPrefix": "Builder's Heuristic:",
           "text": "Never deploy generative models without automated evaluation gates. The true test of rules, scores and models is measured accuracy on real domain edge cases."
+        },
+        "image": {
+          "url": "/academy/diagrams/hybrid-ml-llm.svg",
+          "caption": "Figure 12.1: The Hybrid Architecture: Combining microsecond tabular ML scoring with generative LLM synthesis.",
+          "alt": "Hybrid Tabular ML and LLM Diagram"
         }
       },
       {

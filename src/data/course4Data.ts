@@ -45,9 +45,9 @@ export const COURSE_4_CHAPTERS: AcademyChapter[] = [
     "sectionsCount": 4,
     "part": "Understand & Frame",
     "coverColor": "#ea580c",
-    "subs": "What This Subject Covers · The Five-Stage Solver Roadmap · Prerequisites · How to Use This Material",
+    "subs": "What This Subject Covers \u00b7 The Five-Stage Solver Roadmap \u00b7 Prerequisites \u00b7 How to Use This Material",
     "lead": "A verified and sized problem still requires a thoughtful, user-validated solution. This subject guides you through the human-centered methodology of turning pain points into wireframes, clickable prototypes, scoped MVPs, and converted customer pilots.",
-    "inThisChapter": "The 5-stage solver roadmap · Transitioning from problem discovery to product design · Prerequisites and tools · The capstone portfolio project",
+    "inThisChapter": "The 5-stage solver roadmap \u00b7 Transitioning from problem discovery to product design \u00b7 Prerequisites and tools \u00b7 The capstone portfolio project",
     "practicePrompt": "Select one validated problem from the Stuckhere open directory to serve as your case study throughout this course.",
     "sections": [
       {
@@ -211,9 +211,9 @@ export const COURSE_4_CHAPTERS: AcademyChapter[] = [
     "sectionsCount": 5,
     "part": "Understand & Frame",
     "coverColor": "#ea580c",
-    "subs": "Why Technology-First Fails · Principles of Human-Centered Design · The Double Diamond · Solving Within Constraints · and 1 more sections",
+    "subs": "Why Technology-First Fails \u00b7 Principles of Human-Centered Design \u00b7 The Double Diamond \u00b7 Solving Within Constraints \u00b7 and 1 more sections",
     "lead": "Technology is only valuable when it improves a human's lived experience or workplace outcome. Human-centered design prevents builders from falling in love with clever technology rather than practical utility.",
-    "inThisChapter": "Why technology-first approaches fail · The 4 core principles of HCD · The Double Diamond model · Designing within strict real-world constraints",
+    "inThisChapter": "Why technology-first approaches fail \u00b7 The 4 core principles of HCD \u00b7 The Double Diamond model \u00b7 Designing within strict real-world constraints",
     "practicePrompt": "Audit one digital product you use weekly. Identify two features that feel engineered for demos rather than real human workflows.",
     "sections": [
       {
@@ -241,6 +241,11 @@ export const COURSE_4_CHAPTERS: AcademyChapter[] = [
         "callout": {
           "boldPrefix": "Builder's Compass:",
           "text": "Never build what can be tested faster with a prototype. The goal of why technology-first fails is maximizing learning velocity per dollar spent."
+        },
+        "image": {
+          "url": "/academy/diagrams/double-diamond-design.svg",
+          "caption": "Figure 1.1: The Double Diamond Framework: Diverging and converging across problem space and solution space.",
+          "alt": "Double Diamond Design Process Diagram"
         }
       },
       {
@@ -396,9 +401,9 @@ export const COURSE_4_CHAPTERS: AcademyChapter[] = [
     "sectionsCount": 6,
     "part": "Understand & Frame",
     "coverColor": "#ea580c",
-    "subs": "Revisiting Your Research · Observation Methods · Personas · Journey Maps · and 2 more sections",
+    "subs": "Revisiting Your Research \u00b7 Observation Methods \u00b7 Personas \u00b7 Journey Maps \u00b7 and 2 more sections",
     "lead": "Great design starts with empathy grounded in hard observational evidence. Learn how to shadow operators, extract behavioral patterns, construct evidence-based personas, and map the user's emotional journey.",
-    "inThisChapter": "Extracting design cues from discovery interviews · Shadowing and contextual inquiry · Evidence-based personas vs fictional stereotypes · Jobs To Be Done (JTBD) framing",
+    "inThisChapter": "Extracting design cues from discovery interviews \u00b7 Shadowing and contextual inquiry \u00b7 Evidence-based personas vs fictional stereotypes \u00b7 Jobs To Be Done (JTBD) framing",
     "practicePrompt": "Create a persona card and a 5-stage customer journey map with emotional highs and lows for your target problem.",
     "sections": [
       {
@@ -422,6 +427,11 @@ export const COURSE_4_CHAPTERS: AcademyChapter[] = [
         "callout": {
           "boldPrefix": "Builder's Compass:",
           "text": "Never build what can be tested faster with a prototype. The goal of revisiting your research is maximizing learning velocity per dollar spent."
+        },
+        "image": {
+          "url": "/academy/diagrams/user-journey-map.svg",
+          "caption": "Figure 2.1: The 5-Stage Customer Journey Map with emotional highs, lows, and pain trigger moments.",
+          "alt": "User Journey Map Diagram"
         }
       },
       {
@@ -592,9 +602,9 @@ export const COURSE_4_CHAPTERS: AcademyChapter[] = [
     "sectionsCount": 6,
     "part": "Understand & Frame",
     "coverColor": "#ea580c",
-    "subs": "From Insight to Opportunity · Problem Reframing · How Might We Questions · Success Criteria · and 2 more sections",
+    "subs": "From Insight to Opportunity \u00b7 Problem Reframing \u00b7 How Might We Questions \u00b7 Success Criteria \u00b7 and 2 more sections",
     "lead": "A problem well-stated is a problem half-solved. Transform raw discovery findings into actionable How Might We statements, establish measurable success criteria, and write an airtight one-page design brief.",
-    "inThisChapter": "Affinity mapping and pattern synthesis · The Five Whys for root-cause isolation · Crafting calibrated How Might We questions · Writing the one-page design brief",
+    "inThisChapter": "Affinity mapping and pattern synthesis \u00b7 The Five Whys for root-cause isolation \u00b7 Crafting calibrated How Might We questions \u00b7 Writing the one-page design brief",
     "practicePrompt": "Draft 5 How Might We questions for your problem, choose the single best one, and write a one-page design brief.",
     "sections": [
       {
@@ -618,6 +628,11 @@ export const COURSE_4_CHAPTERS: AcademyChapter[] = [
         "callout": {
           "boldPrefix": "Builder's Compass:",
           "text": "Never build what can be tested faster with a prototype. The goal of from insight to opportunity is maximizing learning velocity per dollar spent."
+        },
+        "image": {
+          "url": "/academy/diagrams/how-might-we-framing.svg",
+          "caption": "Figure 3.1: How Might We (HMW) Framing: Calibrating between overly narrow and overly broad problem statements.",
+          "alt": "How Might We Problem Framing Diagram"
         }
       },
       {
@@ -780,9 +795,9 @@ export const COURSE_4_CHAPTERS: AcademyChapter[] = [
     "sectionsCount": 6,
     "part": "Ideate & Prioritise",
     "coverColor": "#d97706",
-    "subs": "Ground Rules · Ideation Techniques · Solution Patterns · Non-Software Solutions · and 2 more sections",
+    "subs": "Ground Rules \u00b7 Ideation Techniques \u00b7 Solution Patterns \u00b7 Non-Software Solutions \u00b7 and 2 more sections",
     "lead": "Quantity breeds quality. Break out of obvious, incremental thinking using structured ideation frameworks like Crazy 8s, SCAMPER, cross-industry analogies, and AI-assisted solution blueprinting.",
-    "inThisChapter": "Psychological safety and deferral of judgement · Crazy 8s rapid sketching · SCAMPER mutation method · Architectural solution archetypes · AI copilot ideation prompts",
+    "inThisChapter": "Psychological safety and deferral of judgement \u00b7 Crazy 8s rapid sketching \u00b7 SCAMPER mutation method \u00b7 Architectural solution archetypes \u00b7 AI copilot ideation prompts",
     "practicePrompt": "Run a 10-minute Crazy 8s sketching sprint for your chosen design brief. Generate 8 distinct visual concept sketches.",
     "sections": [
       {
@@ -1000,10 +1015,10 @@ export const COURSE_4_CHAPTERS: AcademyChapter[] = [
     "sectionsCount": 6,
     "part": "Ideate & Prioritise",
     "coverColor": "#d97706",
-    "subs": "Why Prioritisation Matters · Prioritisation Frameworks · Riskiest Assumption Testing · Feasibility Checks · and 2 more sections",
+    "subs": "Why Prioritisation Matters \u00b7 Prioritisation Frameworks \u00b7 Riskiest Assumption Testing \u00b7 Feasibility Checks \u00b7 and 2 more sections",
     "lead": "You cannot build everything at once. Use rigorous prioritisation frameworks like RICE, MoSCoW, and the Impact-Effort matrix to filter candidate ideas and isolate your riskiest unproven assumptions.",
-    "inThisChapter": "The true cost of building the wrong feature · Impact vs Effort mapping · RICE scoring formulas · Riskiest Assumption Testing (RAT) across desirability, feasibility, viability",
-    "practicePrompt": "Score 5 solution concepts using the RICE matrix (Reach × Impact × Confidence / Effort) and rank them objectively.",
+    "inThisChapter": "The true cost of building the wrong feature \u00b7 Impact vs Effort mapping \u00b7 RICE scoring formulas \u00b7 Riskiest Assumption Testing (RAT) across desirability, feasibility, viability",
+    "practicePrompt": "Score 5 solution concepts using the RICE matrix (Reach \u00d7 Impact \u00d7 Confidence / Effort) and rank them objectively.",
     "sections": [
       {
         "id": "c4-ch5-s01",
@@ -1022,6 +1037,11 @@ export const COURSE_4_CHAPTERS: AcademyChapter[] = [
         "callout": {
           "boldPrefix": "Builder's Compass:",
           "text": "Never build what can be tested faster with a prototype. The goal of why prioritisation matters is maximizing learning velocity per dollar spent."
+        },
+        "image": {
+          "url": "/academy/diagrams/rice-prioritization-matrix.svg",
+          "caption": "Figure 5.1: The RICE Prioritization Equation: Balancing Reach, Impact, and Confidence against Engineering Effort.",
+          "alt": "RICE Prioritization Formula Diagram"
         }
       },
       {
@@ -1170,21 +1190,21 @@ export const COURSE_4_CHAPTERS: AcademyChapter[] = [
         },
         {
           "key": "B",
-          "label": "(Reach × Impact × Confidence) / Effort",
+          "label": "(Reach \u00d7 Impact \u00d7 Confidence) / Effort",
           "isCorrect": true
         },
         {
           "key": "C",
-          "label": "Effort / (Reach × Impact)",
+          "label": "Effort / (Reach \u00d7 Impact)",
           "isCorrect": false
         },
         {
           "key": "D",
-          "label": "Revenue × Cost × Engineers",
+          "label": "Revenue \u00d7 Cost \u00d7 Engineers",
           "isCorrect": false
         }
       ],
-      "feedbackCorrect": "Exactly right! (Reach × Impact × Confidence) / Effort balances scale, magnitude, and certainty against implementation cost.",
+      "feedbackCorrect": "Exactly right! (Reach \u00d7 Impact \u00d7 Confidence) / Effort balances scale, magnitude, and certainty against implementation cost.",
       "feedbackIncorrect": "Review Section 5.2: The RICE formula multiplies Reach, Impact, and Confidence, then divides the product by Effort."
     }
   },
@@ -1196,9 +1216,9 @@ export const COURSE_4_CHAPTERS: AcademyChapter[] = [
     "sectionsCount": 6,
     "part": "Ideate & Prioritise",
     "coverColor": "#d97706",
-    "subs": "Information Architecture · User Flows · Wireframing · Interface Design Basics · and 2 more sections",
+    "subs": "Information Architecture \u00b7 User Flows \u00b7 Wireframing \u00b7 Interface Design Basics \u00b7 and 2 more sections",
     "lead": "Translate prioritized features into clear step-by-step screen sequences. Master low-fidelity wireframing, information architecture, cognitive load reduction, and MNC accessibility guidelines.",
-    "inThisChapter": "Information architecture hierarchy · Happy path and edge case flowcharts · Low-fidelity paper and digital wireframing · WCAG 2.1 AA accessibility and light theme design tokens",
+    "inThisChapter": "Information architecture hierarchy \u00b7 Happy path and edge case flowcharts \u00b7 Low-fidelity paper and digital wireframing \u00b7 WCAG 2.1 AA accessibility and light theme design tokens",
     "practicePrompt": "Map the 4-step user flow of your core action and draw low-fidelity wireframes for the two primary screens.",
     "sections": [
       {
@@ -1400,9 +1420,9 @@ export const COURSE_4_CHAPTERS: AcademyChapter[] = [
     "sectionsCount": 6,
     "part": "Prototype, MVP & Test",
     "coverColor": "#c2410c",
-    "subs": "Why Prototype · Types of Prototypes · Tools · Prototype Planning · and 2 more sections",
+    "subs": "Why Prototype \u00b7 Types of Prototypes \u00b7 Tools \u00b7 Prototype Planning \u00b7 and 2 more sections",
     "lead": "If a picture is worth a thousand words, a prototype is worth a thousand meetings. Learn how to construct clickable Figma prototypes, paper simulations, and interactive mockups in rapid 14-day sprint cycles.",
-    "inThisChapter": "The Prototype Fidelity Ladder · Clickable Figma interactions · Wizard of Oz and concierge testing · Planning the 14-day sprint roadmap",
+    "inThisChapter": "The Prototype Fidelity Ladder \u00b7 Clickable Figma interactions \u00b7 Wizard of Oz and concierge testing \u00b7 Planning the 14-day sprint roadmap",
     "practicePrompt": "Connect your 4 wireframe screens into a clickable prototype link with interactive tap/click transitions.",
     "sections": [
       {
@@ -1596,9 +1616,9 @@ export const COURSE_4_CHAPTERS: AcademyChapter[] = [
     "sectionsCount": 6,
     "part": "Prototype, MVP & Test",
     "coverColor": "#c2410c",
-    "subs": "What an MVP Is and Is Not · Scoping an MVP · Build, Buy or Borrow · Technical Planning for Small Teams · and 2 more sections",
+    "subs": "What an MVP Is and Is Not \u00b7 Scoping an MVP \u00b7 Build, Buy or Borrow \u00b7 Technical Planning for Small Teams \u00b7 and 2 more sections",
     "lead": "An MVP is not a half-baked product; it is the smallest complete package of functionality that delivers real customer value. Learn how to scope ruthlessly, decide build vs buy, and timebox development.",
-    "inThisChapter": "The true definition of an MVP (Earliest Testable Product) · The skateboard-to-car metaphor · Build vs Buy vs Borrow matrix · 14-day technical timeboxing",
+    "inThisChapter": "The true definition of an MVP (Earliest Testable Product) \u00b7 The skateboard-to-car metaphor \u00b7 Build vs Buy vs Borrow matrix \u00b7 14-day technical timeboxing",
     "practicePrompt": "List all features you initially envisioned for your product. Cut 70% of them to establish your strict Day 1 MVP scope.",
     "sections": [
       {
@@ -1626,6 +1646,11 @@ export const COURSE_4_CHAPTERS: AcademyChapter[] = [
         "callout": {
           "boldPrefix": "Builder's Compass:",
           "text": "Never build what can be tested faster with a prototype. The goal of what an mvp is and is not is maximizing learning velocity per dollar spent."
+        },
+        "image": {
+          "url": "/academy/diagrams/mvp-pyramid.svg",
+          "caption": "Figure 8.1: The True MVP: Slicing vertically across functional, reliable, usable, and delightful layers.",
+          "alt": "MVP Vertical Slice Pyramid Diagram"
         }
       },
       {
@@ -1800,9 +1825,9 @@ export const COURSE_4_CHAPTERS: AcademyChapter[] = [
     "sectionsCount": 6,
     "part": "Prototype, MVP & Test",
     "coverColor": "#c2410c",
-    "subs": "Why Test With Real Users · Planning a Test · Running a Session · Measuring Usability · and 2 more sections",
+    "subs": "Why Test With Real Users \u00b7 Planning a Test \u00b7 Running a Session \u00b7 Measuring Usability \u00b7 and 2 more sections",
     "lead": "Watching 5 real users interact with your prototype reveals 85% of usability bottlenecks. Learn how to write unbiased test scripts, run think-aloud test sessions, and measure task completion rates.",
-    "inThisChapter": "Jakob Nielsen's 5-user rule · Think-aloud testing protocol · Writing task-based scenario prompts · System Usability Scale (SUS) benchmarking · Synthesizing feedback into rapid design fixes",
+    "inThisChapter": "Jakob Nielsen's 5-user rule \u00b7 Think-aloud testing protocol \u00b7 Writing task-based scenario prompts \u00b7 System Usability Scale (SUS) benchmarking \u00b7 Synthesizing feedback into rapid design fixes",
     "practicePrompt": "Conduct a 20-minute usability test with one peer using your clickable prototype. Note 3 moments of hesitation or confusion.",
     "sections": [
       {
@@ -2000,9 +2025,9 @@ export const COURSE_4_CHAPTERS: AcademyChapter[] = [
     "sectionsCount": 7,
     "part": "Prototype, MVP & Test",
     "coverColor": "#c2410c",
-    "subs": "What a Pilot Is · Finding a Pilot Partner · Pilot Proposal · Pilot Agreement Basics · and 3 more sections",
+    "subs": "What a Pilot Is \u00b7 Finding a Pilot Partner \u00b7 Pilot Proposal \u00b7 Pilot Agreement Basics \u00b7 and 3 more sections",
     "lead": "A prototype tests usability; a pilot tests real operational commitment. Learn how to secure design partners, draft a mutually protective pilot agreement, manage the 30-day live test, and convert pilots into paid contracts.",
-    "inThisChapter": "Design partner recruitment criteria · The 3-part pilot proposal · Non-disclosure and data privacy fundamentals · Weekly operational cadences · Conversion criteria into paid annual contracts",
+    "inThisChapter": "Design partner recruitment criteria \u00b7 The 3-part pilot proposal \u00b7 Non-disclosure and data privacy fundamentals \u00b7 Weekly operational cadences \u00b7 Conversion criteria into paid annual contracts",
     "practicePrompt": "Draft a one-page Pilot Agreement Letter outlining customer responsibilities, launch dates, and success criteria for conversion.",
     "sections": [
       {
@@ -2026,6 +2051,11 @@ export const COURSE_4_CHAPTERS: AcademyChapter[] = [
         "callout": {
           "boldPrefix": "Builder's Compass:",
           "text": "Never build what can be tested faster with a prototype. The goal of what a pilot is is maximizing learning velocity per dollar spent."
+        },
+        "image": {
+          "url": "/academy/diagrams/pilot-conversion-funnel.svg",
+          "caption": "Figure 10.1: The 5-Stage Customer Pilot Funnel: Converting proof-of-concept agreements into recurring contracts.",
+          "alt": "Pilot Conversion Funnel Diagram"
         }
       },
       {
@@ -2231,9 +2261,9 @@ export const COURSE_4_CHAPTERS: AcademyChapter[] = [
     "sectionsCount": 6,
     "part": "Launch, Scale & Capstone",
     "coverColor": "#b45309",
-    "subs": "Choosing Metrics · Core Product Metrics · Business Metrics · Feedback Loops · and 2 more sections",
+    "subs": "Choosing Metrics \u00b7 Core Product Metrics \u00b7 Business Metrics \u00b7 Feedback Loops \u00b7 and 2 more sections",
     "lead": "Vanity metrics make you feel good; actionable product metrics keep your company alive. Understand the difference between activation, retention cohorts, engagement loops, and net promoter economics.",
-    "inThisChapter": "The Pirate Metrics framework (AARRR) · North Star Metric identification · Measuring weekly cohort retention curves · Qualitative customer feedback loops · Continuous A/B experimentation",
+    "inThisChapter": "The Pirate Metrics framework (AARRR) \u00b7 North Star Metric identification \u00b7 Measuring weekly cohort retention curves \u00b7 Qualitative customer feedback loops \u00b7 Continuous A/B experimentation",
     "practicePrompt": "Define the single North Star Metric for your product and identify the 3 leading input metrics that drive it.",
     "sections": [
       {
@@ -2427,9 +2457,9 @@ export const COURSE_4_CHAPTERS: AcademyChapter[] = [
     "sectionsCount": 5,
     "part": "Launch, Scale & Capstone",
     "coverColor": "#b45309",
-    "subs": "Forming a Team · Roles and Collaboration · Planning a 24 to 48 Hour Build · Long-Form Programmes · and 1 more sections",
+    "subs": "Forming a Team \u00b7 Roles and Collaboration \u00b7 Planning a 24 to 48 Hour Build \u00b7 Long-Form Programmes \u00b7 and 1 more sections",
     "lead": "Building great products is a team sport. Learn how to divide roles effectively across Product, Design, and Engineering, coordinate rapid 24-48 hour hackathon sprints, and execute multi-week acceleration programs.",
-    "inThisChapter": "The Hacker/Hustler/Hipster trio · Clear division of ownership and decision rights · Rapid 24-hour sprint milestones · Managing burnout and feature creep during competitions",
+    "inThisChapter": "The Hacker/Hustler/Hipster trio \u00b7 Clear division of ownership and decision rights \u00b7 Rapid 24-hour sprint milestones \u00b7 Managing burnout and feature creep during competitions",
     "practicePrompt": "Create a 48-hour sprint milestone schedule allocating specific 4-hour build blocks for design, frontend, and demo preparation.",
     "sections": [
       {
@@ -2604,9 +2634,9 @@ export const COURSE_4_CHAPTERS: AcademyChapter[] = [
     "sectionsCount": 6,
     "part": "Launch, Scale & Capstone",
     "coverColor": "#b45309",
-    "subs": "The Story Structure · Slide Deck · Live Demo · Delivery · and 2 more sections",
+    "subs": "The Story Structure \u00b7 Slide Deck \u00b7 Live Demo \u00b7 Delivery \u00b7 and 2 more sections",
     "lead": "A brilliant solution poorly demonstrated will lose to an average solution pitched with clarity and conviction. Master the 10-slide narrative arc, execute bulletproof live demos, and handle hostile judge Q&A with poise.",
-    "inThisChapter": "The 3-act narrative pitch structure · The 10-slide investor & judge deck · Bulletproof live demo guidelines · Handling tough Q&A without defensiveness",
+    "inThisChapter": "The 3-act narrative pitch structure \u00b7 The 10-slide investor & judge deck \u00b7 Bulletproof live demo guidelines \u00b7 Handling tough Q&A without defensiveness",
     "practicePrompt": "Record a 3-minute video pitch demonstrating your prototype, following the Problem -> Solution -> Proof -> Next Steps format.",
     "sections": [
       {
@@ -2796,9 +2826,9 @@ export const COURSE_4_CHAPTERS: AcademyChapter[] = [
     "sectionsCount": 5,
     "part": "Launch, Scale & Capstone",
     "coverColor": "#b45309",
-    "subs": "What Open Innovation Is · Reading a Challenge Brief · Submitting Strong Entries · After the Challenge · and 1 more sections",
+    "subs": "What Open Innovation Is \u00b7 Reading a Challenge Brief \u00b7 Submitting Strong Entries \u00b7 After the Challenge \u00b7 and 1 more sections",
     "lead": "Enterprises and venture studios post real friction points to source innovative solutions. Learn how to decode challenge briefs, align with corporate sponsor priorities, and license or spin out your venture.",
-    "inThisChapter": "How open innovation programs operate · Deconstructing corporate problem briefs · Crafting winning competition proposals · Post-challenge IP licensing and venture incubation",
+    "inThisChapter": "How open innovation programs operate \u00b7 Deconstructing corporate problem briefs \u00b7 Crafting winning competition proposals \u00b7 Post-challenge IP licensing and venture incubation",
     "practicePrompt": "Review an active corporate problem brief on Stuckhere and list 3 specific sponsor priorities you would highlight in your submission.",
     "sections": [
       {
@@ -2965,9 +2995,9 @@ export const COURSE_4_CHAPTERS: AcademyChapter[] = [
     "sectionsCount": 5,
     "part": "Launch, Scale & Capstone",
     "coverColor": "#b45309",
-    "subs": "Ethics in Product Decisions · Data and Privacy · Responsible AI · Inclusion · and 1 more sections",
+    "subs": "Ethics in Product Decisions \u00b7 Data and Privacy \u00b7 Responsible AI \u00b7 Inclusion \u00b7 and 1 more sections",
     "lead": "Design decisions carry ethical weight. Learn how to protect vulnerable user data, avoid algorithmic bias, design for low-connectivity environments, and adhere to international privacy regulations.",
-    "inThisChapter": "Ethical product frameworks · Data minimization and privacy by design (GDPR/DPDP) · Mitigating bias in AI-driven decisions · Designing for low-bandwidth and multilingual contexts",
+    "inThisChapter": "Ethical product frameworks \u00b7 Data minimization and privacy by design (GDPR/DPDP) \u00b7 Mitigating bias in AI-driven decisions \u00b7 Designing for low-bandwidth and multilingual contexts",
     "practicePrompt": "Conduct an ethical risk audit for your solution. Identify one potential unintended consequence and document a mitigation safeguard.",
     "sections": [
       {
@@ -3110,9 +3140,9 @@ export const COURSE_4_CHAPTERS: AcademyChapter[] = [
     "sectionsCount": 4,
     "part": "Launch, Scale & Capstone",
     "coverColor": "#b45309",
-    "subs": "Brief · Deliverables · Grading Rubric · Submit to Stuckhere",
+    "subs": "Brief \u00b7 Deliverables \u00b7 Grading Rubric \u00b7 Submit to Stuckhere",
     "lead": "Apply the complete 17-chapter curriculum to build, test, and publish a comprehensive Solution Dossier and prototype for a verified problem from the Stuckhere open registry.",
-    "inThisChapter": "Comprehensive capstone brief · Required deliverables: Persona, HMW, Clickable Prototype, Pilot Plan · 100-point grading rubric · Publishing to the Stuckhere showcase",
+    "inThisChapter": "Comprehensive capstone brief \u00b7 Required deliverables: Persona, HMW, Clickable Prototype, Pilot Plan \u00b7 100-point grading rubric \u00b7 Publishing to the Stuckhere showcase",
     "practicePrompt": "Compile your user research, wireframes, prototype link, and pilot metrics into your final Capstone Solution Dossier.",
     "sections": [
       {
@@ -3277,7 +3307,7 @@ export const COURSE_4_CHAPTERS: AcademyChapter[] = [
         }
       ],
       "feedbackCorrect": "Correct! While commercial traction is wonderful, the capstone grades your methodology: empathy, framing, prototyping, and testing rigor.",
-      "feedbackIncorrect": "Review Section 16.2: The capstone requires personas, prototypes, and pilot plans—venture capital term sheets are not a prerequisite!"
+      "feedbackIncorrect": "Review Section 16.2: The capstone requires personas, prototypes, and pilot plans\u2014venture capital term sheets are not a prerequisite!"
     }
   },
   {
@@ -3288,9 +3318,9 @@ export const COURSE_4_CHAPTERS: AcademyChapter[] = [
     "sectionsCount": 6,
     "part": "Launch, Scale & Capstone",
     "coverColor": "#b45309",
-    "subs": "Glossary · Templates · One-Page Cheat Sheet · Master Quiz Bank · and 2 more sections",
+    "subs": "Glossary \u00b7 Templates \u00b7 One-Page Cheat Sheet \u00b7 Master Quiz Bank \u00b7 and 2 more sections",
     "lead": "A permanent reference library of product design templates, wireframe cheat sheets, pilot contracts, usability test scripts, and the master FAQ.",
-    "inThisChapter": "Complete Product & Design Glossary · Ready-to-use Figma and Notion templates · The One-Page Solution Cheat Sheet · Master Quiz Bank and FAQ",
+    "inThisChapter": "Complete Product & Design Glossary \u00b7 Ready-to-use Figma and Notion templates \u00b7 The One-Page Solution Cheat Sheet \u00b7 Master Quiz Bank and FAQ",
     "practicePrompt": "Bookmark this reference chapter to access production templates whenever you kick off a new venture build.",
     "sections": [
       {

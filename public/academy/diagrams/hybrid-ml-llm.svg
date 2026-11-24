@@ -1,0 +1,22 @@
+<svg viewBox="0 0 760 170" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="760" height="170" rx="12" fill="#F8FAFC"/>
+  <text x="380" y="26" fill="#0F172A" font-size="14" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">The Hybrid Architecture: Tabular Scoring + Generative LLM</text>
+
+  <rect x="24" y="46" width="224" height="106" rx="8" fill="#FFFFFF" stroke="#0284C7" stroke-width="1.8"/>
+  <text x="40" y="72" fill="#0284C7" font-size="13" font-weight="bold" font-family="system-ui, sans-serif">1. TABULAR FEATURES</text>
+  <text x="40" y="94" fill="#334155" font-size="11" font-family="system-ui, sans-serif">• Frequency, duration, wasted hours</text>
+  <text x="40" y="112" fill="#334155" font-size="11" font-family="system-ui, sans-serif">• Direct operator financial cost</text>
+  <text x="40" y="134" fill="#0284C7" font-size="10" font-weight="bold" font-family="system-ui, sans-serif">Raw Quantitative Metrics</text>
+
+  <rect x="268" y="46" width="224" height="106" rx="8" fill="#FFFFFF" stroke="#0891B2" stroke-width="1.8"/>
+  <text x="284" y="72" fill="#0891B2" font-size="13" font-weight="bold" font-family="system-ui, sans-serif">2. GRADIENT BOOSTING / ML</text>
+  <text x="284" y="94" fill="#1E293B" font-size="11" font-weight="semibold" font-family="system-ui, sans-serif">• Computes Pain Score (0-100)</text>
+  <text x="284" y="112" fill="#1E293B" font-size="11" font-weight="semibold" font-family="system-ui, sans-serif">• Instant, explainable ranking</text>
+  <text x="284" y="134" fill="#0891B2" font-size="10" font-weight="bold" font-family="system-ui, sans-serif">Microsecond Determinism</text>
+
+  <rect x="512" y="46" width="224" height="106" rx="8" fill="#FFFFFF" stroke="#7C3AED" stroke-width="1.8"/>
+  <text x="528" y="72" fill="#7C3AED" font-size="13" font-weight="bold" font-family="system-ui, sans-serif">3. GENERATIVE COPILOT</text>
+  <text x="528" y="94" fill="#334155" font-size="11" font-family="system-ui, sans-serif">• Ingests calculated score + context</text>
+  <text x="528" y="112" fill="#334155" font-size="11" font-family="system-ui, sans-serif">• Drafts customer-ready proposals</text>
+  <text x="528" y="134" fill="#7C3AED" font-size="10" font-weight="bold" font-family="system-ui, sans-serif">Natural Language Synthesis</text>
+</svg>

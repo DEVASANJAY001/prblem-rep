@@ -1,0 +1,38 @@
+<svg viewBox="0 0 760 170" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="760" height="170" rx="12" fill="#F8FAFC"/>
+  <text x="380" y="26" fill="#0F172A" font-size="14" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">Problem Solver Copilot Component Architecture</text>
+
+  <rect x="24" y="46" width="168" height="106" rx="8" fill="#FFFFFF" stroke="#0891B2" stroke-width="1.6"/>
+  <text x="108" y="70" fill="#0891B2" font-size="12" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">Dossier Context Engine</text>
+  <text x="108" y="92" fill="#334155" font-size="11" text-anchor="middle" font-family="system-ui, sans-serif">Pulls validated problem facts</text>
+  <text x="108" y="110" fill="#64748B" font-size="10" text-anchor="middle" font-family="system-ui, sans-serif">Pain score, interviews &amp; TAM</text>
+  <text x="108" y="128" fill="#64748B" font-size="10" text-anchor="middle" font-family="system-ui, sans-serif">Dynamic context window assembly</text>
+  <text x="108" y="144" fill="#0891B2" font-size="9" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">Grounding Source</text>
+
+  <path d="M194 98H210" stroke="#94A3B8" stroke-width="2" stroke-linecap="round"/>
+
+  <rect x="212" y="46" width="170" height="106" rx="8" fill="#FFFFFF" stroke="#0284C7" stroke-width="1.6"/>
+  <text x="297" y="70" fill="#0284C7" font-size="12" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">Streaming UI Interface</text>
+  <text x="297" y="92" fill="#334155" font-size="11" text-anchor="middle" font-family="system-ui, sans-serif">Chunk-by-chunk token render</text>
+  <text x="297" y="110" fill="#64748B" font-size="10" text-anchor="middle" font-family="system-ui, sans-serif">&lt; 350ms Time-to-First-Token</text>
+  <text x="297" y="128" fill="#64748B" font-size="10" text-anchor="middle" font-family="system-ui, sans-serif">Inline citations &amp; source tags</text>
+  <text x="297" y="144" fill="#0284C7" font-size="9" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">Human-Centered UX</text>
+
+  <path d="M384 98H400" stroke="#94A3B8" stroke-width="2" stroke-linecap="round"/>
+
+  <rect x="402" y="46" width="170" height="106" rx="8" fill="#FFFFFF" stroke="#7C3AED" stroke-width="1.6"/>
+  <text x="487" y="70" fill="#7C3AED" font-size="12" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">Tool Dispatch Gateway</text>
+  <text x="487" y="92" fill="#334155" font-size="11" text-anchor="middle" font-family="system-ui, sans-serif">Function calling router</text>
+  <text x="487" y="110" fill="#64748B" font-size="10" text-anchor="middle" font-family="system-ui, sans-serif">Database query execution</text>
+  <text x="487" y="128" fill="#64748B" font-size="10" text-anchor="middle" font-family="system-ui, sans-serif">External climate &amp; pricing APIs</text>
+  <text x="487" y="144" fill="#7C3AED" font-size="9" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">Action Execution</text>
+
+  <path d="M574 98H590" stroke="#94A3B8" stroke-width="2" stroke-linecap="round"/>
+
+  <rect x="592" y="46" width="144" height="106" rx="8" fill="#FFFFFF" stroke="#059669" stroke-width="2"/>
+  <text x="664" y="70" fill="#059669" font-size="12" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">Feedback &amp; Telemetry</text>
+  <text x="664" y="92" fill="#1E293B" font-size="11" font-weight="semibold" text-anchor="middle" font-family="system-ui, sans-serif">Thumbs Up / Down</text>
+  <text x="664" y="110" fill="#1E293B" font-size="10" text-anchor="middle" font-family="system-ui, sans-serif">Golden dataset curation</text>
+  <text x="664" y="128" fill="#1E293B" font-size="10" text-anchor="middle" font-family="system-ui, sans-serif">Continuous improvement</text>
+  <text x="664" y="144" fill="#059669" font-size="9" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">Data Flywheel</text>
+</svg>

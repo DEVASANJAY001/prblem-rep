@@ -1,0 +1,22 @@
+<svg viewBox="0 0 760 170" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="760" height="170" rx="12" fill="#F8FAFC"/>
+  <text x="380" y="26" fill="#0F172A" font-size="14" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">Tiered Model Routing Cascade with Semantic Caching</text>
+
+  <rect x="24" y="46" width="224" height="106" rx="8" fill="#FFFFFF" stroke="#059669" stroke-width="2"/>
+  <text x="40" y="72" fill="#059669" font-size="13" font-weight="bold" font-family="system-ui, sans-serif">1. SEMANTIC CACHE</text>
+  <text x="40" y="94" fill="#334155" font-size="11" font-family="system-ui, sans-serif">• Vector similarity on past queries</text>
+  <text x="40" y="112" fill="#334155" font-size="11" font-family="system-ui, sans-serif">• Serves 30-40% of repetitive asks</text>
+  <text x="40" y="134" fill="#059669" font-size="10" font-weight="bold" font-family="system-ui, sans-serif">Cost: $0.00 · Latency: 15ms</text>
+
+  <rect x="268" y="46" width="224" height="106" rx="8" fill="#FFFFFF" stroke="#0284C7" stroke-width="1.8"/>
+  <text x="284" y="72" fill="#0284C7" font-size="13" font-weight="bold" font-family="system-ui, sans-serif">2. FLASH / FAST MODEL</text>
+  <text x="284" y="94" fill="#334155" font-size="11" font-family="system-ui, sans-serif">• Handles classifications &amp; summaries</text>
+  <text x="284" y="112" fill="#334155" font-size="11" font-family="system-ui, sans-serif">• Resolves 50%+ of unique prompts</text>
+  <text x="284" y="134" fill="#0284C7" font-size="10" font-weight="bold" font-family="system-ui, sans-serif">Cost: $0.15/1M · Latency: 350ms</text>
+
+  <rect x="512" y="46" width="224" height="106" rx="8" fill="#FFFFFF" stroke="#7C3AED" stroke-width="1.6"/>
+  <text x="528" y="72" fill="#7C3AED" font-size="13" font-weight="bold" font-family="system-ui, sans-serif">3. REASONING ENGINE</text>
+  <text x="528" y="94" fill="#334155" font-size="11" font-family="system-ui, sans-serif">• Reserved for hard multi-step tasks</text>
+  <text x="528" y="112" fill="#334155" font-size="11" font-family="system-ui, sans-serif">• Deep analytical synthesis</text>
+  <text x="528" y="134" fill="#7C3AED" font-size="10" font-weight="bold" font-family="system-ui, sans-serif">Cost: $5.00/1M · Latency: 2500ms</text>
+</svg>
