@@ -402,8 +402,126 @@ export const CourseCardBanner: React.FC<CourseCardBannerProps> = ({ courseNum })
   }
 
   // Course 4: Solution Design & MVP Building (Warm Sunset Amber & Coral, Mobile Prototype & Rocket motif)
+  if (courseNum === 4) {
+    return (
+      <div className="relative w-full h-full min-h-[210px] overflow-hidden select-none bg-[#1a0601]">
+        <svg
+          viewBox="0 0 360 225"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className="w-full h-full object-cover"
+          preserveAspectRatio="xMidYMid slice"
+          aria-hidden="true"
+        >
+          <defs>
+            <linearGradient id="c4-bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#170501" />
+              <stop offset="50%" stopColor="#4a1506" />
+              <stop offset="100%" stopColor="#210802" />
+            </linearGradient>
+
+            <radialGradient id="c4-glow" cx="50%" cy="46%" r="62%">
+              <stop offset="0%" stopColor="#f97316" stopOpacity="0.4" />
+              <stop offset="60%" stopColor="#c2410c" stopOpacity="0.22" />
+              <stop offset="100%" stopColor="#170501" stopOpacity="0" />
+            </radialGradient>
+
+            <filter id="c4-phone-shadow" x="-20%" y="-20%" width="140%" height="140%">
+              <feDropShadow dx="0" dy="10" stdDeviation="12" floodColor="#0d0300" floodOpacity="0.7" />
+            </filter>
+          </defs>
+
+          {/* Background & Ambient Coral-Amber Glow */}
+          <rect width="360" height="225" fill="url(#c4-bg-grad)" />
+          <circle cx="180" cy="112" r="115" fill="url(#c4-glow)" />
+
+          {/* Double Diamond Framework Geometry in Background */}
+          <path
+            d="M 50 112 L 105 75 L 160 112 L 105 149 Z"
+            stroke="#fdba74"
+            strokeWidth="1.2"
+            opacity="0.3"
+            fill="none"
+          />
+          <path
+            d="M 200 112 L 255 75 L 310 112 L 255 149 Z"
+            stroke="#fdba74"
+            strokeWidth="1.2"
+            opacity="0.3"
+            fill="none"
+          />
+
+          {/* Bottom Left: User Journey Node Network */}
+          <g transform="translate(52, 178)" stroke="#fdba74" strokeWidth="1.6" fill="none" opacity="0.8">
+            <circle cx="6" cy="12" r="4" fill="#ea580c" />
+            <circle cx="22" cy="4" r="4" fill="#f97316" />
+            <circle cx="36" cy="14" r="4" fill="#fed7aa" />
+            <line x1="10" y1="10" x2="18" y2="6" />
+            <line x1="26" y1="6" x2="32" y2="12" />
+          </g>
+
+          {/* Top Right: Launch Rocket Trajectory */}
+          <g transform="translate(285, 34)">
+            <path
+              d="M 14 0 C 20 6, 22 14, 20 20 L 16 18 L 12 22 L 8 18 L 4 20 C 2 14, 4 6, 10 0 Z"
+              fill="#ea580c"
+              stroke="#fde047"
+              strokeWidth="1.5"
+            />
+            <circle cx="12" cy="8" r="2.5" fill="#ffffff" />
+            <path d="M 9 21 L 12 28 L 15 21 Z" fill="#facc15" />
+          </g>
+
+          {/* Centerpiece: 3D MVP Mobile Prototype Frame */}
+          <g transform="translate(180, 112)" filter="url(#c4-phone-shadow)">
+            {/* Phone Body */}
+            <rect
+              x="-34"
+              y="-48"
+              width="68"
+              height="96"
+              rx="14"
+              fill="#1c1917"
+              stroke="#fb923c"
+              strokeWidth="1.6"
+            />
+            {/* Speaker / Notch */}
+            <rect x="-9" y="-42" width="18" height="2.5" rx="1.2" fill="#7c2d12" />
+
+            {/* Wireframe UI Header & Skeleton */}
+            <rect x="-24" y="-32" width="34" height="5" rx="2" fill="#fbbf24" fillOpacity="0.9" />
+            <rect x="-24" y="-22" width="48" height="3.5" rx="1.5" fill="#fdba74" fillOpacity="0.45" />
+            <rect x="-24" y="-14" width="40" height="3.5" rx="1.5" fill="#fdba74" fillOpacity="0.3" />
+
+            {/* MVP Interactive Card */}
+            <rect x="-24" y="-5" width="48" height="24" rx="4.5" fill="#431407" stroke="#ea580c" strokeWidth="1" />
+            <circle cx="-15" cy="7" r="4.5" fill="#f97316" />
+            <line x1="-6" y1="4" x2="16" y2="4" stroke="#fde047" strokeWidth="1.8" strokeLinecap="round" />
+            <line x1="-6" y1="10" x2="8" y2="10" stroke="#fdba74" strokeWidth="1.2" strokeLinecap="round" strokeOpacity="0.6" />
+
+            {/* Primary Action Button */}
+            <rect x="-24" y="24" width="48" height="12" rx="3.5" fill="#ea580c" />
+            <text
+              x="0"
+              y="33"
+              fill="#ffffff"
+              fontSize="6.5"
+              fontWeight="bold"
+              textAnchor="middle"
+              fontFamily="system-ui, -apple-system, sans-serif"
+              letterSpacing="0.5"
+            >
+              LAUNCH MVP
+            </text>
+          </g>
+        </svg>
+      </div>
+    );
+  }
+
+  // Course 5: AI for Builders (Electric Cyan & Deep Tech Blue, Neural Copilot Processor & RAG Matrix motif)
   return (
-    <div className="relative w-full h-full min-h-[210px] overflow-hidden select-none bg-[#1a0601]">
+    <div className="relative w-full h-full min-h-[210px] overflow-hidden select-none bg-[#02131e]">
       <svg
         viewBox="0 0 360 225"
         fill="none"
@@ -413,104 +531,141 @@ export const CourseCardBanner: React.FC<CourseCardBannerProps> = ({ courseNum })
         aria-hidden="true"
       >
         <defs>
-          <linearGradient id="c4-bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#170501" />
-            <stop offset="50%" stopColor="#4a1506" />
-            <stop offset="100%" stopColor="#210802" />
+          <linearGradient id="c5-bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#010d16" />
+            <stop offset="45%" stopColor="#083344" />
+            <stop offset="100%" stopColor="#041f2c" />
           </linearGradient>
 
-          <radialGradient id="c4-glow" cx="50%" cy="46%" r="62%">
-            <stop offset="0%" stopColor="#f97316" stopOpacity="0.4" />
-            <stop offset="60%" stopColor="#c2410c" stopOpacity="0.22" />
-            <stop offset="100%" stopColor="#170501" stopOpacity="0" />
+          <radialGradient id="c5-glow" cx="50%" cy="46%" r="62%">
+            <stop offset="0%" stopColor="#22d3ee" stopOpacity="0.42" />
+            <stop offset="55%" stopColor="#0891b2" stopOpacity="0.22" />
+            <stop offset="100%" stopColor="#010d16" stopOpacity="0" />
           </radialGradient>
 
-          <filter id="c4-phone-shadow" x="-20%" y="-20%" width="140%" height="140%">
-            <feDropShadow dx="0" dy="10" stdDeviation="12" floodColor="#0d0300" floodOpacity="0.7" />
+          <linearGradient id="c5-chip-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#0e2a3b" />
+            <stop offset="50%" stopColor="#083344" />
+            <stop offset="100%" stopColor="#051c28" />
+          </linearGradient>
+
+          <filter id="c5-chip-shadow" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="10" stdDeviation="12" floodColor="#01080d" floodOpacity="0.75" />
+          </filter>
+
+          <filter id="c5-sparkle-glow" x="-30%" y="-30%" width="160%" height="160%">
+            <feGaussianBlur stdDeviation="3" result="blur" />
+            <feComposite in="SourceGraphic" in2="blur" operator="over" />
           </filter>
         </defs>
 
-        {/* Background & Ambient Coral-Amber Glow */}
-        <rect width="360" height="225" fill="url(#c4-bg-grad)" />
-        <circle cx="180" cy="112" r="115" fill="url(#c4-glow)" />
+        {/* Background & Ambient Cyan Glow */}
+        <rect width="360" height="225" fill="url(#c5-bg-grad)" />
+        <circle cx="180" cy="112" r="115" fill="url(#c5-glow)" />
 
-        {/* Double Diamond Framework Geometry in Background */}
-        <path
-          d="M 50 112 L 105 75 L 160 112 L 105 149 Z"
-          stroke="#fdba74"
-          strokeWidth="1.2"
-          opacity="0.3"
-          fill="none"
-        />
-        <path
-          d="M 200 112 L 255 75 L 310 112 L 255 149 Z"
-          stroke="#fdba74"
-          strokeWidth="1.2"
-          opacity="0.3"
-          fill="none"
-        />
-
-        {/* Bottom Left: User Journey Node Network */}
-        <g transform="translate(52, 178)" stroke="#fdba74" strokeWidth="1.6" fill="none" opacity="0.8">
-          <circle cx="6" cy="12" r="4" fill="#ea580c" />
-          <circle cx="22" cy="4" r="4" fill="#f97316" />
-          <circle cx="36" cy="14" r="4" fill="#fed7aa" />
-          <line x1="10" y1="10" x2="18" y2="6" />
-          <line x1="26" y1="6" x2="32" y2="12" />
+        {/* Transformer Attention Matrix Grid in Top Left */}
+        <g transform="translate(50, 36)" stroke="#06b6d4" strokeWidth="0.8" opacity="0.35">
+          <line x1="0" y1="0" x2="36" y2="0" />
+          <line x1="0" y1="12" x2="36" y2="12" />
+          <line x1="0" y1="24" x2="36" y2="24" />
+          <line x1="0" y1="0" x2="0" y2="24" />
+          <line x1="12" y1="0" x2="12" y2="24" />
+          <line x1="24" y1="0" x2="24" y2="24" />
+          <line x1="36" y1="0" x2="36" y2="24" />
+          <circle cx="12" cy="12" r="2" fill="#22d3ee" />
+          <circle cx="24" cy="0" r="1.5" fill="#67e8f9" />
+          <circle cx="0" cy="24" r="1.5" fill="#67e8f9" />
         </g>
 
-        {/* Top Right: Launch Rocket Trajectory */}
-        <g transform="translate(285, 34)">
-          <path
-            d="M 14 0 C 20 6, 22 14, 20 20 L 16 18 L 12 22 L 8 18 L 4 20 C 2 14, 4 6, 10 0 Z"
-            fill="#ea580c"
-            stroke="#fde047"
-            strokeWidth="1.5"
-          />
-          <circle cx="12" cy="8" r="2.5" fill="#ffffff" />
-          <path d="M 9 21 L 12 28 L 15 21 Z" fill="#facc15" />
+        {/* Top Right: AI Terminal / Model Gateway Prompt Badge */}
+        <g transform="translate(282, 36)" fill="none" opacity="0.8">
+          <rect x="0" y="0" width="30" height="22" rx="4" fill="#083344" stroke="#22d3ee" strokeWidth="1.2" />
+          <path d="M 7 7 L 12 11 L 7 15" stroke="#67e8f9" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+          <line x1="15" y1="15" x2="23" y2="15" stroke="#a5f3fc" strokeWidth="1.8" strokeLinecap="round" />
         </g>
 
-        {/* Centerpiece: 3D MVP Mobile Prototype Frame */}
-        <g transform="translate(180, 112)" filter="url(#c4-phone-shadow)">
-          {/* Phone Body */}
+        {/* Bottom Left: Neural Network Synaptic Nodes */}
+        <g transform="translate(52, 172)" stroke="#22d3ee" strokeWidth="1.4" fill="none" opacity="0.8">
+          <circle cx="6" cy="18" r="4" fill="#0891b2" />
+          <circle cx="24" cy="6" r="4.5" fill="#06b6d4" />
+          <circle cx="40" cy="20" r="4" fill="#22d3ee" />
+          <line x1="9" y1="16" x2="20" y2="8" strokeOpacity="0.7" />
+          <line x1="28" y1="8" x2="36" y2="18" strokeOpacity="0.7" />
+        </g>
+
+        {/* Flowing Prompt / RAG Vector Stream across Lower Background */}
+        <path
+          d="M 25 182 Q 130 162 180 120 T 335 68"
+          stroke="#22d3ee"
+          strokeWidth="2.2"
+          strokeLinecap="round"
+          strokeOpacity="0.45"
+          fill="none"
+        />
+
+        {/* Centerpiece: 3D AI Neural Processor & Copilot Core */}
+        <g transform="translate(180, 112)" filter="url(#c5-chip-shadow)">
+          {/* External Chip Connection Pins */}
+          {[-24, -12, 0, 12, 24].map((offset, i) => (
+            <React.Fragment key={i}>
+              {/* Top pins */}
+              <line x1={offset} y1="-44" x2={offset} y2="-38" stroke="#06b6d4" strokeWidth="2" strokeLinecap="round" />
+              {/* Bottom pins */}
+              <line x1={offset} y1="38" x2={offset} y2="44" stroke="#06b6d4" strokeWidth="2" strokeLinecap="round" />
+              {/* Left pins */}
+              <line x1="-44" y1={offset} x2="-38" y2={offset} stroke="#06b6d4" strokeWidth="2" strokeLinecap="round" />
+              {/* Right pins */}
+              <line x1="38" y1={offset} x2="44" y2={offset} stroke="#06b6d4" strokeWidth="2" strokeLinecap="round" />
+            </React.Fragment>
+          ))}
+
+          {/* Neural Chip Body */}
           <rect
-            x="-34"
-            y="-48"
-            width="68"
-            height="96"
-            rx="14"
-            fill="#1c1917"
-            stroke="#fb923c"
+            x="-38"
+            y="-38"
+            width="76"
+            height="76"
+            rx="16"
+            fill="url(#c5-chip-grad)"
+            stroke="#22d3ee"
             strokeWidth="1.6"
           />
-          {/* Speaker / Notch */}
-          <rect x="-9" y="-42" width="18" height="2.5" rx="1.2" fill="#7c2d12" />
 
-          {/* Wireframe UI Header & Skeleton */}
-          <rect x="-24" y="-32" width="34" height="5" rx="2" fill="#fbbf24" fillOpacity="0.9" />
-          <rect x="-24" y="-22" width="48" height="3.5" rx="1.5" fill="#fdba74" fillOpacity="0.45" />
-          <rect x="-24" y="-14" width="40" height="3.5" rx="1.5" fill="#fdba74" fillOpacity="0.3" />
+          {/* Inner Circuit Perimeter */}
+          <rect
+            x="-28"
+            y="-28"
+            width="56"
+            height="56"
+            rx="10"
+            fill="#031a26"
+            stroke="#0891b2"
+            strokeWidth="1.2"
+            strokeDasharray="4 2"
+          />
 
-          {/* MVP Interactive Card */}
-          <rect x="-24" y="-5" width="48" height="24" rx="4.5" fill="#431407" stroke="#ea580c" strokeWidth="1" />
-          <circle cx="-15" cy="7" r="4.5" fill="#f97316" />
-          <line x1="-6" y1="4" x2="16" y2="4" stroke="#fde047" strokeWidth="1.8" strokeLinecap="round" />
-          <line x1="-6" y1="10" x2="8" y2="10" stroke="#fdba74" strokeWidth="1.2" strokeLinecap="round" strokeOpacity="0.6" />
+          {/* AI Copilot 4-Point Neural Sparkle Core */}
+          <g filter="url(#c5-sparkle-glow)">
+            <path
+              d="M 0 -16 Q 0 0 16 0 Q 0 0 0 16 Q 0 0 -16 0 Q 0 0 0 -16 Z"
+              fill="#ffffff"
+            />
+            <circle cx="0" cy="0" r="4.5" fill="#22d3ee" />
+            <circle cx="0" cy="0" r="2" fill="#ffffff" />
+          </g>
 
-          {/* Primary Action Button */}
-          <rect x="-24" y="24" width="48" height="12" rx="3.5" fill="#ea580c" />
+          {/* Mini Tech Label */}
           <text
             x="0"
-            y="33"
-            fill="#ffffff"
-            fontSize="6.5"
-            fontWeight="bold"
+            y="23"
+            fill="#67e8f9"
+            fontSize="6"
+            fontWeight="800"
             textAnchor="middle"
             fontFamily="system-ui, -apple-system, sans-serif"
-            letterSpacing="0.5"
+            letterSpacing="0.8"
           >
-            LAUNCH MVP
+            AI COPILOT
           </text>
         </g>
       </svg>

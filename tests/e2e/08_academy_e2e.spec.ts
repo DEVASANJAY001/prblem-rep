@@ -304,4 +304,28 @@ test.describe("Academy Flow E2E Tests: Course Branching, Layout & Independent Sc
     await expect(page.locator("body")).toContainText(/8\.1 What an MVP/i);
     console.log("✅ [Academy E2E] Course 4 Subject Page & Reader passed 100%");
   });
+
+  test("9. Course 5 (AI for Builders) Subject Page and Chapter Reader", async ({ page }) => {
+    console.log("🤖 [Academy E2E] Testing Course 5 (AI for Builders) Subject Page & Reader...");
+    await page.goto("/learn/ai-for-builders", { waitUntil: "domcontentloaded" });
+
+    await expect(page.locator("h1")).toContainText("AI for Builders");
+    await expect(page.locator("body")).toContainText("18 chapters");
+
+    // Click Start learning
+    const startBtn = page.getByRole("link", { name: /Start learning/i });
+    await expect(startBtn).toBeVisible();
+    await startBtn.click();
+    await expect(page).toHaveURL(/\/learn\/ai-for-builders\/course-overview/);
+
+    // Verify Chapter 0 content
+    await expect(page.locator("h1")).toContainText("Course Overview");
+    await expect(page.locator("body")).toContainText(/0\.1 What This Subject Covers/i);
+
+    // Navigate to Chapter 5 (Grounding With Your Own Data RAG)
+    await page.goto("/learn/ai-for-builders/grounding-with-your-own-data-rag", { waitUntil: "domcontentloaded" });
+    await expect(page.locator("h1")).toContainText("Grounding With Your Own Data");
+    await expect(page.locator("body")).toContainText(/5\.1 Why Grounding/i);
+    console.log("✅ [Academy E2E] Course 5 Subject Page & Reader passed 100%");
+  });
 });

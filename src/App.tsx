@@ -196,10 +196,15 @@ export default function App() {
                 <Route path="/learn/solution-design-and-mvp-building/:chapterSlug" element={<PublicLayout><ChapterReader /></PublicLayout>} />
                 <Route path="/learn/solution-design-and-mvp-building/chapter/:chapterNum" element={<PublicLayout><ChapterReader /></PublicLayout>} />
                 <Route path="/learn/solution-design" element={<Navigate to="/learn/solution-design-and-mvp-building" replace />} />
+                <Route path="/learn/ai-for-builders" element={<PublicLayout><SubjectPage /></PublicLayout>} />
+                <Route path="/learn/ai-for-builders/:chapterSlug" element={<PublicLayout><ChapterReader /></PublicLayout>} />
+                <Route path="/learn/ai-for-builders/chapter/:chapterNum" element={<PublicLayout><ChapterReader /></PublicLayout>} />
+                <Route path="/learn/ai" element={<Navigate to="/learn/ai-for-builders" replace />} />
                 <Route path="/learn/module-1" element={<Navigate to="/learn/problem-discovery-and-validation" replace />} />
                 <Route path="/learn/module-2" element={<Navigate to="/learn/market-sizing-and-opportunity" replace />} />
                 <Route path="/learn/module-3" element={<Navigate to="/learn/full-stack-cloud-development" replace />} />
                 <Route path="/learn/module-4" element={<Navigate to="/learn/solution-design-and-mvp-building" replace />} />
+                <Route path="/learn/module-5" element={<Navigate to="/learn/ai-for-builders" replace />} />
                 <Route path="/learn/course" element={<Navigate to="/learn/problem-discovery-and-validation" replace />} />
                 <Route path="/learn/problem-discovery-validation" element={<Navigate to="/learn/problem-discovery-and-validation" replace />} />
                 <Route path="/learn/course/:courseSlug" element={<PublicLayout><SubjectPage /></PublicLayout>} />

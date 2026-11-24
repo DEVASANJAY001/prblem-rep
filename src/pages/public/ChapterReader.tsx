@@ -7,6 +7,7 @@ import {
   COURSE_2_CHAPTERS,
   COURSE_3_CHAPTERS,
   COURSE_4_CHAPTERS,
+  COURSE_5_CHAPTERS,
   AcademyChapter,
 } from "@/data/academyData";
 import { Menu, X, ChevronRight, CheckCircle2 } from "lucide-react";
@@ -22,14 +23,23 @@ export const ChapterReader: React.FC = () => {
   const navigate = useNavigate();
 
   // Determine active course
+  const isCourse5 =
+    location.pathname.includes("ai-for-builders") ||
+    location.pathname.includes("/ai") ||
+    courseSlug?.includes("ai-for-builders") ||
+    courseSlug?.includes("ai") ||
+    courseSlug === "course-5";
+
   const isCourse4 =
-    location.pathname.includes("solution-design") ||
-    location.pathname.includes("mvp") ||
-    courseSlug?.includes("solution-design") ||
-    courseSlug?.includes("mvp") ||
-    courseSlug === "course-4";
+    !isCourse5 &&
+    (location.pathname.includes("solution-design") ||
+      location.pathname.includes("mvp") ||
+      courseSlug?.includes("solution-design") ||
+      courseSlug?.includes("mvp") ||
+      courseSlug === "course-4");
 
   const isCourse3 =
+    !isCourse5 &&
     !isCourse4 &&
     (location.pathname.includes("full-stack") ||
       location.pathname.includes("cloud") ||
@@ -38,20 +48,25 @@ export const ChapterReader: React.FC = () => {
       courseSlug === "course-3");
 
   const isCourse2 =
+    !isCourse5 &&
     !isCourse4 &&
     !isCourse3 &&
     (location.pathname.includes("market-sizing") ||
       courseSlug?.includes("market-sizing") ||
       courseSlug === "course-2");
 
-  const activeCourse = isCourse4
+  const activeCourse = isCourse5
+    ? ACADEMY_COURSES[4]
+    : isCourse4
     ? ACADEMY_COURSES[3]
     : isCourse3
     ? ACADEMY_COURSES[2]
     : isCourse2
     ? ACADEMY_COURSES[1]
     : ACADEMY_COURSES[0];
-  const chapters: AcademyChapter[] = isCourse4
+  const chapters: AcademyChapter[] = isCourse5
+    ? COURSE_5_CHAPTERS
+    : isCourse4
     ? COURSE_4_CHAPTERS
     : isCourse3
     ? COURSE_3_CHAPTERS
