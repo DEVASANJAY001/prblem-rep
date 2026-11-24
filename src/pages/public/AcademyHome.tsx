@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useRef, useEffect } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { SEOHead } from "@/components/common/SEOHead";
@@ -28,6 +28,40 @@ export const AcademyHome: React.FC = () => {
   const q = searchParams.get("q") || "";
   const [selectedCourseSlug, setSelectedCourseSlug] = useState<string | null>(null);
   const [part, setPart] = useState("All");
+
+  // Courses 4-in-view horizontal scroll container & state
+  const coursesScrollRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+
+  const updateScrollButtons = () => {
+    if (!coursesScrollRef.current) return;
+    const { scrollLeft, scrollWidth, clientWidth } = coursesScrollRef.current;
+    setCanScrollLeft(scrollLeft > 10);
+    setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 10);
+  };
+
+  useEffect(() => {
+    const el = coursesScrollRef.current;
+    if (!el) return;
+    updateScrollButtons();
+    el.addEventListener("scroll", updateScrollButtons, { passive: true });
+    window.addEventListener("resize", updateScrollButtons);
+    return () => {
+      el.removeEventListener("scroll", updateScrollButtons);
+      window.removeEventListener("resize", updateScrollButtons);
+    };
+  }, []);
+
+  const scrollCourses = (direction: "left" | "right") => {
+    if (!coursesScrollRef.current) return;
+    const container = coursesScrollRef.current;
+    const cardWidth = container.firstElementChild
+      ? (container.firstElementChild as HTMLElement).offsetWidth + 24
+      : 300;
+    const scrollAmount = direction === "left" ? -cardWidth * 2 : cardWidth * 2;
+    container.scrollBy({ left: scrollAmount, behavior: "smooth" });
+  };
 
   const isCourse6 =
     selectedCourseSlug === "startup-fundamentals" ||
@@ -277,14 +311,57 @@ export const AcademyHome: React.FC = () => {
         </div>
       </section>
 
-      {/* ── Courses Section (Coursera-style Cards matching user reference) ──────── */}
+      {/* ── Courses Section (Coursera-style Cards: 4 in view on desktop with smooth left-to-right scrolling) ──────── */}
       <section id="courses" className="max-w-[1280px] mx-auto px-4 sm:px-6 md:px-8 pt-10 sm:pt-14 box-border">
-        <h2 className="m-0 text-2xl sm:text-[28px] font-bold text-[#1f1f1f]">Courses</h2>
-        <div className="text-sm sm:text-[15px] text-[#5b606b] mt-1">
-          Master the full pipeline: discover authentic problems, size the market, and build solutions. Click any course to view its chapters.
+        <div className="flex items-end justify-between gap-4">
+          <div>
+            <h2 className="m-0 text-2xl sm:text-[28px] font-bold text-[#1f1f1f]">Courses</h2>
+            <div className="text-sm sm:text-[15px] text-[#5b606b] mt-1">
+              Master the full pipeline: discover authentic problems, size the market, and build solutions. Click any course to view its chapters.
+            </div>
+          </div>
+
+          {/* Left / Right Scroll Navigation Controls */}
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={() => scrollCourses("left")}
+              disabled={!canScrollLeft}
+              aria-label="Scroll courses left"
+              className={`w-9 h-9 rounded-full flex items-center justify-center border transition-all ${
+                canScrollLeft
+                  ? "bg-white border-[#dae1ed] text-[#1f1f1f] hover:bg-[#f0f4fa] hover:border-[#0056d2] shadow-2xs cursor-pointer"
+                  : "bg-gray-50 border-gray-200 text-gray-300 cursor-not-allowed"
+              }`}
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <button
+              type="button"
+              onClick={() => scrollCourses("right")}
+              disabled={!canScrollRight}
+              aria-label="Scroll courses right"
+              className={`w-9 h-9 rounded-full flex items-center justify-center border transition-all ${
+                canScrollRight
+                  ? "bg-white border-[#dae1ed] text-[#1f1f1f] hover:bg-[#f0f4fa] hover:border-[#0056d2] shadow-2xs cursor-pointer"
+                  : "bg-gray-50 border-gray-200 text-gray-300 cursor-not-allowed"
+              }`}
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.2} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5 sm:gap-6 mt-6">
+        {/* 4 Cards Visible at Once with Left-to-Right Horizontal Scrolling for Remaining */}
+        <div
+          ref={coursesScrollRef}
+          className="flex gap-5 sm:gap-6 mt-6 overflow-x-auto pb-4 pt-1 px-1 -mx-1 snap-x snap-mandatory scroll-smooth no-scrollbar"
+          style={{ scrollbarWidth: "none" }}
+        >
           {ACADEMY_COURSES.map((course) => {
             const providerInfo =
               course.n === 1
@@ -315,11 +392,18 @@ export const AcademyHome: React.FC = () => {
                     rating: "4.9",
                     level: "Builder",
                   }
-                : {
+                : course.n === 5
+                ? {
                     tag: "AI Specialization",
                     tagClass: "bg-[#ecfeff] text-[#0e7490] border-[#cffafe]",
                     rating: "4.9",
                     level: "Advanced AI",
+                  }
+                : {
+                    tag: "Founder & Venture",
+                    tagClass: "bg-[#fff1f2] text-[#be123c] border-[#fecdd3]",
+                    rating: "4.9",
+                    level: "Founder",
                   };
 
             return (
@@ -334,7 +418,7 @@ export const AcademyHome: React.FC = () => {
                     handleCourseSwitch(course.slug);
                   }
                 }}
-                className="text-[#1f1f1f] border border-[#dae1ed] rounded-2xl p-3 sm:p-3.5 bg-white shadow-2xs hover:shadow-xl hover:border-gray-300 hover:-translate-y-1 transition-all duration-300 group flex flex-col justify-between cursor-pointer text-left select-none relative"
+                className="w-[84%] sm:w-[calc((100%-24px)/2)] lg:w-[calc((100%-72px)/4)] shrink-0 snap-start text-[#1f1f1f] border border-[#dae1ed] rounded-2xl p-3 sm:p-3.5 bg-white shadow-2xs hover:shadow-xl hover:border-gray-300 hover:-translate-y-1 transition-all duration-300 group flex flex-col justify-between cursor-pointer text-left select-none relative"
               >
                 {/* 65% - 70% Inner Rounded-Corner Cut Image Frame */}
                 <div className="w-full h-[210px] sm:h-[225px] rounded-xl overflow-hidden shrink-0 relative bg-slate-950">

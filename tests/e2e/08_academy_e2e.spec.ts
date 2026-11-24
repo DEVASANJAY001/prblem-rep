@@ -53,6 +53,12 @@ test.describe("Academy Flow E2E Tests: Course Branching, Layout & Independent Sc
     await course1Card.click();
     await expect(page.locator("text=Showing 15 of 15 chapters")).toBeVisible();
 
+    // Verify horizontal scroll controls exist
+    const scrollRightBtn = page.locator("button[aria-label='Scroll courses right']");
+    await expect(scrollRightBtn).toBeVisible();
+    await scrollRightBtn.click();
+    await page.waitForTimeout(500);
+
     if (!isMobile) {
       await page.screenshot({ path: "C:/Users/devas/.gemini/antigravity/brain/ef1f2699-1dfc-402a-891a-60fd42c360d2/verified_learn_home.png" });
     }
