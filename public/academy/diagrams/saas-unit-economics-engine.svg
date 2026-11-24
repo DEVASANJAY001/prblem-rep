@@ -1,0 +1,32 @@
+<svg viewBox="0 0 760 170" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="760" height="170" rx="12" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="1"/>
+  <text x="36" y="24" fill="#0F172A" font-size="12" font-family="system-ui, sans-serif" font-weight="700">SaaS Unit Economics Core Ratios: Health &amp; Scalability</text>
+  <g transform="translate(36, 38)">
+    <!-- Metric 1: LTV to CAC -->
+    <rect x="0" y="0" width="158" height="84" rx="6" fill="#FFFFFF" stroke="#CBD5E1"/>
+    <text x="12" y="18" fill="#64748B" font-size="9" font-family="system-ui, sans-serif" font-weight="600">LTV : CAC RATIO</text>
+    <text x="12" y="44" fill="#0F172A" font-size="22" font-family="system-ui, sans-serif" font-weight="800">&gt; 3.0x</text>
+    <rect x="12" y="56" width="134" height="18" rx="3" fill="#DCFCE7"/>
+    <text x="79" y="68" fill="#15803D" font-size="8.5" font-family="system-ui, sans-serif" font-weight="600" text-anchor="middle">Sustainable Growth</text>
+    <!-- Metric 2: CAC Payback -->
+    <rect x="176" y="0" width="158" height="84" rx="6" fill="#FFFFFF" stroke="#CBD5E1"/>
+    <text x="12" y="18" fill="#64748B" font-size="9" font-family="system-ui, sans-serif" font-weight="600">CAC PAYBACK PERIOD</text>
+    <text x="12" y="44" fill="#0F172A" font-size="22" font-family="system-ui, sans-serif" font-weight="800">&lt; 12 mo</text>
+    <rect x="12" y="56" width="134" height="18" rx="3" fill="#DBEAFE"/>
+    <text x="79" y="68" fill="#1D4ED8" font-size="8.5" font-family="system-ui, sans-serif" font-weight="600" text-anchor="middle">Fast Capital Recycling</text>
+    <!-- Metric 3: Gross Margin -->
+    <rect x="352" y="0" width="158" height="84" rx="6" fill="#FFFFFF" stroke="#CBD5E1"/>
+    <text x="12" y="18" fill="#64748B" font-size="9" font-family="system-ui, sans-serif" font-weight="600">GROSS MARGIN</text>
+    <text x="12" y="44" fill="#0F172A" font-size="22" font-family="system-ui, sans-serif" font-weight="800">&gt; 75%</text>
+    <rect x="12" y="56" width="134" height="18" rx="3" fill="#FEF3C7"/>
+    <text x="79" y="68" fill="#B45309" font-size="8.5" font-family="system-ui, sans-serif" font-weight="600" text-anchor="middle">Software Leverage</text>
+    <!-- Metric 4: Net Revenue Retention -->
+    <rect x="528" y="0" width="158" height="84" rx="6" fill="#FFFFFF" stroke="#CBD5E1"/>
+    <text x="12" y="18" fill="#64748B" font-size="9" font-family="system-ui, sans-serif" font-weight="600">NET REVENUE RETENTION</text>
+    <text x="12" y="44" fill="#0F172A" font-size="22" font-family="system-ui, sans-serif" font-weight="800">&gt; 110%</text>
+    <rect x="12" y="56" width="134" height="18" rx="3" fill="#FCE7F3"/>
+    <text x="79" y="68" fill="#BE185D" font-size="8.5" font-family="system-ui, sans-serif" font-weight="600" text-anchor="middle">Negative Net Churn</text>
+  </g>
+  <rect x="36" y="132" width="688" height="24" rx="4" fill="#F1F5F9"/>
+  <text x="380" y="148" fill="#475569" font-size="9" font-family="system-ui, sans-serif" font-weight="500" text-anchor="middle">LTV = (ARPU × Gross Margin) ÷ Churn Rate. A sub-12 month payback allows profitable reinvestment of customer cash.</text>
+</svg>

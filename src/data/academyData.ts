@@ -157,7 +157,8 @@ export const COURSE_2_PARTS: AcademyPart[] = [
 import { COURSE_3_PARTS, COURSE_3_CHAPTERS } from "./course3Data";
 import { COURSE_4_PARTS, COURSE_4_CHAPTERS } from "./course4Data";
 import { COURSE_5_PARTS, COURSE_5_CHAPTERS } from "./course5Data";
-export { COURSE_3_PARTS, COURSE_3_CHAPTERS, COURSE_4_PARTS, COURSE_4_CHAPTERS, COURSE_5_PARTS, COURSE_5_CHAPTERS };
+import { COURSE_6_PARTS, COURSE_6_CHAPTERS } from "./course6Data";
+export { COURSE_3_PARTS, COURSE_3_CHAPTERS, COURSE_4_PARTS, COURSE_4_CHAPTERS, COURSE_5_PARTS, COURSE_5_CHAPTERS, COURSE_6_PARTS, COURSE_6_CHAPTERS };
 
 export const ACADEMY_PARTS = COURSE_1_PARTS;
 
@@ -239,6 +240,19 @@ export const ACADEMY_COURSES: AcademyCourse[] = [
     sectionsCount: 101,
     description: "Design, build and ship reliable AI features for real problems. Master prompt engineering, model APIs, RAG, tool calling, evaluation, safety, and agent workflows.",
     parts: COURSE_5_PARTS,
+  },
+  {
+    id: "course-6",
+    n: 6,
+    slug: "startup-fundamentals",
+    title: "Startup Fundamentals",
+    level: "Founder",
+    live: true,
+    meta: "18 chapters · 104 sections",
+    chaptersCount: 18,
+    sectionsCount: 104,
+    description: "Turn a validated prototype into a sustainable, scalable venture. Master business models, founder equity, legal setups, runway modeling, sales pipelines, and investor fundraising.",
+    parts: COURSE_6_PARTS,
   },
 ];
 
@@ -4069,6 +4083,7 @@ export function getCourse(slugOrId?: string): AcademyCourse {
     (c) =>
       c.slug.toLowerCase() === cleaned ||
       c.id.toLowerCase() === cleaned ||
+      ((cleaned.includes("startup") || cleaned.includes("fundamental")) && c.id === "course-6") ||
       ((cleaned.includes("ai") || cleaned.includes("builder")) && c.id === "course-5") ||
       ((cleaned.includes("solution") || cleaned.includes("mvp")) && c.id === "course-4") ||
       ((cleaned.includes("cloud") || cleaned.includes("full-stack")) && c.id === "course-3") ||
@@ -4081,6 +4096,9 @@ export function getCourse(slugOrId?: string): AcademyCourse {
 export function getCourseChapters(courseSlug?: string): AcademyChapter[] {
   if (!courseSlug) return COURSE_1_CHAPTERS;
   const cleaned = courseSlug.toLowerCase().trim();
+  if (cleaned.includes("startup") || cleaned.includes("fundamental") || cleaned === "course-6") {
+    return COURSE_6_CHAPTERS;
+  }
   if (cleaned.includes("ai") || cleaned.includes("builder") || cleaned === "course-5") {
     return COURSE_5_CHAPTERS;
   }
@@ -4099,6 +4117,9 @@ export function getCourseChapters(courseSlug?: string): AcademyChapter[] {
 export function getCourseParts(courseSlug?: string): AcademyPart[] {
   if (!courseSlug) return COURSE_1_PARTS;
   const cleaned = courseSlug.toLowerCase().trim();
+  if (cleaned.includes("startup") || cleaned.includes("fundamental") || cleaned === "course-6") {
+    return COURSE_6_PARTS;
+  }
   if (cleaned.includes("ai") || cleaned.includes("builder") || cleaned === "course-5") {
     return COURSE_5_PARTS;
   }

@@ -8,11 +8,13 @@ import {
   COURSE_3_CHAPTERS,
   COURSE_4_CHAPTERS,
   COURSE_5_CHAPTERS,
+  COURSE_6_CHAPTERS,
   COURSE_1_PARTS,
   COURSE_2_PARTS,
   COURSE_3_PARTS,
   COURSE_4_PARTS,
   COURSE_5_PARTS,
+  COURSE_6_PARTS,
   AcademyChapter,
   AcademyPart,
 } from "@/data/academyData";
@@ -22,14 +24,23 @@ export const SubjectPage: React.FC = () => {
   const location = useLocation();
 
   // Determine active course
+  const isCourse6 =
+    location.pathname.includes("startup-fundamentals") ||
+    location.pathname.includes("/startup") ||
+    courseSlug?.includes("startup-fundamentals") ||
+    courseSlug?.includes("startup") ||
+    courseSlug === "course-6";
+
   const isCourse5 =
-    location.pathname.includes("ai-for-builders") ||
-    location.pathname.includes("/ai") ||
-    courseSlug?.includes("ai-for-builders") ||
-    courseSlug?.includes("ai") ||
-    courseSlug === "course-5";
+    !isCourse6 &&
+    (location.pathname.includes("ai-for-builders") ||
+      location.pathname.includes("/ai") ||
+      courseSlug?.includes("ai-for-builders") ||
+      courseSlug?.includes("ai") ||
+      courseSlug === "course-5");
 
   const isCourse4 =
+    !isCourse6 &&
     !isCourse5 &&
     (location.pathname.includes("solution-design") ||
       location.pathname.includes("mvp") ||
@@ -38,6 +49,7 @@ export const SubjectPage: React.FC = () => {
       courseSlug === "course-4");
 
   const isCourse3 =
+    !isCourse6 &&
     !isCourse5 &&
     !isCourse4 &&
     (location.pathname.includes("full-stack") ||
@@ -47,6 +59,7 @@ export const SubjectPage: React.FC = () => {
       courseSlug === "course-3");
 
   const isCourse2 =
+    !isCourse6 &&
     !isCourse5 &&
     !isCourse4 &&
     !isCourse3 &&
@@ -54,7 +67,9 @@ export const SubjectPage: React.FC = () => {
       courseSlug?.includes("market-sizing") ||
       courseSlug === "course-2");
 
-  const course = isCourse5
+  const course = isCourse6
+    ? ACADEMY_COURSES[5]
+    : isCourse5
     ? ACADEMY_COURSES[4]
     : isCourse4
     ? ACADEMY_COURSES[3]
@@ -63,7 +78,9 @@ export const SubjectPage: React.FC = () => {
     : isCourse2
     ? ACADEMY_COURSES[1]
     : ACADEMY_COURSES[0];
-  const chapters: AcademyChapter[] = isCourse5
+  const chapters: AcademyChapter[] = isCourse6
+    ? COURSE_6_CHAPTERS
+    : isCourse5
     ? COURSE_5_CHAPTERS
     : isCourse4
     ? COURSE_4_CHAPTERS
@@ -73,7 +90,9 @@ export const SubjectPage: React.FC = () => {
     ? COURSE_2_CHAPTERS
     : COURSE_1_CHAPTERS;
   const parts: AcademyPart[] = (
-    isCourse5
+    isCourse6
+      ? COURSE_6_PARTS
+      : isCourse5
       ? COURSE_5_PARTS
       : isCourse4
       ? COURSE_4_PARTS
@@ -88,6 +107,16 @@ export const SubjectPage: React.FC = () => {
   const [openPart, setOpenPart] = useState<number>(0);
 
   const whatYouWillLearn = useMemo(() => {
+    if (isCourse6) {
+      return [
+        "Select the right venture path (venture-scale, bootstrapped, or service-first)",
+        "Construct a dynamic 9-box Business Model Canvas tied to verified customer pain",
+        "Structure fair co-founder equity splits with 4-year vesting and 1-year cliffs",
+        "Set up Delaware C-Corp / Pvt Ltd legal entities and execute complete IP assignment",
+        "Build 18-month cash runway models, calculate net burn, and manage unit economics",
+        "Master the 6-stage B2B pilot conversion sales pipeline to close paying customers",
+      ];
+    }
     if (isCourse5) {
       return [
         "Select the right AI architecture (rules vs classical ML vs LLMs)",
@@ -136,9 +165,21 @@ export const SubjectPage: React.FC = () => {
       "Test a problem with cheap validation experiments",
       "Decide objectively to go, pivot or stop",
     ];
-  }, [isCourse2, isCourse3, isCourse4, isCourse5]);
+  }, [isCourse2, isCourse3, isCourse4, isCourse5, isCourse6]);
 
   const skills = useMemo(() => {
+    if (isCourse6) {
+      return [
+        "Business Model Design",
+        "Value-Based Pricing",
+        "Co-Founder Equity & Vesting",
+        "IP Assignment & Legal Entities",
+        "Cash Runway Modeling",
+        "SAFE & Seed Fundraising",
+        "B2B Enterprise Sales",
+        "SaaS Unit Economics (CAC/LTV)",
+      ];
+    }
     if (isCourse5) {
       return [
         "Prompt Engineering & JSON Schemas",
@@ -191,7 +232,7 @@ export const SubjectPage: React.FC = () => {
       "Bottom-up sizing",
       "Validation experiments",
     ];
-  }, [isCourse2, isCourse3, isCourse4, isCourse5]);
+  }, [isCourse2, isCourse3, isCourse4, isCourse5, isCourse6]);
 
   return (
     <div className="font-source-sans w-full min-h-screen bg-white text-[#1f1f1f] text-base antialiased">
@@ -240,7 +281,9 @@ export const SubjectPage: React.FC = () => {
               <div>
                 <div className="font-bold text-[17px] sm:text-[18px] text-[#1f1f1f]">{course.level}</div>
                 <div className="text-xs sm:text-sm text-[#5b606b]">
-                  {isCourse5
+                  {isCourse6
+                    ? "Prerequisite: Courses 1, 2, 4 & 5 recommended"
+                    : isCourse5
                     ? "Prerequisite: Courses 1, 2 & 3 recommended"
                     : isCourse4
                     ? "Prerequisite: Courses 1 & 2 (Course 3 optional)"

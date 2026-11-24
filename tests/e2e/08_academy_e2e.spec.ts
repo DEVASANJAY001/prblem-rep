@@ -328,4 +328,34 @@ test.describe("Academy Flow E2E Tests: Course Branching, Layout & Independent Sc
     await expect(page.locator("body")).toContainText(/5\.1 Why Grounding/i);
     console.log("✅ [Academy E2E] Course 5 Subject Page & Reader passed 100%");
   });
+
+  test("10. Course 6 (Startup Fundamentals) Subject Page and Chapter Reader", async ({ page }) => {
+    console.log("🚀 [Academy E2E] Testing Course 6 (Startup Fundamentals) Subject Page & Reader...");
+    await page.goto("/learn/startup-fundamentals", { waitUntil: "domcontentloaded" });
+
+    await expect(page.locator("h1")).toContainText("Startup Fundamentals");
+    await expect(page.locator("body")).toContainText("18 chapters");
+
+    // Click Start learning
+    const startBtn = page.getByRole("link", { name: /Start learning/i });
+    await expect(startBtn).toBeVisible();
+    await startBtn.click();
+    await expect(page).toHaveURL(/\/learn\/startup-fundamentals\/course-overview/);
+
+    // Verify Chapter 0 content
+    await expect(page.locator("h1")).toContainText("Course Overview");
+    await expect(page.locator("body")).toContainText(/0\.1 What This Subject Covers/i);
+
+    // Navigate to Chapter 1 (Mindset & Venture Types with SVG diagram)
+    await page.goto("/learn/startup-fundamentals/the-startup-mindset-and-venture-types", { waitUntil: "domcontentloaded" });
+    await expect(page.locator("h1")).toContainText("Startup Mindset");
+    await expect(page.locator("figure")).toBeVisible();
+    await expect(page.locator("body")).toContainText(/1\.1 What a Startup Is/i);
+
+    // Navigate to Chapter 3 (Founders, Teams and Equity with Vesting Diagram)
+    await page.goto("/learn/startup-fundamentals/founders-teams-and-equity", { waitUntil: "domcontentloaded" });
+    await expect(page.locator("h1")).toContainText("Founders, Teams and Equity");
+    await expect(page.locator("figure")).toBeVisible();
+    console.log("✅ [Academy E2E] Course 6 Subject Page & Reader passed 100%");
+  });
 });

@@ -1,0 +1,61 @@
+<svg viewBox="0 0 760 170" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="760" height="170" rx="12" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="1"/>
+  <text x="36" y="24" fill="#0F172A" font-size="12" font-family="system-ui, sans-serif" font-weight="700">The 6-Stage B2B Pilot-to-Contract Conversion Pipeline</text>
+  <g transform="translate(36, 40)">
+    <!-- Stage 1 -->
+    <rect x="0" y="0" width="102" height="78" rx="5" fill="#FFFFFF" stroke="#CBD5E1"/>
+    <text x="10" y="18" fill="#475569" font-size="9" font-family="system-ui, sans-serif" font-weight="700">1. Discovery</text>
+    <text x="10" y="34" fill="#64748B" font-size="8" font-family="system-ui, sans-serif">Diagnose Pain</text>
+    <text x="10" y="46" fill="#64748B" font-size="8" font-family="system-ui, sans-serif">Verify Budget</text>
+    <rect x="10" y="56" width="82" height="14" rx="2" fill="#F1F5F9"/>
+    <text x="51" y="66" fill="#475569" font-size="7.5" font-family="system-ui, sans-serif" font-weight="600" text-anchor="middle">100% Leads</text>
+    <!-- Arrow 1 -->
+    <path d="M 106 39 L 115 39" stroke="#94A3B8" stroke-width="1.8" stroke-linecap="round"/>
+    <!-- Stage 2 -->
+    <rect x="119" y="0" width="102" height="78" rx="5" fill="#FFFFFF" stroke="#CBD5E1"/>
+    <text x="10" y="18" fill="#475569" font-size="9" font-family="system-ui, sans-serif" font-weight="700">2. Solution Demo</text>
+    <text x="10" y="34" fill="#64748B" font-size="8" font-family="system-ui, sans-serif">Custom Flow</text>
+    <text x="10" y="46" fill="#64748B" font-size="8" font-family="system-ui, sans-serif">Show Direct ROI</text>
+    <rect x="10" y="56" width="82" height="14" rx="2" fill="#F1F5F9"/>
+    <text x="51" y="66" fill="#475569" font-size="7.5" font-family="system-ui, sans-serif" font-weight="600" text-anchor="middle">50% Qualified</text>
+    <!-- Arrow 2 -->
+    <path d="M 225 39 L 234 39" stroke="#94A3B8" stroke-width="1.8" stroke-linecap="round"/>
+    <!-- Stage 3 -->
+    <rect x="238" y="0" width="102" height="78" rx="5" fill="#EFF6FF" stroke="#93C5FD"/>
+    <text x="10" y="18" fill="#1D4ED8" font-size="9" font-family="system-ui, sans-serif" font-weight="700">3. Paid Pilot</text>
+    <text x="10" y="34" fill="#2563EB" font-size="8" font-family="system-ui, sans-serif">30-60 Day Trial</text>
+    <text x="10" y="46" fill="#2563EB" font-size="8" font-family="system-ui, sans-serif">Defined Success</text>
+    <rect x="10" y="56" width="82" height="14" rx="2" fill="#DBEAFE"/>
+    <text x="51" y="66" fill="#1E40AF" font-size="7.5" font-family="system-ui, sans-serif" font-weight="600" text-anchor="middle">30% Pilot</text>
+    <!-- Arrow 3 -->
+    <path d="M 344 39 L 353 39" stroke="#94A3B8" stroke-width="1.8" stroke-linecap="round"/>
+    <!-- Stage 4 -->
+    <rect x="357" y="0" width="102" height="78" rx="5" fill="#FFFFFF" stroke="#CBD5E1"/>
+    <text x="10" y="18" fill="#475569" font-size="9" font-family="system-ui, sans-serif" font-weight="700">4. Security/Legal</text>
+    <text x="10" y="34" fill="#64748B" font-size="8" font-family="system-ui, sans-serif">DPA &amp; InfoSec</text>
+    <text x="10" y="46" fill="#64748B" font-size="8" font-family="system-ui, sans-serif">Procurement</text>
+    <rect x="10" y="56" width="82" height="14" rx="2" fill="#F1F5F9"/>
+    <text x="51" y="66" fill="#475569" font-size="7.5" font-family="system-ui, sans-serif" font-weight="600" text-anchor="middle">20% Audit</text>
+    <!-- Arrow 4 -->
+    <path d="M 463 39 L 472 39" stroke="#94A3B8" stroke-width="1.8" stroke-linecap="round"/>
+    <!-- Stage 5 -->
+    <rect x="476" y="0" width="102" height="78" rx="5" fill="#F0FDF4" stroke="#86EFAC"/>
+    <text x="10" y="18" fill="#15803D" font-size="9" font-family="system-ui, sans-serif" font-weight="700">5. Annual MSA</text>
+    <text x="10" y="34" fill="#166534" font-size="8" font-family="system-ui, sans-serif">Signed Contract</text>
+    <text x="10" y="46" fill="#166534" font-size="8" font-family="system-ui, sans-serif">Upfront Cash</text>
+    <rect x="10" y="56" width="82" height="14" rx="2" fill="#DCFCE7"/>
+    <text x="51" y="66" fill="#166534" font-size="7.5" font-family="system-ui, sans-serif" font-weight="600" text-anchor="middle">15% Close</text>
+    <!-- Arrow 5 -->
+    <path d="M 582 39 L 591 39" stroke="#94A3B8" stroke-width="1.8" stroke-linecap="round"/>
+    <!-- Stage 6 -->
+    <rect x="595" y="0" width="93" height="78" rx="5" fill="#FFF1F2" stroke="#FDA4AF"/>
+    <text x="10" y="18" fill="#BE123C" font-size="9" font-family="system-ui, sans-serif" font-weight="700">6. Expansion</text>
+    <text x="10" y="34" fill="#9F1239" font-size="8" font-family="system-ui, sans-serif">Seat Upsell</text>
+    <text x="10" y="46" fill="#9F1239" font-size="8" font-family="system-ui, sans-serif">&gt; 115% NRR</text>
+    <rect x="10" y="56" width="73" height="14" rx="2" fill="#FFE4E6"/>
+    <text x="46" y="66" fill="#BE123C" font-size="7.5" font-family="system-ui, sans-serif" font-weight="600" text-anchor="middle">Land &amp; Expand</text>
+  </g>
+  <!-- Legend -->
+  <rect x="36" y="128" width="688" height="22" rx="4" fill="#F8FAFC" stroke="#E2E8F0"/>
+  <text x="380" y="143" fill="#64748B" font-size="8.5" font-family="system-ui, sans-serif" text-anchor="middle">Always pre-wire conversion milestones in writing before launching a pilot to guarantee smooth MSA signing.</text>
+</svg>

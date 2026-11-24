@@ -520,8 +520,163 @@ export const CourseCardBanner: React.FC<CourseCardBannerProps> = ({ courseNum })
   }
 
   // Course 5: AI for Builders (Electric Cyan & Deep Tech Blue, Neural Copilot Processor & RAG Matrix motif)
+  if (courseNum === 5) {
+    return (
+      <div className="relative w-full h-full min-h-[210px] overflow-hidden select-none bg-[#02131e]">
+        <svg
+          viewBox="0 0 360 225"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className="w-full h-full object-cover"
+          preserveAspectRatio="xMidYMid slice"
+          aria-hidden="true"
+        >
+          <defs>
+            <linearGradient id="c5-bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#010d16" />
+              <stop offset="45%" stopColor="#083344" />
+              <stop offset="100%" stopColor="#041f2c" />
+            </linearGradient>
+
+            <radialGradient id="c5-glow" cx="50%" cy="46%" r="62%">
+              <stop offset="0%" stopColor="#22d3ee" stopOpacity="0.42" />
+              <stop offset="55%" stopColor="#0891b2" stopOpacity="0.22" />
+              <stop offset="100%" stopColor="#010d16" stopOpacity="0" />
+            </radialGradient>
+
+            <linearGradient id="c5-chip-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#0e2a3b" />
+              <stop offset="50%" stopColor="#083344" />
+              <stop offset="100%" stopColor="#051c28" />
+            </linearGradient>
+
+            <filter id="c5-chip-shadow" x="-20%" y="-20%" width="140%" height="140%">
+              <feDropShadow dx="0" dy="10" stdDeviation="12" floodColor="#01080d" floodOpacity="0.75" />
+            </filter>
+
+            <filter id="c5-sparkle-glow" x="-30%" y="-30%" width="160%" height="160%">
+              <feGaussianBlur stdDeviation="3" result="blur" />
+              <feComposite in="SourceGraphic" in2="blur" operator="over" />
+            </filter>
+          </defs>
+
+          {/* Background & Ambient Cyan Glow */}
+          <rect width="360" height="225" fill="url(#c5-bg-grad)" />
+          <circle cx="180" cy="112" r="115" fill="url(#c5-glow)" />
+
+          {/* Transformer Attention Matrix Grid in Top Left */}
+          <g transform="translate(50, 36)" stroke="#06b6d4" strokeWidth="0.8" opacity="0.35">
+            <line x1="0" y1="0" x2="36" y2="0" />
+            <line x1="0" y1="12" x2="36" y2="12" />
+            <line x1="0" y1="24" x2="36" y2="24" />
+            <line x1="0" y1="0" x2="0" y2="24" />
+            <line x1="12" y1="0" x2="12" y2="24" />
+            <line x1="24" y1="0" x2="24" y2="24" />
+            <line x1="36" y1="0" x2="36" y2="24" />
+            <circle cx="12" cy="12" r="2" fill="#22d3ee" />
+            <circle cx="24" cy="0" r="1.5" fill="#67e8f9" />
+            <circle cx="0" cy="24" r="1.5" fill="#67e8f9" />
+          </g>
+
+          {/* Top Right: AI Terminal / Model Gateway Prompt Badge */}
+          <g transform="translate(282, 36)" fill="none" opacity="0.8">
+            <rect x="0" y="0" width="30" height="22" rx="4" fill="#083344" stroke="#22d3ee" strokeWidth="1.2" />
+            <path d="M 7 7 L 12 11 L 7 15" stroke="#67e8f9" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+            <line x1="15" y1="15" x2="23" y2="15" stroke="#a5f3fc" strokeWidth="1.8" strokeLinecap="round" />
+          </g>
+
+          {/* Bottom Left: Neural Network Synaptic Nodes */}
+          <g transform="translate(52, 172)" stroke="#22d3ee" strokeWidth="1.4" fill="none" opacity="0.8">
+            <circle cx="6" cy="18" r="4" fill="#0891b2" />
+            <circle cx="24" cy="6" r="4.5" fill="#06b6d4" />
+            <circle cx="40" cy="20" r="4" fill="#22d3ee" />
+            <line x1="9" y1="16" x2="20" y2="8" strokeOpacity="0.7" />
+            <line x1="28" y1="8" x2="36" y2="18" strokeOpacity="0.7" />
+          </g>
+
+          {/* Flowing Prompt / RAG Vector Stream across Lower Background */}
+          <path
+            d="M 25 182 Q 130 162 180 120 T 335 68"
+            stroke="#22d3ee"
+            strokeWidth="2.2"
+            strokeLinecap="round"
+            strokeOpacity="0.45"
+            fill="none"
+          />
+
+          {/* Centerpiece: 3D AI Neural Processor & Copilot Core */}
+          <g transform="translate(180, 112)" filter="url(#c5-chip-shadow)">
+            {/* External Chip Connection Pins */}
+            {[-24, -12, 0, 12, 24].map((offset, i) => (
+              <React.Fragment key={i}>
+                {/* Top pins */}
+                <line x1={offset} y1="-44" x2={offset} y2="-38" stroke="#06b6d4" strokeWidth="2" strokeLinecap="round" />
+                {/* Bottom pins */}
+                <line x1={offset} y1="38" x2={offset} y2="44" stroke="#06b6d4" strokeWidth="2" strokeLinecap="round" />
+                {/* Left pins */}
+                <line x1="-44" y1={offset} x2="-38" y2={offset} stroke="#06b6d4" strokeWidth="2" strokeLinecap="round" />
+                {/* Right pins */}
+                <line x1="38" y1={offset} x2="44" y2={offset} stroke="#06b6d4" strokeWidth="2" strokeLinecap="round" />
+              </React.Fragment>
+            ))}
+
+            {/* Neural Chip Body */}
+            <rect
+              x="-38"
+              y="-38"
+              width="76"
+              height="76"
+              rx="16"
+              fill="url(#c5-chip-grad)"
+              stroke="#22d3ee"
+              strokeWidth="1.6"
+            />
+
+            {/* Inner Circuit Perimeter */}
+            <rect
+              x="-28"
+              y="-28"
+              width="56"
+              height="56"
+              rx="10"
+              fill="#031a26"
+              stroke="#0891b2"
+              strokeWidth="1.2"
+              strokeDasharray="4 2"
+            />
+
+            {/* AI Copilot 4-Point Neural Sparkle Core */}
+            <g filter="url(#c5-sparkle-glow)">
+              <path
+                d="M 0 -16 Q 0 0 16 0 Q 0 0 0 16 Q 0 0 -16 0 Q 0 0 0 -16 Z"
+                fill="#ffffff"
+              />
+              <circle cx="0" cy="0" r="4.5" fill="#22d3ee" />
+              <circle cx="0" cy="0" r="2" fill="#ffffff" />
+            </g>
+
+            {/* Mini Tech Label */}
+            <text
+              x="0"
+              y="23"
+              fill="#67e8f9"
+              fontSize="6"
+              fontWeight="800"
+              textAnchor="middle"
+              fontFamily="system-ui, -apple-system, sans-serif"
+              letterSpacing="0.8"
+            >
+              AI COPILOT
+            </text>
+          </g>
+        </svg>
+      </div>
+    );
+  }
+
+  // Course 6: Startup Fundamentals (Rich Crimson Burgundy & Warm Amber Gold, Venture Rocket & Cap Table Scale motif)
   return (
-    <div className="relative w-full h-full min-h-[210px] overflow-hidden select-none bg-[#02131e]">
+    <div className="relative w-full h-full min-h-[210px] overflow-hidden select-none bg-[#19030a]">
       <svg
         viewBox="0 0 360 225"
         fill="none"
@@ -531,141 +686,153 @@ export const CourseCardBanner: React.FC<CourseCardBannerProps> = ({ courseNum })
         aria-hidden="true"
       >
         <defs>
-          <linearGradient id="c5-bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#010d16" />
-            <stop offset="45%" stopColor="#083344" />
-            <stop offset="100%" stopColor="#041f2c" />
+          <linearGradient id="c6-bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#140207" />
+            <stop offset="45%" stopColor="#4c0519" />
+            <stop offset="100%" stopColor="#25040d" />
           </linearGradient>
 
-          <radialGradient id="c5-glow" cx="50%" cy="46%" r="62%">
-            <stop offset="0%" stopColor="#22d3ee" stopOpacity="0.42" />
-            <stop offset="55%" stopColor="#0891b2" stopOpacity="0.22" />
-            <stop offset="100%" stopColor="#010d16" stopOpacity="0" />
+          <radialGradient id="c6-glow" cx="50%" cy="46%" r="62%">
+            <stop offset="0%" stopColor="#f43f5e" stopOpacity="0.45" />
+            <stop offset="55%" stopColor="#be123c" stopOpacity="0.25" />
+            <stop offset="100%" stopColor="#140207" stopOpacity="0" />
           </radialGradient>
 
-          <linearGradient id="c5-chip-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#0e2a3b" />
-            <stop offset="50%" stopColor="#083344" />
-            <stop offset="100%" stopColor="#051c28" />
+          <linearGradient id="c6-rocket-body" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#ffffff" />
+            <stop offset="40%" stopColor="#ffe4e6" />
+            <stop offset="100%" stopColor="#fecdd3" />
           </linearGradient>
 
-          <filter id="c5-chip-shadow" x="-20%" y="-20%" width="140%" height="140%">
-            <feDropShadow dx="0" dy="10" stdDeviation="12" floodColor="#01080d" floodOpacity="0.75" />
-          </filter>
+          <linearGradient id="c6-gold-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#fde68a" />
+            <stop offset="100%" stopColor="#d97706" />
+          </linearGradient>
 
-          <filter id="c5-sparkle-glow" x="-30%" y="-30%" width="160%" height="160%">
-            <feGaussianBlur stdDeviation="3" result="blur" />
-            <feComposite in="SourceGraphic" in2="blur" operator="over" />
+          <filter id="c6-rocket-shadow" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="10" stdDeviation="12" floodColor="#000000" floodOpacity="0.75" />
           </filter>
         </defs>
 
-        {/* Background & Ambient Cyan Glow */}
-        <rect width="360" height="225" fill="url(#c5-bg-grad)" />
-        <circle cx="180" cy="112" r="115" fill="url(#c5-glow)" />
+        {/* Background & Ambient Rose Glow */}
+        <rect width="360" height="225" fill="url(#c6-bg-grad)" />
+        <circle cx="180" cy="112" r="115" fill="url(#c6-glow)" />
 
-        {/* Transformer Attention Matrix Grid in Top Left */}
-        <g transform="translate(50, 36)" stroke="#06b6d4" strokeWidth="0.8" opacity="0.35">
-          <line x1="0" y1="0" x2="36" y2="0" />
-          <line x1="0" y1="12" x2="36" y2="12" />
-          <line x1="0" y1="24" x2="36" y2="24" />
-          <line x1="0" y1="0" x2="0" y2="24" />
-          <line x1="12" y1="0" x2="12" y2="24" />
-          <line x1="24" y1="0" x2="24" y2="24" />
-          <line x1="36" y1="0" x2="36" y2="24" />
-          <circle cx="12" cy="12" r="2" fill="#22d3ee" />
-          <circle cx="24" cy="0" r="1.5" fill="#67e8f9" />
-          <circle cx="0" cy="24" r="1.5" fill="#67e8f9" />
+        {/* Top Left: Cap Table Equity Pie Allocation Icon */}
+        <g transform="translate(48, 36)" opacity="0.8">
+          <circle cx="16" cy="16" r="14" fill="#881337" stroke="#fb7185" strokeWidth="1.2" />
+          {/* Pie Slice 1 (Founders 60%) */}
+          <path d="M 16 16 L 16 2 A 14 14 0 0 1 29 22 Z" fill="#f43f5e" />
+          {/* Pie Slice 2 (Investors 25%) */}
+          <path d="M 16 16 L 29 22 A 14 14 0 0 1 10 29 Z" fill="#fbbf24" />
+          {/* Pie Slice 3 (ESOP 15%) */}
+          <path d="M 16 16 L 10 29 A 14 14 0 0 1 16 2 Z" fill="#fda4af" />
         </g>
 
-        {/* Top Right: AI Terminal / Model Gateway Prompt Badge */}
-        <g transform="translate(282, 36)" fill="none" opacity="0.8">
-          <rect x="0" y="0" width="30" height="22" rx="4" fill="#083344" stroke="#22d3ee" strokeWidth="1.2" />
-          <path d="M 7 7 L 12 11 L 7 15" stroke="#67e8f9" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-          <line x1="15" y1="15" x2="23" y2="15" stroke="#a5f3fc" strokeWidth="1.8" strokeLinecap="round" />
+        {/* Top Right: Valuation & Growth Metric Tag */}
+        <g transform="translate(268, 36)" fill="none" opacity="0.85">
+          <rect x="0" y="0" width="46" height="24" rx="4" fill="#881337" stroke="#fb7185" strokeWidth="1.2" />
+          <text
+            x="23"
+            y="11"
+            fill="#fecdd3"
+            fontSize="6"
+            fontFamily="system-ui, sans-serif"
+            fontWeight="bold"
+            textAnchor="middle"
+          >
+            VALUATION
+          </text>
+          <text
+            x="23"
+            y="20"
+            fill="#fbbf24"
+            fontSize="7"
+            fontFamily="system-ui, sans-serif"
+            fontWeight="800"
+            textAnchor="middle"
+          >
+            $5M SEED
+          </text>
         </g>
 
-        {/* Bottom Left: Neural Network Synaptic Nodes */}
-        <g transform="translate(52, 172)" stroke="#22d3ee" strokeWidth="1.4" fill="none" opacity="0.8">
-          <circle cx="6" cy="18" r="4" fill="#0891b2" />
-          <circle cx="24" cy="6" r="4.5" fill="#06b6d4" />
-          <circle cx="40" cy="20" r="4" fill="#22d3ee" />
-          <line x1="9" y1="16" x2="20" y2="8" strokeOpacity="0.7" />
-          <line x1="28" y1="8" x2="36" y2="18" strokeOpacity="0.7" />
+        {/* Bottom Left: Ascending Venture Traction Bar Chart */}
+        <g transform="translate(48, 160)" opacity="0.8">
+          <rect x="0" y="16" width="6" height="12" rx="1.5" fill="#fda4af" />
+          <rect x="9" y="10" width="6" height="18" rx="1.5" fill="#f43f5e" />
+          <rect x="18" y="4" width="6" height="24" rx="1.5" fill="#e11d48" />
+          <rect x="27" y="0" width="6" height="28" rx="1.5" fill="#fbbf24" />
         </g>
 
-        {/* Flowing Prompt / RAG Vector Stream across Lower Background */}
+        {/* Dynamic Upward Growth Orbit Line */}
         <path
-          d="M 25 182 Q 130 162 180 120 T 335 68"
-          stroke="#22d3ee"
+          d="M 25 188 Q 120 170 180 120 T 335 60"
+          stroke="#fb7185"
           strokeWidth="2.2"
           strokeLinecap="round"
-          strokeOpacity="0.45"
+          strokeOpacity="0.5"
           fill="none"
         />
 
-        {/* Centerpiece: 3D AI Neural Processor & Copilot Core */}
-        <g transform="translate(180, 112)" filter="url(#c5-chip-shadow)">
-          {/* External Chip Connection Pins */}
-          {[-24, -12, 0, 12, 24].map((offset, i) => (
-            <React.Fragment key={i}>
-              {/* Top pins */}
-              <line x1={offset} y1="-44" x2={offset} y2="-38" stroke="#06b6d4" strokeWidth="2" strokeLinecap="round" />
-              {/* Bottom pins */}
-              <line x1={offset} y1="38" x2={offset} y2="44" stroke="#06b6d4" strokeWidth="2" strokeLinecap="round" />
-              {/* Left pins */}
-              <line x1="-44" y1={offset} x2="-38" y2={offset} stroke="#06b6d4" strokeWidth="2" strokeLinecap="round" />
-              {/* Right pins */}
-              <line x1="38" y1={offset} x2="44" y2={offset} stroke="#06b6d4" strokeWidth="2" strokeLinecap="round" />
-            </React.Fragment>
-          ))}
+        {/* Centerpiece: 3D Venture Rocket Core & Launch Thrust */}
+        <g transform="translate(180, 108)" filter="url(#c6-rocket-shadow)">
+          {/* Rocket Exhaust Plume */}
+          <path
+            d="M -10 32 Q 0 54 10 32 Q 0 46 -10 32 Z"
+            fill="url(#c6-gold-grad)"
+          />
+          <circle cx="0" cy="38" r="4" fill="#fbbf24" opacity="0.9" />
 
-          {/* Neural Chip Body */}
-          <rect
-            x="-38"
-            y="-38"
-            width="76"
-            height="76"
-            rx="16"
-            fill="url(#c5-chip-grad)"
-            stroke="#22d3ee"
-            strokeWidth="1.6"
+          {/* Left Fin */}
+          <path
+            d="M -16 12 L -30 28 L -14 26 Z"
+            fill="#be123c"
+            stroke="#fb7185"
+            strokeWidth="1"
+          />
+          {/* Right Fin */}
+          <path
+            d="M 16 12 L 30 28 L 14 26 Z"
+            fill="#be123c"
+            stroke="#fb7185"
+            strokeWidth="1"
           />
 
-          {/* Inner Circuit Perimeter */}
-          <rect
-            x="-28"
-            y="-28"
-            width="56"
-            height="56"
-            rx="10"
-            fill="#031a26"
-            stroke="#0891b2"
-            strokeWidth="1.2"
-            strokeDasharray="4 2"
+          {/* Fuselage / Rocket Body */}
+          <path
+            d="M 0 -36 C -18 -10 -16 18 -14 30 L 14 30 C 16 18 18 -10 0 -36 Z"
+            fill="url(#c6-rocket-body)"
+            stroke="#ffffff"
+            strokeWidth="1.5"
           />
 
-          {/* AI Copilot 4-Point Neural Sparkle Core */}
-          <g filter="url(#c5-sparkle-glow)">
-            <path
-              d="M 0 -16 Q 0 0 16 0 Q 0 0 0 16 Q 0 0 -16 0 Q 0 0 0 -16 Z"
-              fill="#ffffff"
-            />
-            <circle cx="0" cy="0" r="4.5" fill="#22d3ee" />
-            <circle cx="0" cy="0" r="2" fill="#ffffff" />
-          </g>
+          {/* Cabin Porthole Glass */}
+          <circle cx="0" cy="-6" r="10" fill="#881337" stroke="#fbbf24" strokeWidth="2" />
+          <circle cx="0" cy="-6" r="6" fill="#140207" />
+          <circle cx="2" cy="-8" r="2" fill="#ffffff" opacity="0.8" />
 
-          {/* Mini Tech Label */}
+          {/* Ventral Fin Stripe */}
+          <line x1="0" y1="8" x2="0" y2="28" stroke="#e11d48" strokeWidth="2.5" strokeLinecap="round" />
+
+          {/* Rocket Nose Cone Accent */}
+          <path
+            d="M 0 -36 C -5 -28 0 -22 0 -22 C 0 -22 5 -28 0 -36 Z"
+            fill="#e11d48"
+          />
+
+          {/* Venture Stage Label Tag */}
+          <rect x="-24" y="32" width="48" height="11" rx="3" fill="#be123c" stroke="#f43f5e" strokeWidth="0.8" />
           <text
             x="0"
-            y="23"
-            fill="#67e8f9"
+            y="40"
+            fill="#ffffff"
             fontSize="6"
             fontWeight="800"
             textAnchor="middle"
             fontFamily="system-ui, -apple-system, sans-serif"
-            letterSpacing="0.8"
+            letterSpacing="0.6"
           >
-            AI COPILOT
+            VENTURE 1.0
           </text>
         </g>
       </svg>

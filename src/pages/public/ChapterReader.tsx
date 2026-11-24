@@ -8,6 +8,7 @@ import {
   COURSE_3_CHAPTERS,
   COURSE_4_CHAPTERS,
   COURSE_5_CHAPTERS,
+  COURSE_6_CHAPTERS,
   AcademyChapter,
 } from "@/data/academyData";
 import { Menu, X, ChevronRight, CheckCircle2 } from "lucide-react";
@@ -23,14 +24,23 @@ export const ChapterReader: React.FC = () => {
   const navigate = useNavigate();
 
   // Determine active course
+  const isCourse6 =
+    location.pathname.includes("startup-fundamentals") ||
+    location.pathname.includes("/startup") ||
+    courseSlug?.includes("startup-fundamentals") ||
+    courseSlug?.includes("startup") ||
+    courseSlug === "course-6";
+
   const isCourse5 =
-    location.pathname.includes("ai-for-builders") ||
-    location.pathname.includes("/ai") ||
-    courseSlug?.includes("ai-for-builders") ||
-    courseSlug?.includes("ai") ||
-    courseSlug === "course-5";
+    !isCourse6 &&
+    (location.pathname.includes("ai-for-builders") ||
+      location.pathname.includes("/ai") ||
+      courseSlug?.includes("ai-for-builders") ||
+      courseSlug?.includes("ai") ||
+      courseSlug === "course-5");
 
   const isCourse4 =
+    !isCourse6 &&
     !isCourse5 &&
     (location.pathname.includes("solution-design") ||
       location.pathname.includes("mvp") ||
@@ -39,6 +49,7 @@ export const ChapterReader: React.FC = () => {
       courseSlug === "course-4");
 
   const isCourse3 =
+    !isCourse6 &&
     !isCourse5 &&
     !isCourse4 &&
     (location.pathname.includes("full-stack") ||
@@ -48,6 +59,7 @@ export const ChapterReader: React.FC = () => {
       courseSlug === "course-3");
 
   const isCourse2 =
+    !isCourse6 &&
     !isCourse5 &&
     !isCourse4 &&
     !isCourse3 &&
@@ -55,7 +67,9 @@ export const ChapterReader: React.FC = () => {
       courseSlug?.includes("market-sizing") ||
       courseSlug === "course-2");
 
-  const activeCourse = isCourse5
+  const activeCourse = isCourse6
+    ? ACADEMY_COURSES[5]
+    : isCourse5
     ? ACADEMY_COURSES[4]
     : isCourse4
     ? ACADEMY_COURSES[3]
@@ -64,7 +78,9 @@ export const ChapterReader: React.FC = () => {
     : isCourse2
     ? ACADEMY_COURSES[1]
     : ACADEMY_COURSES[0];
-  const chapters: AcademyChapter[] = isCourse5
+  const chapters: AcademyChapter[] = isCourse6
+    ? COURSE_6_CHAPTERS
+    : isCourse5
     ? COURSE_5_CHAPTERS
     : isCourse4
     ? COURSE_4_CHAPTERS
@@ -100,7 +116,13 @@ export const ChapterReader: React.FC = () => {
   const [sectionsDrawerOpen, setSectionsDrawerOpen] = useState(false);
 
   // Completion state in localStorage per course
-  const storageKey = isCourse3
+  const storageKey = isCourse6
+    ? "stuckhere_academy_done_c6"
+    : isCourse5
+    ? "stuckhere_academy_done_c5"
+    : isCourse4
+    ? "stuckhere_academy_done_c4"
+    : isCourse3
     ? "stuckhere_academy_done_c3"
     : isCourse2
     ? "stuckhere_academy_done_c2"
