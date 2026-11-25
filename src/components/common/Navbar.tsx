@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { SmartLink as Link } from "@/components/common/SmartLink";
 import { useAuth } from "@/contexts/AuthContext";
 import { Menu, X, Shield, Sparkles, User as UserIcon, Bookmark, Plus, Search } from "lucide-react";
 import { UserAvatar } from "@/components/ui/UserAvatar";

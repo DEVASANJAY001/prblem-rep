@@ -90,44 +90,20 @@ const AdminAppController = lazyWithRetry(() => import("@/pages/admin/AdminAppCon
 const AdminCompanies = lazyWithRetry(() => import("@/pages/admin/AdminCompanies").then((m) => ({ default: m.AdminCompanies })));
 const AdminCredits = lazyWithRetry(() => import("@/pages/admin/AdminCredits").then((m) => ({ default: m.AdminCredits })));
 
+import { TopProgressBar, SlimPageFallback } from "@/components/common/TopProgressBar";
+import { preheatTopRoutes } from "@/lib/routePrefetch";
+
 // Pre-warm primary public routes during idle time so navigation is instantaneous
 function RoutePrewarmer() {
   React.useEffect(() => {
-    const prewarm = () => {
-      import("@/pages/public/Explore");
-      import("@/pages/public/Industries");
-      import("@/pages/public/Community");
-      import("@/pages/public/About");
-      import("@/pages/public/ProblemDetail");
-      import("@/pages/public/AcademyHome");
-    };
-
-    if (typeof window !== "undefined") {
-      if ("requestIdleCallback" in window) {
-        (window as any).requestIdleCallback(prewarm, { timeout: 3000 });
-      } else {
-        setTimeout(prewarm, 1200);
-      }
-    }
+    preheatTopRoutes();
   }, []);
 
   return null;
 }
 
-// Ultra-fast slim top loader and fallback
-const PageLoader = () => (
-  <div className="w-full">
-    <div className="fixed top-0 left-0 right-0 h-0.5 bg-primary/20 z-[9999] overflow-hidden">
-      <div className="h-full bg-gradient-to-r from-primary to-blue-400 animate-[indeterminate_1s_infinite_linear] origin-left" />
-    </div>
-    <div className="flex min-h-[50vh] w-full items-center justify-center">
-      <div className="flex flex-col items-center gap-3">
-        <div className="h-7 w-7 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-        <span className="text-xs font-semibold text-on-surface-variant animate-pulse">Loading...</span>
-      </div>
-    </div>
-  </div>
-);
+// Next.js-style zero-layout-shift fallback
+const PageLoader = SlimPageFallback;
 
 function RoutedErrorBoundary({ children }: { children: React.ReactNode }) {
   const location = useLocation();
@@ -143,6 +119,7 @@ export default function App() {
     <ThemeProvider>
       <AuthProvider>
         <BrowserRouter>
+          <TopProgressBar />
           <RoutePrewarmer />
           <ScrollRestoration />
           <RoutedErrorBoundary>

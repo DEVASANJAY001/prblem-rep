@@ -7,6 +7,7 @@ import {
 } from "@/lib/firebase/services/problemsService";
 import { subscribeCompanies } from "@/lib/firebase/services/companiesService";
 import { ProblemDoc, CompanyDoc, IndustryDoc } from "@/types";
+import { swrCache } from "@/lib/cache/swrCache";
 import { REAL_COMPANIES, REAL_INDUSTRIES, REAL_PROBLEMS } from "@/data/realProductionData";
 import { usePageContent } from "@/hooks/usePageContent";
 import { ProblemCardSkeleton } from "@/components/common/LoadingContainer";
@@ -177,10 +178,22 @@ export const Explore: React.FC = () => {
     };
   }, []);
 
-  // Fetch only the 20 problem cards for the current page & filter set
+  // Fetch only the 20 problem cards for the current page & filter set with instant SWR cache
   useEffect(() => {
     let mounted = true;
-    setIsPageLoading(true);
+    const cacheKey = `explore_page_${currentPage}_${search}_${selectedIndustries.join(",")}_${selectedSeverity}_${verifiedOnly}_${sortBy}`;
+    const cached = swrCache.get<{ problems: ProblemDoc[]; totalCount?: number }>(cacheKey);
+
+    if (cached) {
+      setPageProblems(cached.problems);
+      if (typeof cached.totalCount === "number") {
+        setTotalStatementsCount(cached.totalCount);
+      }
+      setIsPageLoading(false);
+      setLoading(false);
+    } else {
+      setIsPageLoading(true);
+    }
 
     fetchExploreProblemsPage(currentPage, ITEMS_PER_PAGE, {
       search,
@@ -191,6 +204,7 @@ export const Explore: React.FC = () => {
     })
       .then((res) => {
         if (mounted) {
+          swrCache.set(cacheKey, { problems: res.problems, totalCount: res.totalCount });
           setPageProblems(res.problems);
           if (typeof res.totalCount === "number") {
             setTotalStatementsCount(res.totalCount);

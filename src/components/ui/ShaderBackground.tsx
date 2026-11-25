@@ -121,6 +121,17 @@ export const ShaderBackground: React.FC<ShaderBackgroundProps> = ({ className = 
 
     let isVisible = true;
     let isRunning = false;
+    let isScrolling = false;
+    let scrollTimeout: any = null;
+
+    const handleScroll = () => {
+      isScrolling = true;
+      if (scrollTimeout) clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(() => {
+        isScrolling = false;
+      }, 100);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
 
     let lastT = 0;
     const render = (t: number) => {
@@ -130,8 +141,9 @@ export const ShaderBackground: React.FC<ShaderBackgroundProps> = ({ className = 
       }
       animId = requestAnimationFrame(render);
 
-      // Mobile frame pacing (~35fps) to save battery and keep scrolling 60fps
-      if (isMobile && t - lastT < 28) {
+      // Throttling during active scrolling and on mobile to guarantee 60fps/120fps silky-smooth physics
+      const minInterval = isScrolling ? 45 : isMobile ? 32 : 16;
+      if (t - lastT < minInterval) {
         return;
       }
       lastT = t;
@@ -172,6 +184,8 @@ export const ShaderBackground: React.FC<ShaderBackgroundProps> = ({ className = 
 
     return () => {
       cancelAnimationFrame(animId);
+      window.removeEventListener("scroll", handleScroll);
+      if (scrollTimeout) clearTimeout(scrollTimeout);
       document.removeEventListener("visibilitychange", handleVisibility);
       if (resizeObserver) {
         resizeObserver.disconnect();

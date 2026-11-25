@@ -4,6 +4,7 @@ import { Navbar } from "@/components/common/Navbar";
 import { usePageContent } from "@/hooks/usePageContent";
 import { fetchTrendingProblemsPage, TrendingCursor } from "@/lib/firebase/services/problemsService";
 import { ProblemDoc } from "@/types";
+import { swrCache } from "@/lib/cache/swrCache";
 import { ProblemCardSkeleton } from "@/components/common/LoadingContainer";
 import { ShaderBackground } from "@/components/ui/ShaderBackground";
 const OrganicAtlasSection = React.lazy(() =>
@@ -81,15 +82,29 @@ export const Home: React.FC = () => {
     }
   };
 
-  // 1. Initial Load: Fetch exactly 5 cards (0 onSnapshot listeners)
+  // 1. Initial Load: Fetch exactly 5 cards with instant SWR memory cache
   useEffect(() => {
     let isMounted = true;
-    isLoadingRef.current = true;
-    setLoadingProblems(true);
+    const cacheKey = "home_trending_problems_5";
+    const cached = swrCache.get<{ problems: ProblemDoc[]; cursor: TrendingCursor; hasMore: boolean }>(cacheKey);
+
+    if (cached) {
+      setTrendingProblems(cached.problems);
+      cursorRef.current = cached.cursor;
+      setHasMore(cached.hasMore);
+      hasMoreRef.current = cached.hasMore;
+      setLoadingProblems(false);
+      isLoadingRef.current = false;
+      setTimeout(checkScroll, 50);
+    } else {
+      isLoadingRef.current = true;
+      setLoadingProblems(true);
+    }
 
     fetchTrendingProblemsPage(null, 5)
       .then((res) => {
         if (!isMounted) return;
+        swrCache.set(cacheKey, { problems: res.problems, cursor: res.cursor, hasMore: res.hasMore });
         setTrendingProblems(res.problems);
         cursorRef.current = res.cursor;
         setHasMore(res.hasMore);
