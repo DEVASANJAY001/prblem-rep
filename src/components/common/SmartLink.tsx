@@ -2,7 +2,7 @@ import React, { useCallback } from "react";
 import { Link, LinkProps } from "react-router-dom";
 import { prefetchRoute } from "@/lib/routePrefetch";
 
-export interface SmartLinkProps extends LinkProps {
+export interface SmartLinkProps extends Omit<LinkProps, "prefetch"> {
   /**
    * Whether to prefetch the target route chunk on hover / touch / focus.
    * Defaults to true (Next.js Link default behavior).
