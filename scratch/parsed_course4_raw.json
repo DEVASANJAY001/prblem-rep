@@ -1,0 +1,1931 @@
+[
+  {
+    "num": 0,
+    "title": "Course Overview",
+    "intro": "",
+    "sections": [
+      {
+        "num": "0.1",
+        "title": "What This Subject Covers",
+        "intro": "",
+        "subs": [
+          {
+            "title": "0.1.1 The one-line idea",
+            "body": "A verified problem still needs a well-designed answer. This subject teaches a human-centered way to go from problem to prototype to pilot without wasting months on features nobody needs."
+          },
+          {
+            "title": "0.1.2 What you will be able to do",
+            "body": "- Build user personas and journey maps from real interviews\n- Reframe a problem into clear design questions\n- Generate, compare and prioritise solution ideas\n- Wireframe and prototype quickly\n- Define and ship a minimum viable product\n- Test with users and run a pilot with a real customer\n- Pitch the result to judges, sponsors and customers"
+          }
+        ]
+      },
+      {
+        "num": "0.2",
+        "title": "The Five-Stage Solver Roadmap",
+        "intro": "",
+        "subs": [
+          {
+            "title": "0.2.1 Stage 1: Understand",
+            "body": ""
+          },
+          {
+            "title": "0.2.2 Stage 2: Define",
+            "body": ""
+          },
+          {
+            "title": "0.2.3 Stage 3: Ideate and prioritise",
+            "body": ""
+          },
+          {
+            "title": "0.2.4 Stage 4: Prototype and test",
+            "body": ""
+          },
+          {
+            "title": "0.2.5 Stage 5: Pilot and iterate",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "0.3",
+        "title": "Prerequisites",
+        "intro": "",
+        "subs": [
+          {
+            "title": "0.3.1 Subject 1: Problem Discovery & Validation",
+            "body": ""
+          },
+          {
+            "title": "0.3.2 Subject 2: Market Sizing & Opportunity Analysis",
+            "body": ""
+          },
+          {
+            "title": "0.3.3 Subject 3 (Full-Stack Cloud) is helpful but not required; no-code paths are covered",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "0.4",
+        "title": "How to Use This Material",
+        "intro": "",
+        "subs": [
+          {
+            "title": "0.4.1 Suggested path (12 to 16 hours with practice)",
+            "body": ""
+          },
+          {
+            "title": "0.4.2 Chapter format: Concept, Method, Template, Exercise, Checkpoint Quiz",
+            "body": ""
+          },
+          {
+            "title": "0.4.3 Working on one real problem from the Stuckhere catalog throughout",
+            "body": ""
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "num": 1,
+    "title": "The Human-Centered Mindset",
+    "intro": "",
+    "sections": [
+      {
+        "num": "1.1",
+        "title": "Why Technology-First Fails",
+        "intro": "",
+        "subs": [
+          {
+            "title": "1.1.1 Building what is easy rather than what is needed",
+            "body": ""
+          },
+          {
+            "title": "1.1.2 Features nobody asked for",
+            "body": ""
+          },
+          {
+            "title": "1.1.3 Products that work in demos but not in workplaces",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "1.2",
+        "title": "Principles of Human-Centered Design",
+        "intro": "",
+        "subs": [
+          {
+            "title": "1.2.1 Start with people, not technology",
+            "body": ""
+          },
+          {
+            "title": "1.2.2 Design with users, not for them",
+            "body": ""
+          },
+          {
+            "title": "1.2.3 Test early with rough versions",
+            "body": ""
+          },
+          {
+            "title": "1.2.4 Iterate in short cycles",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "1.3",
+        "title": "The Double Diamond",
+        "intro": "",
+        "subs": [
+          {
+            "title": "1.3.1 Diverge and converge on the problem",
+            "body": ""
+          },
+          {
+            "title": "1.3.2 Diverge and converge on the solution",
+            "body": ""
+          },
+          {
+            "title": "1.3.3 Mapping it to the five-stage roadmap",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "1.4",
+        "title": "Solving Within Constraints",
+        "intro": "",
+        "subs": [
+          {
+            "title": "1.4.1 Time, money, skills and data",
+            "body": ""
+          },
+          {
+            "title": "1.4.2 Regulation, privacy and safety",
+            "body": ""
+          },
+          {
+            "title": "1.4.3 Constraints as a source of creativity",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "1.5",
+        "title": "Chapter Practice",
+        "intro": "",
+        "subs": [
+          {
+            "title": "1.5.1 Exercise: audit a product you use for human-centered failures",
+            "body": ""
+          },
+          {
+            "title": "1.5.2 Checkpoint quiz",
+            "body": ""
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "num": 2,
+    "title": "Understanding Users Deeply",
+    "intro": "",
+    "sections": [
+      {
+        "num": "2.1",
+        "title": "Revisiting Your Research",
+        "intro": "",
+        "subs": [
+          {
+            "title": "2.1.1 Pulling insights from Subject 1 interviews",
+            "body": ""
+          },
+          {
+            "title": "2.1.2 Filling gaps with a short second round",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "2.2",
+        "title": "Observation Methods",
+        "intro": "",
+        "subs": [
+          {
+            "title": "2.2.1 Shadowing and day-in-the-life studies",
+            "body": ""
+          },
+          {
+            "title": "2.2.2 Contextual inquiry",
+            "body": ""
+          },
+          {
+            "title": "2.2.3 Artifact review (spreadsheets, forms, registers, chat groups)",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "2.3",
+        "title": "Personas",
+        "intro": "",
+        "subs": [
+          {
+            "title": "2.3.1 What a useful persona contains (role, goals, frustrations, environment, tech comfort)",
+            "body": ""
+          },
+          {
+            "title": "2.3.2 Evidence-based vs. imagined personas",
+            "body": ""
+          },
+          {
+            "title": "2.3.3 Primary, secondary and buyer personas",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "2.4",
+        "title": "Journey Maps",
+        "intro": "",
+        "subs": [
+          {
+            "title": "2.4.1 Stages, actions, thoughts, emotions",
+            "body": ""
+          },
+          {
+            "title": "2.4.2 Marking pain points and opportunities",
+            "body": ""
+          },
+          {
+            "title": "2.4.3 Current-state vs. future-state maps",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "2.5",
+        "title": "Jobs To Be Done",
+        "intro": "",
+        "subs": [
+          {
+            "title": "2.5.1 \"When I..., I want to..., so I can...\"",
+            "body": ""
+          },
+          {
+            "title": "2.5.2 Functional, emotional and social jobs",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "2.6",
+        "title": "Chapter Practice",
+        "intro": "",
+        "subs": [
+          {
+            "title": "2.6.1 Exercise: create one persona and one journey map",
+            "body": ""
+          },
+          {
+            "title": "2.6.2 Checkpoint quiz",
+            "body": ""
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "num": 3,
+    "title": "Framing the Design Challenge",
+    "intro": "",
+    "sections": [
+      {
+        "num": "3.1",
+        "title": "From Insight to Opportunity",
+        "intro": "",
+        "subs": [
+          {
+            "title": "3.1.1 Clustering findings into themes",
+            "body": ""
+          },
+          {
+            "title": "3.1.2 Affinity mapping",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "3.2",
+        "title": "Problem Reframing",
+        "intro": "",
+        "subs": [
+          {
+            "title": "3.2.1 Five Whys",
+            "body": ""
+          },
+          {
+            "title": "3.2.2 Separating symptoms from root causes",
+            "body": ""
+          },
+          {
+            "title": "3.2.3 Widening and narrowing the scope",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "3.3",
+        "title": "How Might We Questions",
+        "intro": "",
+        "subs": [
+          {
+            "title": "3.3.1 Writing good HMW statements",
+            "body": ""
+          },
+          {
+            "title": "3.3.2 Too broad, too narrow, just right",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "3.4",
+        "title": "Success Criteria",
+        "intro": "",
+        "subs": [
+          {
+            "title": "3.4.1 What must be true for users to say it worked",
+            "body": ""
+          },
+          {
+            "title": "3.4.2 Measurable outcomes (time saved, errors reduced, cost cut)",
+            "body": ""
+          },
+          {
+            "title": "3.4.3 Non-goals: what you will not solve",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "3.5",
+        "title": "The Design Brief",
+        "intro": "",
+        "subs": [
+          {
+            "title": "3.5.1 One-page brief template",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "3.6",
+        "title": "Chapter Practice",
+        "intro": "",
+        "subs": [
+          {
+            "title": "3.6.1 Exercise: write five HMW questions and a design brief",
+            "body": ""
+          },
+          {
+            "title": "3.6.2 Checkpoint quiz",
+            "body": ""
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "num": 4,
+    "title": "Ideation",
+    "intro": "",
+    "sections": [
+      {
+        "num": "4.1",
+        "title": "Ground Rules",
+        "intro": "",
+        "subs": [
+          {
+            "title": "4.1.1 Quantity before quality",
+            "body": ""
+          },
+          {
+            "title": "4.1.2 Defer judgement",
+            "body": ""
+          },
+          {
+            "title": "4.1.3 Build on others' ideas",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "4.2",
+        "title": "Ideation Techniques",
+        "intro": "",
+        "subs": [
+          {
+            "title": "4.2.1 Brainstorming and brainwriting",
+            "body": ""
+          },
+          {
+            "title": "4.2.2 Crazy 8s",
+            "body": ""
+          },
+          {
+            "title": "4.2.3 SCAMPER",
+            "body": ""
+          },
+          {
+            "title": "4.2.4 Analogies from other industries",
+            "body": ""
+          },
+          {
+            "title": "4.2.5 Reverse brainstorming",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "4.3",
+        "title": "Solution Patterns",
+        "intro": "",
+        "subs": [
+          {
+            "title": "4.3.1 Digitising a manual workflow",
+            "body": ""
+          },
+          {
+            "title": "4.3.2 Automating repetitive steps",
+            "body": ""
+          },
+          {
+            "title": "4.3.3 Connecting two sides (marketplace)",
+            "body": ""
+          },
+          {
+            "title": "4.3.4 Alerts, dashboards and analytics",
+            "body": ""
+          },
+          {
+            "title": "4.3.5 Decision-support with AI",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "4.4",
+        "title": "Non-Software Solutions",
+        "intro": "",
+        "subs": [
+          {
+            "title": "4.4.1 Process or policy changes",
+            "body": ""
+          },
+          {
+            "title": "4.4.2 Training and checklists",
+            "body": ""
+          },
+          {
+            "title": "4.4.3 Hardware or hybrid solutions",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "4.5",
+        "title": "Using the AI Solver Copilot",
+        "intro": "",
+        "subs": [
+          {
+            "title": "4.5.1 Generating technical blueprints",
+            "body": ""
+          },
+          {
+            "title": "4.5.2 Checking ideas against the dossier",
+            "body": ""
+          },
+          {
+            "title": "4.5.3 Keeping human judgement in charge",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "4.6",
+        "title": "Chapter Practice",
+        "intro": "",
+        "subs": [
+          {
+            "title": "4.6.1 Exercise: produce 20 ideas and cluster them",
+            "body": ""
+          },
+          {
+            "title": "4.6.2 Checkpoint quiz",
+            "body": ""
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "num": 5,
+    "title": "Choosing What to Build",
+    "intro": "",
+    "sections": [
+      {
+        "num": "5.1",
+        "title": "Why Prioritisation Matters",
+        "intro": "",
+        "subs": [
+          {
+            "title": "5.1.1 The cost of building the wrong thing",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "5.2",
+        "title": "Prioritisation Frameworks",
+        "intro": "",
+        "subs": [
+          {
+            "title": "5.2.1 Impact vs. effort matrix",
+            "body": ""
+          },
+          {
+            "title": "5.2.2 RICE (reach, impact, confidence, effort)",
+            "body": ""
+          },
+          {
+            "title": "5.2.3 MoSCoW (must, should, could, will not)",
+            "body": ""
+          },
+          {
+            "title": "5.2.4 Kano model (basic, performance, delight)",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "5.3",
+        "title": "Riskiest Assumption Testing",
+        "intro": "",
+        "subs": [
+          {
+            "title": "5.3.1 Desirability, feasibility, viability",
+            "body": ""
+          },
+          {
+            "title": "5.3.2 Listing and ranking assumptions",
+            "body": ""
+          },
+          {
+            "title": "5.3.3 Designing the cheapest test for each",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "5.4",
+        "title": "Feasibility Checks",
+        "intro": "",
+        "subs": [
+          {
+            "title": "5.4.1 Team skills and time",
+            "body": ""
+          },
+          {
+            "title": "5.4.2 Data access and integrations",
+            "body": ""
+          },
+          {
+            "title": "5.4.3 Compliance and safety risks",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "5.5",
+        "title": "Making the Final Choice",
+        "intro": "",
+        "subs": [
+          {
+            "title": "5.5.1 A decision log",
+            "body": ""
+          },
+          {
+            "title": "5.5.2 Agreeing as a team",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "5.6",
+        "title": "Chapter Practice",
+        "intro": "",
+        "subs": [
+          {
+            "title": "5.6.1 Exercise: score your ideas with two frameworks",
+            "body": ""
+          },
+          {
+            "title": "5.6.2 Checkpoint quiz",
+            "body": ""
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "num": 6,
+    "title": "User Flows and Wireframes",
+    "intro": "",
+    "sections": [
+      {
+        "num": "6.1",
+        "title": "Information Architecture",
+        "intro": "",
+        "subs": [
+          {
+            "title": "6.1.1 Listing screens and content",
+            "body": ""
+          },
+          {
+            "title": "6.1.2 Navigation structures",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "6.2",
+        "title": "User Flows",
+        "intro": "",
+        "subs": [
+          {
+            "title": "6.2.1 Happy path",
+            "body": ""
+          },
+          {
+            "title": "6.2.2 Edge cases and errors",
+            "body": ""
+          },
+          {
+            "title": "6.2.3 Drawing a flow diagram",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "6.3",
+        "title": "Wireframing",
+        "intro": "",
+        "subs": [
+          {
+            "title": "6.3.1 Paper sketches",
+            "body": ""
+          },
+          {
+            "title": "6.3.2 Low-fidelity digital wireframes",
+            "body": ""
+          },
+          {
+            "title": "6.3.3 Layout, hierarchy and spacing",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "6.4",
+        "title": "Interface Design Basics",
+        "intro": "",
+        "subs": [
+          {
+            "title": "6.4.1 Clarity over decoration",
+            "body": ""
+          },
+          {
+            "title": "6.4.2 Forms that people finish",
+            "body": ""
+          },
+          {
+            "title": "6.4.3 Mobile-first thinking",
+            "body": ""
+          },
+          {
+            "title": "6.4.4 Colour, type and contrast",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "6.5",
+        "title": "Accessibility and Inclusion",
+        "intro": "",
+        "subs": [
+          {
+            "title": "6.5.1 Screen readers, keyboard use and colour blindness",
+            "body": ""
+          },
+          {
+            "title": "6.5.2 Low-literacy and local-language design",
+            "body": ""
+          },
+          {
+            "title": "6.5.3 Low bandwidth and older devices",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "6.6",
+        "title": "Chapter Practice",
+        "intro": "",
+        "subs": [
+          {
+            "title": "6.6.1 Exercise: wireframe the core flow in five screens",
+            "body": ""
+          },
+          {
+            "title": "6.6.2 Checkpoint quiz",
+            "body": ""
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "num": 7,
+    "title": "Prototyping",
+    "intro": "",
+    "sections": [
+      {
+        "num": "7.1",
+        "title": "Why Prototype",
+        "intro": "",
+        "subs": [
+          {
+            "title": "7.1.1 Learn before you build",
+            "body": ""
+          },
+          {
+            "title": "7.1.2 Fidelity: matching effort to the question",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "7.2",
+        "title": "Types of Prototypes",
+        "intro": "",
+        "subs": [
+          {
+            "title": "7.2.1 Paper and clickable mockups",
+            "body": ""
+          },
+          {
+            "title": "7.2.2 Concierge: do the service manually",
+            "body": ""
+          },
+          {
+            "title": "7.2.3 Wizard of Oz: looks automated, run by hand",
+            "body": ""
+          },
+          {
+            "title": "7.2.4 Landing page and smoke tests",
+            "body": ""
+          },
+          {
+            "title": "7.2.5 Working code spike",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "7.3",
+        "title": "Tools",
+        "intro": "",
+        "subs": [
+          {
+            "title": "7.3.1 Design and prototyping tools",
+            "body": ""
+          },
+          {
+            "title": "7.3.2 No-code and low-code platforms",
+            "body": ""
+          },
+          {
+            "title": "7.3.3 AI-assisted prototyping and its limits",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "7.4",
+        "title": "Prototype Planning",
+        "intro": "",
+        "subs": [
+          {
+            "title": "7.4.1 One question per prototype",
+            "body": ""
+          },
+          {
+            "title": "7.4.2 What to fake and what to make real",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "7.5",
+        "title": "The 14-Day Sprint Revisited",
+        "intro": "",
+        "subs": [
+          {
+            "title": "7.5.1 Where prototyping fits in days 4 to 7",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "7.6",
+        "title": "Chapter Practice",
+        "intro": "",
+        "subs": [
+          {
+            "title": "7.6.1 Exercise: build a clickable prototype of the core flow",
+            "body": ""
+          },
+          {
+            "title": "7.6.2 Checkpoint quiz",
+            "body": ""
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "num": 8,
+    "title": "Defining the MVP",
+    "intro": "",
+    "sections": [
+      {
+        "num": "8.1",
+        "title": "What an MVP Is and Is Not",
+        "intro": "",
+        "subs": [
+          {
+            "title": "8.1.1 Minimum means smallest test of the core value",
+            "body": ""
+          },
+          {
+            "title": "8.1.2 Viable means it actually solves the job",
+            "body": ""
+          },
+          {
+            "title": "8.1.3 Common myths (\"MVP means low quality\")",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "8.2",
+        "title": "Scoping an MVP",
+        "intro": "",
+        "subs": [
+          {
+            "title": "8.2.1 Core value in one sentence",
+            "body": ""
+          },
+          {
+            "title": "8.2.2 The one workflow that must work end to end",
+            "body": ""
+          },
+          {
+            "title": "8.2.3 Feature cut list: what to leave out",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "8.3",
+        "title": "Build, Buy or Borrow",
+        "intro": "",
+        "subs": [
+          {
+            "title": "8.3.1 No-code and templates",
+            "body": ""
+          },
+          {
+            "title": "8.3.2 Third-party APIs and services",
+            "body": ""
+          },
+          {
+            "title": "8.3.3 Custom code only where it differentiates",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "8.4",
+        "title": "Technical Planning for Small Teams",
+        "intro": "",
+        "subs": [
+          {
+            "title": "8.4.1 Simple architecture",
+            "body": ""
+          },
+          {
+            "title": "8.4.2 Data you must store vs. data you can avoid",
+            "body": ""
+          },
+          {
+            "title": "8.4.3 Hooking into the Subject 3 stack",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "8.5",
+        "title": "Estimation and Timeboxing",
+        "intro": "",
+        "subs": [
+          {
+            "title": "8.5.1 Breaking work into small tasks",
+            "body": ""
+          },
+          {
+            "title": "8.5.2 Weekly goals and demos",
+            "body": ""
+          },
+          {
+            "title": "8.5.3 Handling scope creep",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "8.6",
+        "title": "Chapter Practice",
+        "intro": "",
+        "subs": [
+          {
+            "title": "8.6.1 Exercise: write an MVP spec with a must-have list and a cut list",
+            "body": ""
+          },
+          {
+            "title": "8.6.2 Checkpoint quiz",
+            "body": ""
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "num": 9,
+    "title": "Usability Testing",
+    "intro": "",
+    "sections": [
+      {
+        "num": "9.1",
+        "title": "Why Test With Real Users",
+        "intro": "",
+        "subs": [
+          {
+            "title": "9.1.1 You are not your user",
+            "body": ""
+          },
+          {
+            "title": "9.1.2 Finding problems before launch",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "9.2",
+        "title": "Planning a Test",
+        "intro": "",
+        "subs": [
+          {
+            "title": "9.2.1 Goals and hypotheses",
+            "body": ""
+          },
+          {
+            "title": "9.2.2 Recruiting 5 to 8 representative users",
+            "body": ""
+          },
+          {
+            "title": "9.2.3 Writing task scenarios",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "9.3",
+        "title": "Running a Session",
+        "intro": "",
+        "subs": [
+          {
+            "title": "9.3.1 Think-aloud protocol",
+            "body": ""
+          },
+          {
+            "title": "9.3.2 Staying neutral and silent",
+            "body": ""
+          },
+          {
+            "title": "9.3.3 Recording and consent",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "9.4",
+        "title": "Measuring Usability",
+        "intro": "",
+        "subs": [
+          {
+            "title": "9.4.1 Task success and time on task",
+            "body": ""
+          },
+          {
+            "title": "9.4.2 Error counts",
+            "body": ""
+          },
+          {
+            "title": "9.4.3 System Usability Scale (SUS)",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "9.5",
+        "title": "Analysing and Acting",
+        "intro": "",
+        "subs": [
+          {
+            "title": "9.5.1 Issue logs and severity ratings",
+            "body": ""
+          },
+          {
+            "title": "9.5.2 Fixing the top three issues first",
+            "body": ""
+          },
+          {
+            "title": "9.5.3 Retesting",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "9.6",
+        "title": "Chapter Practice",
+        "intro": "",
+        "subs": [
+          {
+            "title": "9.6.1 Exercise: run five tests on your prototype and report results",
+            "body": ""
+          },
+          {
+            "title": "9.6.2 Checkpoint quiz",
+            "body": ""
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "num": 10,
+    "title": "Running a Pilot",
+    "intro": "",
+    "sections": [
+      {
+        "num": "10.1",
+        "title": "What a Pilot Is",
+        "intro": "",
+        "subs": [
+          {
+            "title": "10.1.1 A small, real-world trial with a real organisation",
+            "body": ""
+          },
+          {
+            "title": "10.1.2 Pilot vs. demo vs. full rollout",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "10.2",
+        "title": "Finding a Pilot Partner",
+        "intro": "",
+        "subs": [
+          {
+            "title": "10.2.1 Interviewees who offered to help",
+            "body": ""
+          },
+          {
+            "title": "10.2.2 Companies interested in the Stuckhere problem",
+            "body": ""
+          },
+          {
+            "title": "10.2.3 Sponsors and challenge owners",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "10.3",
+        "title": "Pilot Proposal",
+        "intro": "",
+        "subs": [
+          {
+            "title": "10.3.1 Objective, scope, duration",
+            "body": ""
+          },
+          {
+            "title": "10.3.2 What the partner provides and what you provide",
+            "body": ""
+          },
+          {
+            "title": "10.3.3 Success metrics agreed in advance",
+            "body": ""
+          },
+          {
+            "title": "10.3.4 Pricing and commitment for the next step",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "10.4",
+        "title": "Pilot Agreement Basics",
+        "intro": "",
+        "subs": [
+          {
+            "title": "10.4.1 Data handling and confidentiality",
+            "body": ""
+          },
+          {
+            "title": "10.4.2 Intellectual property and ownership",
+            "body": ""
+          },
+          {
+            "title": "10.4.3 Liability and support expectations",
+            "body": ""
+          },
+          {
+            "title": "10.4.4 When to get legal advice",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "10.5",
+        "title": "Running the Pilot",
+        "intro": "",
+        "subs": [
+          {
+            "title": "10.5.1 Onboarding users",
+            "body": ""
+          },
+          {
+            "title": "10.5.2 Weekly check-ins",
+            "body": ""
+          },
+          {
+            "title": "10.5.3 Logging issues and wins",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "10.6",
+        "title": "Closing and Converting",
+        "intro": "",
+        "subs": [
+          {
+            "title": "10.6.1 Results report",
+            "body": ""
+          },
+          {
+            "title": "10.6.2 Converting to a paid contract or extended pilot",
+            "body": ""
+          },
+          {
+            "title": "10.6.3 Learning from failed pilots",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "10.7",
+        "title": "Chapter Practice",
+        "intro": "",
+        "subs": [
+          {
+            "title": "10.7.1 Exercise: write a one-page pilot proposal",
+            "body": ""
+          },
+          {
+            "title": "10.7.2 Checkpoint quiz",
+            "body": ""
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "num": 11,
+    "title": "Measuring Product Success",
+    "intro": "",
+    "sections": [
+      {
+        "num": "11.1",
+        "title": "Choosing Metrics",
+        "intro": "",
+        "subs": [
+          {
+            "title": "11.1.1 Outcome metrics vs. vanity metrics",
+            "body": ""
+          },
+          {
+            "title": "11.1.2 One north-star metric",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "11.2",
+        "title": "Core Product Metrics",
+        "intro": "",
+        "subs": [
+          {
+            "title": "11.2.1 Activation",
+            "body": ""
+          },
+          {
+            "title": "11.2.2 Engagement and frequency",
+            "body": ""
+          },
+          {
+            "title": "11.2.3 Retention and churn",
+            "body": ""
+          },
+          {
+            "title": "11.2.4 Customer satisfaction and NPS",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "11.3",
+        "title": "Business Metrics",
+        "intro": "",
+        "subs": [
+          {
+            "title": "11.3.1 Revenue, conversion and payback",
+            "body": ""
+          },
+          {
+            "title": "11.3.2 Linking back to Subject 2 unit economics",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "11.4",
+        "title": "Feedback Loops",
+        "intro": "",
+        "subs": [
+          {
+            "title": "11.4.1 In-product feedback",
+            "body": ""
+          },
+          {
+            "title": "11.4.2 Regular user calls",
+            "body": ""
+          },
+          {
+            "title": "11.4.3 Turning feedback into a roadmap",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "11.5",
+        "title": "Experimentation",
+        "intro": "",
+        "subs": [
+          {
+            "title": "11.5.1 A/B tests with small samples",
+            "body": ""
+          },
+          {
+            "title": "11.5.2 Qualitative signals when data is thin",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "11.6",
+        "title": "Chapter Practice",
+        "intro": "",
+        "subs": [
+          {
+            "title": "11.6.1 Exercise: define a metrics dashboard for your MVP",
+            "body": ""
+          },
+          {
+            "title": "11.6.2 Checkpoint quiz",
+            "body": ""
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "num": 12,
+    "title": "Teamwork and Hackathon Execution",
+    "intro": "",
+    "sections": [
+      {
+        "num": "12.1",
+        "title": "Forming a Team",
+        "intro": "",
+        "subs": [
+          {
+            "title": "12.1.1 Skills mix: builder, designer, domain expert, storyteller",
+            "body": ""
+          },
+          {
+            "title": "12.1.2 Finding teammates through Stuckhere",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "12.2",
+        "title": "Roles and Collaboration",
+        "intro": "",
+        "subs": [
+          {
+            "title": "12.2.1 Clear ownership",
+            "body": ""
+          },
+          {
+            "title": "12.2.2 Shared task board and daily check-ins",
+            "body": ""
+          },
+          {
+            "title": "12.2.3 Resolving disagreements",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "12.3",
+        "title": "Planning a 24 to 48 Hour Build",
+        "intro": "",
+        "subs": [
+          {
+            "title": "12.3.1 Hour-by-hour plan",
+            "body": ""
+          },
+          {
+            "title": "12.3.2 Freeze points for scope and code",
+            "body": ""
+          },
+          {
+            "title": "12.3.3 Managing energy and sleep",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "12.4",
+        "title": "Long-Form Programmes",
+        "intro": "",
+        "subs": [
+          {
+            "title": "12.4.1 Smart India Hackathon style multi-round challenges",
+            "body": ""
+          },
+          {
+            "title": "12.4.2 Mentor sessions and review rounds",
+            "body": ""
+          },
+          {
+            "title": "12.4.3 Staying consistent over weeks",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "12.5",
+        "title": "Chapter Practice",
+        "intro": "",
+        "subs": [
+          {
+            "title": "12.5.1 Exercise: write a team charter and a 48-hour plan",
+            "body": ""
+          },
+          {
+            "title": "12.5.2 Checkpoint quiz",
+            "body": ""
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "num": 13,
+    "title": "Pitching and Demonstrating",
+    "intro": "",
+    "sections": [
+      {
+        "num": "13.1",
+        "title": "The Story Structure",
+        "intro": "",
+        "subs": [
+          {
+            "title": "13.1.1 Problem, people, insight, solution, proof, ask",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "13.2",
+        "title": "Slide Deck",
+        "intro": "",
+        "subs": [
+          {
+            "title": "13.2.1 Ten slides that cover everything",
+            "body": ""
+          },
+          {
+            "title": "13.2.2 Visuals that carry the story",
+            "body": ""
+          },
+          {
+            "title": "13.2.3 Using evidence from your dossier, Pain Score and market sizing",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "13.3",
+        "title": "Live Demo",
+        "intro": "",
+        "subs": [
+          {
+            "title": "13.3.1 Showing one flow, end to end",
+            "body": ""
+          },
+          {
+            "title": "13.3.2 Backup plans (video, offline mode)",
+            "body": ""
+          },
+          {
+            "title": "13.3.3 Common demo disasters and how to avoid them",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "13.4",
+        "title": "Delivery",
+        "intro": "",
+        "subs": [
+          {
+            "title": "13.4.1 Voice, pacing and body language",
+            "body": ""
+          },
+          {
+            "title": "13.4.2 Team handovers",
+            "body": ""
+          },
+          {
+            "title": "13.4.3 Staying within time",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "13.5",
+        "title": "Q&A",
+        "intro": "",
+        "subs": [
+          {
+            "title": "13.5.1 Predicting the toughest questions",
+            "body": ""
+          },
+          {
+            "title": "13.5.2 Answering honestly when you do not know",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "13.6",
+        "title": "Chapter Practice",
+        "intro": "",
+        "subs": [
+          {
+            "title": "13.6.1 Exercise: deliver a five-minute pitch and collect feedback",
+            "body": ""
+          },
+          {
+            "title": "13.6.2 Checkpoint quiz",
+            "body": ""
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "num": 14,
+    "title": "Open Innovation and Working With Sponsors",
+    "intro": "",
+    "sections": [
+      {
+        "num": "14.1",
+        "title": "What Open Innovation Is",
+        "intro": "",
+        "subs": [
+          {
+            "title": "14.1.1 Organisations posting problems for outside solvers",
+            "body": ""
+          },
+          {
+            "title": "14.1.2 Why enterprises and governments use it",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "14.2",
+        "title": "Reading a Challenge Brief",
+        "intro": "",
+        "subs": [
+          {
+            "title": "14.2.1 Objectives, constraints and evaluation criteria",
+            "body": ""
+          },
+          {
+            "title": "14.2.2 Spotting the real need behind the brief",
+            "body": ""
+          },
+          {
+            "title": "14.2.3 Questions to ask the sponsor",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "14.3",
+        "title": "Submitting Strong Entries",
+        "intro": "",
+        "subs": [
+          {
+            "title": "14.3.1 Matching your solution to scoring criteria",
+            "body": ""
+          },
+          {
+            "title": "14.3.2 Documentation and demo requirements",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "14.4",
+        "title": "After the Challenge",
+        "intro": "",
+        "subs": [
+          {
+            "title": "14.4.1 Pilots, procurement and grants",
+            "body": ""
+          },
+          {
+            "title": "14.4.2 Keeping IP and relationships clear",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "14.5",
+        "title": "Chapter Practice",
+        "intro": "",
+        "subs": [
+          {
+            "title": "14.5.1 Exercise: analyse a sample challenge brief and plan a response",
+            "body": ""
+          },
+          {
+            "title": "14.5.2 Checkpoint quiz",
+            "body": ""
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "num": 15,
+    "title": "Responsible and Inclusive Design",
+    "intro": "",
+    "sections": [
+      {
+        "num": "15.1",
+        "title": "Ethics in Product Decisions",
+        "intro": "",
+        "subs": [
+          {
+            "title": "15.1.1 Who benefits and who might be harmed",
+            "body": ""
+          },
+          {
+            "title": "15.1.2 Consent and dark patterns",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "15.2",
+        "title": "Data and Privacy",
+        "intro": "",
+        "subs": [
+          {
+            "title": "15.2.1 Collect less, protect more",
+            "body": ""
+          },
+          {
+            "title": "15.2.2 Sensitive data in health, finance and education",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "15.3",
+        "title": "Responsible AI",
+        "intro": "",
+        "subs": [
+          {
+            "title": "15.3.1 Bias in data and outputs",
+            "body": ""
+          },
+          {
+            "title": "15.3.2 Transparency and human oversight",
+            "body": ""
+          },
+          {
+            "title": "15.3.3 Handling errors and fallbacks",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "15.4",
+        "title": "Inclusion",
+        "intro": "",
+        "subs": [
+          {
+            "title": "15.4.1 Language, literacy and disability",
+            "body": ""
+          },
+          {
+            "title": "15.4.2 Affordability and access",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "15.5",
+        "title": "Chapter Practice",
+        "intro": "",
+        "subs": [
+          {
+            "title": "15.5.1 Exercise: write a short risk and mitigation table for your MVP",
+            "body": ""
+          },
+          {
+            "title": "15.5.2 Checkpoint quiz",
+            "body": ""
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "num": 16,
+    "title": "Capstone Project",
+    "intro": "",
+    "sections": [
+      {
+        "num": "16.1",
+        "title": "Brief",
+        "intro": "",
+        "subs": [
+          {
+            "title": "16.1.1 Take your validated and sized problem from Subjects 1 and 2",
+            "body": ""
+          },
+          {
+            "title": "16.1.2 Deliver a tested prototype or MVP with pilot plan",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "16.2",
+        "title": "Deliverables",
+        "intro": "",
+        "subs": [
+          {
+            "title": "16.2.1 Persona, journey map and design brief",
+            "body": ""
+          },
+          {
+            "title": "16.2.2 Idea list and prioritisation sheet",
+            "body": ""
+          },
+          {
+            "title": "16.2.3 User flows and wireframes",
+            "body": ""
+          },
+          {
+            "title": "16.2.4 Clickable prototype or working MVP",
+            "body": ""
+          },
+          {
+            "title": "16.2.5 Usability test report from five users",
+            "body": ""
+          },
+          {
+            "title": "16.2.6 One-page pilot proposal",
+            "body": ""
+          },
+          {
+            "title": "16.2.7 Five-minute pitch and deck",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "16.3",
+        "title": "Grading Rubric",
+        "intro": "",
+        "subs": [
+          {
+            "title": "16.3.1 User understanding (20%)",
+            "body": ""
+          },
+          {
+            "title": "16.3.2 Problem framing and prioritisation (15%)",
+            "body": ""
+          },
+          {
+            "title": "16.3.3 Design and prototype quality (20%)",
+            "body": ""
+          },
+          {
+            "title": "16.3.4 Testing evidence and iteration (25%)",
+            "body": ""
+          },
+          {
+            "title": "16.3.5 Pitch and pilot readiness (20%)",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "16.4",
+        "title": "Submit to Stuckhere",
+        "intro": "",
+        "subs": [
+          {
+            "title": "16.4.1 Publish your solution page under the problem",
+            "body": ""
+          },
+          {
+            "title": "16.4.2 Share with interested companies and sponsors",
+            "body": ""
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "num": 17,
+    "title": "Appendices",
+    "intro": "",
+    "sections": [
+      {
+        "num": "17.1",
+        "title": "Glossary",
+        "intro": "",
+        "subs": [
+          {
+            "title": "17.1.1 Persona, journey map, JTBD, HMW, wireframe, prototype, MVP, pilot, SUS, NPS, retention, scope creep",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "17.2",
+        "title": "Templates",
+        "intro": "",
+        "subs": [
+          {
+            "title": "17.2.1 Persona canvas",
+            "body": ""
+          },
+          {
+            "title": "17.2.2 Journey map grid",
+            "body": ""
+          },
+          {
+            "title": "17.2.3 Design brief",
+            "body": ""
+          },
+          {
+            "title": "17.2.4 Prioritisation sheet",
+            "body": ""
+          },
+          {
+            "title": "17.2.5 Usability test script and issue log",
+            "body": ""
+          },
+          {
+            "title": "17.2.6 Pilot proposal",
+            "body": ""
+          },
+          {
+            "title": "17.2.7 Pitch deck outline",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "17.3",
+        "title": "One-Page Cheat Sheet",
+        "intro": "",
+        "subs": [
+          {
+            "title": "17.3.1 The loop: Understand, Define, Ideate, Prioritise, Prototype, Test, Pilot, Measure",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "17.4",
+        "title": "Master Quiz Bank",
+        "intro": "",
+        "subs": [
+          {
+            "title": "17.4.1 60 multiple-choice questions grouped by chapter",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "17.5",
+        "title": "Further Reading",
+        "intro": "",
+        "subs": [
+          {
+            "title": "17.5.1 Books on design thinking, lean product development and usability",
+            "body": ""
+          },
+          {
+            "title": "17.5.2 Related Stuckhere pages: How to Solve, Startup Mode, Open Innovation",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "17.6",
+        "title": "FAQ (good for Schema.org FAQPage SEO)",
+        "intro": "",
+        "subs": [
+          {
+            "title": "17.6.1 How many users do I need to test with?",
+            "body": ""
+          },
+          {
+            "title": "17.6.2 Should my MVP be coded or no-code?",
+            "body": ""
+          },
+          {
+            "title": "17.6.3 How do I find a pilot partner as a student team?",
+            "body": ""
+          },
+          {
+            "title": "17.6.4 What if users do not behave the way I expected?",
+            "body": ""
+          }
+        ]
+      }
+    ]
+  }
+]

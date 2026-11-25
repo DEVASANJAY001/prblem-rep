@@ -1,0 +1,1990 @@
+[
+  {
+    "num": 0,
+    "title": "Course Overview",
+    "intro": "",
+    "sections": [
+      {
+        "num": "0.1",
+        "title": "What This Subject Covers",
+        "intro": "",
+        "subs": [
+          {
+            "title": "0.1.1 The one-line idea",
+            "body": "A good solution to a verified problem is not yet a company. This subject covers the business, legal, financial and people foundations you need to turn a pilot into a sustainable venture."
+          },
+          {
+            "title": "0.1.2 What you will be able to do",
+            "body": "- Choose a business model and pricing strategy\n- Set up a team, roles and equity fairly\n- Understand legal structures, IP and basic compliance\n- Plan finances and runway\n- Explore funding options and prepare for investors\n- Build a go-to-market plan and early sales pipeline\n- Track the metrics that matter and decide when to scale, pivot or stop"
+          }
+        ]
+      },
+      {
+        "num": "0.2",
+        "title": "Important Note",
+        "intro": "",
+        "subs": [
+          {
+            "title": "0.2.1 This course is educational, not legal, tax or financial advice",
+            "body": ""
+          },
+          {
+            "title": "0.2.2 Rules change by country and over time; confirm current requirements with qualified professionals and official government sources",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "0.3",
+        "title": "Prerequisites",
+        "intro": "",
+        "subs": [
+          {
+            "title": "0.3.1 Subjects 1 to 4 (problem, market, solution) recommended",
+            "body": ""
+          },
+          {
+            "title": "0.3.2 No finance or legal background needed",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "0.4",
+        "title": "How to Use This Material",
+        "intro": "",
+        "subs": [
+          {
+            "title": "0.4.1 Suggested path (12 to 16 hours with practice)",
+            "body": ""
+          },
+          {
+            "title": "0.4.2 Chapter format: Concept, Example, Template, Exercise, Checkpoint Quiz",
+            "body": ""
+          },
+          {
+            "title": "0.4.3 Building one venture plan across all chapters",
+            "body": ""
+          }
+        ]
+      }
+    ],
+    "sectionsCount": 4
+  },
+  {
+    "num": 1,
+    "title": "The Startup Mindset and Venture Types",
+    "intro": "",
+    "sections": [
+      {
+        "num": "1.1",
+        "title": "What a Startup Is",
+        "intro": "",
+        "subs": [
+          {
+            "title": "1.1.1 Search for a repeatable, scalable business model",
+            "body": ""
+          },
+          {
+            "title": "1.1.2 Startup vs. small business vs. freelancing vs. agency",
+            "body": ""
+          },
+          {
+            "title": "1.1.3 Social enterprise and non-profit models",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "1.2",
+        "title": "Choosing Your Path",
+        "intro": "",
+        "subs": [
+          {
+            "title": "1.2.1 Venture-scale startup",
+            "body": ""
+          },
+          {
+            "title": "1.2.2 Profitable lifestyle or niche business",
+            "body": ""
+          },
+          {
+            "title": "1.2.3 Open-source or community project with sustainability plan",
+            "body": ""
+          },
+          {
+            "title": "1.2.4 Service-first, product-later",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "1.3",
+        "title": "Founder Fit",
+        "intro": "",
+        "subs": [
+          {
+            "title": "1.3.1 Skills, motivation and risk tolerance",
+            "body": ""
+          },
+          {
+            "title": "1.3.2 Time and financial runway at a personal level",
+            "body": ""
+          },
+          {
+            "title": "1.3.3 Student and part-time founders",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "1.4",
+        "title": "Common Myths",
+        "intro": "",
+        "subs": [
+          {
+            "title": "1.4.1 \"Ideas are everything\"",
+            "body": ""
+          },
+          {
+            "title": "1.4.2 \"You need funding to start\"",
+            "body": ""
+          },
+          {
+            "title": "1.4.3 \"Overnight success\"",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "1.5",
+        "title": "Chapter Practice",
+        "intro": "",
+        "subs": [
+          {
+            "title": "1.5.1 Exercise: write your founder-fit and path statement",
+            "body": ""
+          },
+          {
+            "title": "1.5.2 Checkpoint quiz",
+            "body": ""
+          }
+        ]
+      }
+    ],
+    "sectionsCount": 5
+  },
+  {
+    "num": 2,
+    "title": "Business Models",
+    "intro": "",
+    "sections": [
+      {
+        "num": "2.1",
+        "title": "Value Proposition",
+        "intro": "",
+        "subs": [
+          {
+            "title": "2.1.1 Who, which job, what outcome",
+            "body": ""
+          },
+          {
+            "title": "2.1.2 Linking to your Pain Score and dossier evidence",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "2.2",
+        "title": "The Business Model Canvas",
+        "intro": "",
+        "subs": [
+          {
+            "title": "2.2.1 Customer segments and relationships",
+            "body": ""
+          },
+          {
+            "title": "2.2.2 Channels and value proposition",
+            "body": ""
+          },
+          {
+            "title": "2.2.3 Revenue streams and cost structure",
+            "body": ""
+          },
+          {
+            "title": "2.2.4 Key resources, activities and partners",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "2.3",
+        "title": "Revenue Models",
+        "intro": "",
+        "subs": [
+          {
+            "title": "2.3.1 Subscription (SaaS)",
+            "body": ""
+          },
+          {
+            "title": "2.3.2 Usage-based and transaction fees",
+            "body": ""
+          },
+          {
+            "title": "2.3.3 Marketplace commissions",
+            "body": ""
+          },
+          {
+            "title": "2.3.4 Licensing and enterprise contracts",
+            "body": ""
+          },
+          {
+            "title": "2.3.5 Services, implementation and support",
+            "body": ""
+          },
+          {
+            "title": "2.3.6 Grants and sponsored programmes",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "2.4",
+        "title": "Pricing",
+        "intro": "",
+        "subs": [
+          {
+            "title": "2.4.1 Cost-plus, competitor-based and value-based pricing",
+            "body": ""
+          },
+          {
+            "title": "2.4.2 Packaging and tiers",
+            "body": ""
+          },
+          {
+            "title": "2.4.3 Testing and changing price",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "2.5",
+        "title": "Moats and Defensibility",
+        "intro": "",
+        "subs": [
+          {
+            "title": "2.5.1 Data, network effects, switching costs, brand",
+            "body": ""
+          },
+          {
+            "title": "2.5.2 Speed and focus as early advantages",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "2.6",
+        "title": "Chapter Practice",
+        "intro": "",
+        "subs": [
+          {
+            "title": "2.6.1 Exercise: complete a canvas and compare two revenue models",
+            "body": ""
+          },
+          {
+            "title": "2.6.2 Checkpoint quiz",
+            "body": ""
+          }
+        ]
+      }
+    ],
+    "sectionsCount": 6
+  },
+  {
+    "num": 3,
+    "title": "Founders, Teams and Equity",
+    "intro": "",
+    "sections": [
+      {
+        "num": "3.1",
+        "title": "Solo vs. Co-Founders",
+        "intro": "",
+        "subs": [
+          {
+            "title": "3.1.1 Pros and cons",
+            "body": ""
+          },
+          {
+            "title": "3.1.2 Complementary skills: build, sell, operate, domain",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "3.2",
+        "title": "Finding Co-Founders",
+        "intro": "",
+        "subs": [
+          {
+            "title": "3.2.1 Hackathon and classmate teams",
+            "body": ""
+          },
+          {
+            "title": "3.2.2 Stuckhere community and domain experts",
+            "body": ""
+          },
+          {
+            "title": "3.2.3 Trial projects before commitment",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "3.3",
+        "title": "Roles and Decision Rights",
+        "intro": "",
+        "subs": [
+          {
+            "title": "3.3.1 CEO, product, technology, operations",
+            "body": ""
+          },
+          {
+            "title": "3.3.2 Who decides what",
+            "body": ""
+          },
+          {
+            "title": "3.3.3 Resolving disagreement early",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "3.4",
+        "title": "Equity Basics",
+        "intro": "",
+        "subs": [
+          {
+            "title": "3.4.1 What equity is",
+            "body": ""
+          },
+          {
+            "title": "3.4.2 Splitting fairly (contribution, commitment, risk)",
+            "body": ""
+          },
+          {
+            "title": "3.4.3 Vesting and cliffs",
+            "body": ""
+          },
+          {
+            "title": "3.4.4 Employee and advisor equity pools",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "3.5",
+        "title": "Founder Agreements",
+        "intro": "",
+        "subs": [
+          {
+            "title": "3.5.1 What to write down",
+            "body": ""
+          },
+          {
+            "title": "3.5.2 Handling a founder leaving",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "3.6",
+        "title": "Advisors and Mentors",
+        "intro": "",
+        "subs": [
+          {
+            "title": "3.6.1 Getting useful advice",
+            "body": ""
+          },
+          {
+            "title": "3.6.2 Compensating advisors",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "3.7",
+        "title": "Chapter Practice",
+        "intro": "",
+        "subs": [
+          {
+            "title": "3.7.1 Exercise: draft a founder agreement outline",
+            "body": ""
+          },
+          {
+            "title": "3.7.2 Checkpoint quiz",
+            "body": ""
+          }
+        ]
+      }
+    ],
+    "sectionsCount": 7
+  },
+  {
+    "num": 4,
+    "title": "Legal Foundations",
+    "intro": "",
+    "sections": [
+      {
+        "num": "4.1",
+        "title": "Choosing a Legal Structure",
+        "intro": "",
+        "subs": [
+          {
+            "title": "4.1.1 Sole proprietorship, partnership, LLP, private limited company (India context)",
+            "body": ""
+          },
+          {
+            "title": "4.1.2 Comparing liability, tax, compliance and fundraising suitability",
+            "body": ""
+          },
+          {
+            "title": "4.1.3 Equivalent structures in other countries (LLC, C-corp, etc.)",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "4.2",
+        "title": "Registration and Recognition",
+        "intro": "",
+        "subs": [
+          {
+            "title": "4.2.1 Company registration steps overview",
+            "body": ""
+          },
+          {
+            "title": "4.2.2 Government startup recognition programmes and their benefits",
+            "body": ""
+          },
+          {
+            "title": "4.2.3 Tax registrations such as GST where applicable",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "4.3",
+        "title": "Intellectual Property",
+        "intro": "",
+        "subs": [
+          {
+            "title": "4.3.1 Copyright, trademark, patent and trade secret",
+            "body": ""
+          },
+          {
+            "title": "4.3.2 Who owns code and designs (employees, contractors, students)",
+            "body": ""
+          },
+          {
+            "title": "4.3.3 Open-source licences and obligations",
+            "body": ""
+          },
+          {
+            "title": "4.3.4 Protecting your brand and domain",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "4.4",
+        "title": "Contracts",
+        "intro": "",
+        "subs": [
+          {
+            "title": "4.4.1 Customer terms and pilot agreements",
+            "body": ""
+          },
+          {
+            "title": "4.4.2 Non-disclosure agreements",
+            "body": ""
+          },
+          {
+            "title": "4.4.3 Contractor and employee agreements",
+            "body": ""
+          },
+          {
+            "title": "4.4.4 Terms of service and privacy policy for your platform",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "4.5",
+        "title": "Data Protection and Compliance",
+        "intro": "",
+        "subs": [
+          {
+            "title": "4.5.1 Personal data and user consent",
+            "body": ""
+          },
+          {
+            "title": "4.5.2 Sector rules (health, finance, education)",
+            "body": ""
+          },
+          {
+            "title": "4.5.3 Records and audits",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "4.6",
+        "title": "When to Hire a Lawyer",
+        "intro": "",
+        "subs": [
+          {
+            "title": "4.6.1 Deals, fundraising, disputes and equity",
+            "body": ""
+          },
+          {
+            "title": "4.6.2 Low-cost legal help for early founders",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "4.7",
+        "title": "Chapter Practice",
+        "intro": "",
+        "subs": [
+          {
+            "title": "4.7.1 Exercise: legal checklist for your venture",
+            "body": ""
+          },
+          {
+            "title": "4.7.2 Checkpoint quiz",
+            "body": ""
+          }
+        ]
+      }
+    ],
+    "sectionsCount": 7
+  },
+  {
+    "num": 5,
+    "title": "Finance Basics",
+    "intro": "",
+    "sections": [
+      {
+        "num": "5.1",
+        "title": "Money Concepts",
+        "intro": "",
+        "subs": [
+          {
+            "title": "5.1.1 Revenue, costs, profit and cash",
+            "body": ""
+          },
+          {
+            "title": "5.1.2 Why cash flow kills more startups than losses",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "5.2",
+        "title": "Budgeting and Forecasting",
+        "intro": "",
+        "subs": [
+          {
+            "title": "5.2.1 Fixed and variable costs",
+            "body": ""
+          },
+          {
+            "title": "5.2.2 Monthly budget template",
+            "body": ""
+          },
+          {
+            "title": "5.2.3 Twelve-month cash forecast",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "5.3",
+        "title": "Runway",
+        "intro": "",
+        "subs": [
+          {
+            "title": "5.3.1 Monthly burn",
+            "body": ""
+          },
+          {
+            "title": "5.3.2 Runway = cash divided by net burn",
+            "body": ""
+          },
+          {
+            "title": "5.3.3 Extending runway",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "5.4",
+        "title": "Bootstrapping",
+        "intro": "",
+        "subs": [
+          {
+            "title": "5.4.1 Customer-funded growth",
+            "body": ""
+          },
+          {
+            "title": "5.4.2 Free credits, grants and low-cost tools",
+            "body": ""
+          },
+          {
+            "title": "5.4.3 Keeping personal and business money separate",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "5.5",
+        "title": "Accounting and Taxes",
+        "intro": "",
+        "subs": [
+          {
+            "title": "5.5.1 Bookkeeping basics",
+            "body": ""
+          },
+          {
+            "title": "5.5.2 Invoices, receipts and payment terms",
+            "body": ""
+          },
+          {
+            "title": "5.5.3 Tax filing overview (consult an accountant)",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "5.6",
+        "title": "Unit Economics Revisited",
+        "intro": "",
+        "subs": [
+          {
+            "title": "5.6.1 Linking to Subject 2: CAC, LTV, payback",
+            "body": ""
+          },
+          {
+            "title": "5.6.2 Gross margin targets",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "5.7",
+        "title": "Chapter Practice",
+        "intro": "",
+        "subs": [
+          {
+            "title": "5.7.1 Exercise: build a 12-month cash forecast",
+            "body": ""
+          },
+          {
+            "title": "5.7.2 Checkpoint quiz",
+            "body": ""
+          }
+        ]
+      }
+    ],
+    "sectionsCount": 7
+  },
+  {
+    "num": 6,
+    "title": "Funding Options",
+    "intro": "",
+    "sections": [
+      {
+        "num": "6.1",
+        "title": "Do You Need Funding?",
+        "intro": "",
+        "subs": [
+          {
+            "title": "6.1.1 Bootstrapped, grant-funded or investor-funded",
+            "body": ""
+          },
+          {
+            "title": "6.1.2 Matching funding to your business model",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "6.2",
+        "title": "Non-Dilutive Funding",
+        "intro": "",
+        "subs": [
+          {
+            "title": "6.2.1 Grants and government schemes",
+            "body": ""
+          },
+          {
+            "title": "6.2.2 Hackathon and competition prizes",
+            "body": ""
+          },
+          {
+            "title": "6.2.3 Corporate challenge awards and pilots",
+            "body": ""
+          },
+          {
+            "title": "6.2.4 Revenue and pre-sales",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "6.3",
+        "title": "Incubators and Accelerators",
+        "intro": "",
+        "subs": [
+          {
+            "title": "6.3.1 What they offer and what they ask for",
+            "body": ""
+          },
+          {
+            "title": "6.3.2 College and regional programmes",
+            "body": ""
+          },
+          {
+            "title": "6.3.3 Choosing the right programme",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "6.4",
+        "title": "Angel and Venture Capital",
+        "intro": "",
+        "subs": [
+          {
+            "title": "6.4.1 How angels and VCs think",
+            "body": ""
+          },
+          {
+            "title": "6.4.2 Stages: pre-seed, seed, Series A",
+            "body": ""
+          },
+          {
+            "title": "6.4.3 Dilution and ownership maths",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "6.5",
+        "title": "Other Sources",
+        "intro": "",
+        "subs": [
+          {
+            "title": "6.5.1 Crowdfunding",
+            "body": ""
+          },
+          {
+            "title": "6.5.2 Revenue-based financing and loans",
+            "body": ""
+          },
+          {
+            "title": "6.5.3 Friends and family: risks and etiquette",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "6.6",
+        "title": "Terms and Documents",
+        "intro": "",
+        "subs": [
+          {
+            "title": "6.6.1 Valuation basics",
+            "body": ""
+          },
+          {
+            "title": "6.6.2 SAFE and convertible notes overview",
+            "body": ""
+          },
+          {
+            "title": "6.6.3 Term sheet key clauses",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "6.7",
+        "title": "Chapter Practice",
+        "intro": "",
+        "subs": [
+          {
+            "title": "6.7.1 Exercise: map five funding options to your venture and rank them",
+            "body": ""
+          },
+          {
+            "title": "6.7.2 Checkpoint quiz",
+            "body": ""
+          }
+        ]
+      }
+    ],
+    "sectionsCount": 7
+  },
+  {
+    "num": 7,
+    "title": "Go-to-Market Strategy",
+    "intro": "",
+    "sections": [
+      {
+        "num": "7.1",
+        "title": "Positioning",
+        "intro": "",
+        "subs": [
+          {
+            "title": "7.1.1 Who you are for and who you are not for",
+            "body": ""
+          },
+          {
+            "title": "7.1.2 Differentiation against the current workaround and competitors",
+            "body": ""
+          },
+          {
+            "title": "7.1.3 One-sentence positioning statement",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "7.2",
+        "title": "Choosing Your Beachhead",
+        "intro": "",
+        "subs": [
+          {
+            "title": "7.2.1 Revisiting the ICP from Subject 2",
+            "body": ""
+          },
+          {
+            "title": "7.2.2 Dominating one niche first",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "7.3",
+        "title": "Channels",
+        "intro": "",
+        "subs": [
+          {
+            "title": "7.3.1 Direct outreach",
+            "body": ""
+          },
+          {
+            "title": "7.3.2 Partnerships and associations",
+            "body": ""
+          },
+          {
+            "title": "7.3.3 Community and content",
+            "body": ""
+          },
+          {
+            "title": "7.3.4 Marketplaces and integrations",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "7.4",
+        "title": "Messaging",
+        "intro": "",
+        "subs": [
+          {
+            "title": "7.4.1 Speaking the customer's language from interviews",
+            "body": ""
+          },
+          {
+            "title": "7.4.2 Landing page structure",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "7.5",
+        "title": "Launch Plan",
+        "intro": "",
+        "subs": [
+          {
+            "title": "7.5.1 Pre-launch waitlist",
+            "body": ""
+          },
+          {
+            "title": "7.5.2 First 10 customers",
+            "body": ""
+          },
+          {
+            "title": "7.5.3 First 100 customers",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "7.6",
+        "title": "Chapter Practice",
+        "intro": "",
+        "subs": [
+          {
+            "title": "7.6.1 Exercise: write a go-to-market one-pager",
+            "body": ""
+          },
+          {
+            "title": "7.6.2 Checkpoint quiz",
+            "body": ""
+          }
+        ]
+      }
+    ],
+    "sectionsCount": 6
+  },
+  {
+    "num": 8,
+    "title": "Sales: From Pilot to Paying Customer",
+    "intro": "",
+    "sections": [
+      {
+        "num": "8.1",
+        "title": "Founder-Led Sales",
+        "intro": "",
+        "subs": [
+          {
+            "title": "8.1.1 Why founders sell first",
+            "body": ""
+          },
+          {
+            "title": "8.1.2 Learning from every conversation",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "8.2",
+        "title": "The Sales Process",
+        "intro": "",
+        "subs": [
+          {
+            "title": "8.2.1 Prospecting and qualifying",
+            "body": ""
+          },
+          {
+            "title": "8.2.2 Discovery calls",
+            "body": ""
+          },
+          {
+            "title": "8.2.3 Demo and proposal",
+            "body": ""
+          },
+          {
+            "title": "8.2.4 Negotiation and closing",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "8.3",
+        "title": "Selling to Organisations",
+        "intro": "",
+        "subs": [
+          {
+            "title": "8.3.1 Users, champions, decision makers and payers",
+            "body": ""
+          },
+          {
+            "title": "8.3.2 Procurement, security reviews and approvals",
+            "body": ""
+          },
+          {
+            "title": "8.3.3 Government and institutional sales",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "8.4",
+        "title": "Pilots That Convert",
+        "intro": "",
+        "subs": [
+          {
+            "title": "8.4.1 Defining success metrics up front",
+            "body": ""
+          },
+          {
+            "title": "8.4.2 Converting results into a contract",
+            "body": ""
+          },
+          {
+            "title": "8.4.3 Handling objections",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "8.5",
+        "title": "Customer Success",
+        "intro": "",
+        "subs": [
+          {
+            "title": "8.5.1 Onboarding and training",
+            "body": ""
+          },
+          {
+            "title": "8.5.2 Support and retention",
+            "body": ""
+          },
+          {
+            "title": "8.5.3 Asking for referrals and case studies",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "8.6",
+        "title": "Tools",
+        "intro": "",
+        "subs": [
+          {
+            "title": "8.6.1 Simple CRM and pipeline tracking",
+            "body": ""
+          },
+          {
+            "title": "8.6.2 Email, calendar and proposal tools",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "8.7",
+        "title": "Chapter Practice",
+        "intro": "",
+        "subs": [
+          {
+            "title": "8.7.1 Exercise: build a 30-lead pipeline and run five outreach messages",
+            "body": ""
+          },
+          {
+            "title": "8.7.2 Checkpoint quiz",
+            "body": ""
+          }
+        ]
+      }
+    ],
+    "sectionsCount": 7
+  },
+  {
+    "num": 9,
+    "title": "Marketing and Growth",
+    "intro": "",
+    "sections": [
+      {
+        "num": "9.1",
+        "title": "Marketing Foundations",
+        "intro": "",
+        "subs": [
+          {
+            "title": "9.1.1 Awareness, consideration, conversion",
+            "body": ""
+          },
+          {
+            "title": "9.1.2 Brand basics: name, voice, visuals",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "9.2",
+        "title": "Content and SEO",
+        "intro": "",
+        "subs": [
+          {
+            "title": "9.2.1 Educational content as a growth engine (the Academy approach)",
+            "body": ""
+          },
+          {
+            "title": "9.2.2 Keyword research and content plans",
+            "body": ""
+          },
+          {
+            "title": "9.2.3 Structured data and AI search visibility",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "9.3",
+        "title": "Community",
+        "intro": "",
+        "subs": [
+          {
+            "title": "9.3.1 Building a practitioner and builder community",
+            "body": ""
+          },
+          {
+            "title": "9.3.2 Moderation and quality",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "9.4",
+        "title": "Social, Email and Partnerships",
+        "intro": "",
+        "subs": [
+          {
+            "title": "9.4.1 Professional networks and short-form channels",
+            "body": ""
+          },
+          {
+            "title": "9.4.2 Newsletters and email sequences",
+            "body": ""
+          },
+          {
+            "title": "9.4.3 Co-marketing with universities, associations and sponsors",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "9.5",
+        "title": "Growth Loops",
+        "intro": "",
+        "subs": [
+          {
+            "title": "9.5.1 Referrals and invites",
+            "body": ""
+          },
+          {
+            "title": "9.5.2 User-generated content loops",
+            "body": ""
+          },
+          {
+            "title": "9.5.3 Measuring each loop",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "9.6",
+        "title": "Chapter Practice",
+        "intro": "",
+        "subs": [
+          {
+            "title": "9.6.1 Exercise: plan a three-month content and community calendar",
+            "body": ""
+          },
+          {
+            "title": "9.6.2 Checkpoint quiz",
+            "body": ""
+          }
+        ]
+      }
+    ],
+    "sectionsCount": 6
+  },
+  {
+    "num": 10,
+    "title": "Operations and Product Management",
+    "intro": "",
+    "sections": [
+      {
+        "num": "10.1",
+        "title": "Roadmaps",
+        "intro": "",
+        "subs": [
+          {
+            "title": "10.1.1 Now, next, later",
+            "body": ""
+          },
+          {
+            "title": "10.1.2 Saying no to requests",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "10.2",
+        "title": "Working in Cycles",
+        "intro": "",
+        "subs": [
+          {
+            "title": "10.2.1 Weekly and monthly planning",
+            "body": ""
+          },
+          {
+            "title": "10.2.2 Retrospectives",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "10.3",
+        "title": "Tools and Processes",
+        "intro": "",
+        "subs": [
+          {
+            "title": "10.3.1 Task tracking and documentation",
+            "body": ""
+          },
+          {
+            "title": "10.3.2 Customer support workflow",
+            "body": ""
+          },
+          {
+            "title": "10.3.3 Handling incidents and outages",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "10.4",
+        "title": "Vendors and Costs",
+        "intro": "",
+        "subs": [
+          {
+            "title": "10.4.1 Choosing software tools and cloud services",
+            "body": ""
+          },
+          {
+            "title": "10.4.2 Controlling subscriptions and credits",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "10.5",
+        "title": "Documentation and Knowledge",
+        "intro": "",
+        "subs": [
+          {
+            "title": "10.5.1 Writing things down",
+            "body": ""
+          },
+          {
+            "title": "10.5.2 Onboarding docs for new teammates",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "10.6",
+        "title": "Chapter Practice",
+        "intro": "",
+        "subs": [
+          {
+            "title": "10.6.1 Exercise: write a three-month roadmap with a stop-doing list",
+            "body": ""
+          },
+          {
+            "title": "10.6.2 Checkpoint quiz",
+            "body": ""
+          }
+        ]
+      }
+    ],
+    "sectionsCount": 6
+  },
+  {
+    "num": 11,
+    "title": "Hiring and Culture",
+    "intro": "",
+    "sections": [
+      {
+        "num": "11.1",
+        "title": "When to Hire",
+        "intro": "",
+        "subs": [
+          {
+            "title": "11.1.1 Contractors, interns and part-timers before full-time staff",
+            "body": ""
+          },
+          {
+            "title": "11.1.2 Hiring for your biggest bottleneck",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "11.2",
+        "title": "Hiring Process",
+        "intro": "",
+        "subs": [
+          {
+            "title": "11.2.1 Job descriptions",
+            "body": ""
+          },
+          {
+            "title": "11.2.2 Interviews and work trials",
+            "body": ""
+          },
+          {
+            "title": "11.2.3 Offers and onboarding",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "11.3",
+        "title": "Compensation",
+        "intro": "",
+        "subs": [
+          {
+            "title": "11.3.1 Salary, stipends and equity",
+            "body": ""
+          },
+          {
+            "title": "11.3.2 Fairness and transparency",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "11.4",
+        "title": "Culture",
+        "intro": "",
+        "subs": [
+          {
+            "title": "11.4.1 Values in practice",
+            "body": ""
+          },
+          {
+            "title": "11.4.2 Feedback and communication habits",
+            "body": ""
+          },
+          {
+            "title": "11.4.3 Remote and hybrid teamwork",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "11.5",
+        "title": "Chapter Practice",
+        "intro": "",
+        "subs": [
+          {
+            "title": "11.5.1 Exercise: write a role scorecard for your first hire",
+            "body": ""
+          },
+          {
+            "title": "11.5.2 Checkpoint quiz",
+            "body": ""
+          }
+        ]
+      }
+    ],
+    "sectionsCount": 5
+  },
+  {
+    "num": 12,
+    "title": "Metrics and Reporting",
+    "intro": "",
+    "sections": [
+      {
+        "num": "12.1",
+        "title": "Choosing Metrics by Stage",
+        "intro": "",
+        "subs": [
+          {
+            "title": "12.1.1 Problem stage, pilot stage, growth stage",
+            "body": ""
+          },
+          {
+            "title": "12.1.2 One north-star metric",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "12.2",
+        "title": "Key Business Metrics",
+        "intro": "",
+        "subs": [
+          {
+            "title": "12.2.1 MRR and ARR",
+            "body": ""
+          },
+          {
+            "title": "12.2.2 Growth rate and churn",
+            "body": ""
+          },
+          {
+            "title": "12.2.3 CAC, LTV and payback",
+            "body": ""
+          },
+          {
+            "title": "12.2.4 Burn and runway",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "12.3",
+        "title": "Dashboards",
+        "intro": "",
+        "subs": [
+          {
+            "title": "12.3.1 What to show weekly",
+            "body": ""
+          },
+          {
+            "title": "12.3.2 Avoiding vanity metrics",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "12.4",
+        "title": "Investor and Stakeholder Updates",
+        "intro": "",
+        "subs": [
+          {
+            "title": "12.4.1 Monthly update format",
+            "body": ""
+          },
+          {
+            "title": "12.4.2 Honest reporting of bad news",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "12.5",
+        "title": "Chapter Practice",
+        "intro": "",
+        "subs": [
+          {
+            "title": "12.5.1 Exercise: build a one-page metrics dashboard and monthly update",
+            "body": ""
+          },
+          {
+            "title": "12.5.2 Checkpoint quiz",
+            "body": ""
+          }
+        ]
+      }
+    ],
+    "sectionsCount": 5
+  },
+  {
+    "num": 13,
+    "title": "Fundraising and Investor Pitching",
+    "intro": "",
+    "sections": [
+      {
+        "num": "13.1",
+        "title": "Readiness Check",
+        "intro": "",
+        "subs": [
+          {
+            "title": "13.1.1 Evidence investors want to see",
+            "body": ""
+          },
+          {
+            "title": "13.1.2 Traction, team, market, product",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "13.2",
+        "title": "The Investor Deck",
+        "intro": "",
+        "subs": [
+          {
+            "title": "13.2.1 Problem, solution, traction, market, model, team, ask",
+            "body": ""
+          },
+          {
+            "title": "13.2.2 Using your Pain Score, dossier and market sizing as proof",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "13.3",
+        "title": "Finding and Approaching Investors",
+        "intro": "",
+        "subs": [
+          {
+            "title": "13.3.1 Building a target list",
+            "body": ""
+          },
+          {
+            "title": "13.3.2 Warm introductions",
+            "body": ""
+          },
+          {
+            "title": "13.3.3 Cold outreach that gets replies",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "13.4",
+        "title": "The Process",
+        "intro": "",
+        "subs": [
+          {
+            "title": "13.4.1 First meetings and follow-ups",
+            "body": ""
+          },
+          {
+            "title": "13.4.2 Due diligence and data room",
+            "body": ""
+          },
+          {
+            "title": "13.4.3 Negotiating and closing",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "13.5",
+        "title": "Handling Questions and Rejection",
+        "intro": "",
+        "subs": [
+          {
+            "title": "13.5.1 Common tough questions",
+            "body": ""
+          },
+          {
+            "title": "13.5.2 Learning from no",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "13.6",
+        "title": "Chapter Practice",
+        "intro": "",
+        "subs": [
+          {
+            "title": "13.6.1 Exercise: draft a 10-slide investor deck outline",
+            "body": ""
+          },
+          {
+            "title": "13.6.2 Checkpoint quiz",
+            "body": ""
+          }
+        ]
+      }
+    ],
+    "sectionsCount": 6
+  },
+  {
+    "num": 14,
+    "title": "Founder Wellbeing and Decision-Making",
+    "intro": "",
+    "sections": [
+      {
+        "num": "14.1",
+        "title": "The Emotional Reality of Startups",
+        "intro": "",
+        "subs": [
+          {
+            "title": "14.1.1 Uncertainty, rejection and isolation",
+            "body": ""
+          },
+          {
+            "title": "14.1.2 Comparing yourself with others",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "14.2",
+        "title": "Sustainable Habits",
+        "intro": "",
+        "subs": [
+          {
+            "title": "14.2.1 Sleep, exercise and boundaries",
+            "body": ""
+          },
+          {
+            "title": "14.2.2 Avoiding burnout",
+            "body": ""
+          },
+          {
+            "title": "14.2.3 Getting support from peers, mentors and professionals",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "14.3",
+        "title": "Decision-Making",
+        "intro": "",
+        "subs": [
+          {
+            "title": "14.3.1 Reversible vs. irreversible decisions",
+            "body": ""
+          },
+          {
+            "title": "14.3.2 Using evidence and setting deadlines",
+            "body": ""
+          },
+          {
+            "title": "14.3.3 Decision logs",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "14.4",
+        "title": "Conflict and Communication",
+        "intro": "",
+        "subs": [
+          {
+            "title": "14.4.1 Co-founder conflicts",
+            "body": ""
+          },
+          {
+            "title": "14.4.2 Difficult customer or investor conversations",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "14.5",
+        "title": "Chapter Practice",
+        "intro": "",
+        "subs": [
+          {
+            "title": "14.5.1 Exercise: write a personal sustainability plan",
+            "body": ""
+          },
+          {
+            "title": "14.5.2 Checkpoint quiz",
+            "body": ""
+          }
+        ]
+      }
+    ],
+    "sectionsCount": 5
+  },
+  {
+    "num": 15,
+    "title": "Scale, Pivot or Stop",
+    "intro": "",
+    "sections": [
+      {
+        "num": "15.1",
+        "title": "Signals to Scale",
+        "intro": "",
+        "subs": [
+          {
+            "title": "15.1.1 Strong retention and repeatable sales",
+            "body": ""
+          },
+          {
+            "title": "15.1.2 Unit economics that work",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "15.2",
+        "title": "Signals to Pivot",
+        "intro": "",
+        "subs": [
+          {
+            "title": "15.2.1 Types of pivots: customer, problem, solution, channel, model",
+            "body": ""
+          },
+          {
+            "title": "15.2.2 Using your validation data to choose",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "15.3",
+        "title": "Signals to Stop",
+        "intro": "",
+        "subs": [
+          {
+            "title": "15.3.1 Sunk-cost thinking",
+            "body": ""
+          },
+          {
+            "title": "15.3.2 Winding down responsibly",
+            "body": ""
+          },
+          {
+            "title": "15.3.3 Turning the experience into your next venture",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "15.4",
+        "title": "Scaling Responsibly",
+        "intro": "",
+        "subs": [
+          {
+            "title": "15.4.1 Systems before headcount",
+            "body": ""
+          },
+          {
+            "title": "15.4.2 International and multi-segment expansion",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "15.5",
+        "title": "Chapter Practice",
+        "intro": "",
+        "subs": [
+          {
+            "title": "15.5.1 Exercise: define your scale, pivot and stop triggers with numbers",
+            "body": ""
+          },
+          {
+            "title": "15.5.2 Checkpoint quiz",
+            "body": ""
+          }
+        ]
+      }
+    ],
+    "sectionsCount": 5
+  },
+  {
+    "num": 16,
+    "title": "Capstone Project",
+    "intro": "",
+    "sections": [
+      {
+        "num": "16.1",
+        "title": "Brief",
+        "intro": "",
+        "subs": [
+          {
+            "title": "16.1.1 Create a complete venture plan for the solution you built in earlier subjects",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "16.2",
+        "title": "Deliverables",
+        "intro": "",
+        "subs": [
+          {
+            "title": "16.2.1 Business model canvas and pricing",
+            "body": ""
+          },
+          {
+            "title": "16.2.2 Founder and equity plan",
+            "body": ""
+          },
+          {
+            "title": "16.2.3 Legal and compliance checklist",
+            "body": ""
+          },
+          {
+            "title": "16.2.4 12-month cash forecast and runway plan",
+            "body": ""
+          },
+          {
+            "title": "16.2.5 Funding strategy",
+            "body": ""
+          },
+          {
+            "title": "16.2.6 Go-to-market plan and sales pipeline",
+            "body": ""
+          },
+          {
+            "title": "16.2.7 Metrics dashboard",
+            "body": ""
+          },
+          {
+            "title": "16.2.8 Investor or sponsor pitch deck",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "16.3",
+        "title": "Grading Rubric",
+        "intro": "",
+        "subs": [
+          {
+            "title": "16.3.1 Business model clarity (20%)",
+            "body": ""
+          },
+          {
+            "title": "16.3.2 Financial realism (20%)",
+            "body": ""
+          },
+          {
+            "title": "16.3.3 Go-to-market quality (20%)",
+            "body": ""
+          },
+          {
+            "title": "16.3.4 Legal and team readiness (15%)",
+            "body": ""
+          },
+          {
+            "title": "16.3.5 Evidence and consistency with earlier subjects (15%)",
+            "body": ""
+          },
+          {
+            "title": "16.3.6 Pitch (10%)",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "16.4",
+        "title": "Submit to Stuckhere",
+        "intro": "",
+        "subs": [
+          {
+            "title": "16.4.1 Share your venture plan with the community and mentors",
+            "body": ""
+          }
+        ]
+      }
+    ],
+    "sectionsCount": 4
+  },
+  {
+    "num": 17,
+    "title": "Appendices",
+    "intro": "",
+    "sections": [
+      {
+        "num": "17.1",
+        "title": "Glossary",
+        "intro": "",
+        "subs": [
+          {
+            "title": "17.1.1 Equity, vesting, cap table, runway, burn, MRR, ARR, churn, CAC, LTV, term sheet, SAFE, moat, beachhead",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "17.2",
+        "title": "Templates",
+        "intro": "",
+        "subs": [
+          {
+            "title": "17.2.1 Business model canvas",
+            "body": ""
+          },
+          {
+            "title": "17.2.2 Founder agreement outline",
+            "body": ""
+          },
+          {
+            "title": "17.2.3 Cash forecast spreadsheet",
+            "body": ""
+          },
+          {
+            "title": "17.2.4 Go-to-market one-pager",
+            "body": ""
+          },
+          {
+            "title": "17.2.5 Outreach and follow-up emails",
+            "body": ""
+          },
+          {
+            "title": "17.2.6 Investor update template",
+            "body": ""
+          },
+          {
+            "title": "17.2.7 Investor deck outline",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "17.3",
+        "title": "Checklists",
+        "intro": "",
+        "subs": [
+          {
+            "title": "17.3.1 Pre-incorporation checklist",
+            "body": ""
+          },
+          {
+            "title": "17.3.2 First-customer checklist",
+            "body": ""
+          },
+          {
+            "title": "17.3.3 Pre-fundraising checklist",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "17.4",
+        "title": "Master Quiz Bank",
+        "intro": "",
+        "subs": [
+          {
+            "title": "17.4.1 60 multiple-choice questions grouped by chapter",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "17.5",
+        "title": "Further Reading",
+        "intro": "",
+        "subs": [
+          {
+            "title": "17.5.1 Books on startups, sales and fundraising",
+            "body": ""
+          },
+          {
+            "title": "17.5.2 Official government and regulator websites for registration and compliance",
+            "body": ""
+          },
+          {
+            "title": "17.5.3 Related Stuckhere pages: Founder Guide, Methodology, Open Innovation",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "17.6",
+        "title": "FAQ (good for Schema.org FAQPage SEO)",
+        "intro": "",
+        "subs": [
+          {
+            "title": "17.6.1 Do I need to register a company before building a prototype?",
+            "body": ""
+          },
+          {
+            "title": "17.6.2 How much equity should I give a co-founder?",
+            "body": ""
+          },
+          {
+            "title": "17.6.3 How do students approach investors?",
+            "body": ""
+          },
+          {
+            "title": "17.6.4 When should I raise money?",
+            "body": ""
+          }
+        ]
+      }
+    ],
+    "sectionsCount": 6
+  }
+]

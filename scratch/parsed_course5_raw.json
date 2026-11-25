@@ -1,0 +1,1941 @@
+[
+  {
+    "num": 0,
+    "title": "Course Overview",
+    "intro": "",
+    "sections": [
+      {
+        "num": "0.1",
+        "title": "What This Subject Covers",
+        "intro": "",
+        "subs": [
+          {
+            "title": "0.1.1 The one-line idea",
+            "body": "AI is a tool for solving verified problems, not a goal in itself. This subject teaches how to add language-model features, such as a problem solver copilot, that are useful, safe, affordable and testable."
+          },
+          {
+            "title": "0.1.2 What you will be able to do",
+            "body": "- Explain how large language models work and where they fail\n- Write clear prompts and structured outputs\n- Call a model API from a secure back end\n- Ground answers in your own data with retrieval\n- Add tools and simple agent workflows\n- Evaluate quality, safety and cost before launch"
+          }
+        ]
+      },
+      {
+        "num": "0.2",
+        "title": "Prerequisites",
+        "intro": "",
+        "subs": [
+          {
+            "title": "0.2.1 Basic programming",
+            "body": ""
+          },
+          {
+            "title": "0.2.2 Subject 3 (Full-Stack Cloud) strongly recommended",
+            "body": ""
+          },
+          {
+            "title": "0.2.3 Subjects 1 and 2 help you choose problems that deserve AI",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "0.3",
+        "title": "How to Use This Material",
+        "intro": "",
+        "subs": [
+          {
+            "title": "0.3.1 Suggested path (15 to 20 hours with practice)",
+            "body": ""
+          },
+          {
+            "title": "0.3.2 Chapter format: Concept, Code, Exercise, Checkpoint Quiz",
+            "body": ""
+          },
+          {
+            "title": "0.3.3 Building one AI feature across all chapters",
+            "body": ""
+          }
+        ]
+      }
+    ],
+    "sectionsCount": 3
+  },
+  {
+    "num": 1,
+    "title": "AI Foundations for Builders",
+    "intro": "",
+    "sections": [
+      {
+        "num": "1.1",
+        "title": "Key Terms",
+        "intro": "",
+        "subs": [
+          {
+            "title": "1.1.1 AI, machine learning, deep learning",
+            "body": ""
+          },
+          {
+            "title": "1.1.2 Generative AI and large language models",
+            "body": ""
+          },
+          {
+            "title": "1.1.3 Models, training, inference",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "1.2",
+        "title": "Types of AI Tasks",
+        "intro": "",
+        "subs": [
+          {
+            "title": "1.2.1 Classification and prediction",
+            "body": ""
+          },
+          {
+            "title": "1.2.2 Generation (text, images, code)",
+            "body": ""
+          },
+          {
+            "title": "1.2.3 Extraction and summarisation",
+            "body": ""
+          },
+          {
+            "title": "1.2.4 Search, ranking and recommendation",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "1.3",
+        "title": "When AI Is the Right Tool",
+        "intro": "",
+        "subs": [
+          {
+            "title": "1.3.1 Fuzzy, language-heavy, high-volume tasks",
+            "body": ""
+          },
+          {
+            "title": "1.3.2 When rules or a spreadsheet are better",
+            "body": ""
+          },
+          {
+            "title": "1.3.3 The cost of being wrong",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "1.4",
+        "title": "Using Your Problem Dossier",
+        "intro": "",
+        "subs": [
+          {
+            "title": "1.4.1 Which workflow step could AI improve?",
+            "body": ""
+          },
+          {
+            "title": "1.4.2 Defining success in measurable terms",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "1.5",
+        "title": "Chapter Practice",
+        "intro": "",
+        "subs": [
+          {
+            "title": "1.5.1 Exercise: list five AI opportunities and rate them",
+            "body": ""
+          },
+          {
+            "title": "1.5.2 Checkpoint quiz",
+            "body": ""
+          }
+        ]
+      }
+    ],
+    "sectionsCount": 5
+  },
+  {
+    "num": 2,
+    "title": "How Large Language Models Work",
+    "intro": "",
+    "sections": [
+      {
+        "num": "2.1",
+        "title": "Text as Tokens",
+        "intro": "",
+        "subs": [
+          {
+            "title": "2.1.1 What a token is",
+            "body": ""
+          },
+          {
+            "title": "2.1.2 Why token counts drive cost and limits",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "2.2",
+        "title": "Prediction at Scale",
+        "intro": "",
+        "subs": [
+          {
+            "title": "2.2.1 Next-token prediction in plain language",
+            "body": ""
+          },
+          {
+            "title": "2.2.2 Pretraining and fine-tuning",
+            "body": ""
+          },
+          {
+            "title": "2.2.3 Instruction tuning and human feedback",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "2.3",
+        "title": "Context Window",
+        "intro": "",
+        "subs": [
+          {
+            "title": "2.3.1 What the model can see at once",
+            "body": ""
+          },
+          {
+            "title": "2.3.2 Long inputs and what gets lost",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "2.4",
+        "title": "Sampling and Settings",
+        "intro": "",
+        "subs": [
+          {
+            "title": "2.4.1 Temperature and randomness",
+            "body": ""
+          },
+          {
+            "title": "2.4.2 Max output length",
+            "body": ""
+          },
+          {
+            "title": "2.4.3 Stop sequences",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "2.5",
+        "title": "Strengths and Limits",
+        "intro": "",
+        "subs": [
+          {
+            "title": "2.5.1 Strong at drafting, explaining, restructuring",
+            "body": ""
+          },
+          {
+            "title": "2.5.2 Hallucination: confident but wrong",
+            "body": ""
+          },
+          {
+            "title": "2.5.3 Weak at precise arithmetic and up-to-date facts",
+            "body": ""
+          },
+          {
+            "title": "2.5.4 Knowledge cutoffs",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "2.6",
+        "title": "Choosing a Model",
+        "intro": "",
+        "subs": [
+          {
+            "title": "2.6.1 Capability, speed and price trade-offs",
+            "body": ""
+          },
+          {
+            "title": "2.6.2 Small vs. large models",
+            "body": ""
+          },
+          {
+            "title": "2.6.3 Avoiding vendor lock-in",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "2.7",
+        "title": "Chapter Practice",
+        "intro": "",
+        "subs": [
+          {
+            "title": "2.7.1 Exercise: compare two models on five tasks",
+            "body": ""
+          },
+          {
+            "title": "2.7.2 Checkpoint quiz",
+            "body": ""
+          }
+        ]
+      }
+    ],
+    "sectionsCount": 7
+  },
+  {
+    "num": 3,
+    "title": "Prompt Engineering",
+    "intro": "",
+    "sections": [
+      {
+        "num": "3.1",
+        "title": "Anatomy of a Prompt",
+        "intro": "",
+        "subs": [
+          {
+            "title": "3.1.1 System instructions",
+            "body": ""
+          },
+          {
+            "title": "3.1.2 User input",
+            "body": ""
+          },
+          {
+            "title": "3.1.3 Context and examples",
+            "body": ""
+          },
+          {
+            "title": "3.1.4 Output format",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "3.2",
+        "title": "Core Techniques",
+        "intro": "",
+        "subs": [
+          {
+            "title": "3.2.1 Be specific about role, audience and goal",
+            "body": ""
+          },
+          {
+            "title": "3.2.2 Give examples (few-shot)",
+            "body": ""
+          },
+          {
+            "title": "3.2.3 Ask for step-by-step reasoning when needed",
+            "body": ""
+          },
+          {
+            "title": "3.2.4 Set constraints and say what to avoid",
+            "body": ""
+          },
+          {
+            "title": "3.2.5 Separate instructions from data with clear delimiters",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "3.3",
+        "title": "Structured Outputs",
+        "intro": "",
+        "subs": [
+          {
+            "title": "3.3.1 Requesting JSON",
+            "body": ""
+          },
+          {
+            "title": "3.3.2 Schemas and validation",
+            "body": ""
+          },
+          {
+            "title": "3.3.3 Handling malformed responses",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "3.4",
+        "title": "Prompt Patterns for Stuckhere-Style Features",
+        "intro": "",
+        "subs": [
+          {
+            "title": "3.4.1 Technical architecture suggestion",
+            "body": ""
+          },
+          {
+            "title": "3.4.2 Interview script generator",
+            "body": ""
+          },
+          {
+            "title": "3.4.3 Sprint roadmap generator",
+            "body": ""
+          },
+          {
+            "title": "3.4.4 Outreach email drafter",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "3.5",
+        "title": "Iterating on Prompts",
+        "intro": "",
+        "subs": [
+          {
+            "title": "3.5.1 Versioning prompts",
+            "body": ""
+          },
+          {
+            "title": "3.5.2 Testing changes against a fixed set of examples",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "3.6",
+        "title": "Chapter Practice",
+        "intro": "",
+        "subs": [
+          {
+            "title": "3.6.1 Exercise: improve a weak prompt through three revisions",
+            "body": ""
+          },
+          {
+            "title": "3.6.2 Checkpoint quiz",
+            "body": ""
+          }
+        ]
+      }
+    ],
+    "sectionsCount": 6
+  },
+  {
+    "num": 4,
+    "title": "Calling Model APIs",
+    "intro": "",
+    "sections": [
+      {
+        "num": "4.1",
+        "title": "API Basics",
+        "intro": "",
+        "subs": [
+          {
+            "title": "4.1.1 Requests, messages and roles",
+            "body": ""
+          },
+          {
+            "title": "4.1.2 Responses and usage data",
+            "body": ""
+          },
+          {
+            "title": "4.1.3 Errors, rate limits and retries",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "4.2",
+        "title": "Keeping Keys Safe",
+        "intro": "",
+        "subs": [
+          {
+            "title": "4.2.1 Never call a paid API with a key in browser code",
+            "body": ""
+          },
+          {
+            "title": "4.2.2 A server or edge function as a proxy",
+            "body": ""
+          },
+          {
+            "title": "4.2.3 Authenticating your own users first",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "4.3",
+        "title": "Streaming",
+        "intro": "",
+        "subs": [
+          {
+            "title": "4.3.1 Why streaming feels faster",
+            "body": ""
+          },
+          {
+            "title": "4.3.2 Handling streams in a React front end",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "4.4",
+        "title": "Multi-Turn Conversations",
+        "intro": "",
+        "subs": [
+          {
+            "title": "4.4.1 Sending history",
+            "body": ""
+          },
+          {
+            "title": "4.4.2 Summarising old turns to save tokens",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "4.5",
+        "title": "Files and Images",
+        "intro": "",
+        "subs": [
+          {
+            "title": "4.5.1 Sending documents and images as input",
+            "body": ""
+          },
+          {
+            "title": "4.5.2 Limits and costs",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "4.6",
+        "title": "Building a Simple Endpoint",
+        "intro": "",
+        "subs": [
+          {
+            "title": "4.6.1 Request validation",
+            "body": ""
+          },
+          {
+            "title": "4.6.2 Prompt assembly",
+            "body": ""
+          },
+          {
+            "title": "4.6.3 Response parsing and error fallback",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "4.7",
+        "title": "Chapter Practice",
+        "intro": "",
+        "subs": [
+          {
+            "title": "4.7.1 Exercise: build a secure endpoint that drafts a pilot email",
+            "body": ""
+          },
+          {
+            "title": "4.7.2 Checkpoint quiz",
+            "body": ""
+          }
+        ]
+      }
+    ],
+    "sectionsCount": 7
+  },
+  {
+    "num": 5,
+    "title": "Grounding With Your Own Data (RAG)",
+    "intro": "",
+    "sections": [
+      {
+        "num": "5.1",
+        "title": "Why Grounding",
+        "intro": "",
+        "subs": [
+          {
+            "title": "5.1.1 Reducing hallucination",
+            "body": ""
+          },
+          {
+            "title": "5.1.2 Using private and fresh information",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "5.2",
+        "title": "Embeddings and Similarity",
+        "intro": "",
+        "subs": [
+          {
+            "title": "5.2.1 Turning text into vectors",
+            "body": ""
+          },
+          {
+            "title": "5.2.2 Cosine similarity in plain language",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "5.3",
+        "title": "The RAG Pipeline",
+        "intro": "",
+        "subs": [
+          {
+            "title": "5.3.1 Collect and clean documents",
+            "body": ""
+          },
+          {
+            "title": "5.3.2 Chunking strategies",
+            "body": ""
+          },
+          {
+            "title": "5.3.3 Indexing in a vector store",
+            "body": ""
+          },
+          {
+            "title": "5.3.4 Retrieve, assemble context, generate",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "5.4",
+        "title": "Improving Retrieval",
+        "intro": "",
+        "subs": [
+          {
+            "title": "5.4.1 Metadata filters",
+            "body": ""
+          },
+          {
+            "title": "5.4.2 Hybrid keyword and vector search",
+            "body": ""
+          },
+          {
+            "title": "5.4.3 Re-ranking",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "5.5",
+        "title": "Citing Sources",
+        "intro": "",
+        "subs": [
+          {
+            "title": "5.5.1 Showing which dossier or document an answer came from",
+            "body": ""
+          },
+          {
+            "title": "5.5.2 Saying \"I don't know\" when context is missing",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "5.6",
+        "title": "Example: Problem Dossier Q&A",
+        "intro": "",
+        "subs": [
+          {
+            "title": "5.6.1 Indexing verified problems",
+            "body": ""
+          },
+          {
+            "title": "5.6.2 Answering a builder's questions with citations",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "5.7",
+        "title": "Chapter Practice",
+        "intro": "",
+        "subs": [
+          {
+            "title": "5.7.1 Exercise: build a small RAG demo over ten documents",
+            "body": ""
+          },
+          {
+            "title": "5.7.2 Checkpoint quiz",
+            "body": ""
+          }
+        ]
+      }
+    ],
+    "sectionsCount": 7
+  },
+  {
+    "num": 6,
+    "title": "Tools and Agents",
+    "intro": "",
+    "sections": [
+      {
+        "num": "6.1",
+        "title": "Tool Use",
+        "intro": "",
+        "subs": [
+          {
+            "title": "6.1.1 Letting a model call functions",
+            "body": ""
+          },
+          {
+            "title": "6.1.2 Describing tools with schemas",
+            "body": ""
+          },
+          {
+            "title": "6.1.3 Validating tool arguments",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "6.2",
+        "title": "Common Tools",
+        "intro": "",
+        "subs": [
+          {
+            "title": "6.2.1 Database lookup",
+            "body": ""
+          },
+          {
+            "title": "6.2.2 Calculator and code execution",
+            "body": ""
+          },
+          {
+            "title": "6.2.3 Web search",
+            "body": ""
+          },
+          {
+            "title": "6.2.4 Sending email or creating records (with approval)",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "6.3",
+        "title": "Agent Workflows",
+        "intro": "",
+        "subs": [
+          {
+            "title": "6.3.1 Plan, act, observe loops",
+            "body": ""
+          },
+          {
+            "title": "6.3.2 Workflows vs. fully autonomous agents",
+            "body": ""
+          },
+          {
+            "title": "6.3.3 When not to use an agent",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "6.4",
+        "title": "Controlling Agents",
+        "intro": "",
+        "subs": [
+          {
+            "title": "6.4.1 Step and cost limits",
+            "body": ""
+          },
+          {
+            "title": "6.4.2 Human approval for risky actions",
+            "body": ""
+          },
+          {
+            "title": "6.4.3 Logging every tool call",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "6.5",
+        "title": "Chapter Practice",
+        "intro": "",
+        "subs": [
+          {
+            "title": "6.5.1 Exercise: add a scoring tool to your copilot",
+            "body": ""
+          },
+          {
+            "title": "6.5.2 Checkpoint quiz",
+            "body": ""
+          }
+        ]
+      }
+    ],
+    "sectionsCount": 5
+  },
+  {
+    "num": 7,
+    "title": "Building a Problem Solver Copilot",
+    "intro": "",
+    "sections": [
+      {
+        "num": "7.1",
+        "title": "Define the Copilot's Job",
+        "intro": "",
+        "subs": [
+          {
+            "title": "7.1.1 Users and tasks",
+            "body": ""
+          },
+          {
+            "title": "7.1.2 What it should never do",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "7.2",
+        "title": "Copilot Modules",
+        "intro": "",
+        "subs": [
+          {
+            "title": "7.2.1 Technical architecture module",
+            "body": ""
+          },
+          {
+            "title": "7.2.2 Discovery interview module",
+            "body": ""
+          },
+          {
+            "title": "7.2.3 14-day sprint module",
+            "body": ""
+          },
+          {
+            "title": "7.2.4 Pilot outreach module",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "7.3",
+        "title": "Architecture",
+        "intro": "",
+        "subs": [
+          {
+            "title": "7.3.1 Front end panel",
+            "body": ""
+          },
+          {
+            "title": "7.3.2 Back end endpoint and prompt builder",
+            "body": ""
+          },
+          {
+            "title": "7.3.3 Data sources (dossier, market sizing, competitors)",
+            "body": ""
+          },
+          {
+            "title": "7.3.4 Response storage and history",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "7.4",
+        "title": "Context Assembly",
+        "intro": "",
+        "subs": [
+          {
+            "title": "7.4.1 Selecting relevant dossier fields",
+            "body": ""
+          },
+          {
+            "title": "7.4.2 Staying within token budgets",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "7.5",
+        "title": "User Experience",
+        "intro": "",
+        "subs": [
+          {
+            "title": "7.5.1 Loading, streaming and error states",
+            "body": ""
+          },
+          {
+            "title": "7.5.2 Edit, copy, regenerate and feedback buttons",
+            "body": ""
+          },
+          {
+            "title": "7.5.3 Showing limits and disclaimers",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "7.6",
+        "title": "Chapter Practice",
+        "intro": "",
+        "subs": [
+          {
+            "title": "7.6.1 Exercise: build two copilot modules end to end",
+            "body": ""
+          },
+          {
+            "title": "7.6.2 Checkpoint quiz",
+            "body": ""
+          }
+        ]
+      }
+    ],
+    "sectionsCount": 6
+  },
+  {
+    "num": 8,
+    "title": "Evaluating AI Features",
+    "intro": "",
+    "sections": [
+      {
+        "num": "8.1",
+        "title": "Why Evaluation Is Hard",
+        "intro": "",
+        "subs": [
+          {
+            "title": "8.1.1 No single right answer",
+            "body": ""
+          },
+          {
+            "title": "8.1.2 Quality drifts when prompts or models change",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "8.2",
+        "title": "Building a Test Set",
+        "intro": "",
+        "subs": [
+          {
+            "title": "8.2.1 20 to 50 real examples",
+            "body": ""
+          },
+          {
+            "title": "8.2.2 Including hard and adversarial cases",
+            "body": ""
+          },
+          {
+            "title": "8.2.3 Expected behaviours, not exact answers",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "8.3",
+        "title": "Evaluation Methods",
+        "intro": "",
+        "subs": [
+          {
+            "title": "8.3.1 Human review with a rubric",
+            "body": ""
+          },
+          {
+            "title": "8.3.2 Automated checks (format, length, banned content)",
+            "body": ""
+          },
+          {
+            "title": "8.3.3 Model-as-judge and its biases",
+            "body": ""
+          },
+          {
+            "title": "8.3.4 Comparing versions side by side",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "8.4",
+        "title": "Metrics",
+        "intro": "",
+        "subs": [
+          {
+            "title": "8.4.1 Accuracy and groundedness",
+            "body": ""
+          },
+          {
+            "title": "8.4.2 Usefulness ratings from users",
+            "body": ""
+          },
+          {
+            "title": "8.4.3 Latency and cost per request",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "8.5",
+        "title": "Continuous Monitoring",
+        "intro": "",
+        "subs": [
+          {
+            "title": "8.5.1 Logging prompts and outputs responsibly",
+            "body": ""
+          },
+          {
+            "title": "8.5.2 User feedback loops",
+            "body": ""
+          },
+          {
+            "title": "8.5.3 Regression checks before every change",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "8.6",
+        "title": "Chapter Practice",
+        "intro": "",
+        "subs": [
+          {
+            "title": "8.6.1 Exercise: create a 25-case test set and score two prompt versions",
+            "body": ""
+          },
+          {
+            "title": "8.6.2 Checkpoint quiz",
+            "body": ""
+          }
+        ]
+      }
+    ],
+    "sectionsCount": 6
+  },
+  {
+    "num": 9,
+    "title": "Safety, Privacy and Security",
+    "intro": "",
+    "sections": [
+      {
+        "num": "9.1",
+        "title": "Risks Specific to AI Features",
+        "intro": "",
+        "subs": [
+          {
+            "title": "9.1.1 Wrong or invented answers",
+            "body": ""
+          },
+          {
+            "title": "9.1.2 Harmful or biased outputs",
+            "body": ""
+          },
+          {
+            "title": "9.1.3 Over-reliance by users",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "9.2",
+        "title": "Prompt Injection",
+        "intro": "",
+        "subs": [
+          {
+            "title": "9.2.1 Instructions hidden in user input or documents",
+            "body": ""
+          },
+          {
+            "title": "9.2.2 Separating trusted instructions from untrusted content",
+            "body": ""
+          },
+          {
+            "title": "9.2.3 Limiting what tools can do",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "9.3",
+        "title": "Data Privacy",
+        "intro": "",
+        "subs": [
+          {
+            "title": "9.3.1 Minimising personal data sent to models",
+            "body": ""
+          },
+          {
+            "title": "9.3.2 Consent and retention",
+            "body": ""
+          },
+          {
+            "title": "9.3.3 Sensitive domains such as health and finance",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "9.4",
+        "title": "Abuse Prevention",
+        "intro": "",
+        "subs": [
+          {
+            "title": "9.4.1 Rate limits per user",
+            "body": ""
+          },
+          {
+            "title": "9.4.2 Spend caps and alerts",
+            "body": ""
+          },
+          {
+            "title": "9.4.3 Content filters and moderation",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "9.5",
+        "title": "Responsible AI Practice",
+        "intro": "",
+        "subs": [
+          {
+            "title": "9.5.1 Transparency: tell users when AI is used",
+            "body": ""
+          },
+          {
+            "title": "9.5.2 Human oversight for important decisions",
+            "body": ""
+          },
+          {
+            "title": "9.5.3 Fairness testing across user groups",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "9.6",
+        "title": "Chapter Practice",
+        "intro": "",
+        "subs": [
+          {
+            "title": "9.6.1 Exercise: red-team your copilot with 15 attack prompts",
+            "body": ""
+          },
+          {
+            "title": "9.6.2 Checkpoint quiz",
+            "body": ""
+          }
+        ]
+      }
+    ],
+    "sectionsCount": 6
+  },
+  {
+    "num": 10,
+    "title": "Cost, Latency and Scale",
+    "intro": "",
+    "sections": [
+      {
+        "num": "10.1",
+        "title": "Understanding Costs",
+        "intro": "",
+        "subs": [
+          {
+            "title": "10.1.1 Input and output token pricing",
+            "body": ""
+          },
+          {
+            "title": "10.1.2 Estimating cost per request and per user",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "10.2",
+        "title": "Reducing Cost",
+        "intro": "",
+        "subs": [
+          {
+            "title": "10.2.1 Shorter prompts and tighter context",
+            "body": ""
+          },
+          {
+            "title": "10.2.2 Caching repeated answers",
+            "body": ""
+          },
+          {
+            "title": "10.2.3 Using smaller models for easy tasks",
+            "body": ""
+          },
+          {
+            "title": "10.2.4 Batching",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "10.3",
+        "title": "Improving Speed",
+        "intro": "",
+        "subs": [
+          {
+            "title": "10.3.1 Streaming",
+            "body": ""
+          },
+          {
+            "title": "10.3.2 Parallel calls",
+            "body": ""
+          },
+          {
+            "title": "10.3.3 Precomputing common outputs",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "10.4",
+        "title": "Reliability",
+        "intro": "",
+        "subs": [
+          {
+            "title": "10.4.1 Timeouts and retries with backoff",
+            "body": ""
+          },
+          {
+            "title": "10.4.2 Fallback models and graceful degradation",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "10.5",
+        "title": "Pricing Your AI Feature",
+        "intro": "",
+        "subs": [
+          {
+            "title": "10.5.1 Linking cost to the unit economics from Subject 2",
+            "body": ""
+          },
+          {
+            "title": "10.5.2 Free limits and paid tiers",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "10.6",
+        "title": "Chapter Practice",
+        "intro": "",
+        "subs": [
+          {
+            "title": "10.6.1 Exercise: build a cost model for 1,000 daily users",
+            "body": ""
+          },
+          {
+            "title": "10.6.2 Checkpoint quiz",
+            "body": ""
+          }
+        ]
+      }
+    ],
+    "sectionsCount": 6
+  },
+  {
+    "num": 11,
+    "title": "Data for AI",
+    "intro": "",
+    "sections": [
+      {
+        "num": "11.1",
+        "title": "Where Data Comes From",
+        "intro": "",
+        "subs": [
+          {
+            "title": "11.1.1 Your own product data",
+            "body": ""
+          },
+          {
+            "title": "11.1.2 Public datasets",
+            "body": ""
+          },
+          {
+            "title": "11.1.3 User-submitted content",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "11.2",
+        "title": "Data Quality",
+        "intro": "",
+        "subs": [
+          {
+            "title": "11.2.1 Cleaning and deduplicating",
+            "body": ""
+          },
+          {
+            "title": "11.2.2 Consistent structure",
+            "body": ""
+          },
+          {
+            "title": "11.2.3 Handling missing and noisy values",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "11.3",
+        "title": "Labelling",
+        "intro": "",
+        "subs": [
+          {
+            "title": "11.3.1 Simple labelling guidelines",
+            "body": ""
+          },
+          {
+            "title": "11.3.2 Agreement between labellers",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "11.4",
+        "title": "Legal and Ethical Use",
+        "intro": "",
+        "subs": [
+          {
+            "title": "11.4.1 Licences and terms of use",
+            "body": ""
+          },
+          {
+            "title": "11.4.2 Personal data and consent",
+            "body": ""
+          },
+          {
+            "title": "11.4.3 Bias in datasets",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "11.5",
+        "title": "Chapter Practice",
+        "intro": "",
+        "subs": [
+          {
+            "title": "11.5.1 Exercise: clean and label a 50-row dataset",
+            "body": ""
+          },
+          {
+            "title": "11.5.2 Checkpoint quiz",
+            "body": ""
+          }
+        ]
+      }
+    ],
+    "sectionsCount": 5
+  },
+  {
+    "num": 12,
+    "title": "Classical Machine Learning and Scoring Models",
+    "intro": "",
+    "sections": [
+      {
+        "num": "12.1",
+        "title": "Rules, Scores and Models",
+        "intro": "",
+        "subs": [
+          {
+            "title": "12.1.1 Weighted scores such as the Pain Score",
+            "body": ""
+          },
+          {
+            "title": "12.1.2 When a simple formula beats machine learning",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "12.2",
+        "title": "Supervised Learning Basics",
+        "intro": "",
+        "subs": [
+          {
+            "title": "12.2.1 Features and labels",
+            "body": ""
+          },
+          {
+            "title": "12.2.2 Training, validation and test sets",
+            "body": ""
+          },
+          {
+            "title": "12.2.3 Overfitting",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "12.3",
+        "title": "Common Models",
+        "intro": "",
+        "subs": [
+          {
+            "title": "12.3.1 Linear and logistic regression",
+            "body": ""
+          },
+          {
+            "title": "12.3.2 Decision trees and forests",
+            "body": ""
+          },
+          {
+            "title": "12.3.3 Clustering for grouping similar problems",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "12.4",
+        "title": "Measuring Performance",
+        "intro": "",
+        "subs": [
+          {
+            "title": "12.4.1 Accuracy, precision and recall",
+            "body": ""
+          },
+          {
+            "title": "12.4.2 Confusion matrix",
+            "body": ""
+          },
+          {
+            "title": "12.4.3 Choosing the right metric for the job",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "12.5",
+        "title": "Use Cases on a Problem Platform",
+        "intro": "",
+        "subs": [
+          {
+            "title": "12.5.1 Duplicate problem detection",
+            "body": ""
+          },
+          {
+            "title": "12.5.2 Auto-tagging domains and industries",
+            "body": ""
+          },
+          {
+            "title": "12.5.3 Suggested pain score from submission text",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "12.6",
+        "title": "Chapter Practice",
+        "intro": "",
+        "subs": [
+          {
+            "title": "12.6.1 Exercise: build a simple tagger and measure it",
+            "body": ""
+          },
+          {
+            "title": "12.6.2 Checkpoint quiz",
+            "body": ""
+          }
+        ]
+      }
+    ],
+    "sectionsCount": 6
+  },
+  {
+    "num": 13,
+    "title": "Designing AI Products and Experiences",
+    "intro": "",
+    "sections": [
+      {
+        "num": "13.1",
+        "title": "Human-in-the-Loop",
+        "intro": "",
+        "subs": [
+          {
+            "title": "13.1.1 AI suggests, human decides",
+            "body": ""
+          },
+          {
+            "title": "13.1.2 Easy editing and undo",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "13.2",
+        "title": "Building Trust",
+        "intro": "",
+        "subs": [
+          {
+            "title": "13.2.1 Showing sources and reasoning",
+            "body": ""
+          },
+          {
+            "title": "13.2.2 Communicating uncertainty",
+            "body": ""
+          },
+          {
+            "title": "13.2.3 Setting realistic expectations",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "13.3",
+        "title": "Interface Patterns",
+        "intro": "",
+        "subs": [
+          {
+            "title": "13.3.1 Chat vs. buttons vs. inline suggestions",
+            "body": ""
+          },
+          {
+            "title": "13.3.2 Templates and guided inputs",
+            "body": ""
+          },
+          {
+            "title": "13.3.3 Onboarding for AI features",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "13.4",
+        "title": "Handling Failure",
+        "intro": "",
+        "subs": [
+          {
+            "title": "13.4.1 Wrong answers: report and recover",
+            "body": ""
+          },
+          {
+            "title": "13.4.2 Empty or refused responses",
+            "body": ""
+          },
+          {
+            "title": "13.4.3 Offline and slow states",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "13.5",
+        "title": "Chapter Practice",
+        "intro": "",
+        "subs": [
+          {
+            "title": "13.5.1 Exercise: redesign an AI feature screen for trust and clarity",
+            "body": ""
+          },
+          {
+            "title": "13.5.2 Checkpoint quiz",
+            "body": ""
+          }
+        ]
+      }
+    ],
+    "sectionsCount": 5
+  },
+  {
+    "num": 14,
+    "title": "Working Faster With AI Tools",
+    "intro": "",
+    "sections": [
+      {
+        "num": "14.1",
+        "title": "AI for Coding",
+        "intro": "",
+        "subs": [
+          {
+            "title": "14.1.1 Code assistants and agents",
+            "body": ""
+          },
+          {
+            "title": "14.1.2 Reviewing generated code",
+            "body": ""
+          },
+          {
+            "title": "14.1.3 Tests as your safety net",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "14.2",
+        "title": "AI for Research and Writing",
+        "intro": "",
+        "subs": [
+          {
+            "title": "14.2.1 Summarising interviews",
+            "body": ""
+          },
+          {
+            "title": "14.2.2 Drafting documents with human editing",
+            "body": ""
+          },
+          {
+            "title": "14.2.3 Checking facts and sources",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "14.3",
+        "title": "AI for Design and Prototyping",
+        "intro": "",
+        "subs": [
+          {
+            "title": "14.3.1 Generating layouts and copy",
+            "body": ""
+          },
+          {
+            "title": "14.3.2 Limits and cleanup",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "14.4",
+        "title": "Good Habits",
+        "intro": "",
+        "subs": [
+          {
+            "title": "14.4.1 Never paste secrets or private data",
+            "body": ""
+          },
+          {
+            "title": "14.4.2 Keep a log of important prompts",
+            "body": ""
+          },
+          {
+            "title": "14.4.3 Learn the basics yourself first",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "14.5",
+        "title": "Chapter Practice",
+        "intro": "",
+        "subs": [
+          {
+            "title": "14.5.1 Exercise: build a small feature with AI help and document what you changed",
+            "body": ""
+          },
+          {
+            "title": "14.5.2 Checkpoint quiz",
+            "body": ""
+          }
+        ]
+      }
+    ],
+    "sectionsCount": 5
+  },
+  {
+    "num": 15,
+    "title": "AI in Real Domains",
+    "intro": "",
+    "sections": [
+      {
+        "num": "15.1",
+        "title": "Healthcare and Clinics",
+        "intro": "",
+        "subs": [
+          {
+            "title": "15.1.1 Scheduling, documentation and triage support",
+            "body": ""
+          },
+          {
+            "title": "15.1.2 Safety and regulation",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "15.2",
+        "title": "Logistics and Operations",
+        "intro": "",
+        "subs": [
+          {
+            "title": "15.2.1 Route and dispatch support",
+            "body": ""
+          },
+          {
+            "title": "15.2.2 Document extraction (invoices, bills of lading)",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "15.3",
+        "title": "Education",
+        "intro": "",
+        "subs": [
+          {
+            "title": "15.3.1 Tutoring and feedback",
+            "body": ""
+          },
+          {
+            "title": "15.3.2 Academic integrity concerns",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "15.4",
+        "title": "Finance and Small Business",
+        "intro": "",
+        "subs": [
+          {
+            "title": "15.4.1 Bookkeeping and reconciliation",
+            "body": ""
+          },
+          {
+            "title": "15.4.2 Compliance and accuracy needs",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "15.5",
+        "title": "India and Multilingual Contexts",
+        "intro": "",
+        "subs": [
+          {
+            "title": "15.5.1 Indian languages and code-mixed text",
+            "body": ""
+          },
+          {
+            "title": "15.5.2 Voice and low-bandwidth use",
+            "body": ""
+          },
+          {
+            "title": "15.5.3 Government and public-sector use cases",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "15.6",
+        "title": "Chapter Practice",
+        "intro": "",
+        "subs": [
+          {
+            "title": "15.6.1 Exercise: design an AI workflow for one problem in your domain",
+            "body": ""
+          },
+          {
+            "title": "15.6.2 Checkpoint quiz",
+            "body": ""
+          }
+        ]
+      }
+    ],
+    "sectionsCount": 6
+  },
+  {
+    "num": 16,
+    "title": "Capstone Project",
+    "intro": "",
+    "sections": [
+      {
+        "num": "16.1",
+        "title": "Brief",
+        "intro": "",
+        "subs": [
+          {
+            "title": "16.1.1 Add one AI feature to the solution you built in Subject 3 or 4",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "16.2",
+        "title": "Requirements",
+        "intro": "",
+        "subs": [
+          {
+            "title": "16.2.1 Clear job statement and success metrics",
+            "body": ""
+          },
+          {
+            "title": "16.2.2 Secure back-end endpoint",
+            "body": ""
+          },
+          {
+            "title": "16.2.3 Grounded answers with sources",
+            "body": ""
+          },
+          {
+            "title": "16.2.4 Structured output with validation",
+            "body": ""
+          },
+          {
+            "title": "16.2.5 25-case evaluation set and results",
+            "body": ""
+          },
+          {
+            "title": "16.2.6 Safety tests and a cost model",
+            "body": ""
+          },
+          {
+            "title": "16.2.7 A user-facing explanation of limits",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "16.3",
+        "title": "Grading Rubric",
+        "intro": "",
+        "subs": [
+          {
+            "title": "16.3.1 Problem fit and design (20%)",
+            "body": ""
+          },
+          {
+            "title": "16.3.2 Implementation quality (25%)",
+            "body": ""
+          },
+          {
+            "title": "16.3.3 Evaluation rigour (25%)",
+            "body": ""
+          },
+          {
+            "title": "16.3.4 Safety and privacy (15%)",
+            "body": ""
+          },
+          {
+            "title": "16.3.5 Cost awareness and UX (15%)",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "16.4",
+        "title": "Submit to Stuckhere",
+        "intro": "",
+        "subs": [
+          {
+            "title": "16.4.1 Publish a demo and write-up for the community",
+            "body": ""
+          }
+        ]
+      }
+    ],
+    "sectionsCount": 4
+  },
+  {
+    "num": 17,
+    "title": "Appendices",
+    "intro": "",
+    "sections": [
+      {
+        "num": "17.1",
+        "title": "Glossary",
+        "intro": "",
+        "subs": [
+          {
+            "title": "17.1.1 Token, context window, temperature, prompt, embedding, RAG, agent, tool call, hallucination, fine-tuning, evaluation, prompt injection",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "17.2",
+        "title": "Templates",
+        "intro": "",
+        "subs": [
+          {
+            "title": "17.2.1 Prompt template",
+            "body": ""
+          },
+          {
+            "title": "17.2.2 Evaluation rubric",
+            "body": ""
+          },
+          {
+            "title": "17.2.3 Test-case sheet",
+            "body": ""
+          },
+          {
+            "title": "17.2.4 Red-team checklist",
+            "body": ""
+          },
+          {
+            "title": "17.2.5 Cost estimation sheet",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "17.3",
+        "title": "Pre-Launch Checklist",
+        "intro": "",
+        "subs": [
+          {
+            "title": "17.3.1 20 checks across quality, safety, privacy and cost",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "17.4",
+        "title": "Master Quiz Bank",
+        "intro": "",
+        "subs": [
+          {
+            "title": "17.4.1 60 multiple-choice questions grouped by chapter",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "17.5",
+        "title": "Further Reading",
+        "intro": "",
+        "subs": [
+          {
+            "title": "17.5.1 Official model provider documentation and prompting guides",
+            "body": ""
+          },
+          {
+            "title": "17.5.2 Related Stuckhere pages: Methodology, Startup Mode, Full-Stack Cloud",
+            "body": ""
+          }
+        ]
+      },
+      {
+        "num": "17.6",
+        "title": "FAQ (good for Schema.org FAQPage SEO)",
+        "intro": "",
+        "subs": [
+          {
+            "title": "17.6.1 Do I need to train my own model?",
+            "body": ""
+          },
+          {
+            "title": "17.6.2 How do I stop an AI feature from making things up?",
+            "body": ""
+          },
+          {
+            "title": "17.6.3 How much does an AI feature cost per user?",
+            "body": ""
+          },
+          {
+            "title": "17.6.4 Is it safe to send user data to a model API?",
+            "body": ""
+          }
+        ]
+      }
+    ],
+    "sectionsCount": 6
+  }
+]
