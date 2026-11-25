@@ -34,6 +34,8 @@ Allow: /learn
 Allow: /learn/
 Allow: /llms.txt
 Allow: /sitemap.xml
+Allow: /sitemap*.xml
+Allow: /sitemap-*.xml
 Disallow: /admin/
 Disallow: /admin/*
 Disallow: /dashboard
@@ -60,6 +62,8 @@ Allow: /learn
 Allow: /learn/
 Allow: /llms.txt
 Allow: /sitemap.xml
+Allow: /sitemap*.xml
+Allow: /sitemap-*.xml
 Disallow: /admin/
 Disallow: /admin/*
 Disallow: /dashboard
