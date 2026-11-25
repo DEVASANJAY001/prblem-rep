@@ -1,0 +1,3114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <url>
+    <loc>https://stuckhere.davns.com/</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Stuckhere — The World&apos;s Open Problem Registry</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/explore</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.95</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Explore Verified Industry Problems</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/explore?filter=startup_mode</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Startup Mode: Venture Opportunities &amp; Solutions</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/methodology</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Problem Verification Methodology &amp; Pain Scoring</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/guides/problem-discovery-framework</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Founder Problem Discovery Guide &amp; Framework</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/open-innovation</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Open Innovation &amp; Enterprise Challenges</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/solutions</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.80</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Innovative Solutions &amp; Architecture Blueprints</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/companies</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.80</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Enterprise &amp; Partner Directory</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/research</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Industry Empirical Research &amp; Whitepapers</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/competitions</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Hackathons, Bounties &amp; Innovation Competitions</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/community</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.75</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Community Forum &amp; Contributor Discussions</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/features</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Platform Features &amp; Builder Capabilities</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/about</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.70</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>About Stuckhere — Mission &amp; Team</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/contact</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.60</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Contact &amp; Partnership Inquiries</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/submit</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Submit a Verified Problem Statement</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/privacy</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.30</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Privacy Policy</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/terms</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.30</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Terms of Service</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/cookies</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.30</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Cookie Policy</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.95</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Stuckhere Academy Learning Portal</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/problem-discovery-and-validation</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/discovery-loop.svg</image:loc>
+      <image:title>The 8-Step Discovery Loop Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/problem-discovery-and-validation/course-overview</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/discovery-loop.svg</image:loc>
+      <image:title>The 8-Step Discovery Loop Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/problem-discovery-and-validation/what-is-a-problem</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/problem-idea-solution.svg</image:loc>
+      <image:title>Problem vs Idea vs Solution Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/problem-discovery-and-validation/why-startups-fail</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/startup-failure-rates.svg</image:loc>
+      <image:title>Startup Failure Reasons Bar Chart</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/problem-discovery-and-validation/vitamin-painkiller-surgery</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/triage-matrix.svg</image:loc>
+      <image:title>Problem Triage Matrix Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/problem-discovery-and-validation/where-to-find-problems</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 1 Chapter 4: Where to Find Real Problems</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/problem-discovery-and-validation/customer-discovery-interviews</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/mom-test-questions.svg</image:loc>
+      <image:title>Mom Test Good vs Bad Questions</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/problem-discovery-and-validation/the-problem-dossier</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/dossier-architecture.svg</image:loc>
+      <image:title>Problem Dossier Architecture</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/problem-discovery-and-validation/measuring-pain</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/pain-score-formula.svg</image:loc>
+      <image:title>Pain Score Equation Breakdown</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/problem-discovery-and-validation/validation-signals</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/evidence-ladder.svg</image:loc>
+      <image:title>The Evidence Ladder</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/problem-discovery-and-validation/workarounds-and-competitors</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 1 Chapter 9: Workarounds and Competitor Analysis</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/problem-discovery-and-validation/sizing-the-opportunity</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/tam-sam-som.svg</image:loc>
+      <image:title>TAM SAM SOM Sizing Model</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/problem-discovery-and-validation/solution-hypothesis</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/14-day-sprint.svg</image:loc>
+      <image:title>14-Day Sprint Roadmap</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/problem-discovery-and-validation/bias-ethics-and-mistakes</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 1 Chapter 12: Bias, Ethics and Common Mistakes</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/problem-discovery-and-validation/capstone-project</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 1 Chapter 13: Capstone Project</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/problem-discovery-and-validation/appendices</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/discovery-loop.svg</image:loc>
+      <image:title>Master 8-Step Discovery Loop</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/market-sizing-and-opportunity</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/tam-sam-som.svg</image:loc>
+      <image:title>TAM SAM SOM Concentric Circles</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/market-sizing-and-opportunity/course-overview</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/tam-sam-som.svg</image:loc>
+      <image:title>TAM SAM SOM Concentric Circles</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/market-sizing-and-opportunity/why-market-sizing-matters</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 2 Chapter 1: Why Market Sizing Matters: A Real Problem vs. A Real Market</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/market-sizing-and-opportunity/core-vocabulary</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/tam-sam-som.svg</image:loc>
+      <image:title>Concentric TAM SAM SOM Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/market-sizing-and-opportunity/three-ways-to-size-a-market</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/three-sizing-methods.svg</image:loc>
+      <image:title>Three Sizing Methods Comparison</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/market-sizing-and-opportunity/defining-who-is-in-the-market</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/user-buyer-payer.svg</image:loc>
+      <image:title>User Buyer Payer Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/market-sizing-and-opportunity/counting-customers</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 2 Chapter 5: Counting Customers: Data Sources &amp; Building a Population</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/market-sizing-and-opportunity/pricing-and-willingness-to-pay</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/pricing-value-ladder.svg</image:loc>
+      <image:title>Pricing Value Ladder Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/market-sizing-and-opportunity/usage-frequency-and-revenue-per-customer</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 2 Chapter 7: Usage, Frequency and Revenue per Customer (ACV &amp; LTV)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/market-sizing-and-opportunity/bottom-up-tam-step-by-step</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/bottom-up-formula.svg</image:loc>
+      <image:title>Bottom Up Formula Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/market-sizing-and-opportunity/growth-trends-and-timing</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 2 Chapter 9: Growth, Trends and Timing: Why Now?</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/market-sizing-and-opportunity/obtainable-market-and-go-to-market</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 2 Chapter 10: Obtainable Market (SOM) and Go-to-Market Realities</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/market-sizing-and-opportunity/unit-economics</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/unit-economics-ltv-cac.svg</image:loc>
+      <image:title>Unit Economics LTV CAC Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/market-sizing-and-opportunity/sanity-checks-ranges-and-sensitivity</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/sensitivity-tornado.svg</image:loc>
+      <image:title>Scenario and Sensitivity Analysis Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/market-sizing-and-opportunity/sizing-in-india-and-emerging-markets</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 2 Chapter 13: Sizing in India and Emerging Markets: High Volume, Low ARPU</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/market-sizing-and-opportunity/communicating-the-opportunity</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/opportunity-one-pager.svg</image:loc>
+      <image:title>Opportunity One Pager Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/market-sizing-and-opportunity/common-mistakes-and-honest-practice</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 2 Chapter 15: Common Mistakes and Honest Practice</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/market-sizing-and-opportunity/capstone-project</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 2 Chapter 16: Capstone Project: The Complete Market Sizing Dossier</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/market-sizing-and-opportunity/appendices-and-formula-cheat-sheet</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 2 Chapter 17: Appendices, Formulas and Master Glossary</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/full-stack-cloud-development</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 3: Full-Stack Cloud Development</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/full-stack-cloud-development/course-overview</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 3 Chapter 0: Course Overview: The Full-Stack Cloud Roadmap</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/full-stack-cloud-development/cloud-web-app-architecture</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 3 Chapter 1: The Big Picture of a Cloud Web App</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/full-stack-cloud-development/front-end-foundations</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 3 Chapter 2: Front-End Foundations: HTML, CSS &amp; Modern TypeScript</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/full-stack-cloud-development/react-fundamentals</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 3 Chapter 3: React Fundamentals: Components, State &amp; Effects</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/full-stack-cloud-development/tooling-routing-and-code-splitting</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 3 Chapter 4: Tooling, Routing &amp; Code Splitting</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/full-stack-cloud-development/styling-design-tokens-and-themes</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 3 Chapter 5: Styling, Design Tokens &amp; Themes</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/full-stack-cloud-development/back-end-concepts-and-apis</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 3 Chapter 6: Back-End Concepts &amp; APIs</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/full-stack-cloud-development/data-modelling-with-cloud-firestore</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 3 Chapter 7: Data Modelling with Cloud Firestore</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/full-stack-cloud-development/authentication-and-authorization</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 3 Chapter 8: Authentication &amp; Authorization</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/full-stack-cloud-development/security</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 3 Chapter 9: Security: Threat Thinking &amp; Security Rules</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/full-stack-cloud-development/adding-ai-features</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 3 Chapter 10: Adding AI Features &amp; Copilots</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/full-stack-cloud-development/deployment-and-ci-cd</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 3 Chapter 11: Deployment &amp; CI/CD Pipelines</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/full-stack-cloud-development/performance-and-cost</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 3 Chapter 12: Performance &amp; Cost Optimization</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/full-stack-cloud-development/testing-and-quality</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 3 Chapter 13: Testing &amp; Quality Assurance</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/full-stack-cloud-development/seo-and-ai-search-visibility</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 3 Chapter 14: SEO &amp; AI Search Visibility (GEO)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/full-stack-cloud-development/monitoring-and-maintenance</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 3 Chapter 15: Monitoring, Observability &amp; Maintenance</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/full-stack-cloud-development/capstone-project</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 3 Chapter 16: Capstone Project: Production Cloud Platform</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/full-stack-cloud-development/appendices-and-production-checklist</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 3 Chapter 17: Appendices, Glossaries &amp; Production Checklists</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/solution-design-and-mvp-building</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/double-diamond-design.svg</image:loc>
+      <image:title>Double Diamond Design Process Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/solution-design-and-mvp-building/course-overview</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 4 Chapter 0: Course Overview</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/solution-design-and-mvp-building/human-centered-mindset</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/double-diamond-design.svg</image:loc>
+      <image:title>Double Diamond Design Process Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/solution-design-and-mvp-building/understanding-users-deeply</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/user-journey-map.svg</image:loc>
+      <image:title>User Journey Map Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/solution-design-and-mvp-building/framing-the-design-challenge</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/how-might-we-framing.svg</image:loc>
+      <image:title>How Might We Problem Framing Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/solution-design-and-mvp-building/ideation-techniques</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 4 Chapter 4: Ideation</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/solution-design-and-mvp-building/choosing-what-to-build</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/rice-prioritization-matrix.svg</image:loc>
+      <image:title>RICE Prioritization Formula Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/solution-design-and-mvp-building/user-flows-and-wireframes</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 4 Chapter 6: User Flows and Wireframes</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/solution-design-and-mvp-building/prototyping-methods</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 4 Chapter 7: Prototyping</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/solution-design-and-mvp-building/defining-the-mvp</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/mvp-pyramid.svg</image:loc>
+      <image:title>MVP Vertical Slice Pyramid Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/solution-design-and-mvp-building/usability-testing</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 4 Chapter 9: Usability Testing</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/solution-design-and-mvp-building/running-a-pilot</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/pilot-conversion-funnel.svg</image:loc>
+      <image:title>Pilot Conversion Funnel Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/solution-design-and-mvp-building/measuring-product-success</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 4 Chapter 11: Measuring Product Success</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/solution-design-and-mvp-building/teamwork-and-hackathon-execution</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 4 Chapter 12: Teamwork and Hackathon Execution</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/solution-design-and-mvp-building/pitching-and-demonstrating</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 4 Chapter 13: Pitching and Demonstrating</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/solution-design-and-mvp-building/open-innovation-and-sponsors</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 4 Chapter 14: Open Innovation and Working With Sponsors</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/solution-design-and-mvp-building/responsible-and-inclusive-design</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 4 Chapter 15: Responsible and Inclusive Design</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/solution-design-and-mvp-building/capstone-project</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 4 Chapter 16: Capstone Project</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/solution-design-and-mvp-building/appendices-and-templates</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 4 Chapter 17: Appendices</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/ai-for-builders</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/ai-builder-pipeline.svg</image:loc>
+      <image:title>6-Stage AI Builder Architecture Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/ai-for-builders/course-overview</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/ai-builder-pipeline.svg</image:loc>
+      <image:title>6-Stage AI Builder Architecture Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/ai-for-builders/ai-foundations-for-builders</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/ai-triage-matrix.svg</image:loc>
+      <image:title>AI Architecture Triage Matrix</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/ai-for-builders/how-large-language-models-work</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/llm-token-pipeline.svg</image:loc>
+      <image:title>LLM Token Pipeline Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/ai-for-builders/prompt-engineering</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/structured-prompt-anatomy.svg</image:loc>
+      <image:title>Structured Prompt Anatomy Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/ai-for-builders/calling-model-apis</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/model-api-architecture.svg</image:loc>
+      <image:title>Model API Gateway Architecture Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/ai-for-builders/grounding-with-your-own-data-rag</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/rag-architecture.svg</image:loc>
+      <image:title>RAG Architecture Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/ai-for-builders/tools-and-agents</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/react-agent-loop.svg</image:loc>
+      <image:title>ReAct Agent Loop Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/ai-for-builders/building-a-problem-solver-copilot</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/copilot-anatomy.svg</image:loc>
+      <image:title>Problem Solver Copilot Anatomy Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/ai-for-builders/evaluating-ai-features</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/ai-evals-pyramid.svg</image:loc>
+      <image:title>AI Evaluation Pyramid Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/ai-for-builders/safety-privacy-and-security</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/ai-safety-defense.svg</image:loc>
+      <image:title>AI Safety Defense Framework Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/ai-for-builders/cost-latency-and-scale</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/cost-latency-cascade.svg</image:loc>
+      <image:title>Cost Latency Cascade Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/ai-for-builders/data-for-ai</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 5 Chapter 11: Data for AI</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/ai-for-builders/classical-machine-learning-and-scoring-models</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/hybrid-ml-llm.svg</image:loc>
+      <image:title>Hybrid Tabular ML and LLM Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/ai-for-builders/designing-ai-products-and-experiences</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 5 Chapter 13: Designing AI Products and Experiences</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/ai-for-builders/working-faster-with-ai-tools</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 5 Chapter 14: Working Faster With AI Tools</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/ai-for-builders/ai-in-real-domains</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 5 Chapter 15: AI in Real Domains</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/ai-for-builders/capstone-project</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 5 Chapter 16: Capstone Project</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/ai-for-builders/appendices</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 5 Chapter 17: Appendices</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/startup-fundamentals</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/venture-pathways-matrix.svg</image:loc>
+      <image:title>Venture Pathways Matrix Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/startup-fundamentals/course-overview</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 6 Chapter 0: Course Overview</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/startup-fundamentals/the-startup-mindset-and-venture-types</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/venture-pathways-matrix.svg</image:loc>
+      <image:title>Venture Pathways Matrix Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/startup-fundamentals/business-models</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/business-model-canvas-map.svg</image:loc>
+      <image:title>Business Model Canvas Architecture Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/startup-fundamentals/founders-teams-and-equity</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/equity-vesting-schedule.svg</image:loc>
+      <image:title>Equity Vesting Schedule Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/startup-fundamentals/legal-foundations</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 6 Chapter 4: Legal Foundations</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/startup-fundamentals/finance-basics</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/runway-burn-calculator.svg</image:loc>
+      <image:title>Runway Burn Calculator Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/startup-fundamentals/funding-options</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 6 Chapter 6: Funding Options</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/startup-fundamentals/go-to-market-strategy</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 6 Chapter 7: Go-to-Market Strategy</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/startup-fundamentals/sales-from-pilot-to-paying-customer</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/b2b-pilot-sales-pipeline.svg</image:loc>
+      <image:title>B2B Pilot Sales Pipeline Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/startup-fundamentals/marketing-and-growth</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 6 Chapter 9: Marketing and Growth</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/startup-fundamentals/operations-and-product-management</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 6 Chapter 10: Operations and Product Management</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/startup-fundamentals/hiring-and-culture</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 6 Chapter 11: Hiring and Culture</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/startup-fundamentals/metrics-and-reporting</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/saas-unit-economics-engine.svg</image:loc>
+      <image:title>SaaS Unit Economics Engine Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/startup-fundamentals/fundraising-and-investor-pitching</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/venture-fundraising-funnel.svg</image:loc>
+      <image:title>Venture Fundraising Funnel Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/startup-fundamentals/founder-wellbeing-and-decision-making</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 6 Chapter 14: Founder Wellbeing and Decision-Making</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/startup-fundamentals/scale-pivot-or-stop</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/scale-pivot-stop-framework.svg</image:loc>
+      <image:title>Scale Pivot Stop Decision Framework Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/startup-fundamentals/capstone-project</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 6 Chapter 16: Capstone Project</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/startup-fundamentals/appendices</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 6 Chapter 17: Appendices</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/autonomous-capture-and-de-orbiting-of-non-cooperative-micro-debris-in-low-earth-orbit-leo</loc>
+    <lastmod>2026-11-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Autonomous Capture and De-orbiting of Non-Cooperative Micro-Debris in Low Earth Orbit (LEO)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/freshers-cannot-tell-a-real-recruiter-from-a-scammer-before-paying-or-sharing-documents</loc>
+    <lastmod>2026-11-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Freshers Cannot Tell a Real Recruiter from a Scammer Before Paying or Sharing Documents</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/government-school-teachers-lose-teaching-time-to-repeated-data-collection-and-online-data-entry</loc>
+    <lastmod>2026-11-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Government School Teachers Lose Teaching Time to Repeated Data Collection and Online Data Entry</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/patients-and-small-pharmacies-have-no-easy-way-to-learn-that-a-medicine-batch-they-hold-was-flagged-substandard</loc>
+    <lastmod>2026-11-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Patients and Small Pharmacies Have No Easy Way to Learn That a Medicine Batch They Hold Was Flagged Substandard</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/small-and-cooperative-banks-struggle-to-spot-mule-accounts-that-launder-cyber-fraud-money</loc>
+    <lastmod>2026-11-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Small and Cooperative Banks Struggle to Spot Mule Accounts That Launder Cyber-Fraud Money</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/micro-and-small-suppliers-cannot-easily-track-prove-and-claim-payments-overdue-beyond-the-45-day-limit</loc>
+    <lastmod>2026-11-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Micro and Small Suppliers Cannot Easily Track, Prove and Claim Payments Overdue Beyond the 45-Day Limit</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/delivery-and-ride-workers-cannot-verify-their-real-take-home-pay-per-hour-after-waiting-time-and-costs</loc>
+    <lastmod>2026-11-08</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Delivery and Ride Workers Cannot Verify Their Real Take-Home Pay per Hour After Waiting Time and Costs</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/small-farmers-sell-perishables-immediately-at-distress-prices-because-affordable-cooling-and-storage-are-out-of-reach</loc>
+    <lastmod>2026-11-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Small Farmers Sell Perishables Immediately at Distress Prices Because Affordable Cooling and Storage Are Out of Reach</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/screen-reader-users-are-locked-out-of-government-services-by-image-only-documents-and-image-captchas</loc>
+    <lastmod>2026-11-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Screen-Reader Users Are Locked Out of Government Services by Image-Only Documents and Image CAPTCHAs</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/patients-and-small-clinics-still-run-on-handwritten-prescriptions-and-lab-printouts-that-never-become-a-usable-health-record</loc>
+    <lastmod>2026-11-08</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Patients and Small Clinics Still Run on Handwritten Prescriptions and Lab Printouts That Never Become a Usable Health Record</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/families-cannot-easily-find-and-claim-forgotten-bank-insurance-and-investment-money-held-across-separate-portals</loc>
+    <lastmod>2026-11-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Families Cannot Easily Find and Claim Forgotten Bank, Insurance and Investment Money Held Across Separate Portals</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/fishing-crews-at-sea-cannot-reliably-get-cyclone-warnings-they-can-act-on-and-sail-or-return-decisions-rest-on-fragmented-advisories</loc>
+    <lastmod>2026-11-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Fishing Crews at Sea Cannot Reliably Get Cyclone Warnings They Can Act On, and Sail-or-Return Decisions Rest on Fragmented Advisories</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/children-of-mobile-migrant-families-are-missed-again-after-being-identified-because-due-lists-do-not-follow-the-family</loc>
+    <lastmod>2026-11-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Children of Mobile Migrant Families Are Missed Again After Being Identified, Because Due Lists Do Not Follow the Family</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/persons-with-disabilities-wait-months-for-a-certificate-or-udid-card-and-cannot-see-which-stage-is-stuck-or-why-an-application-was-rejected</loc>
+    <lastmod>2026-11-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Persons With Disabilities Wait Months for a Certificate or UDID Card and Cannot See Which Stage Is Stuck or Why an Application Was Rejected</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/blood-collection-is-not-planned-around-transfusion-demand-and-stock-data-is-unreliable-so-families-run-from-bank-to-bank-looking-for-donors</loc>
+    <lastmod>2026-11-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Blood Collection Is Not Planned Around Transfusion Demand and Stock Data Is Unreliable, So Families Run From Bank to Bank Looking for Donors</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/people-granted-bail-stay-in-jail-for-want-of-a-surety-and-the-gap-between-a-bail-order-and-release-is-hard-to-see-and-act-on</loc>
+    <lastmod>2026-11-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>People Granted Bail Stay in Jail for Want of a Surety, and the Gap Between a Bail Order and Release Is Hard to See and Act On</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/households-cannot-independently-check-whether-a-smart-meter-bill-reflects-their-real-electricity-use</loc>
+    <lastmod>2026-11-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Households Cannot Independently Check Whether a Smart Meter Bill Reflects Their Real Electricity Use</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/low-income-households-cannot-plan-or-afford-regular-lpg-refills-so-many-slip-back-to-firewood</loc>
+    <lastmod>2026-11-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Low-Income Households Cannot Plan or Afford Regular LPG Refills, So Many Slip Back to Firewood</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/motorists-cannot-easily-tell-a-genuine-e-challan-from-a-scam-see-everything-pending-against-their-vehicle-or-dispute-a-wrong-challan-within-the-deadline</loc>
+    <lastmod>2026-11-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Motorists Cannot Easily Tell a Genuine E-Challan From a Scam, See Everything Pending Against Their Vehicle, or Dispute a Wrong Challan Within the Deadline</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/households-hold-or-give-away-old-electronics-without-a-clear-authorised-route-and-official-recycling-figures-cannot-say-how-much-is-really-recycled</loc>
+    <lastmod>2026-11-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Households Hold or Give Away Old Electronics Without a Clear Authorised Route, and Official Recycling Figures Cannot Say How Much Is Really Recycled</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/pensioners-risk-a-stopped-pension-if-digital-life-certificate-authentication-fails-or-is-missed-by-30-november</loc>
+    <lastmod>2026-11-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Pensioners Risk a Stopped Pension if Digital Life Certificate Authentication Fails or Is Missed by 30 November</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/farmers-queue-for-fertiliser-at-sowing-time-because-local-stock-visibility-and-distribution-do-not-match-aggregate-availability</loc>
+    <lastmod>2026-11-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Farmers Queue for Fertiliser at Sowing Time Because Local Stock Visibility and Distribution Do Not Match Aggregate Availability</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/construction-workers-registered-with-welfare-boards-do-not-receive-the-benefits-the-cess-is-meant-to-fund-and-board-and-central-registries-do-not-reconcile</loc>
+    <lastmod>2026-11-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Construction Workers Registered With Welfare Boards Do Not Receive the Benefits the Cess Is Meant to Fund, and Board and Central Registries Do Not Reconcile</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/dog-bite-victims-often-start-but-do-not-complete-rabies-vaccination-and-cannot-tell-which-nearby-facility-has-vaccine-and-immunoglobulin</loc>
+    <lastmod>2026-11-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Dog-Bite Victims Often Start but Do Not Complete Rabies Vaccination, and Cannot Tell Which Nearby Facility Has Vaccine and Immunoglobulin</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/motorists-cannot-verify-the-ethanol-content-of-the-petrol-they-buy-because-sampling-methods-labs-and-results-are-disputed-and-not-recorded-in-one-comparable-place</loc>
+    <lastmod>2026-11-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Motorists Cannot Verify the Ethanol Content of the Petrol They Buy Because Sampling Methods, Labs and Results Are Disputed and Not Recorded in One Comparable Place</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/public-libraries-and-book-selection-committees-have-no-standard-affordable-check-for-authorship-plagiarism-and-factual-accuracy-before-buying-books-in-bulk</loc>
+    <lastmod>2026-11-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Public Libraries and Book-Selection Committees Have No Standard, Affordable Check for Authorship, Plagiarism and Factual Accuracy Before Buying Books in Bulk</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/courts-and-lawyers-cannot-quickly-verify-whether-every-case-citation-and-quotation-in-a-filing-is-real</loc>
+    <lastmod>2026-11-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Courts and Lawyers Cannot Quickly Verify Whether Every Case Citation and Quotation in a Filing Is Real</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/buyers-cannot-see-in-one-place-whether-a-land-parcel-has-a-pending-mutation-court-case-or-loan-before-they-pay</loc>
+    <lastmod>2026-11-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Buyers Cannot See in One Place Whether a Land Parcel Has a Pending Mutation, Court Case or Loan Before They Pay</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/people-being-treated-for-tb-wait-months-for-nutrition-support-and-delays-are-worst-for-patients-notified-by-private-providers</loc>
+    <lastmod>2026-11-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>People Being Treated for TB Wait Months for Nutrition Support, and Delays Are Worst for Patients Notified by Private Providers</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/teachers-lack-a-quick-way-to-find-which-children-are-behind-in-reading-and-number-sense-so-gaps-only-show-up-years-later-in-large-surveys</loc>
+    <lastmod>2026-11-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Teachers Lack a Quick Way to Find Which Children Are Behind in Reading and Number Sense, So Gaps Only Show Up Years Later in Large Surveys</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/health-insurance-claims-get-delayed-or-rejected-over-document-mismatches-that-policyholders-cannot-spot-before-submitting</loc>
+    <lastmod>2026-11-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Health Insurance Claims Get Delayed or Rejected Over Document Mismatches That Policyholders Cannot Spot Before Submitting</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/borrowers-in-a-cash-crunch-cannot-quickly-tell-whether-a-loan-app-is-genuinely-linked-to-a-regulated-lender</loc>
+    <lastmod>2026-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Borrowers in a Cash Crunch Cannot Quickly Tell Whether a Loan App Is Genuinely Linked to a Regulated Lender</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/small-farmers-cannot-reliably-get-a-working-residue-management-machine-in-the-short-window-before-wheat-sowing-and-incentives-cannot-cheaply-verify-who-did-not-burn</loc>
+    <lastmod>2026-11-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Small Farmers Cannot Reliably Get a Working Residue-Management Machine in the Short Window Before Wheat Sowing, and Incentives Cannot Cheaply Verify Who Did Not Burn</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/small-employers-cannot-easily-confirm-their-internal-committee-is-legally-valid-and-employees-do-not-know-where-a-workplace-harassment-complaint-will-go</loc>
+    <lastmod>2026-11-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Small Employers Cannot Easily Confirm Their Internal Committee Is Legally Valid, and Employees Do Not Know Where a Workplace Harassment Complaint Will Go</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/rural-households-cannot-see-or-understand-their-drinking-water-test-results-so-contaminated-taps-go-untreated</loc>
+    <lastmod>2026-11-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Rural Households Cannot See or Understand Their Drinking Water Test Results, So Contaminated Taps Go Untreated</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/people-treated-for-hypertension-drop-out-of-follow-up-because-nothing-links-reminders-refills-and-clinic-visits</loc>
+    <lastmod>2026-11-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>People Treated for Hypertension Drop Out of Follow-Up Because Nothing Links Reminders, Refills and Clinic Visits</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/migrant-workers-do-not-know-which-welfare-entitlements-they-can-actually-use-in-the-state-where-they-work</loc>
+    <lastmod>2026-11-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Migrant Workers Do Not Know Which Welfare Entitlements They Can Actually Use in the State Where They Work</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/consumers-and-small-food-vendors-cannot-see-what-food-safety-test-failures-and-enforcement-actually-happened-in-their-state</loc>
+    <lastmod>2026-11-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Consumers and Small Food Vendors Cannot See What Food-Safety Test Failures and Enforcement Actually Happened in Their State</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/hospital-attendants-and-people-sleeping-rough-cannot-find-a-shelter-bed-they-can-actually-use-tonight</loc>
+    <lastmod>2026-11-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Hospital Attendants and People Sleeping Rough Cannot Find a Shelter Bed They Can Actually Use Tonight</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/street-vendors-cannot-plan-loan-repayment-and-next-tranche-eligibility-around-irregular-daily-income</loc>
+    <lastmod>2026-11-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Street Vendors Cannot Plan Loan Repayment and Next-Tranche Eligibility Around Irregular Daily Income</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/lack-of-verifiable-waste-traceability-from-collection-to-recycling-in-chennai</loc>
+    <lastmod>2026-11-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Lack of Verifiable Waste Traceability from Collection to Recycling in Chennai</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/long-haul-truck-drivers-cannot-find-out-where-a-legal-safe-night-halt-is-available-before-their-driving-hours-run-out</loc>
+    <lastmod>2026-11-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Long-Haul Truck Drivers Cannot Find Out Where a Legal, Safe Night Halt Is Available Before Their Driving Hours Run Out</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/chennai-commuters-wait-through-long-gaps-and-then-see-several-buses-on-one-route-arrive-together-and-there-is-no-public-measure-of-how-regular-each-route-is</loc>
+    <lastmod>2026-11-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Chennai Commuters Wait Through Long Gaps and Then See Several Buses on One Route Arrive Together, and There Is No Public Measure of How Regular Each Route Is</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/salaried-employees-cannot-easily-check-whether-their-employer-is-depositing-every-months-pf-so-gaps-surface-only-when-they-change-jobs-or-withdraw</loc>
+    <lastmod>2026-11-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Salaried Employees Cannot Easily Check Whether Their Employer Is Depositing Every Month&amp;apos;s PF, So Gaps Surface Only When They Change Jobs or Withdraw</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/engineering-teams-using-ai-coding-tools-cannot-see-which-pull-requests-need-deep-review-so-review-queues-stall-or-changes-merge-unreviewed</loc>
+    <lastmod>2026-11-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Engineering Teams Using AI Coding Tools Cannot See Which Pull Requests Need Deep Review, So Review Queues Stall or Changes Merge Unreviewed</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/students-and-early-researchers-cannot-easily-tell-whether-a-paper-they-cite-has-been-retracted-so-withdrawn-work-keeps-spreading-through-theses-papers-and-wikipedia</loc>
+    <lastmod>2026-11-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Students and Early Researchers Cannot Easily Tell Whether a Paper They Cite Has Been Retracted, So Withdrawn Work Keeps Spreading Through Theses, Papers and Wikipedia</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/workers-and-families-in-virudhunagars-fireworks-cluster-cannot-check-whether-a-unit-is-licensed-within-its-worker-limit-and-recently-inspected-before-they-take-the-job</loc>
+    <lastmod>2026-11-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Workers and Families in Virudhunagar&amp;apos;s Fireworks Cluster Cannot Check Whether a Unit Is Licensed, Within Its Worker Limit and Recently Inspected Before They Take the Job</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/students-cannot-see-at-which-stage-their-scholarship-application-is-stuck-whether-the-fault-lies-with-the-college-the-bank-mapping-or-the-government-or-what-to-do-before-the-deadline</loc>
+    <lastmod>2026-11-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Students Cannot See at Which Stage Their Scholarship Application Is Stuck, Whether the Fault Lies With the College, the Bank Mapping or the Government, or What to Do Before the Deadline</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/older-adults-living-alone-or-far-from-their-children-cannot-reliably-track-which-prescribed-medicines-they-took-and-no-one-nearby-notices-missed-doses</loc>
+    <lastmod>2026-11-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Older Adults Living Alone or Far From Their Children Cannot Reliably Track Which Prescribed Medicines They Took, and No One Nearby Notices Missed Doses</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/mobile-users-cannot-tell-in-the-moment-whether-a-call-or-text-comes-from-a-registered-sender-and-about-half-of-their-spam-complaints-turn-out-not-to-be-actionable</loc>
+    <lastmod>2026-11-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Mobile Users Cannot Tell in the Moment Whether a Call or Text Comes From a Registered Sender, and About Half of Their Spam Complaints Turn Out Not to Be Actionable</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/customers-with-a-failed-upi-or-card-payment-cannot-tell-whether-their-complaint-will-be-accepted-by-the-rbi-ombudsman-and-most-complaints-at-the-central-centre-are-closed-as-not-maintainable</loc>
+    <lastmod>2026-11-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Customers With a Failed UPI or Card Payment Cannot Tell Whether Their Complaint Will Be Accepted by the RBI Ombudsman, and Most Complaints at the Central Centre Are Closed as Not Maintainable</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/small-businesses-have-no-practical-way-to-map-their-personal-data-and-prepare-consent-notices-before-indias-may-2027-dpdp-deadline</loc>
+    <lastmod>2026-11-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Small Businesses Have No Practical Way to Map Their Personal Data and Prepare Consent Notices Before India&amp;apos;s May 2027 DPDP Deadline</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/graduates-are-asked-for-proof-of-applied-skills-but-have-no-trusted-way-to-show-their-work-or-get-feedback-on-it</loc>
+    <lastmod>2026-11-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Graduates Are Asked for Proof of Applied Skills but Have No Trusted Way to Show Their Work or Get Feedback on It</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/households-applying-for-rooftop-solar-subsidy-cannot-track-each-approval-step-or-check-their-vendor-before-loan-money-moves</loc>
+    <lastmod>2026-11-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Households Applying for Rooftop Solar Subsidy Cannot Track Each Approval Step or Check Their Vendor Before Loan Money Moves</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/older-adults-under-a-live-digital-arrest-call-are-isolated-so-neither-family-nor-bank-gets-a-chance-to-intervene-before-money-moves</loc>
+    <lastmod>2026-11-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Older Adults Under a Live &amp;apos;Digital Arrest&amp;apos; Call Are Isolated, So Neither Family Nor Bank Gets a Chance to Intervene Before Money Moves</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/residents-who-report-dust-and-pollution-violations-cannot-see-whether-anyone-acted-and-closures-cannot-be-verified</loc>
+    <lastmod>2026-11-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Residents Who Report Dust and Pollution Violations Cannot See Whether Anyone Acted, and Closures Cannot Be Verified</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/ev-drivers-cannot-tell-before-they-arrive-whether-a-public-charger-actually-works</loc>
+    <lastmod>2026-11-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>EV Drivers Cannot Tell Before They Arrive Whether a Public Charger Actually Works</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/students-cannot-easily-find-trust-or-navigate-the-mental-health-support-their-campus-says-it-offers</loc>
+    <lastmod>2026-11-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Students Cannot Easily Find, Trust or Navigate the Mental Health Support Their Campus Says It Offers</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/tenants-and-landlords-cannot-prove-a-homes-condition-or-know-which-deposit-rules-apply-so-refunds-end-in-disputes</loc>
+    <lastmod>2026-11-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Tenants and Landlords Cannot Prove a Home&amp;apos;s Condition or Know Which Deposit Rules Apply, So Refunds End in Disputes</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/small-teams-install-new-open-source-package-versions-with-no-vetting-layer-so-one-poisoned-release-runs-on-their-machines-before-anyone-can-review-it</loc>
+    <lastmod>2026-11-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Small Teams Install New Open-Source Package Versions With No Vetting Layer, So One Poisoned Release Runs on Their Machines Before Anyone Can Review It</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/ambulance-delays-cannot-be-traced-to-their-cause-because-call-dispatch-travel-and-hospital-handover-times-are-not-analysed-together</loc>
+    <lastmod>2026-11-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Ambulance Delays Cannot Be Traced to Their Cause Because Call, Dispatch, Travel and Hospital-Handover Times Are Not Analysed Together</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/data-interoperability-failure-in-rural-clinics</loc>
+    <lastmod>2026-11-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Data Interoperability Failure in Rural Clinics</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/fragmented-patient-medical-records-across-incompatible-ehr-vendor-architectures</loc>
+    <lastmod>2026-11-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Fragmented patient medical records across incompatible EHR vendor architectures</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/subsurface-hydrogen-pipeline-micro-leaks-escaping-standard-optical-gas-detection</loc>
+    <lastmod>2026-11-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Subsurface hydrogen pipeline micro-leaks escaping standard optical gas detection</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/silent-sensor-occlusion-and-false-positive-phantom-braking-in-autonomous-freight-trucks</loc>
+    <lastmod>2026-11-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Silent sensor occlusion and false-positive phantom braking in autonomous freight trucks</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/high-latency-cross-border-b2b-settlement-fees-crushing-emerging-market-smb-exporters</loc>
+    <lastmod>2026-11-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>High-latency cross-border B2B settlement fees crushing emerging market SMB exporters</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/subsurface-soil-carbon-measurement-uncertainty-preventing-farmer-carbon-credit-verification</loc>
+    <lastmod>2026-11-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Subsurface soil carbon measurement uncertainty preventing farmer carbon credit verification</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/prob-1</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Data Interoperability Failure in Rural Clinics</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/prob-2</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Fragmented patient medical records across incompatible EHR vendor architectures</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/prob-3</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Subsurface hydrogen pipeline micro-leaks escaping standard optical gas detection</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/prob-4</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Silent sensor occlusion and false-positive phantom braking in autonomous freight trucks</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/prob-5</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>High-latency cross-border B2B settlement fees crushing emerging market SMB exporters</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/problem/prob-6</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Subsurface soil carbon measurement uncertainty preventing farmer carbon credit verification</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/startup-mode/freshers-cannot-tell-a-real-recruiter-from-a-scammer-before-paying-or-sharing-documents</loc>
+    <lastmod>2026-11-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Startup Blueprint: Freshers Cannot Tell a Real Recruiter from a Scammer Before Paying or Sharing Documents</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/startup-mode/government-school-teachers-lose-teaching-time-to-repeated-data-collection-and-online-data-entry</loc>
+    <lastmod>2026-11-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Startup Blueprint: Government School Teachers Lose Teaching Time to Repeated Data Collection and Online Data Entry</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/startup-mode/patients-and-small-pharmacies-have-no-easy-way-to-learn-that-a-medicine-batch-they-hold-was-flagged-substandard</loc>
+    <lastmod>2026-11-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Startup Blueprint: Patients and Small Pharmacies Have No Easy Way to Learn That a Medicine Batch They Hold Was Flagged Substandard</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/startup-mode/small-and-cooperative-banks-struggle-to-spot-mule-accounts-that-launder-cyber-fraud-money</loc>
+    <lastmod>2026-11-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Startup Blueprint: Small and Cooperative Banks Struggle to Spot Mule Accounts That Launder Cyber-Fraud Money</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/startup-mode/micro-and-small-suppliers-cannot-easily-track-prove-and-claim-payments-overdue-beyond-the-45-day-limit</loc>
+    <lastmod>2026-11-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Startup Blueprint: Micro and Small Suppliers Cannot Easily Track, Prove and Claim Payments Overdue Beyond the 45-Day Limit</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/startup-mode/delivery-and-ride-workers-cannot-verify-their-real-take-home-pay-per-hour-after-waiting-time-and-costs</loc>
+    <lastmod>2026-11-08</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Startup Blueprint: Delivery and Ride Workers Cannot Verify Their Real Take-Home Pay per Hour After Waiting Time and Costs</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/startup-mode/small-farmers-sell-perishables-immediately-at-distress-prices-because-affordable-cooling-and-storage-are-out-of-reach</loc>
+    <lastmod>2026-11-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Startup Blueprint: Small Farmers Sell Perishables Immediately at Distress Prices Because Affordable Cooling and Storage Are Out of Reach</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/startup-mode/screen-reader-users-are-locked-out-of-government-services-by-image-only-documents-and-image-captchas</loc>
+    <lastmod>2026-11-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Startup Blueprint: Screen-Reader Users Are Locked Out of Government Services by Image-Only Documents and Image CAPTCHAs</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/startup-mode/patients-and-small-clinics-still-run-on-handwritten-prescriptions-and-lab-printouts-that-never-become-a-usable-health-record</loc>
+    <lastmod>2026-11-08</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Startup Blueprint: Patients and Small Clinics Still Run on Handwritten Prescriptions and Lab Printouts That Never Become a Usable Health Record</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/startup-mode/families-cannot-easily-find-and-claim-forgotten-bank-insurance-and-investment-money-held-across-separate-portals</loc>
+    <lastmod>2026-11-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Startup Blueprint: Families Cannot Easily Find and Claim Forgotten Bank, Insurance and Investment Money Held Across Separate Portals</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/startup-mode/fishing-crews-at-sea-cannot-reliably-get-cyclone-warnings-they-can-act-on-and-sail-or-return-decisions-rest-on-fragmented-advisories</loc>
+    <lastmod>2026-11-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Startup Blueprint: Fishing Crews at Sea Cannot Reliably Get Cyclone Warnings They Can Act On, and Sail-or-Return Decisions Rest on Fragmented Advisories</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/startup-mode/children-of-mobile-migrant-families-are-missed-again-after-being-identified-because-due-lists-do-not-follow-the-family</loc>
+    <lastmod>2026-11-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Startup Blueprint: Children of Mobile Migrant Families Are Missed Again After Being Identified, Because Due Lists Do Not Follow the Family</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/startup-mode/persons-with-disabilities-wait-months-for-a-certificate-or-udid-card-and-cannot-see-which-stage-is-stuck-or-why-an-application-was-rejected</loc>
+    <lastmod>2026-11-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Startup Blueprint: Persons With Disabilities Wait Months for a Certificate or UDID Card and Cannot See Which Stage Is Stuck or Why an Application Was Rejected</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/startup-mode/blood-collection-is-not-planned-around-transfusion-demand-and-stock-data-is-unreliable-so-families-run-from-bank-to-bank-looking-for-donors</loc>
+    <lastmod>2026-11-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Startup Blueprint: Blood Collection Is Not Planned Around Transfusion Demand and Stock Data Is Unreliable, So Families Run From Bank to Bank Looking for Donors</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/startup-mode/people-granted-bail-stay-in-jail-for-want-of-a-surety-and-the-gap-between-a-bail-order-and-release-is-hard-to-see-and-act-on</loc>
+    <lastmod>2026-11-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Startup Blueprint: People Granted Bail Stay in Jail for Want of a Surety, and the Gap Between a Bail Order and Release Is Hard to See and Act On</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/startup-mode/households-cannot-independently-check-whether-a-smart-meter-bill-reflects-their-real-electricity-use</loc>
+    <lastmod>2026-11-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Startup Blueprint: Households Cannot Independently Check Whether a Smart Meter Bill Reflects Their Real Electricity Use</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/startup-mode/low-income-households-cannot-plan-or-afford-regular-lpg-refills-so-many-slip-back-to-firewood</loc>
+    <lastmod>2026-11-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Startup Blueprint: Low-Income Households Cannot Plan or Afford Regular LPG Refills, So Many Slip Back to Firewood</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/startup-mode/motorists-cannot-easily-tell-a-genuine-e-challan-from-a-scam-see-everything-pending-against-their-vehicle-or-dispute-a-wrong-challan-within-the-deadline</loc>
+    <lastmod>2026-11-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Startup Blueprint: Motorists Cannot Easily Tell a Genuine E-Challan From a Scam, See Everything Pending Against Their Vehicle, or Dispute a Wrong Challan Within the Deadline</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/startup-mode/households-hold-or-give-away-old-electronics-without-a-clear-authorised-route-and-official-recycling-figures-cannot-say-how-much-is-really-recycled</loc>
+    <lastmod>2026-11-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Startup Blueprint: Households Hold or Give Away Old Electronics Without a Clear Authorised Route, and Official Recycling Figures Cannot Say How Much Is Really Recycled</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/startup-mode/pensioners-risk-a-stopped-pension-if-digital-life-certificate-authentication-fails-or-is-missed-by-30-november</loc>
+    <lastmod>2026-11-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Startup Blueprint: Pensioners Risk a Stopped Pension if Digital Life Certificate Authentication Fails or Is Missed by 30 November</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/startup-mode/farmers-queue-for-fertiliser-at-sowing-time-because-local-stock-visibility-and-distribution-do-not-match-aggregate-availability</loc>
+    <lastmod>2026-11-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Startup Blueprint: Farmers Queue for Fertiliser at Sowing Time Because Local Stock Visibility and Distribution Do Not Match Aggregate Availability</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/startup-mode/construction-workers-registered-with-welfare-boards-do-not-receive-the-benefits-the-cess-is-meant-to-fund-and-board-and-central-registries-do-not-reconcile</loc>
+    <lastmod>2026-11-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Startup Blueprint: Construction Workers Registered With Welfare Boards Do Not Receive the Benefits the Cess Is Meant to Fund, and Board and Central Registries Do Not Reconcile</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/startup-mode/dog-bite-victims-often-start-but-do-not-complete-rabies-vaccination-and-cannot-tell-which-nearby-facility-has-vaccine-and-immunoglobulin</loc>
+    <lastmod>2026-11-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Startup Blueprint: Dog-Bite Victims Often Start but Do Not Complete Rabies Vaccination, and Cannot Tell Which Nearby Facility Has Vaccine and Immunoglobulin</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/startup-mode/motorists-cannot-verify-the-ethanol-content-of-the-petrol-they-buy-because-sampling-methods-labs-and-results-are-disputed-and-not-recorded-in-one-comparable-place</loc>
+    <lastmod>2026-11-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Startup Blueprint: Motorists Cannot Verify the Ethanol Content of the Petrol They Buy Because Sampling Methods, Labs and Results Are Disputed and Not Recorded in One Comparable Place</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/startup-mode/public-libraries-and-book-selection-committees-have-no-standard-affordable-check-for-authorship-plagiarism-and-factual-accuracy-before-buying-books-in-bulk</loc>
+    <lastmod>2026-11-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Startup Blueprint: Public Libraries and Book-Selection Committees Have No Standard, Affordable Check for Authorship, Plagiarism and Factual Accuracy Before Buying Books in Bulk</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/startup-mode/courts-and-lawyers-cannot-quickly-verify-whether-every-case-citation-and-quotation-in-a-filing-is-real</loc>
+    <lastmod>2026-11-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Startup Blueprint: Courts and Lawyers Cannot Quickly Verify Whether Every Case Citation and Quotation in a Filing Is Real</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/startup-mode/buyers-cannot-see-in-one-place-whether-a-land-parcel-has-a-pending-mutation-court-case-or-loan-before-they-pay</loc>
+    <lastmod>2026-11-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Startup Blueprint: Buyers Cannot See in One Place Whether a Land Parcel Has a Pending Mutation, Court Case or Loan Before They Pay</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/startup-mode/people-being-treated-for-tb-wait-months-for-nutrition-support-and-delays-are-worst-for-patients-notified-by-private-providers</loc>
+    <lastmod>2026-11-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Startup Blueprint: People Being Treated for TB Wait Months for Nutrition Support, and Delays Are Worst for Patients Notified by Private Providers</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/startup-mode/teachers-lack-a-quick-way-to-find-which-children-are-behind-in-reading-and-number-sense-so-gaps-only-show-up-years-later-in-large-surveys</loc>
+    <lastmod>2026-11-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Startup Blueprint: Teachers Lack a Quick Way to Find Which Children Are Behind in Reading and Number Sense, So Gaps Only Show Up Years Later in Large Surveys</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/startup-mode/health-insurance-claims-get-delayed-or-rejected-over-document-mismatches-that-policyholders-cannot-spot-before-submitting</loc>
+    <lastmod>2026-11-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Startup Blueprint: Health Insurance Claims Get Delayed or Rejected Over Document Mismatches That Policyholders Cannot Spot Before Submitting</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/startup-mode/borrowers-in-a-cash-crunch-cannot-quickly-tell-whether-a-loan-app-is-genuinely-linked-to-a-regulated-lender</loc>
+    <lastmod>2026-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Startup Blueprint: Borrowers in a Cash Crunch Cannot Quickly Tell Whether a Loan App Is Genuinely Linked to a Regulated Lender</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/startup-mode/small-farmers-cannot-reliably-get-a-working-residue-management-machine-in-the-short-window-before-wheat-sowing-and-incentives-cannot-cheaply-verify-who-did-not-burn</loc>
+    <lastmod>2026-11-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Startup Blueprint: Small Farmers Cannot Reliably Get a Working Residue-Management Machine in the Short Window Before Wheat Sowing, and Incentives Cannot Cheaply Verify Who Did Not Burn</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/startup-mode/small-employers-cannot-easily-confirm-their-internal-committee-is-legally-valid-and-employees-do-not-know-where-a-workplace-harassment-complaint-will-go</loc>
+    <lastmod>2026-11-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Startup Blueprint: Small Employers Cannot Easily Confirm Their Internal Committee Is Legally Valid, and Employees Do Not Know Where a Workplace Harassment Complaint Will Go</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/startup-mode/rural-households-cannot-see-or-understand-their-drinking-water-test-results-so-contaminated-taps-go-untreated</loc>
+    <lastmod>2026-11-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Startup Blueprint: Rural Households Cannot See or Understand Their Drinking Water Test Results, So Contaminated Taps Go Untreated</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/startup-mode/people-treated-for-hypertension-drop-out-of-follow-up-because-nothing-links-reminders-refills-and-clinic-visits</loc>
+    <lastmod>2026-11-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Startup Blueprint: People Treated for Hypertension Drop Out of Follow-Up Because Nothing Links Reminders, Refills and Clinic Visits</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/startup-mode/migrant-workers-do-not-know-which-welfare-entitlements-they-can-actually-use-in-the-state-where-they-work</loc>
+    <lastmod>2026-11-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Startup Blueprint: Migrant Workers Do Not Know Which Welfare Entitlements They Can Actually Use in the State Where They Work</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/startup-mode/consumers-and-small-food-vendors-cannot-see-what-food-safety-test-failures-and-enforcement-actually-happened-in-their-state</loc>
+    <lastmod>2026-11-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Startup Blueprint: Consumers and Small Food Vendors Cannot See What Food-Safety Test Failures and Enforcement Actually Happened in Their State</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/startup-mode/hospital-attendants-and-people-sleeping-rough-cannot-find-a-shelter-bed-they-can-actually-use-tonight</loc>
+    <lastmod>2026-11-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Startup Blueprint: Hospital Attendants and People Sleeping Rough Cannot Find a Shelter Bed They Can Actually Use Tonight</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/startup-mode/street-vendors-cannot-plan-loan-repayment-and-next-tranche-eligibility-around-irregular-daily-income</loc>
+    <lastmod>2026-11-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Startup Blueprint: Street Vendors Cannot Plan Loan Repayment and Next-Tranche Eligibility Around Irregular Daily Income</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/startup-mode/long-haul-truck-drivers-cannot-find-out-where-a-legal-safe-night-halt-is-available-before-their-driving-hours-run-out</loc>
+    <lastmod>2026-11-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Startup Blueprint: Long-Haul Truck Drivers Cannot Find Out Where a Legal, Safe Night Halt Is Available Before Their Driving Hours Run Out</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/startup-mode/chennai-commuters-wait-through-long-gaps-and-then-see-several-buses-on-one-route-arrive-together-and-there-is-no-public-measure-of-how-regular-each-route-is</loc>
+    <lastmod>2026-11-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Startup Blueprint: Chennai Commuters Wait Through Long Gaps and Then See Several Buses on One Route Arrive Together, and There Is No Public Measure of How Regular Each Route Is</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/startup-mode/salaried-employees-cannot-easily-check-whether-their-employer-is-depositing-every-months-pf-so-gaps-surface-only-when-they-change-jobs-or-withdraw</loc>
+    <lastmod>2026-11-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Startup Blueprint: Salaried Employees Cannot Easily Check Whether Their Employer Is Depositing Every Month&amp;apos;s PF, So Gaps Surface Only When They Change Jobs or Withdraw</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/startup-mode/engineering-teams-using-ai-coding-tools-cannot-see-which-pull-requests-need-deep-review-so-review-queues-stall-or-changes-merge-unreviewed</loc>
+    <lastmod>2026-11-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Startup Blueprint: Engineering Teams Using AI Coding Tools Cannot See Which Pull Requests Need Deep Review, So Review Queues Stall or Changes Merge Unreviewed</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/startup-mode/students-and-early-researchers-cannot-easily-tell-whether-a-paper-they-cite-has-been-retracted-so-withdrawn-work-keeps-spreading-through-theses-papers-and-wikipedia</loc>
+    <lastmod>2026-11-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Startup Blueprint: Students and Early Researchers Cannot Easily Tell Whether a Paper They Cite Has Been Retracted, So Withdrawn Work Keeps Spreading Through Theses, Papers and Wikipedia</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/startup-mode/workers-and-families-in-virudhunagars-fireworks-cluster-cannot-check-whether-a-unit-is-licensed-within-its-worker-limit-and-recently-inspected-before-they-take-the-job</loc>
+    <lastmod>2026-11-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Startup Blueprint: Workers and Families in Virudhunagar&amp;apos;s Fireworks Cluster Cannot Check Whether a Unit Is Licensed, Within Its Worker Limit and Recently Inspected Before They Take the Job</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/startup-mode/students-cannot-see-at-which-stage-their-scholarship-application-is-stuck-whether-the-fault-lies-with-the-college-the-bank-mapping-or-the-government-or-what-to-do-before-the-deadline</loc>
+    <lastmod>2026-11-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Startup Blueprint: Students Cannot See at Which Stage Their Scholarship Application Is Stuck, Whether the Fault Lies With the College, the Bank Mapping or the Government, or What to Do Before the Deadline</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/startup-mode/older-adults-living-alone-or-far-from-their-children-cannot-reliably-track-which-prescribed-medicines-they-took-and-no-one-nearby-notices-missed-doses</loc>
+    <lastmod>2026-11-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Startup Blueprint: Older Adults Living Alone or Far From Their Children Cannot Reliably Track Which Prescribed Medicines They Took, and No One Nearby Notices Missed Doses</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/startup-mode/mobile-users-cannot-tell-in-the-moment-whether-a-call-or-text-comes-from-a-registered-sender-and-about-half-of-their-spam-complaints-turn-out-not-to-be-actionable</loc>
+    <lastmod>2026-11-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Startup Blueprint: Mobile Users Cannot Tell in the Moment Whether a Call or Text Comes From a Registered Sender, and About Half of Their Spam Complaints Turn Out Not to Be Actionable</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/startup-mode/customers-with-a-failed-upi-or-card-payment-cannot-tell-whether-their-complaint-will-be-accepted-by-the-rbi-ombudsman-and-most-complaints-at-the-central-centre-are-closed-as-not-maintainable</loc>
+    <lastmod>2026-11-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Startup Blueprint: Customers With a Failed UPI or Card Payment Cannot Tell Whether Their Complaint Will Be Accepted by the RBI Ombudsman, and Most Complaints at the Central Centre Are Closed as Not Maintainable</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/startup-mode/small-businesses-have-no-practical-way-to-map-their-personal-data-and-prepare-consent-notices-before-indias-may-2027-dpdp-deadline</loc>
+    <lastmod>2026-11-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Startup Blueprint: Small Businesses Have No Practical Way to Map Their Personal Data and Prepare Consent Notices Before India&amp;apos;s May 2027 DPDP Deadline</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/startup-mode/graduates-are-asked-for-proof-of-applied-skills-but-have-no-trusted-way-to-show-their-work-or-get-feedback-on-it</loc>
+    <lastmod>2026-11-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Startup Blueprint: Graduates Are Asked for Proof of Applied Skills but Have No Trusted Way to Show Their Work or Get Feedback on It</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/startup-mode/households-applying-for-rooftop-solar-subsidy-cannot-track-each-approval-step-or-check-their-vendor-before-loan-money-moves</loc>
+    <lastmod>2026-11-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Startup Blueprint: Households Applying for Rooftop Solar Subsidy Cannot Track Each Approval Step or Check Their Vendor Before Loan Money Moves</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/startup-mode/older-adults-under-a-live-digital-arrest-call-are-isolated-so-neither-family-nor-bank-gets-a-chance-to-intervene-before-money-moves</loc>
+    <lastmod>2026-11-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Startup Blueprint: Older Adults Under a Live &amp;apos;Digital Arrest&amp;apos; Call Are Isolated, So Neither Family Nor Bank Gets a Chance to Intervene Before Money Moves</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/startup-mode/residents-who-report-dust-and-pollution-violations-cannot-see-whether-anyone-acted-and-closures-cannot-be-verified</loc>
+    <lastmod>2026-11-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Startup Blueprint: Residents Who Report Dust and Pollution Violations Cannot See Whether Anyone Acted, and Closures Cannot Be Verified</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/startup-mode/ev-drivers-cannot-tell-before-they-arrive-whether-a-public-charger-actually-works</loc>
+    <lastmod>2026-11-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Startup Blueprint: EV Drivers Cannot Tell Before They Arrive Whether a Public Charger Actually Works</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/startup-mode/students-cannot-easily-find-trust-or-navigate-the-mental-health-support-their-campus-says-it-offers</loc>
+    <lastmod>2026-11-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Startup Blueprint: Students Cannot Easily Find, Trust or Navigate the Mental Health Support Their Campus Says It Offers</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/startup-mode/tenants-and-landlords-cannot-prove-a-homes-condition-or-know-which-deposit-rules-apply-so-refunds-end-in-disputes</loc>
+    <lastmod>2026-11-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Startup Blueprint: Tenants and Landlords Cannot Prove a Home&amp;apos;s Condition or Know Which Deposit Rules Apply, So Refunds End in Disputes</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/startup-mode/small-teams-install-new-open-source-package-versions-with-no-vetting-layer-so-one-poisoned-release-runs-on-their-machines-before-anyone-can-review-it</loc>
+    <lastmod>2026-11-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Startup Blueprint: Small Teams Install New Open-Source Package Versions With No Vetting Layer, So One Poisoned Release Runs on Their Machines Before Anyone Can Review It</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/startup-mode/ambulance-delays-cannot-be-traced-to-their-cause-because-call-dispatch-travel-and-hospital-handover-times-are-not-analysed-together</loc>
+    <lastmod>2026-11-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Startup Blueprint: Ambulance Delays Cannot Be Traced to Their Cause Because Call, Dispatch, Travel and Hospital-Handover Times Are Not Analysed Together</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/startup-mode/data-interoperability-failure-in-rural-clinics</loc>
+    <lastmod>2026-11-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Startup Blueprint: Data Interoperability Failure in Rural Clinics</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/startup-mode/prob-1</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Build Startup: Data Interoperability Failure in Rural Clinics</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/startup-mode/prob-2</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Build Startup: Fragmented patient medical records across incompatible EHR vendor architectures</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/startup-mode/prob-3</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Build Startup: Subsurface hydrogen pipeline micro-leaks escaping standard optical gas detection</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/startup-mode/prob-4</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Build Startup: Silent sensor occlusion and false-positive phantom braking in autonomous freight trucks</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/startup-mode/prob-5</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Build Startup: High-latency cross-border B2B settlement fees crushing emerging market SMB exporters</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/startup-mode/prob-6</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Build Startup: Subsurface soil carbon measurement uncertainty preventing farmer carbon credit verification</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/industries</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Industry Verticals &amp; Sector Atlases</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/industries/healthcare</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.80</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Healthcare Industry Hub</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/industries/ai</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.80</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>AI Industry Hub</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/industries/clean-energy</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.80</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Clean Energy Industry Hub</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/industries/fintech</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.80</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>FinTech Industry Hub</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/industries/agriculture</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.80</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Agriculture Industry Hub</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/industries/logistics</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.80</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Logistics Industry Hub</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/industries/manufacturing</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.80</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Manufacturing Industry Hub</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/industries/biotech</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.80</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Biotech Industry Hub</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/industries/supply-chain</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.80</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Supply Chain Industry Hub</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/industries/cybersecurity</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.80</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Cybersecurity Industry Hub</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/industries/education</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.80</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Education Industry Hub</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/industries/construction</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.80</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Construction Industry Hub</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/industries/aerospace</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.80</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Aerospace Industry Hub</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/industries/robotics</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.80</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Robotics Industry Hub</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/industries/defense</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.80</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Defense Industry Hub</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/industries/quantum-computing</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.80</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Quantum Computing Industry Hub</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/industries/legaltech</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.80</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>LegalTech Industry Hub</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/industries/ecommerce</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.80</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>E-Commerce Industry Hub</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/industries/mobility</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.80</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Mobility Industry Hub</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/industries/web3</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.80</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Web3 Industry Hub</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/industries/food-security</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.80</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Food Security Industry Hub</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/industries/cleantech</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.80</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>CleanTech Industry Hub</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/industries/machine-learning</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.80</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Machine Learning Industry Hub</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/industries/defi</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.80</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>DeFi Industry Hub</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/companies</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.80</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Enterprise &amp; Partner Directory</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/research</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Empirical Problem Research &amp; Case Studies</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/competitions</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Innovation Competitions &amp; Problem Bounties</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/companies?search=Google</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.70</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Google — Industry Partner &amp; Operations Profile</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/companies?search=Cerner%20HealthTech</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.70</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Cerner HealthTech — Industry Partner &amp; Operations Profile</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/companies?search=Epic%20Systems</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.70</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Epic Systems — Industry Partner &amp; Operations Profile</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/companies?search=Athenahealth</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.70</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Athenahealth — Industry Partner &amp; Operations Profile</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/companies?search=Teladoc%20Health</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.70</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Teladoc Health — Industry Partner &amp; Operations Profile</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/companies?search=Novartis%20Digital%20Health%20Ventures</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.70</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Novartis Digital Health Ventures — Industry Partner &amp; Operations Profile</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/companies?search=FinTech%20Alliance</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.70</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>FinTech Alliance — Industry Partner &amp; Operations Profile</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/companies?search=Urban%20Innovation%20Lab</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.70</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Urban Innovation Lab — Industry Partner &amp; Operations Profile</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/research?topic=General</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.70</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Clinical Impact of Interoperability Failure in Rural Community Clinics — Empirical Problem Dossier</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/research?topic=General</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.70</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Economic Exposure of Cold Chain Temperature Excursions in Specialty Biologics — Empirical Problem Dossier</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/research?topic=General</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.70</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Continuous Optical Sensing for Hydrogen Micro-Leakage Detection in Pipeline Loops — Empirical Problem Dossier</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/research?topic=General</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.70</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Hallucination Rates in Retrieval-Augmented Clinical Decision Support Systems — Empirical Problem Dossier</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/research?topic=General</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.70</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Sub-Surface Soil Salinity Mapping via Drone-Borne Hyperspectral Telemetry — Empirical Problem Dossier</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/research?topic=General</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.70</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Latency and Settlement Risk in Cross-Border Stablecoin Liquidity Corridors — Empirical Problem Dossier</image:title>
+    </image:image>
+  </url>
+</urlset>

@@ -31,6 +31,34 @@ Sitemap: https://stuckhere.davns.com/sitemap.xml
     - [Bottom-Up TAM Step by Step (Count × Volume × Price)](https://stuckhere.davns.com/learn/market-sizing-and-opportunity/bottom-up-tam-step-by-step)
     - [Unit Economics: CAC, LTV & Payback Period](https://stuckhere.davns.com/learn/market-sizing-and-opportunity/unit-economics)
     - [The Executive Opportunity One-Pager](https://stuckhere.davns.com/learn/market-sizing-and-opportunity/communicating-the-opportunity)
+  - [Course 3: Full-Stack Cloud Development](https://stuckhere.davns.com/learn/full-stack-cloud-development): 18 comprehensive chapters covering Cloud Architecture, Frontend Architecture, Backend API Design, Database Design, Authentication & Security, Deployment & CI/CD, and Production Checklists.
+    - [Architecture Principles](https://stuckhere.davns.com/learn/full-stack-cloud-development/architecture-principles)
+    - [Frontend Architecture](https://stuckhere.davns.com/learn/full-stack-cloud-development/frontend-architecture)
+    - [Backend & API Design](https://stuckhere.davns.com/learn/full-stack-cloud-development/backend-and-api-design)
+    - [Database Design & Data Modeling](https://stuckhere.davns.com/learn/full-stack-cloud-development/database-design)
+    - [Authentication, Authorization & Security](https://stuckhere.davns.com/learn/full-stack-cloud-development/authentication-and-security)
+    - [Deployment, CI/CD & DevOps](https://stuckhere.davns.com/learn/full-stack-cloud-development/deployment-and-devops)
+  - [Course 4: Solution Design & MVP Building](https://stuckhere.davns.com/learn/solution-design-and-mvp-building): 18 comprehensive chapters covering Double Diamond Design, User Journeys, How-Might-We framing, Wireframing, User Testing, and Scoping Minimum Lovable Products.
+    - [Human-Centered Mindset](https://stuckhere.davns.com/learn/solution-design-and-mvp-building/human-centered-mindset)
+    - [Understanding Users Deeply](https://stuckhere.davns.com/learn/solution-design-and-mvp-building/understanding-users-deeply)
+    - [Framing the Design Challenge](https://stuckhere.davns.com/learn/solution-design-and-mvp-building/framing-the-design-challenge)
+    - [Ideation & Creative Solution Generation](https://stuckhere.davns.com/learn/solution-design-and-mvp-building/ideation-techniques)
+    - [Prototyping from Paper to Interactive](https://stuckhere.davns.com/learn/solution-design-and-mvp-building/prototyping-foundations)
+    - [Minimum Viable vs Minimum Lovable Product](https://stuckhere.davns.com/learn/solution-design-and-mvp-building/defining-the-mvp)
+  - [Course 5: AI for Builders](https://stuckhere.davns.com/learn/ai-for-builders): 18 comprehensive chapters covering Prompt Engineering, Model APIs, RAG, Embeddings, Function Calling, AI Agents, Evals, and AI Safety.
+    - [The AI Builder Mindset](https://stuckhere.davns.com/learn/ai-for-builders/ai-builder-mindset)
+    - [Prompt Engineering as Code](https://stuckhere.davns.com/learn/ai-for-builders/prompt-engineering)
+    - [Retrieval-Augmented Generation (RAG)](https://stuckhere.davns.com/learn/ai-for-builders/rag-and-vector-databases)
+    - [Structured Outputs & Function Calling](https://stuckhere.davns.com/learn/ai-for-builders/structured-outputs-and-tool-calling)
+    - [Agentic Architectures & Autonomous Workflows](https://stuckhere.davns.com/learn/ai-for-builders/agentic-architectures)
+    - [Evaluating AI Quality & Preventing Regressions](https://stuckhere.davns.com/learn/ai-for-builders/evals-and-benchmarking)
+  - [Course 6: Startup Fundamentals](https://stuckhere.davns.com/learn/startup-fundamentals): 18 comprehensive chapters covering Business Models, Founder Equity Vesting, Legal Setup, Runway Modeling, GTM, B2B Pilot Sales, and Pitch Decks.
+    - [The Startup Mindset & Venture Types](https://stuckhere.davns.com/learn/startup-fundamentals/the-startup-mindset-and-venture-types)
+    - [Business Models: How Startups Make Money](https://stuckhere.davns.com/learn/startup-fundamentals/business-models)
+    - [Founders, Teams and Equity Vesting](https://stuckhere.davns.com/learn/startup-fundamentals/founders-teams-and-equity)
+    - [Financial Runway & Burn Rate Management](https://stuckhere.davns.com/learn/startup-fundamentals/finance-basics)
+    - [Sales: From Pilot to First Paying Customer](https://stuckhere.davns.com/learn/startup-fundamentals/sales-from-pilot-to-paying-customer)
+    - [Pitching & Investor Storytelling](https://stuckhere.davns.com/learn/startup-fundamentals/pitching-and-storytelling)
 - [Industry Verticals Atlas](https://stuckhere.davns.com/industries): Deep-dive into problem taxonomies across Healthcare, AI, CleanTech, Clean Energy, FinTech, Agriculture, Logistics, and Manufacturing.
 - [Enterprise Directory](https://stuckhere.davns.com/companies): Leading enterprises, health systems, and supply chain operators encountering these operational challenges.
 - [Research & Empirical Dossiers](https://stuckhere.davns.com/research): Academic research, clinical data, and audit reports documenting industry failures.

@@ -1,0 +1,1124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <url>
+    <loc>https://stuckhere.davns.com/learn</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.95</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Stuckhere Academy Learning Portal</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/problem-discovery-and-validation</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/discovery-loop.svg</image:loc>
+      <image:title>The 8-Step Discovery Loop Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/problem-discovery-and-validation/course-overview</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/discovery-loop.svg</image:loc>
+      <image:title>The 8-Step Discovery Loop Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/problem-discovery-and-validation/what-is-a-problem</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/problem-idea-solution.svg</image:loc>
+      <image:title>Problem vs Idea vs Solution Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/problem-discovery-and-validation/why-startups-fail</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/startup-failure-rates.svg</image:loc>
+      <image:title>Startup Failure Reasons Bar Chart</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/problem-discovery-and-validation/vitamin-painkiller-surgery</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/triage-matrix.svg</image:loc>
+      <image:title>Problem Triage Matrix Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/problem-discovery-and-validation/where-to-find-problems</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 1 Chapter 4: Where to Find Real Problems</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/problem-discovery-and-validation/customer-discovery-interviews</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/mom-test-questions.svg</image:loc>
+      <image:title>Mom Test Good vs Bad Questions</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/problem-discovery-and-validation/the-problem-dossier</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/dossier-architecture.svg</image:loc>
+      <image:title>Problem Dossier Architecture</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/problem-discovery-and-validation/measuring-pain</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/pain-score-formula.svg</image:loc>
+      <image:title>Pain Score Equation Breakdown</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/problem-discovery-and-validation/validation-signals</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/evidence-ladder.svg</image:loc>
+      <image:title>The Evidence Ladder</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/problem-discovery-and-validation/workarounds-and-competitors</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 1 Chapter 9: Workarounds and Competitor Analysis</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/problem-discovery-and-validation/sizing-the-opportunity</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/tam-sam-som.svg</image:loc>
+      <image:title>TAM SAM SOM Sizing Model</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/problem-discovery-and-validation/solution-hypothesis</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/14-day-sprint.svg</image:loc>
+      <image:title>14-Day Sprint Roadmap</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/problem-discovery-and-validation/bias-ethics-and-mistakes</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 1 Chapter 12: Bias, Ethics and Common Mistakes</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/problem-discovery-and-validation/capstone-project</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 1 Chapter 13: Capstone Project</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/problem-discovery-and-validation/appendices</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/discovery-loop.svg</image:loc>
+      <image:title>Master 8-Step Discovery Loop</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/market-sizing-and-opportunity</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/tam-sam-som.svg</image:loc>
+      <image:title>TAM SAM SOM Concentric Circles</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/market-sizing-and-opportunity/course-overview</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/tam-sam-som.svg</image:loc>
+      <image:title>TAM SAM SOM Concentric Circles</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/market-sizing-and-opportunity/why-market-sizing-matters</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 2 Chapter 1: Why Market Sizing Matters: A Real Problem vs. A Real Market</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/market-sizing-and-opportunity/core-vocabulary</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/tam-sam-som.svg</image:loc>
+      <image:title>Concentric TAM SAM SOM Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/market-sizing-and-opportunity/three-ways-to-size-a-market</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/three-sizing-methods.svg</image:loc>
+      <image:title>Three Sizing Methods Comparison</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/market-sizing-and-opportunity/defining-who-is-in-the-market</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/user-buyer-payer.svg</image:loc>
+      <image:title>User Buyer Payer Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/market-sizing-and-opportunity/counting-customers</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 2 Chapter 5: Counting Customers: Data Sources &amp; Building a Population</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/market-sizing-and-opportunity/pricing-and-willingness-to-pay</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/pricing-value-ladder.svg</image:loc>
+      <image:title>Pricing Value Ladder Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/market-sizing-and-opportunity/usage-frequency-and-revenue-per-customer</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 2 Chapter 7: Usage, Frequency and Revenue per Customer (ACV &amp; LTV)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/market-sizing-and-opportunity/bottom-up-tam-step-by-step</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/bottom-up-formula.svg</image:loc>
+      <image:title>Bottom Up Formula Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/market-sizing-and-opportunity/growth-trends-and-timing</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 2 Chapter 9: Growth, Trends and Timing: Why Now?</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/market-sizing-and-opportunity/obtainable-market-and-go-to-market</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 2 Chapter 10: Obtainable Market (SOM) and Go-to-Market Realities</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/market-sizing-and-opportunity/unit-economics</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/unit-economics-ltv-cac.svg</image:loc>
+      <image:title>Unit Economics LTV CAC Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/market-sizing-and-opportunity/sanity-checks-ranges-and-sensitivity</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/sensitivity-tornado.svg</image:loc>
+      <image:title>Scenario and Sensitivity Analysis Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/market-sizing-and-opportunity/sizing-in-india-and-emerging-markets</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 2 Chapter 13: Sizing in India and Emerging Markets: High Volume, Low ARPU</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/market-sizing-and-opportunity/communicating-the-opportunity</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/opportunity-one-pager.svg</image:loc>
+      <image:title>Opportunity One Pager Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/market-sizing-and-opportunity/common-mistakes-and-honest-practice</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 2 Chapter 15: Common Mistakes and Honest Practice</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/market-sizing-and-opportunity/capstone-project</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 2 Chapter 16: Capstone Project: The Complete Market Sizing Dossier</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/market-sizing-and-opportunity/appendices-and-formula-cheat-sheet</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 2 Chapter 17: Appendices, Formulas and Master Glossary</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/full-stack-cloud-development</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 3: Full-Stack Cloud Development</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/full-stack-cloud-development/course-overview</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 3 Chapter 0: Course Overview: The Full-Stack Cloud Roadmap</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/full-stack-cloud-development/cloud-web-app-architecture</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 3 Chapter 1: The Big Picture of a Cloud Web App</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/full-stack-cloud-development/front-end-foundations</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 3 Chapter 2: Front-End Foundations: HTML, CSS &amp; Modern TypeScript</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/full-stack-cloud-development/react-fundamentals</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 3 Chapter 3: React Fundamentals: Components, State &amp; Effects</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/full-stack-cloud-development/tooling-routing-and-code-splitting</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 3 Chapter 4: Tooling, Routing &amp; Code Splitting</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/full-stack-cloud-development/styling-design-tokens-and-themes</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 3 Chapter 5: Styling, Design Tokens &amp; Themes</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/full-stack-cloud-development/back-end-concepts-and-apis</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 3 Chapter 6: Back-End Concepts &amp; APIs</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/full-stack-cloud-development/data-modelling-with-cloud-firestore</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 3 Chapter 7: Data Modelling with Cloud Firestore</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/full-stack-cloud-development/authentication-and-authorization</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 3 Chapter 8: Authentication &amp; Authorization</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/full-stack-cloud-development/security</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 3 Chapter 9: Security: Threat Thinking &amp; Security Rules</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/full-stack-cloud-development/adding-ai-features</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 3 Chapter 10: Adding AI Features &amp; Copilots</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/full-stack-cloud-development/deployment-and-ci-cd</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 3 Chapter 11: Deployment &amp; CI/CD Pipelines</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/full-stack-cloud-development/performance-and-cost</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 3 Chapter 12: Performance &amp; Cost Optimization</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/full-stack-cloud-development/testing-and-quality</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 3 Chapter 13: Testing &amp; Quality Assurance</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/full-stack-cloud-development/seo-and-ai-search-visibility</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 3 Chapter 14: SEO &amp; AI Search Visibility (GEO)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/full-stack-cloud-development/monitoring-and-maintenance</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 3 Chapter 15: Monitoring, Observability &amp; Maintenance</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/full-stack-cloud-development/capstone-project</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 3 Chapter 16: Capstone Project: Production Cloud Platform</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/full-stack-cloud-development/appendices-and-production-checklist</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 3 Chapter 17: Appendices, Glossaries &amp; Production Checklists</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/solution-design-and-mvp-building</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/double-diamond-design.svg</image:loc>
+      <image:title>Double Diamond Design Process Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/solution-design-and-mvp-building/course-overview</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 4 Chapter 0: Course Overview</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/solution-design-and-mvp-building/human-centered-mindset</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/double-diamond-design.svg</image:loc>
+      <image:title>Double Diamond Design Process Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/solution-design-and-mvp-building/understanding-users-deeply</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/user-journey-map.svg</image:loc>
+      <image:title>User Journey Map Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/solution-design-and-mvp-building/framing-the-design-challenge</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/how-might-we-framing.svg</image:loc>
+      <image:title>How Might We Problem Framing Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/solution-design-and-mvp-building/ideation-techniques</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 4 Chapter 4: Ideation</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/solution-design-and-mvp-building/choosing-what-to-build</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/rice-prioritization-matrix.svg</image:loc>
+      <image:title>RICE Prioritization Formula Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/solution-design-and-mvp-building/user-flows-and-wireframes</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 4 Chapter 6: User Flows and Wireframes</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/solution-design-and-mvp-building/prototyping-methods</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 4 Chapter 7: Prototyping</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/solution-design-and-mvp-building/defining-the-mvp</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/mvp-pyramid.svg</image:loc>
+      <image:title>MVP Vertical Slice Pyramid Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/solution-design-and-mvp-building/usability-testing</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 4 Chapter 9: Usability Testing</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/solution-design-and-mvp-building/running-a-pilot</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/pilot-conversion-funnel.svg</image:loc>
+      <image:title>Pilot Conversion Funnel Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/solution-design-and-mvp-building/measuring-product-success</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 4 Chapter 11: Measuring Product Success</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/solution-design-and-mvp-building/teamwork-and-hackathon-execution</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 4 Chapter 12: Teamwork and Hackathon Execution</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/solution-design-and-mvp-building/pitching-and-demonstrating</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 4 Chapter 13: Pitching and Demonstrating</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/solution-design-and-mvp-building/open-innovation-and-sponsors</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 4 Chapter 14: Open Innovation and Working With Sponsors</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/solution-design-and-mvp-building/responsible-and-inclusive-design</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 4 Chapter 15: Responsible and Inclusive Design</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/solution-design-and-mvp-building/capstone-project</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 4 Chapter 16: Capstone Project</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/solution-design-and-mvp-building/appendices-and-templates</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 4 Chapter 17: Appendices</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/ai-for-builders</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/ai-builder-pipeline.svg</image:loc>
+      <image:title>6-Stage AI Builder Architecture Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/ai-for-builders/course-overview</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/ai-builder-pipeline.svg</image:loc>
+      <image:title>6-Stage AI Builder Architecture Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/ai-for-builders/ai-foundations-for-builders</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/ai-triage-matrix.svg</image:loc>
+      <image:title>AI Architecture Triage Matrix</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/ai-for-builders/how-large-language-models-work</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/llm-token-pipeline.svg</image:loc>
+      <image:title>LLM Token Pipeline Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/ai-for-builders/prompt-engineering</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/structured-prompt-anatomy.svg</image:loc>
+      <image:title>Structured Prompt Anatomy Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/ai-for-builders/calling-model-apis</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/model-api-architecture.svg</image:loc>
+      <image:title>Model API Gateway Architecture Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/ai-for-builders/grounding-with-your-own-data-rag</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/rag-architecture.svg</image:loc>
+      <image:title>RAG Architecture Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/ai-for-builders/tools-and-agents</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/react-agent-loop.svg</image:loc>
+      <image:title>ReAct Agent Loop Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/ai-for-builders/building-a-problem-solver-copilot</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/copilot-anatomy.svg</image:loc>
+      <image:title>Problem Solver Copilot Anatomy Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/ai-for-builders/evaluating-ai-features</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/ai-evals-pyramid.svg</image:loc>
+      <image:title>AI Evaluation Pyramid Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/ai-for-builders/safety-privacy-and-security</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/ai-safety-defense.svg</image:loc>
+      <image:title>AI Safety Defense Framework Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/ai-for-builders/cost-latency-and-scale</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/cost-latency-cascade.svg</image:loc>
+      <image:title>Cost Latency Cascade Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/ai-for-builders/data-for-ai</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 5 Chapter 11: Data for AI</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/ai-for-builders/classical-machine-learning-and-scoring-models</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/hybrid-ml-llm.svg</image:loc>
+      <image:title>Hybrid Tabular ML and LLM Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/ai-for-builders/designing-ai-products-and-experiences</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 5 Chapter 13: Designing AI Products and Experiences</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/ai-for-builders/working-faster-with-ai-tools</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 5 Chapter 14: Working Faster With AI Tools</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/ai-for-builders/ai-in-real-domains</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 5 Chapter 15: AI in Real Domains</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/ai-for-builders/capstone-project</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 5 Chapter 16: Capstone Project</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/ai-for-builders/appendices</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 5 Chapter 17: Appendices</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/startup-fundamentals</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/venture-pathways-matrix.svg</image:loc>
+      <image:title>Venture Pathways Matrix Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/startup-fundamentals/course-overview</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 6 Chapter 0: Course Overview</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/startup-fundamentals/the-startup-mindset-and-venture-types</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/venture-pathways-matrix.svg</image:loc>
+      <image:title>Venture Pathways Matrix Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/startup-fundamentals/business-models</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/business-model-canvas-map.svg</image:loc>
+      <image:title>Business Model Canvas Architecture Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/startup-fundamentals/founders-teams-and-equity</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/equity-vesting-schedule.svg</image:loc>
+      <image:title>Equity Vesting Schedule Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/startup-fundamentals/legal-foundations</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 6 Chapter 4: Legal Foundations</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/startup-fundamentals/finance-basics</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/runway-burn-calculator.svg</image:loc>
+      <image:title>Runway Burn Calculator Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/startup-fundamentals/funding-options</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 6 Chapter 6: Funding Options</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/startup-fundamentals/go-to-market-strategy</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 6 Chapter 7: Go-to-Market Strategy</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/startup-fundamentals/sales-from-pilot-to-paying-customer</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/b2b-pilot-sales-pipeline.svg</image:loc>
+      <image:title>B2B Pilot Sales Pipeline Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/startup-fundamentals/marketing-and-growth</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 6 Chapter 9: Marketing and Growth</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/startup-fundamentals/operations-and-product-management</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 6 Chapter 10: Operations and Product Management</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/startup-fundamentals/hiring-and-culture</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 6 Chapter 11: Hiring and Culture</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/startup-fundamentals/metrics-and-reporting</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/saas-unit-economics-engine.svg</image:loc>
+      <image:title>SaaS Unit Economics Engine Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/startup-fundamentals/fundraising-and-investor-pitching</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/venture-fundraising-funnel.svg</image:loc>
+      <image:title>Venture Fundraising Funnel Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/startup-fundamentals/founder-wellbeing-and-decision-making</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 6 Chapter 14: Founder Wellbeing and Decision-Making</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/startup-fundamentals/scale-pivot-or-stop</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/academy/diagrams/scale-pivot-stop-framework.svg</image:loc>
+      <image:title>Scale Pivot Stop Decision Framework Diagram</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/startup-fundamentals/capstone-project</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 6 Chapter 16: Capstone Project</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://stuckhere.davns.com/learn/startup-fundamentals/appendices</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stuckhere.davns.com/og-image.png</image:loc>
+      <image:title>Course 6 Chapter 17: Appendices</image:title>
+    </image:image>
+  </url>
+</urlset>

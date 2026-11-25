@@ -7,6 +7,7 @@
     "dev": "vite",
     "server": "node server/index.js",
     "build": "vite build",
+    "sitemaps": "npx tsx scripts/generateAllSitemaps.ts",
     "preview": "vite preview",
     "seed": "npx tsx scripts/pushAllDataToDb.ts",
     "test:agents": "playwright test",

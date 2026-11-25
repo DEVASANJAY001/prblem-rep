@@ -75,6 +75,13 @@ User-agent: Diffbot
 User-agent: Omgilibot
 Disallow: /
 
-# 4. XML Sitemap & LLMs Index References
+# 4. XML Sitemap & LLMs Index References (Sitemap Index & Sub-Sitemaps for Super SEO)
 Sitemap: https://stuckhere.davns.com/sitemap.xml
+Sitemap: https://stuckhere.davns.com/sitemap-core.xml
+Sitemap: https://stuckhere.davns.com/sitemap-academy.xml
+Sitemap: https://stuckhere.davns.com/sitemap-problems.xml
+Sitemap: https://stuckhere.davns.com/sitemap-startup-mode.xml
+Sitemap: https://stuckhere.davns.com/sitemap-industries.xml
+Sitemap: https://stuckhere.davns.com/sitemap-companies.xml
+Sitemap: https://stuckhere.davns.com/sitemap-all.xml
 Sitemap: https://stuckhere.davns.com/llms.txt

@@ -1,6 +1,7 @@
 import { ProblemDoc, IndustryDoc } from "@/types";
 import { getProblemSlug } from "./seoUrls";
 import { REAL_INDUSTRIES } from "@/data/realProductionData";
+import { ACADEMY_COURSES, getCourseChapters } from "@/data/academyData";
 
 export interface SitemapUrlEntry {
   loc: string;
@@ -8,11 +9,21 @@ export interface SitemapUrlEntry {
   changefreq?: "always" | "hourly" | "daily" | "weekly" | "monthly" | "yearly" | "never";
   priority?: number;
   title?: string;
+  imageUrl?: string;
+  imageTitle?: string;
 }
 
+const escapeXml = (unsafe: string) =>
+  String(unsafe || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&apos;");
+
 /**
- * Builds a valid XML sitemap string dynamically from approved problems and industries
- * Compliant with Google Search Sitemaps protocol and Google Image extensions.
+ * Builds a valid XML sitemap string dynamically from approved problems, industries, and academy courses
+ * Compliant with Google Search Sitemaps protocol (0.9) and Google Image extensions.
  */
 export function buildSitemapXml(
   problems: ProblemDoc[] = [],
@@ -21,76 +32,66 @@ export function buildSitemapXml(
 ): string {
   const today = new Date().toISOString().slice(0, 10);
 
-  // Static core routes & Stuckhere Academy
+  // Static core routes & Stuckhere Academy Root
   const entries: SitemapUrlEntry[] = [
-    { loc: `${baseUrl}/`, lastmod: today, changefreq: "daily", priority: 1.0 },
-    { loc: `${baseUrl}/explore`, lastmod: today, changefreq: "daily", priority: 0.95 },
-    { loc: `${baseUrl}/explore?filter=startup_mode`, lastmod: today, changefreq: "daily", priority: 0.9 },
-    { loc: `${baseUrl}/learn`, lastmod: today, changefreq: "daily", priority: 0.95 },
-    { loc: `${baseUrl}/methodology`, lastmod: today, changefreq: "weekly", priority: 0.85 },
-    { loc: `${baseUrl}/guides/problem-discovery-framework`, lastmod: today, changefreq: "weekly", priority: 0.85 },
-    { loc: `${baseUrl}/open-innovation`, lastmod: today, changefreq: "weekly", priority: 0.85 },
-    { loc: `${baseUrl}/industries`, lastmod: today, changefreq: "daily", priority: 0.85 },
-    { loc: `${baseUrl}/community`, lastmod: today, changefreq: "daily", priority: 0.85 },
-    { loc: `${baseUrl}/submit`, lastmod: today, changefreq: "weekly", priority: 0.85 },
-    { loc: `${baseUrl}/solutions`, lastmod: today, changefreq: "weekly", priority: 0.8 },
-    { loc: `${baseUrl}/companies`, lastmod: today, changefreq: "weekly", priority: 0.8 },
-    { loc: `${baseUrl}/research`, lastmod: today, changefreq: "weekly", priority: 0.75 },
-    { loc: `${baseUrl}/features`, lastmod: today, changefreq: "monthly", priority: 0.75 },
-    { loc: `${baseUrl}/competitions`, lastmod: today, changefreq: "weekly", priority: 0.75 },
-    { loc: `${baseUrl}/about`, lastmod: today, changefreq: "monthly", priority: 0.7 },
-    { loc: `${baseUrl}/contact`, lastmod: today, changefreq: "monthly", priority: 0.6 },
-    { loc: `${baseUrl}/privacy`, lastmod: today, changefreq: "yearly", priority: 0.3 },
-    { loc: `${baseUrl}/terms`, lastmod: today, changefreq: "yearly", priority: 0.3 },
-    { loc: `${baseUrl}/cookies`, lastmod: today, changefreq: "yearly", priority: 0.3 },
-
-    // Course 1: Problem Discovery & Validation (15 Chapters)
-    { loc: `${baseUrl}/learn/problem-discovery-and-validation`, lastmod: today, changefreq: "weekly", priority: 0.90, title: "Course 1: Problem Discovery & Validation" },
-    { loc: `${baseUrl}/learn/problem-discovery-and-validation/course-overview`, lastmod: today, changefreq: "weekly", priority: 0.85, title: "Course Overview" },
-    { loc: `${baseUrl}/learn/problem-discovery-and-validation/what-is-a-problem`, lastmod: today, changefreq: "weekly", priority: 0.85, title: "Foundations: What Is a Problem?" },
-    { loc: `${baseUrl}/learn/problem-discovery-and-validation/why-startups-fail`, lastmod: today, changefreq: "weekly", priority: 0.85, title: "Why Startups Fail at the Problem Stage" },
-    { loc: `${baseUrl}/learn/problem-discovery-and-validation/vitamin-painkiller-surgery`, lastmod: today, changefreq: "weekly", priority: 0.85, title: "Vitamin, Painkiller, Surgery" },
-    { loc: `${baseUrl}/learn/problem-discovery-and-validation/where-to-find-problems`, lastmod: today, changefreq: "weekly", priority: 0.85, title: "Where to Find Real Problems" },
-    { loc: `${baseUrl}/learn/problem-discovery-and-validation/customer-discovery-interviews`, lastmod: today, changefreq: "weekly", priority: 0.85, title: "Customer Discovery Interviews" },
-    { loc: `${baseUrl}/learn/problem-discovery-and-validation/the-problem-dossier`, lastmod: today, changefreq: "weekly", priority: 0.85, title: "The Problem Dossier" },
-    { loc: `${baseUrl}/learn/problem-discovery-and-validation/measuring-pain`, lastmod: today, changefreq: "weekly", priority: 0.85, title: "Measuring Pain" },
-    { loc: `${baseUrl}/learn/problem-discovery-and-validation/validation-signals`, lastmod: today, changefreq: "weekly", priority: 0.85, title: "Validation: Evidence and Signals" },
-    { loc: `${baseUrl}/learn/problem-discovery-and-validation/workarounds-and-competitors`, lastmod: today, changefreq: "weekly", priority: 0.85, title: "Workarounds and Competitor Analysis" },
-    { loc: `${baseUrl}/learn/problem-discovery-and-validation/sizing-the-opportunity`, lastmod: today, changefreq: "weekly", priority: 0.85, title: "Sizing the Opportunity" },
-    { loc: `${baseUrl}/learn/problem-discovery-and-validation/solution-hypothesis`, lastmod: today, changefreq: "weekly", priority: 0.85, title: "Problem to Solution Hypothesis" },
-    { loc: `${baseUrl}/learn/problem-discovery-and-validation/bias-ethics-and-mistakes`, lastmod: today, changefreq: "weekly", priority: 0.85, title: "Bias, Ethics and Common Mistakes" },
-    { loc: `${baseUrl}/learn/problem-discovery-and-validation/capstone-project`, lastmod: today, changefreq: "weekly", priority: 0.85, title: "Capstone Project: Problem Dossier" },
-    { loc: `${baseUrl}/learn/problem-discovery-and-validation/appendices`, lastmod: today, changefreq: "weekly", priority: 0.85, title: "Appendices and Templates" },
-
-    // Course 2: Market Sizing & Opportunity Analysis (18 Chapters)
-    { loc: `${baseUrl}/learn/market-sizing-and-opportunity`, lastmod: today, changefreq: "weekly", priority: 0.90, title: "Course 2: Market Sizing & Opportunity Analysis" },
-    { loc: `${baseUrl}/learn/market-sizing-and-opportunity/course-overview`, lastmod: today, changefreq: "weekly", priority: 0.85, title: "Course Overview: How Big Is the Problem?" },
-    { loc: `${baseUrl}/learn/market-sizing-and-opportunity/why-market-sizing-matters`, lastmod: today, changefreq: "weekly", priority: 0.85, title: "Why Market Sizing Matters" },
-    { loc: `${baseUrl}/learn/market-sizing-and-opportunity/core-vocabulary`, lastmod: today, changefreq: "weekly", priority: 0.85, title: "Core Vocabulary: TAM, SAM, SOM Demystified" },
-    { loc: `${baseUrl}/learn/market-sizing-and-opportunity/three-ways-to-size-a-market`, lastmod: today, changefreq: "weekly", priority: 0.85, title: "Three Ways to Size a Market" },
-    { loc: `${baseUrl}/learn/market-sizing-and-opportunity/defining-who-is-in-the-market`, lastmod: today, changefreq: "weekly", priority: 0.85, title: "Defining Who Is in the Market" },
-    { loc: `${baseUrl}/learn/market-sizing-and-opportunity/counting-customers`, lastmod: today, changefreq: "weekly", priority: 0.85, title: "Counting Customers: Data Sources" },
-    { loc: `${baseUrl}/learn/market-sizing-and-opportunity/pricing-and-willingness-to-pay`, lastmod: today, changefreq: "weekly", priority: 0.85, title: "Pricing and Willingness to Pay" },
-    { loc: `${baseUrl}/learn/market-sizing-and-opportunity/usage-frequency-and-revenue-per-customer`, lastmod: today, changefreq: "weekly", priority: 0.85, title: "Usage, Frequency and Revenue per Customer" },
-    { loc: `${baseUrl}/learn/market-sizing-and-opportunity/bottom-up-tam-step-by-step`, lastmod: today, changefreq: "weekly", priority: 0.85, title: "Bottom-Up TAM: Step by Step" },
-    { loc: `${baseUrl}/learn/market-sizing-and-opportunity/growth-trends-and-timing`, lastmod: today, changefreq: "weekly", priority: 0.85, title: "Growth, Trends and Timing" },
-    { loc: `${baseUrl}/learn/market-sizing-and-opportunity/obtainable-market-and-go-to-market`, lastmod: today, changefreq: "weekly", priority: 0.85, title: "Obtainable Market (SOM)" },
-    { loc: `${baseUrl}/learn/market-sizing-and-opportunity/unit-economics`, lastmod: today, changefreq: "weekly", priority: 0.85, title: "Unit Economics: CAC, LTV and Break-Even" },
-    { loc: `${baseUrl}/learn/market-sizing-and-opportunity/sanity-checks-ranges-and-sensitivity`, lastmod: today, changefreq: "weekly", priority: 0.85, title: "Sanity Checks, Ranges and Sensitivity" },
-    { loc: `${baseUrl}/learn/market-sizing-and-opportunity/sizing-in-india-and-emerging-markets`, lastmod: today, changefreq: "weekly", priority: 0.85, title: "Sizing in India and Emerging Markets" },
-    { loc: `${baseUrl}/learn/market-sizing-and-opportunity/communicating-the-opportunity`, lastmod: today, changefreq: "weekly", priority: 0.85, title: "Communicating the Opportunity: One-Pager" },
-    { loc: `${baseUrl}/learn/market-sizing-and-opportunity/common-mistakes-and-honest-practice`, lastmod: today, changefreq: "weekly", priority: 0.85, title: "Common Mistakes and Honest Practice" },
-    { loc: `${baseUrl}/learn/market-sizing-and-opportunity/capstone-project`, lastmod: today, changefreq: "weekly", priority: 0.85, title: "Capstone Project: Market Sizing Dossier" },
-    { loc: `${baseUrl}/learn/market-sizing-and-opportunity/appendices-and-formula-cheat-sheet`, lastmod: today, changefreq: "weekly", priority: 0.85, title: "Appendices, Formulas and Glossary" },
+    { loc: `${baseUrl}/`, lastmod: today, changefreq: "daily", priority: 1.0, title: "Stuckhere — The World's Open Problem Registry" },
+    { loc: `${baseUrl}/explore`, lastmod: today, changefreq: "daily", priority: 0.95, title: "Explore Verified Industry Problems" },
+    { loc: `${baseUrl}/explore?filter=startup_mode`, lastmod: today, changefreq: "daily", priority: 0.9, title: "Startup Mode: Venture Opportunities & Solutions" },
+    { loc: `${baseUrl}/learn`, lastmod: today, changefreq: "daily", priority: 0.95, title: "Stuckhere Academy — Learning Portal" },
+    { loc: `${baseUrl}/methodology`, lastmod: today, changefreq: "weekly", priority: 0.85, title: "Problem Verification Methodology & Pain Scoring" },
+    { loc: `${baseUrl}/guides/problem-discovery-framework`, lastmod: today, changefreq: "weekly", priority: 0.85, title: "Founder Problem Discovery Guide & Framework" },
+    { loc: `${baseUrl}/open-innovation`, lastmod: today, changefreq: "weekly", priority: 0.85, title: "Open Innovation & Enterprise Challenges" },
+    { loc: `${baseUrl}/industries`, lastmod: today, changefreq: "daily", priority: 0.85, title: "Industry Verticals Atlas" },
+    { loc: `${baseUrl}/community`, lastmod: today, changefreq: "daily", priority: 0.75, title: "Community Discussions & Leaderboards" },
+    { loc: `${baseUrl}/submit`, lastmod: today, changefreq: "weekly", priority: 0.75, title: "Submit a Problem Statement" },
+    { loc: `${baseUrl}/solutions`, lastmod: today, changefreq: "weekly", priority: 0.8, title: "Solutions & Blueprints Directory" },
+    { loc: `${baseUrl}/companies`, lastmod: today, changefreq: "weekly", priority: 0.8, title: "Enterprise & Partner Directory" },
+    { loc: `${baseUrl}/research`, lastmod: today, changefreq: "weekly", priority: 0.75, title: "Industry Empirical Research" },
+    { loc: `${baseUrl}/features`, lastmod: today, changefreq: "monthly", priority: 0.75, title: "Features & Builder Capabilities" },
+    { loc: `${baseUrl}/competitions`, lastmod: today, changefreq: "weekly", priority: 0.75, title: "Competitions & Bounties" },
+    { loc: `${baseUrl}/about`, lastmod: today, changefreq: "monthly", priority: 0.7, title: "About Stuckhere" },
+    { loc: `${baseUrl}/contact`, lastmod: today, changefreq: "monthly", priority: 0.6, title: "Contact Us" },
+    { loc: `${baseUrl}/privacy`, lastmod: today, changefreq: "yearly", priority: 0.3, title: "Privacy Policy" },
+    { loc: `${baseUrl}/terms`, lastmod: today, changefreq: "yearly", priority: 0.3, title: "Terms of Service" },
+    { loc: `${baseUrl}/cookies`, lastmod: today, changefreq: "yearly", priority: 0.3, title: "Cookie Policy" },
   ];
+
+  // All 6 Stuckhere Academy Courses and All 105 Subtopics / Chapters
+  ACADEMY_COURSES.forEach((course) => {
+    const chapters = getCourseChapters(course.slug);
+
+    // Course Subject Landing Page
+    entries.push({
+      loc: `${baseUrl}/learn/${course.slug}`,
+      lastmod: today,
+      changefreq: "weekly",
+      priority: 0.90,
+      title: `Course ${course.n}: ${course.title}`,
+    });
+
+    // All Chapter Reader Pages for this Course
+    chapters.forEach((chapter) => {
+      const diagram = chapter.sections?.find((s) => s.image?.url)?.image;
+      entries.push({
+        loc: `${baseUrl}/learn/${course.slug}/${chapter.slug}`,
+        lastmod: today,
+        changefreq: "weekly",
+        priority: 0.85,
+        title: `Course ${course.n} Chapter ${chapter.num}: ${chapter.title}`,
+        imageUrl: diagram?.url ? `${baseUrl}${diagram.url}` : undefined,
+        imageTitle: diagram?.alt || `Course ${course.n} Chapter ${chapter.num}: ${chapter.title}`,
+      });
+    });
+  });
 
   // Dynamic industry vertical landing pages
   industries.forEach((ind) => {
     entries.push({
       loc: `${baseUrl}/industries/${ind.slug}`,
       lastmod: today,
-      changefreq: "weekly",
+      changefreq: "daily",
       priority: 0.8,
+      title: `${ind.name} Industry Problems`,
     });
   });
 
@@ -131,19 +132,14 @@ export function buildSitemapXml(
       }
     });
 
-  const escapeXml = (unsafe: string) =>
-    String(unsafe || "")
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&apos;");
-
   const xmlEntries = entries
     .map((e) => {
-      const imageBlock = e.title
-        ? `\n    <image:image>\n      <image:loc>${baseUrl}/og-image.png</image:loc>\n      <image:title>${escapeXml(e.title)}</image:title>\n    </image:image>`
-        : "";
+      let imageBlock = "";
+      if (e.imageUrl) {
+        imageBlock = `\n    <image:image>\n      <image:loc>${escapeXml(e.imageUrl)}</image:loc>\n      <image:title>${escapeXml(e.imageTitle || e.title || "")}</image:title>\n    </image:image>`;
+      } else if (e.title) {
+        imageBlock = `\n    <image:image>\n      <image:loc>${baseUrl}/og-image.png</image:loc>\n      <image:title>${escapeXml(e.title)}</image:title>\n    </image:image>`;
+      }
 
       return `  <url>
     <loc>${escapeXml(e.loc)}</loc>
@@ -159,4 +155,35 @@ export function buildSitemapXml(
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
 ${xmlEntries}
 </urlset>`;
+}
+
+/**
+ * Builds standard Google Search Console Sitemap Index XML string
+ */
+export function buildSitemapIndexXml(
+  sitemaps: string[] = [
+    "sitemap-core.xml",
+    "sitemap-academy.xml",
+    "sitemap-problems.xml",
+    "sitemap-startup-mode.xml",
+    "sitemap-industries.xml",
+    "sitemap-companies.xml",
+    "sitemap-all.xml",
+  ],
+  baseUrl: string = "https://stuckhere.davns.com"
+): string {
+  const today = new Date().toISOString().slice(0, 10);
+  const entries = sitemaps
+    .map(
+      (s) => `  <sitemap>
+    <loc>${baseUrl}/${s.replace(/^\//, "")}</loc>
+    <lastmod>${today}</lastmod>
+  </sitemap>`
+    )
+    .join("\n");
+
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${entries}
+</sitemapindex>`;
 }
