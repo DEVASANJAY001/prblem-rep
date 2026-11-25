@@ -14,11 +14,9 @@ import {
   toggleCommentLike,
   updateProblemStatus,
 } from "@/lib/firebase/services/problemsService";
-import { subscribeCompanies } from "@/lib/firebase/services/companiesService";
-import { subscribeCredits } from "@/lib/firebase/services/creditsService";
 import { REAL_COMPANIES } from "@/data/realProductionData";
 import { ProblemDoc, ProblemComment, CommentReply, CompanyDoc, CreditSourceDoc } from "@/types";
-import { toggleBookmark, isProblemBookmarked, resolveProblemAuthor } from "@/lib/storage";
+import { toggleBookmark, isProblemBookmarked, resolveProblemAuthor, getCompanies, getCredits } from "@/lib/storage";
 import { useAuth } from "@/contexts/AuthContext";
 import { LoadingContainer } from "@/components/common/LoadingContainer";
 import { SEOHead } from "@/components/common/SEOHead";
@@ -272,27 +270,30 @@ export const ProblemDetail: React.FC = () => {
     };
   }, [id, currentUid]);
 
-  // Subscribe to real companies list for logo and profile resolution
-  const [allCompanies, setAllCompanies] = useState<CompanyDoc[]>(REAL_COMPANIES);
-  useEffect(() => {
-    const unsub = subscribeCompanies((list) => {
-      if (list && list.length > 0) {
-        setAllCompanies(list);
-      }
-    });
-    return () => unsub();
-  }, []);
+  // Optimized synchronous cache resolution (0 Firestore collection reads, 0ms latency)
+  const [allCompanies] = useState<CompanyDoc[]>(() => {
+    try {
+      const list = getCompanies();
+      return list && list.length > 0 ? list : REAL_COMPANIES;
+    } catch {
+      return REAL_COMPANIES;
+    }
+  });
 
-  // Subscribe to real credits directory for logo and website resolution
-  const [allCredits, setAllCredits] = useState<CreditSourceDoc[]>([]);
+  const [allCredits] = useState<CreditSourceDoc[]>(() => {
+    try {
+      return getCredits(true);
+    } catch {
+      return [];
+    }
+  });
+
+  // Deep-link anchor detection: switches to discussion tab if URL has #discussion or #comments
   useEffect(() => {
-    const unsub = subscribeCredits((list) => {
-      if (list && list.length > 0) {
-        setAllCredits(list);
-      }
-    });
-    return () => unsub();
-  }, []);
+    if (location.hash === "#discussion" || location.hash === "#comments") {
+      setActiveTab("discussion");
+    }
+  }, [location.hash]);
 
   // Aggregate credit sources (psFrom + credits)
   const creditsList = useMemo(() => {
@@ -1148,7 +1149,11 @@ export const ProblemDetail: React.FC = () => {
                 <span>Building</span>
               </div>
               <span className="text-gray-300">·</span>
-              <div className="flex items-center gap-1">
+              <div
+                onClick={() => handleTabClick("discussion")}
+                className="flex items-center gap-1 cursor-pointer hover:text-primary transition-colors"
+                title="View Discussions"
+              >
                 <MessageSquare className="w-3.5 h-3.5 text-gray-400" />
                 <span className="font-semibold text-on-surface">{totalCommentsCount}</span>
                 <span>Comments</span>
@@ -1188,22 +1193,50 @@ export const ProblemDetail: React.FC = () => {
           <nav className="flex overflow-x-auto gap-5 sm:gap-8 w-full hide-scrollbar">
             {[
               { id: "description", label: "Description" },
-              { id: "evidence", label: "Evidence" },
-              { id: "discussion", label: "Discussion" },
+              {
+                id: "evidence",
+                label: "Evidence",
+                count: problem?.evidenceDocuments?.length || (problem?.evidenceUrls?.length ? problem.evidenceUrls.length : undefined),
+              },
+              {
+                id: "discussion",
+                label: "Discussion",
+                count: totalCommentsCount > 0 ? totalCommentsCount : undefined,
+              },
               { id: "research", label: "Research" },
-              { id: "competitors", label: "Competitors" },
+              {
+                id: "competitors",
+                label: "Competitors",
+                count: problem?.competitorData?.length,
+              },
               { id: "suggested_mvp", label: "Suggested MVP" },
-              { id: "related", label: "Related Problems" },
+              {
+                id: "related",
+                label: "Related Problems",
+                count: relatedProblems.length > 0 ? relatedProblems.length : undefined,
+              },
             ].map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => handleTabClick(tab.id as any)}
-                className={`pb-3 border-b-2 text-xs md:text-sm font-semibold whitespace-nowrap transition-colors cursor-pointer flex items-center gap-1.5 ${activeTab === tab.id
-                  ? "text-primary border-primary font-bold"
-                  : "text-on-surface-variant border-transparent hover:text-on-surface"
-                  }`}
+                className={`pb-3 border-b-2 text-xs md:text-sm font-semibold whitespace-nowrap transition-colors cursor-pointer flex items-center gap-1.5 ${
+                  activeTab === tab.id
+                    ? "text-primary border-primary font-bold"
+                    : "text-on-surface-variant border-transparent hover:text-on-surface"
+                }`}
               >
                 <span>{tab.label}</span>
+                {typeof tab.count === "number" && tab.count > 0 && (
+                  <span
+                    className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${
+                      activeTab === tab.id
+                        ? "bg-primary/10 text-primary"
+                        : "bg-surface-container text-on-surface-variant"
+                    }`}
+                  >
+                    {tab.count}
+                  </span>
+                )}
               </button>
             ))}
           </nav>
@@ -1335,6 +1368,24 @@ export const ProblemDetail: React.FC = () => {
                       <span className="text-xs md:text-sm font-bold text-secondary">{problem.willingnessToPay || "Verified"}</span>
                     </div>
                   </div>
+                </div>
+
+                {/* Discussion Teaser Callout inside Description tab */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-xl bg-surface-container/30 border border-outline-variant/20 mt-2">
+                  <div className="flex items-center gap-2.5">
+                    <MessageSquare className="w-4 h-4 text-primary shrink-0" />
+                    <span className="text-xs md:text-sm font-semibold text-on-surface">
+                      Have practical experience, frontline evidence, or insights on this problem?
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleTabClick("discussion")}
+                    className="text-xs font-bold text-primary hover:underline flex items-center gap-1 cursor-pointer shrink-0 self-start sm:self-auto"
+                  >
+                    <span>Join Discussion ({totalCommentsCount})</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </button>
                 </div>
               </div>
             )}
@@ -1720,62 +1771,33 @@ export const ProblemDetail: React.FC = () => {
               <div className="flex flex-col gap-6 animate-fade-in">
                 <div className="flex flex-col gap-3 py-2">
                   <h3 className="text-base md:text-lg font-bold text-on-surface mb-2">Related Problems</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <Link
-                      to={getProblemDetailUrl({ id: "prob-1", title: "Data Interoperability Failure in Rural Clinics" })}
-                      className="bg-surface-container/40 p-4 rounded-xl flex flex-col gap-2 hover:bg-surface-container transition-colors cursor-pointer border border-outline-variant/20"
-                    >
-                      <div className="flex justify-between items-start">
-                        <span className="bg-surface-container text-on-surface-variant px-2 py-0.5 rounded-full text-[10px] font-bold">
-                          Healthcare
-                        </span>
-                        <span className="text-error font-bold text-xs">9.3</span>
-                      </div>
-                      <h4 className="text-xs md:text-sm font-semibold text-on-surface leading-snug mt-1">
-                        Data Interoperability Failure in Rural Clinics
-                      </h4>
-                    </Link>
-                    <Link
-                      to={getProblemDetailUrl({ id: "prob-3", title: "Subsurface Hydrogen Pipeline Micro-Leaks" })}
-                      className="bg-surface-container/40 p-4 rounded-xl flex flex-col gap-2 hover:bg-surface-container transition-colors cursor-pointer border border-outline-variant/20"
-                    >
-                      <div className="flex justify-between items-start">
-                        <span className="bg-surface-container text-on-surface-variant px-2 py-0.5 rounded-full text-[10px] font-bold">
-                          CleanTech
-                        </span>
-                        <span className="text-error font-bold text-xs">9.2</span>
-                      </div>
-                      <h4 className="text-xs md:text-sm font-semibold text-on-surface leading-snug mt-1">
-                        Subsurface Hydrogen Pipeline Micro-Leaks
-                      </h4>
-                    </Link>
-                    <Link
-                      to={getProblemDetailUrl({ id: "prob-4", title: "Autonomous Freight Sensor Phantom Occlusion" })}
-                      className="bg-surface-container/40 p-4 rounded-xl flex flex-col gap-2 hover:bg-surface-container transition-colors cursor-pointer border border-outline-variant/20"
-                    >
-                      <div className="flex justify-between items-start">
-                        <span className="bg-surface-container text-on-surface-variant px-2 py-0.5 rounded-full text-[10px] font-bold">
-                          AI & ML
-                        </span>
-                        <span className="text-error font-bold text-xs">8.9</span>
-                      </div>
-                      <h4 className="text-xs md:text-sm font-semibold text-on-surface leading-snug mt-1">
-                        Autonomous Freight Sensor Phantom Occlusion
-                      </h4>
-                    </Link>
-                  </div>
+                  {relatedProblems.length === 0 ? (
+                    <div className="rounded-2xl border border-dashed border-gray-200/80 p-8 text-center bg-surface-container/20">
+                      <p className="text-xs text-gray-500">No adjacent problems in this vertical yet.</p>
+                      <Link
+                        to={`/explore?industry=${encodeURIComponent(industry)}`}
+                        className="text-xs font-bold text-primary hover:underline mt-2 inline-block"
+                      >
+                        Explore all {industry} problems
+                      </Link>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {relatedProblems.map((rp) => (
+                        <TrendingProblemCard key={rp.id} problem={rp} className="w-full" />
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             )}
 
-            {/* Split Fade Divider Line before Discussion */}
-            <div className="w-full h-px bg-gradient-to-r from-transparent via-gray-300/70 to-transparent my-2" />
-
             {/* 7. Discussion Tab with True Hierarchical Branching System */}
-            <div className="flex flex-col gap-6 py-2">
-              <h3 className="text-base md:text-lg font-bold text-on-surface">
-                Discussion ({totalCommentsCount})
-              </h3>
+            {activeTab === "discussion" && (
+              <div className="flex flex-col gap-6 py-2 animate-fade-in">
+                <h3 className="text-base md:text-lg font-bold text-on-surface">
+                  Discussion ({totalCommentsCount})
+                </h3>
 
               {/* Threaded Comments Feed with Visible Tree Branching Lines */}
               {effectiveComments.length === 0 ? (
@@ -1917,7 +1939,8 @@ export const ProblemDetail: React.FC = () => {
                 </button>
               </form>
             </div>
-          </div>
+          )}
+        </div>
 
           {/* 30% Right Sidebar: Problem Status & Community Validation */}
           <div className="w-full lg:w-[30%] lg:sticky lg:top-24 flex flex-col gap-6">
