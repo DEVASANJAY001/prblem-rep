@@ -5,12 +5,11 @@ import { createProblem } from "@/lib/firebase/services/problemsService";
 import { BulkProblemImportModal } from "@/components/admin/AdminBulkProblemImportModal";
 import { subscribeCredits } from "@/lib/firebase/services/creditsService";
 import { recordUserSubmission } from "@/lib/storage";
-import { getProblemDetailUrl, getStartupModeUrl } from "@/lib/seoUrls";
+import { getProblemDetailUrl } from "@/lib/seoUrls";
 import { SEOHead } from "@/components/common/SEOHead";
 import { REAL_INDUSTRIES } from "@/data/realProductionData";
-import { EvidenceDocument, ProblemSeverity, CreditSourceDoc } from "@/types";
+import { EvidenceDocument, ProblemSeverity, CreditSourceDoc, StartupSolutionGap, StartupDirection } from "@/types";
 import confetti from "canvas-confetti";
-import { UserAvatar } from "@/components/ui/UserAvatar";
 import { HumanVerification } from "@/components/common/HumanVerification";
 import { executeRecaptcha } from "@/lib/recaptcha";
 import { CreditSourceBadge } from "@/components/ui/CreditSourceBadge";
@@ -26,7 +25,6 @@ import {
   DollarSign,
   ShieldCheck,
   Search,
-  TrendingUp,
   Plus,
   X,
   ExternalLink,
@@ -36,7 +34,6 @@ import {
   Globe,
   Layers,
   BarChart3,
-  Lightbulb,
   Check,
   AlertCircle,
   Clock,
@@ -44,9 +41,11 @@ import {
   HelpCircle,
   Eye,
   Sliders,
-  Flame,
-  FileCheck2,
-  RotateCcw,
+  Sparkles,
+  ChevronRight,
+  Hash,
+  Activity,
+  Info,
 } from "lucide-react";
 
 export const SubmitProblem: React.FC = () => {
@@ -62,8 +61,9 @@ export const SubmitProblem: React.FC = () => {
   const [isHumanVerified, setIsHumanVerified] = useState(false);
   const [adminDirectPublish, setAdminDirectPublish] = useState(false);
   const [isBulkModalOpen, setIsBulkModalOpen] = useState(false);
+  const [mobileInspectorOpen, setMobileInspectorOpen] = useState(false);
 
-  // â”€â”€ Tab 1: Core Overview & Operational Narrative â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Tab 1: Core Narrative ──────────────────────────────────────────
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [industry, setIndustry] = useState("Healthcare");
@@ -90,7 +90,7 @@ export const SubmitProblem: React.FC = () => {
     }
   }, [userDoc, user]);
 
-  // Credits: (Origin / External 3rd Party Attribution Source)
+  // Credits & Origin
   const [psFrom, setPsFrom] = useState<string[]>(["Own Thinking"]);
   const [psFromCustom, setPsFromCustom] = useState("");
   const [availableCredits, setAvailableCredits] = useState<CreditSourceDoc[]>([]);
@@ -103,7 +103,7 @@ export const SubmitProblem: React.FC = () => {
     return () => unsub();
   }, []);
 
-  // â”€â”€ Tab 2: Evidence & Statistical Data Points â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Tab 2: Evidence & Documents ─────────────────────────────────────
   const [dataPoints, setDataPoints] = useState<Array<{ metric: string; label: string }>>([]);
   const [newMetric, setNewMetric] = useState("");
   const [newMetricLabel, setNewMetricLabel] = useState("");
@@ -116,7 +116,7 @@ export const SubmitProblem: React.FC = () => {
   const [evidenceUrls, setEvidenceUrls] = useState<string[]>([]);
   const [newEvidenceUrl, setNewEvidenceUrl] = useState("");
 
-  // â”€â”€ Tab 3: Market Telemetry & Impact â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Tab 3: Market Telemetry ─────────────────────────────────────────
   const [tam, setTam] = useState("");
   const [currentPenetration, setCurrentPenetration] = useState(0);
   const [wastedCost, setWastedCost] = useState("");
@@ -124,51 +124,36 @@ export const SubmitProblem: React.FC = () => {
   const [audienceSize, setAudienceSize] = useState("");
   const [willingnessToPay, setWillingnessToPay] = useState("");
 
-  // â”€â”€ Tab 4: Research & Competitors â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Tab 4: Research & Competitors ───────────────────────────────────
   const [keyFindings, setKeyFindings] = useState<string[]>([]);
   const [newFinding, setNewFinding] = useState("");
-
   const [researchMethodology, setResearchMethodology] = useState("");
-
   const [academicReferences, setAcademicReferences] = useState<string[]>([]);
   const [newRef, setNewRef] = useState("");
-
   const [competitors, setCompetitors] = useState<Array<{ solution: string; pros: string; cons: string }>>([]);
   const [newCompName, setNewCompName] = useState("");
   const [newCompPros, setNewCompPros] = useState("");
   const [newCompCons, setNewCompCons] = useState("");
 
-  // â”€â”€ Tab 5: Suggested MVP & Tech Specs â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Tab 5: Suggested MVP ───────────────────────────────────────────
   const [mvpFeatures, setMvpFeatures] = useState<string[]>([]);
   const [newMvpFeature, setNewMvpFeature] = useState("");
-
   const [technicalRequirements, setTechnicalRequirements] = useState("");
 
-  // â”€â”€ Tab 6: Startup Mode & Venture Blueprint â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Tab 6: Startup Mode Blueprint ──────────────────────────────────
   const [hasStartupMode, setHasStartupMode] = useState(false);
   const [startupThesis, setStartupThesis] = useState("");
   const [startupTargetSegments, setStartupTargetSegments] = useState<string[]>([]);
   const [newSegment, setNewSegment] = useState("");
   const [startupWillingnessToPay, setStartupWillingnessToPay] = useState("");
   const [startupValueProp, setStartupValueProp] = useState("");
-  const [startupSolutionsGaps, setStartupSolutionsGaps] = useState<
-    Array<{ name: string; description: string; weaknessType: "Weakness" | "Gap"; weakness: string }>
-  >([]);
+  const [startupSolutionsGaps, setStartupSolutionsGaps] = useState<StartupSolutionGap[]>([]);
   const [newGapName, setNewGapName] = useState("");
   const [newGapDesc, setNewGapDesc] = useState("");
   const [newGapWeakness, setNewGapWeakness] = useState("");
   const [newGapType, setNewGapType] = useState<"Weakness" | "Gap">("Weakness");
 
-  const [startupDirections, setStartupDirections] = useState<
-    Array<{
-      type: "software" | "service" | "hardware" | "hybrid" | string;
-      title: string;
-      description: string;
-      pros?: string;
-      cons?: string;
-      techStack?: string[];
-    }>
-  >([]);
+  const [startupDirections, setStartupDirections] = useState<StartupDirection[]>([]);
   const [newDirType, setNewDirType] = useState<string>("software");
   const [newDirTitle, setNewDirTitle] = useState("");
   const [newDirDesc, setNewDirDesc] = useState("");
@@ -181,10 +166,11 @@ export const SubmitProblem: React.FC = () => {
   const [discoveryInterviewPrompt, setDiscoveryInterviewPrompt] = useState("");
 
   const [startupComplianceStandards, setStartupComplianceStandards] = useState<string[]>([
-    "HIPAA BAA Compliant",
-    "SOC2 Type II Ready",
-    "FHIR / HL7 Validated",
-    "Carequality HIE Ready",
+    "SOC2 Type II",
+    "ISO 27001",
+    "GDPR Data Privacy",
+    "HIPAA Healthcare Security",
+    "PCI-DSS Payment Card Standard",
   ]);
   const [customStandard, setCustomStandard] = useState("");
 
@@ -193,11 +179,62 @@ export const SubmitProblem: React.FC = () => {
   const [keyRisks, setKeyRisks] = useState<string[]>([]);
   const [newKeyRisk, setNewKeyRisk] = useState("");
 
-  // â”€â”€ Form Submission Handler â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // ── Dynamic Rigor Health Score Calculation ──────────────────────────
+  const rigorScore = useMemo(() => {
+    let score = 0;
+    // 1. Narrative (up to 30)
+    if (title.trim().length >= 10) score += 10;
+    if (description.trim().length >= 40) score += 10;
+    if (whoFacesIt.trim() && whyFrustrating.trim()) score += 10;
+
+    // 2. Evidence (up to 25)
+    if (dataPoints.length > 0) score += 10;
+    if (evidenceUrls.length > 0 || evidenceDocuments.length > 0) score += 10;
+    if (dataPoints.length >= 2) score += 5;
+
+    // 3. Telemetry (up to 25)
+    if (tam.trim()) score += 10;
+    if (wastedCost.trim() || citizensAffected.trim()) score += 10;
+    if (willingnessToPay.trim()) score += 5;
+
+    // 4. Solutions / Startup Blueprint (up to 20)
+    if (competitors.length > 0 || mvpFeatures.length > 0) score += 10;
+    if (hasStartupMode && startupThesis.trim()) score += 10;
+
+    return Math.min(100, score);
+  }, [
+    title,
+    description,
+    whoFacesIt,
+    whyFrustrating,
+    dataPoints,
+    evidenceUrls,
+    evidenceDocuments,
+    tam,
+    wastedCost,
+    citizensAffected,
+    willingnessToPay,
+    competitors,
+    mvpFeatures,
+    hasStartupMode,
+    startupThesis,
+  ]);
+
+  // Modules metadata
+  const MODULES = [
+    { id: 1, label: "Narrative", subtitle: "Problem & Context", icon: FileText },
+    { id: 2, label: "Evidence", subtitle: "Data & Citations", icon: BarChart3 },
+    { id: 3, label: "Market", subtitle: "TAM & Waste", icon: DollarSign },
+    { id: 4, label: "Rivals", subtitle: "Prior Workarounds", icon: Search },
+    { id: 5, label: "Solution", subtitle: "MVP Requirements", icon: Code },
+    { id: 6, label: "Venture", subtitle: "Startup Blueprint", icon: Rocket },
+  ];
+
+  // ── Form Submission Handler ─────────────────────────────────────────
+  const handleSubmit = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     if (!title.trim() || !description.trim()) {
-      setError("Please provide at least a Problem Title and Core Issue Summary.");
+      setError("Please provide at least a Problem Title and Core Narrative Summary.");
       setActiveTab(1);
       return;
     }
@@ -212,7 +249,7 @@ export const SubmitProblem: React.FC = () => {
 
     const authorName = isAnonymous
       ? "Anonymous Scout"
-      : customSubmitterName.trim() || userDoc?.name || user?.displayName || "Practitioner Submitter";
+      : customSubmitterName.trim() || userDoc?.name || user?.displayName || "Community Contributor";
 
     const effectiveIndustry = isCustomIndustry && customIndustry.trim() ? customIndustry.trim() : industry;
 
@@ -223,9 +260,9 @@ export const SubmitProblem: React.FC = () => {
         industry: effectiveIndustry,
         severity,
         location: location.trim() || "Global",
-        submittedByUid: userDoc?.uid || user?.uid || "member",
+        submittedByUid: userDoc?.uid || user?.uid || "community",
         submittedByName: authorName,
-        submitterUsername: isAnonymous ? undefined : (userDoc?.username || undefined),
+        submitterUsername: isAnonymous ? undefined : userDoc?.username || undefined,
         whenItHappens: whenItHappens.trim(),
         whoFacesIt: whoFacesIt.trim(),
         whyFrustrating: whyFrustrating.trim(),
@@ -276,9 +313,8 @@ export const SubmitProblem: React.FC = () => {
           keyRisks: keyRisks.filter(Boolean),
           aiConfidence: 96,
         } as any,
-        status: (isAdmin && adminDirectPublish) ? "approved" : "pending",
+        status: isAdmin && adminDirectPublish ? "approved" : "pending",
       });
-
 
       if (res.success && res.problemId) {
         setSubmittedProblemId(res.problemId);
@@ -301,57 +337,58 @@ export const SubmitProblem: React.FC = () => {
     }
   };
 
-  // Success / Acknowledgement Screen
+  // ── Success / Acknowledgement Screen ────────────────────────────────
   if (submittedProblemId) {
     return (
-      <div className="w-full min-h-screen bg-surface flex items-center justify-center py-16 px-4 font-['Poppins',sans-serif] text-on-surface animate-fade-in">
-        <div className="w-full max-w-md bg-surface-container-lowest rounded-3xl p-8 md:p-10 shadow-xl border border-outline-variant/30 flex flex-col items-center gap-7 text-center">
-          <div className="w-20 h-20 rounded-full bg-emerald-50 dark:bg-emerald-950/30 border-2 border-emerald-200 dark:border-emerald-800 flex items-center justify-center shadow-md">
-            <CheckCircle className="w-10 h-10 text-emerald-600 stroke-[2]" />
+      <div className="w-full min-h-[85vh] bg-surface flex items-center justify-center py-16 px-4 font-['Poppins',sans-serif] text-on-surface animate-fade-in">
+        <div className="w-full max-w-lg bg-surface-container-lowest rounded-3xl p-8 sm:p-10 shadow-2xl border border-outline-variant/30 flex flex-col items-center gap-6 text-center">
+          <div className="w-20 h-20 rounded-full bg-emerald-50 dark:bg-emerald-950/40 border-2 border-emerald-300 dark:border-emerald-700 flex items-center justify-center shadow-lg">
+            <CheckCircle className="w-10 h-10 text-emerald-600 dark:text-emerald-400 stroke-[2.2]" />
           </div>
-          <div className="flex flex-col gap-2">
-            <h2 className="text-2xl font-black text-on-surface">Problem Submitted!</h2>
-            <p className="text-sm text-on-surface-variant leading-relaxed">
-              Thank you for your contribution. Your problem has been received and is now under review.
+
+          <div className="space-y-1.5">
+            <h2 className="text-2xl font-black text-on-surface tracking-tight">Dossier Registered!</h2>
+            <p className="text-xs sm:text-sm text-on-surface-variant max-w-sm mx-auto leading-relaxed">
+              Your problem statement has been encrypted, assigned ID <span className="font-mono font-bold text-primary">{submittedProblemId}</span>, and indexed.
             </p>
           </div>
-          <div className="w-full bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800/40 rounded-2xl px-5 py-4 flex flex-col gap-3">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-on-surface-variant">Status</span>
-              <span className="inline-flex items-center gap-1.5 bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400 text-[11px] font-bold px-3 py-1 rounded-full">
+
+          <div className="w-full bg-surface-container-low border border-outline-variant/30 rounded-2xl p-4 sm:p-5 flex flex-col gap-3 text-left">
+            <div className="flex items-center justify-between text-xs">
+              <span className="font-semibold text-on-surface-variant">Review Status</span>
+              <span className="inline-flex items-center gap-1.5 bg-amber-500/15 text-amber-700 dark:text-amber-400 text-[11px] font-bold px-3 py-1 rounded-full border border-amber-500/20">
                 <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
-                Pending Review
+                {isAdmin && adminDirectPublish ? "Approved & Live" : "Pending Curator Review"}
               </span>
             </div>
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-on-surface-variant">Visibility</span>
-              <span className="text-xs font-semibold text-on-surface-variant">Private until approved</span>
+            <div className="flex items-center justify-between text-xs border-t border-outline-variant/20 pt-2.5">
+              <span className="font-semibold text-on-surface-variant">Attribution</span>
+              <span className="font-bold text-on-surface truncate max-w-[200px]">
+                {isAnonymous ? "Anonymous Scout" : customSubmitterName || "Community Contributor"}
+              </span>
             </div>
-            {isAdmin && (
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-on-surface-variant">Next step</span>
-                <span className="text-xs font-semibold text-on-surface-variant">Admin review &amp; approval</span>
-              </div>
-            )}
+            <div className="flex items-center justify-between text-xs border-t border-outline-variant/20 pt-2.5">
+              <span className="font-semibold text-on-surface-variant">Live Public Dossier</span>
+              <a
+                href={getProblemDetailUrl(submittedProblemId, title)}
+                target="_blank"
+                rel="noreferrer"
+                className="font-bold text-primary hover:underline flex items-center gap-1"
+              >
+                <span>View Dossier</span>
+                <ExternalLink className="w-3 h-3" />
+              </a>
+            </div>
           </div>
-          <div className="flex flex-col sm:flex-row gap-3 w-full pt-1">
-            {isAdmin ? (
-              <button
-                onClick={() => navigate("/admin/review-queue")}
-                className="w-full bg-primary text-white py-3 px-6 rounded-xl text-sm font-bold shadow hover:opacity-90 transition-all flex items-center justify-center gap-2 cursor-pointer"
-              >
-                <span>Review Queue</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
-            ) : (
-              <button
-                onClick={() => navigate("/dashboard")}
-                className="w-full bg-primary text-white py-3 px-6 rounded-xl text-sm font-bold shadow hover:opacity-90 transition-all flex items-center justify-center gap-2 cursor-pointer"
-              >
-                <span>Go to Dashboard</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
-            )}
+
+          <div className="flex flex-col sm:flex-row gap-3 w-full pt-2">
+            <a
+              href={getProblemDetailUrl(submittedProblemId, title)}
+              className="flex-1 bg-primary hover:bg-primary-container text-white py-3 px-5 rounded-xl text-xs sm:text-sm font-bold shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <span>Preview Live Page</span>
+              <ArrowRight className="w-4 h-4" />
+            </a>
             <button
               onClick={() => {
                 setSubmittedProblemId(null);
@@ -359,7 +396,7 @@ export const SubmitProblem: React.FC = () => {
                 setTitle("");
                 setDescription("");
               }}
-              className="w-full bg-surface-container hover:bg-surface-container-high text-on-surface border border-outline-variant/40 py-3 px-6 rounded-xl text-sm font-bold transition-all cursor-pointer"
+              className="flex-1 bg-surface-container hover:bg-surface-container-high text-on-surface border border-outline-variant/40 py-3 px-5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer"
             >
               Submit Another
             </button>
@@ -370,52 +407,39 @@ export const SubmitProblem: React.FC = () => {
   }
 
   return (
-    <div className="w-full min-h-screen bg-surface py-4 sm:py-8 md:py-10 px-3 sm:px-6 md:px-8 lg:px-12 font-['Poppins',sans-serif] text-on-surface">
-      {/* SEO for Sitelinks Indexing */}
+    <div className="w-full min-h-screen bg-surface py-5 sm:py-8 md:py-10 px-3 sm:px-6 md:px-8 lg:px-10 font-['Poppins',sans-serif] text-on-surface">
       <SEOHead
-        title="Submit a Problem Dossier — Problem Intelligence Studio"
-        description="Submit an empirical industry problem with telemetry data, research papers, and market sizing to Stuckhere. Curate real-world challenges for founders and researchers."
+        title="Problem Intelligence Studio — Submit Empirical Problem Dossiers"
+        description="Submit empirical industry problem dossiers with market sizing, research papers, and startup blueprints to Stuckhere Open Registry."
         canonicalUrl="https://stuckhere.davns.com/submit"
         ogType="website"
-        jsonLd={{
-          "@context": "https://schema.org",
-          "@type": "WebPage",
-          "name": "Submit a Problem Dossier",
-          "description": "Submit an empirical industry problem with telemetry data, research papers, and market sizing to Stuckhere.",
-          "url": "https://stuckhere.davns.com/submit",
-          "isPartOf": {
-            "@type": "WebSite",
-            "name": "Stuckhere",
-            "url": "https://stuckhere.davns.com"
-          }
-        }}
       />
-      {/* â”€â”€ TOP HERO HEADER & BREADCRUMBS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
 
-      <div className="w-full flex flex-col md:flex-row md:items-center justify-between gap-3 sm:gap-4 pb-4 sm:pb-6 border-b border-gray-200/60 mb-5 sm:mb-8">
-        <div className="flex flex-col gap-1 sm:gap-1.5">
-          <div className="flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs font-bold text-on-surface-variant">
+      {/* ── STUDIO COMMAND HEADER ────────────────────────────────────── */}
+      <div className="w-full max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4 pb-5 border-b border-outline-variant/20 mb-6">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2 text-[11px] font-bold text-on-surface-variant">
             <Link to="/explore" className="hover:text-primary transition-colors">
-              Explore
+              Registry
             </Link>
-            <span className="text-gray-300">/</span>
-            <span className="text-primary font-bold">Submit Problem Statement</span>
+            <ChevronRight className="w-3 h-3 opacity-40" />
+            <span className="text-primary font-bold">Dossier Studio</span>
           </div>
-          <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black text-on-surface tracking-tight">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-black text-on-surface tracking-tight">
             Problem Intelligence Studio
           </h1>
-          <p className="text-[11px] sm:text-xs md:text-sm text-on-surface-variant max-w-3xl">
-            Draft and structure an empirical, evidence-backed problem dossier with market sizing, research citations, and startup venture blueprints.
+          <p className="text-xs text-on-surface-variant max-w-2xl leading-relaxed">
+            Structure high-conviction, evidence-backed problem dossiers. Quantify market pain, catalog failure modes of prior workarounds, and draft startup blueprints.
           </p>
         </div>
 
-        {/* Action Header Buttons */}
-        <div className="flex items-center gap-2 sm:gap-2.5 shrink-0 self-start md:self-auto flex-wrap sm:flex-nowrap">
+        {/* Global Action Toolbar */}
+        <div className="flex items-center gap-2 sm:gap-2.5 shrink-0 flex-wrap sm:flex-nowrap">
           <button
             type="button"
             onClick={() => setIsBulkModalOpen(true)}
-            className="group flex items-center gap-1.5 px-3 sm:px-4 py-1.5 sm:py-2.5 rounded-lg sm:rounded-xl bg-surface-container hover:bg-surface-container-high border border-outline-variant/30 text-on-surface text-[11px] sm:text-xs font-bold shadow-2xs transition-all cursor-pointer"
-            title="Bulk upload problem statements via CSV / Excel spreadsheet or direct copy-paste"
+            className="group flex items-center gap-1.5 px-3 sm:px-3.5 py-2 rounded-xl bg-surface-container hover:bg-surface-container-high border border-outline-variant/30 text-on-surface text-xs font-bold shadow-2xs transition-all cursor-pointer"
+            title="Import an entire spreadsheet or paste rows via RFC-4180 CSV engine"
           >
             <Upload className="w-3.5 h-3.5 text-primary group-hover:scale-110 transition-transform" />
             <span>Bulk Upload (CSV / Paste)</span>
@@ -423,147 +447,123 @@ export const SubmitProblem: React.FC = () => {
 
           <button
             type="button"
+            onClick={() => setMobileInspectorOpen(!mobileInspectorOpen)}
+            className="lg:hidden flex items-center gap-1.5 px-3 py-2 rounded-xl bg-surface-container border border-outline-variant/30 text-xs font-bold text-on-surface"
+          >
+            <Eye className="w-3.5 h-3.5 text-secondary" />
+            <span>{mobileInspectorOpen ? "Hide Inspector" : "Inspector"}</span>
+          </button>
+
+          <button
+            type="button"
             disabled={submitting}
-            onClick={handleSubmit}
-            className="bg-primary hover:bg-primary-container text-white px-3 sm:px-5 py-1.5 sm:py-2.5 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold shadow-xs transition-all cursor-pointer disabled:opacity-50 flex items-center gap-1.5"
+            onClick={() => handleSubmit()}
+            className="bg-primary hover:bg-primary-container text-white px-4 sm:px-5 py-2 rounded-xl text-xs font-bold shadow-sm hover:shadow transition-all cursor-pointer disabled:opacity-50 flex items-center gap-1.5"
           >
             <Zap className="w-3.5 h-3.5" />
-            <span>{submitting ? "Submitting..." : "Submit Problem"}</span>
+            <span>{submitting ? "Publishing..." : "Submit Problem Dossier"}</span>
           </button>
         </div>
       </div>
 
-      {/* ── BULK UPLOAD CALLOUT FOR BUILDERS & SCOUTS ─────────────────── */}
-      <div className="w-full -mt-2 sm:-mt-4 mb-4 sm:mb-6 p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-surface-container-low/70 border border-primary/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs shadow-2xs">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
-            <FileSpreadsheet className="w-4 h-4" />
+      {/* ── TWO-COLUMN STUDIO WORKBENCH ARCHITECTURE ────────────────── */}
+      <div className="w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
+        {/* ── LEFT: EDITORIAL WORKBENCH (7 cols) ─────────────────────── */}
+        <div className="lg:col-span-7 xl:col-span-8 flex flex-col gap-5">
+          {/* Segmented Investigative Stepper */}
+          <div className="w-full bg-surface-container-low p-1.5 rounded-2xl border border-outline-variant/20 flex items-center gap-1 overflow-x-auto no-scrollbar scrollbar-none shadow-2xs">
+            {MODULES.map((mod) => {
+              const Icon = mod.icon;
+              const isActive = activeTab === mod.id;
+              return (
+                <button
+                  key={mod.id}
+                  type="button"
+                  onClick={() => setActiveTab(mod.id)}
+                  className={`flex-1 min-w-[95px] sm:min-w-0 py-2 px-2 sm:px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer select-none ${
+                    isActive
+                      ? "bg-surface-container-lowest text-primary shadow-xs border border-outline-variant/30 font-extrabold"
+                      : "text-on-surface-variant hover:text-on-surface hover:bg-surface-container"
+                  }`}
+                >
+                  <Icon className={`w-3.5 h-3.5 shrink-0 ${isActive ? "text-primary" : "opacity-60"}`} />
+                  <span className="truncate">{mod.label}</span>
+                </button>
+              );
+            })}
           </div>
-          <div>
-            <p className="font-bold text-[12px] sm:text-[13px] text-on-surface">
-              Have multiple problem statements or a research spreadsheet?
-            </p>
-            <p className="text-[11px] text-on-surface-variant">
-              Import entire CSV files or paste tabular rows with instant 6-module preview, automatic delimiter detection, and inline validation.
-            </p>
-          </div>
-        </div>
-        <button
-          type="button"
-          onClick={() => setIsBulkModalOpen(true)}
-          className="shrink-0 w-full sm:w-auto px-3.5 py-1.5 rounded-lg bg-primary hover:bg-primary-container text-white text-[11px] font-bold shadow-2xs transition-all cursor-pointer flex items-center justify-center gap-1.5"
-        >
-          <Upload className="w-3 h-3" />
-          <span>Upload CSV / Paste Data</span>
-        </button>
-      </div>
-
-      {/* â”€â”€ MAIN FULL-PAGE STUDIO â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <div className="w-full flex flex-col gap-4 sm:gap-6">
-        {/* Section Navigation Tab Bar */}
-        <div className="w-full bg-surface-container-lowest p-1 sm:p-1.5 rounded-xl sm:rounded-2xl border border-outline-variant/30 shadow-2xs flex items-center gap-1 overflow-x-auto no-scrollbar scrollbar-none">
-          {[
-            { id: 1, label: "1. Core Narrative", icon: FileText },
-            { id: 2, label: "2. Evidence & Data", icon: BarChart3 },
-            { id: 3, label: "3. Market & Impact", icon: DollarSign },
-            { id: 4, label: "4. Research & Rivals", icon: Search },
-            { id: 5, label: "5. MVP Specs", icon: Code },
-            { id: 6, label: "6. Startup Mode", icon: Rocket },
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              type="button"
-              onClick={() => setActiveTab(tab.id)}
-              className={`px-2.5 sm:px-4 py-1.5 sm:py-2.5 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold flex items-center gap-1.5 sm:gap-2 transition-all whitespace-nowrap cursor-pointer shrink-0 ${
-                activeTab === tab.id
-                  ? "bg-primary text-white shadow-xs"
-                  : "text-on-surface-variant hover:text-on-surface hover:bg-surface-container/50"
-              }`}
-            >
-              <tab.icon className={`w-3 h-3 sm:w-3.5 sm:h-3.5 ${activeTab === tab.id ? "text-white" : "text-gray-400"}`} />
-              <span>{tab.label}</span>
-            </button>
-          ))}
-        </div>
 
           {error && (
-            <div className="p-4 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs font-semibold flex items-center gap-3">
-              <AlertCircle className="w-5 h-5 shrink-0" />
-              <span>{error}</span>
+            <div className="p-3.5 rounded-xl bg-error/10 border border-error/25 text-error text-xs flex items-center gap-2.5 animate-shake">
+              <AlertCircle className="w-4 h-4 shrink-0" />
+              <p className="font-medium">{error}</p>
             </div>
           )}
 
-          {/* Form Content */}
+          {/* Form Card Container */}
           <form onSubmit={handleSubmit} className="w-full flex flex-col gap-6">
-            {/* â”€â”€ TAB 1: CORE PROBLEM & OPERATIONAL NARRATIVE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+            {/* ── MODULE 1: CORE NARRATIVE ────────────────────────────── */}
             {activeTab === 1 && (
-              <div className="bg-surface-container-lowest p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl border border-outline-variant/30 shadow-2xs flex flex-col gap-4 sm:gap-6 animate-fade-in">
-                <div className="flex flex-col gap-1 border-b border-gray-200/60 pb-3 sm:pb-4">
-                  <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-widest text-primary">
-                    Module 1
-                  </span>
-                  <h2 className="text-base sm:text-lg md:text-xl font-bold text-on-surface">
-                    Problem Overview & Operational Context
+              <div className="bg-surface-container-lowest p-5 sm:p-7 rounded-3xl border border-outline-variant/30 shadow-2xs space-y-5 animate-fade-in">
+                <div className="border-b border-outline-variant/20 pb-3">
+                  <h2 className="text-base sm:text-lg font-bold text-on-surface">
+                    1. Core Narrative & Operational Context
                   </h2>
-                  <p className="text-[11px] sm:text-xs text-on-surface-variant">
-                    Define the core bottleneck, who experiences the friction, and what happens during day-to-day operations.
+                  <p className="text-xs text-on-surface-variant">
+                    Define the core bottleneck in objective, falsifiable terms without pitching a solution prematurely.
                   </p>
                 </div>
 
                 {/* Problem Title */}
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-bold text-on-surface flex items-center justify-between">
-                    <span>Problem Statement Title <span className="text-error">*</span></span>
-                    <span className="text-[10px] text-outline font-normal">Clear, specific, and domain-focused</span>
-                  </label>
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-bold text-on-surface flex items-center gap-1.5">
+                      <Hash className="w-3.5 h-3.5 text-primary" />
+                      <span>Problem Title</span>
+                      <span className="text-error font-mono">*</span>
+                    </label>
+                    <span className="text-[10px] font-mono text-on-surface-variant">{title.length}/140</span>
+                  </div>
                   <input
                     type="text"
                     required
+                    maxLength={140}
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    placeholder="e.g. Data Interoperability Failure in Rural Community Clinics"
-                    className="w-full bg-surface-container/40 rounded-xl px-4 py-3 text-xs md:text-sm font-semibold text-on-surface outline-none focus:ring-2 focus:ring-primary/20 border border-outline-variant/30"
+                    placeholder="e.g. Rural Healthcare Clinics Cannot Share Patient Records Across EHR Silos"
+                    className="w-full bg-surface-container-low rounded-xl px-3.5 py-2.5 text-xs sm:text-sm font-semibold text-on-surface outline-none border border-outline-variant/30 focus:border-primary focus:ring-1 focus:ring-primary transition-all placeholder:text-on-surface-variant/60"
                   />
                 </div>
 
-                {/* Core Issue Summary */}
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-bold text-on-surface flex items-center justify-between">
-                    <span>Core Issue & High-Level Pitch <span className="text-error">*</span></span>
-                    <span className="text-[10px] text-outline font-normal">2-3 sentences explaining the root conflict</span>
-                  </label>
+                {/* Core Summary Description */}
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-bold text-on-surface flex items-center gap-1.5">
+                      <FileText className="w-3.5 h-3.5 text-primary" />
+                      <span>Objective Problem Description</span>
+                      <span className="text-error font-mono">*</span>
+                    </label>
+                    <span className="text-[10px] font-mono text-on-surface-variant">{description.length}/1200</span>
+                  </div>
                   <textarea
                     required
-                    rows={3}
+                    rows={4}
+                    maxLength={1200}
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    placeholder="Rural healthcare providers lack a unified system to access patient records across different local specialists, causing treatment latency and medical errors..."
-                    className="w-full bg-surface-container/40 rounded-xl p-3.5 text-xs text-on-surface outline-none focus:ring-2 focus:ring-primary/20 border border-outline-variant/30 font-normal leading-relaxed"
+                    placeholder="Describe what goes wrong, why current tools fail, and the quantifiable consequence of leaving this problem unsolved..."
+                    className="w-full bg-surface-container-low rounded-xl p-3.5 text-xs sm:text-sm text-on-surface outline-none border border-outline-variant/30 focus:border-primary focus:ring-1 focus:ring-primary transition-all resize-y placeholder:text-on-surface-variant/60 leading-relaxed"
                   />
                 </div>
 
-                {/* Industry & Severity Row */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="flex flex-col gap-1.5">
-                    <div className="flex items-center justify-between">
-                      <label className="text-xs font-bold text-on-surface">Target Industry</label>
-                      <button
-                        type="button"
-                        onClick={() => setIsCustomIndustry(!isCustomIndustry)}
-                        className="text-[10px] text-primary font-bold hover:underline cursor-pointer"
-                      >
-                        {isCustomIndustry ? "Choose from list" : "+ Enter Custom Industry"}
-                      </button>
-                    </div>
-                    {isCustomIndustry ? (
-                      <input
-                        type="text"
-                        value={customIndustry}
-                        onChange={(e) => setCustomIndustry(e.target.value)}
-                        placeholder="e.g. Quantum Cryptography, Ocean Cleanup..."
-                        className="w-full bg-surface-container/40 rounded-xl px-4 py-2.5 text-xs font-semibold text-on-surface outline-none border border-outline-variant/30"
-                      />
-                    ) : (
+                {/* Industry & Severity Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-on-surface flex items-center gap-1.5">
+                      <Building2 className="w-3.5 h-3.5 text-secondary" />
+                      <span>Target Industry Sector</span>
+                    </label>
+                    {!isCustomIndustry ? (
                       <select
                         value={industry}
                         onChange={(e) => {
@@ -573,320 +573,149 @@ export const SubmitProblem: React.FC = () => {
                             setIndustry(e.target.value);
                           }
                         }}
-                        className="w-full bg-surface-container/40 rounded-xl px-4 py-2.5 text-xs font-semibold text-on-surface outline-none border border-outline-variant/30 cursor-pointer"
+                        className="w-full bg-surface-container-low rounded-xl px-3.5 py-2.5 text-xs font-semibold text-on-surface outline-none border border-outline-variant/30 focus:border-primary cursor-pointer"
                       >
-                        {REAL_INDUSTRIES.map((ind) => {
-                          const name = typeof ind === "string" ? ind : ind.name;
-                          return (
-                            <option key={name} value={name}>
-                              {name}
-                            </option>
-                          );
-                        })}
-                        <option value="__custom__">+ Other / Custom Industry...</option>
+                        {REAL_INDUSTRIES.map((ind) => (
+                          <option key={ind.name} value={ind.name}>
+                            {ind.name}
+                          </option>
+                        ))}
+                        <option value="__custom__">+ Enter Custom Industry...</option>
                       </select>
+                    ) : (
+                      <div className="flex items-center gap-1.5">
+                        <input
+                          type="text"
+                          value={customIndustry}
+                          onChange={(e) => setCustomIndustry(e.target.value)}
+                          placeholder="e.g. Maritime Robotics"
+                          className="w-full bg-surface-container-low rounded-xl px-3.5 py-2.5 text-xs font-semibold text-on-surface outline-none border border-outline-variant/30 focus:border-primary"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setIsCustomIndustry(false)}
+                          className="px-2.5 py-2.5 rounded-xl bg-surface-container text-xs text-on-surface hover:bg-surface-container-high"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
                     )}
                   </div>
 
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-bold text-on-surface">Geographic Scope / Location</label>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-on-surface flex items-center gap-1.5">
+                      <Sliders className="w-3.5 h-3.5 text-secondary" />
+                      <span>Severity & Operational Impact</span>
+                    </label>
+                    <div className="grid grid-cols-4 gap-1 bg-surface-container-low p-1 rounded-xl border border-outline-variant/30">
+                      {(["minor", "medium", "major", "critical"] as ProblemSeverity[]).map((sev) => {
+                        const isSelected = severity === sev;
+                        return (
+                          <button
+                            key={sev}
+                            type="button"
+                            onClick={() => setSeverity(sev)}
+                            className={`py-1.5 text-[11px] font-bold rounded-lg capitalize transition-all cursor-pointer ${
+                              isSelected
+                                ? sev === "critical"
+                                  ? "bg-rose-600 text-white shadow-2xs"
+                                  : sev === "major"
+                                  ? "bg-amber-600 text-white shadow-2xs"
+                                  : "bg-primary text-white shadow-2xs"
+                                : "text-on-surface-variant hover:text-on-surface hover:bg-surface-container"
+                            }`}
+                          >
+                            {sev}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Submitter Attribution & Geography */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2 border-t border-outline-variant/20">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-on-surface flex items-center gap-1">
+                      <Users className="w-3.5 h-3.5 text-on-surface-variant" />
+                      <span>Who Faces It</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={whoFacesIt}
+                      onChange={(e) => setWhoFacesIt(e.target.value)}
+                      placeholder="e.g. Clinical IT Directors"
+                      className="w-full bg-surface-container-low rounded-xl px-3 py-2 text-xs text-on-surface outline-none border border-outline-variant/30"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-on-surface flex items-center gap-1">
+                      <Clock className="w-3.5 h-3.5 text-on-surface-variant" />
+                      <span>Frequency</span>
+                    </label>
+                    <select
+                      value={frequency}
+                      onChange={(e) => setFrequency(e.target.value)}
+                      className="w-full bg-surface-container-low rounded-xl px-3 py-2 text-xs font-semibold text-on-surface outline-none border border-outline-variant/30 cursor-pointer"
+                    >
+                      <option value="Hourly">Hourly / Continuous</option>
+                      <option value="Daily">Daily Operational</option>
+                      <option value="Weekly">Weekly Cycle</option>
+                      <option value="Monthly">Monthly Closing</option>
+                      <option value="Seasonal">Seasonal / Event-Driven</option>
+                    </select>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-on-surface flex items-center gap-1">
+                      <Globe className="w-3.5 h-3.5 text-on-surface-variant" />
+                      <span>Geography / Jurisdiction</span>
+                    </label>
                     <input
                       type="text"
                       value={location}
                       onChange={(e) => setLocation(e.target.value)}
-                      placeholder="e.g. Rural United States, Global, EMEA"
-                      className="w-full bg-surface-container/40 rounded-xl px-4 py-2.5 text-xs font-semibold text-on-surface outline-none border border-outline-variant/30"
+                      placeholder="e.g. Global or EU/US"
+                      className="w-full bg-surface-container-low rounded-xl px-3 py-2 text-xs text-on-surface outline-none border border-outline-variant/30"
                     />
                   </div>
-                </div>
-
-                {/* Credits: (Origin / External 3rd Party Attribution Source) */}
-                <div className="flex flex-col gap-2.5 pt-2 border-t border-gray-200/60">
-                  <div className="flex items-center justify-between flex-wrap gap-1">
-                    <label className="text-xs font-bold text-on-surface flex items-center gap-2">
-                      <span>Credits:</span>
-                      <span className="text-[10px] text-primary bg-primary/10 px-2 py-0.5 rounded-full font-semibold">
-                        {psFrom.length} selected
-                      </span>
-                    </label>
-                    <span className="text-[10px] text-on-surface-variant font-normal">
-                      Origin credit, hackathon platform, or 3rd-party innovation program
-                    </span>
-                  </div>
-
-                  {/* Dropdown Selector & Custom Write-in Row */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                    <div className="relative">
-                      <select
-                        value={selectedCreditDropdown}
-                        onChange={(e) => {
-                          const val = e.target.value;
-                          if (val && !psFrom.includes(val)) {
-                            setPsFrom([...psFrom, val]);
-                          }
-                          setSelectedCreditDropdown("");
-                        }}
-                        className="w-full bg-surface-container/40 rounded-xl px-3.5 py-2.5 text-xs font-semibold text-on-surface outline-none border border-outline-variant/30 cursor-pointer"
-                      >
-                        <option value="">+ Select Credit from list...</option>
-                        {availableCredits.map((cred) => (
-                          <option key={cred.id} value={cred.name}>
-                            {cred.name} {cred.category ? `(${cred.category})` : ""}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    {/* Custom Credit Write-In */}
-                    <div className="flex gap-2">
-                      <input
-                        type="text"
-                        value={psFromCustom}
-                        onChange={(e) => setPsFromCustom(e.target.value)}
-                        placeholder="Or enter custom credit name..."
-                        className="flex-1 bg-surface-container/40 rounded-xl px-3 py-2 text-xs text-on-surface outline-none border border-outline-variant/30"
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") {
-                            e.preventDefault();
-                            if (psFromCustom.trim() && !psFrom.includes(psFromCustom.trim())) {
-                              setPsFrom([...psFrom, psFromCustom.trim()]);
-                              setPsFromCustom("");
-                            }
-                          }
-                        }}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (psFromCustom.trim() && !psFrom.includes(psFromCustom.trim())) {
-                            setPsFrom([...psFrom, psFromCustom.trim()]);
-                            setPsFromCustom("");
-                          }
-                        }}
-                        className="px-3.5 py-2 bg-surface-container text-on-surface hover:bg-surface-container-high text-xs font-bold rounded-xl border border-outline-variant/30 cursor-pointer shrink-0"
-                      >
-                        + Add
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Selected Credits Pills / Chips */}
-                  {psFrom.length > 0 && (
-                    <div className="flex flex-wrap gap-1.5 pt-1">
-                      {psFrom.map((source) => (
-                        <CreditSourceBadge
-                          key={source}
-                          source={source}
-                          size="sm"
-                          onRemove={() => setPsFrom(psFrom.filter((s) => s !== source))}
-                        />
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                {/* Problem Severity Selector */}
-                <div className="flex flex-col gap-2">
-                  <label className="text-xs font-bold text-on-surface">Severity & Operational Impact Level</label>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                    {(["minor", "medium", "major", "critical"] as ProblemSeverity[]).map((sev) => (
-                      <button
-                        key={sev}
-                        type="button"
-                        onClick={() => setSeverity(sev)}
-                        className={`p-3 rounded-xl border text-left flex flex-col gap-1 transition-all cursor-pointer capitalize text-xs font-bold ${
-                          severity === sev
-                            ? sev === "critical"
-                              ? "bg-rose-50 border-rose-500 text-rose-700 dark:bg-rose-950/40"
-                              : sev === "major"
-                              ? "bg-orange-50 border-orange-500 text-orange-700 dark:bg-orange-950/40"
-                              : "bg-primary/10 border-primary text-primary"
-                            : "bg-surface-container/20 border-outline-variant/30 text-on-surface-variant hover:bg-surface-container/50"
-                        }`}
-                      >
-                        <span>{sev}</span>
-                        <span className="text-[10px] font-normal opacity-80">
-                          {sev === "critical" ? "Life/Mission threat" : sev === "major" ? "High economic cost" : sev === "medium" ? "Moderate delay" : "Minor nuisance"}
-                        </span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* 5-Questions Operational Narrative Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t border-gray-200/60">
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-bold text-on-surface">When It Happens (Trigger)</label>
-                    <textarea
-                      rows={2}
-                      value={whenItHappens}
-                      onChange={(e) => setWhenItHappens(e.target.value)}
-                      placeholder="During patient triage, emergency transfers, and multi-specialist referrals..."
-                      className="w-full bg-surface-container/40 rounded-xl p-3 text-xs text-on-surface outline-none border border-outline-variant/30"
-                    />
-                  </div>
-
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-bold text-on-surface">Who Faces It (Stakeholders)</label>
-                    <textarea
-                      rows={2}
-                      value={whoFacesIt}
-                      onChange={(e) => setWhoFacesIt(e.target.value)}
-                      placeholder="Rural clinic administrators, triage doctors, regional specialists, patients..."
-                      className="w-full bg-surface-container/40 rounded-xl p-3 text-xs text-on-surface outline-none border border-outline-variant/30"
-                    />
-                  </div>
-
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-bold text-on-surface">Why It's Frustrating (Friction)</label>
-                    <textarea
-                      rows={2}
-                      value={whyFrustrating}
-                      onChange={(e) => setWhyFrustrating(e.target.value)}
-                      placeholder="Manual fax re-entry wastes 4+ hours per transfer, leading to duplicate testing..."
-                      className="w-full bg-surface-container/40 rounded-xl p-3 text-xs text-on-surface outline-none border border-outline-variant/30"
-                    />
-                  </div>
-
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-bold text-on-surface">Current Workarounds (Status Quo)</label>
-                    <textarea
-                      rows={2}
-                      value={currentSolution}
-                      onChange={(e) => setCurrentSolution(e.target.value)}
-                      placeholder="Legacy thermal fax machines, paper courier delivery, unencrypted email PDFs..."
-                      className="w-full bg-surface-container/40 rounded-xl p-3 text-xs text-on-surface outline-none border border-outline-variant/30"
-                    />
-                  </div>
-                </div>
-
-                {/* Submitter Attribution & Privacy */}
-                <div className="flex flex-col gap-3 pt-4 border-t border-gray-200/60">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                    <div>
-                      <h4 className="text-xs font-bold text-on-surface">Submitter Attribution & Privacy</h4>
-                      <p className="text-[11px] text-on-surface-variant">Choose how your name and verified status appear on this problem statement.</p>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => setIsAnonymous(!isAnonymous)}
-                      className={`text-xs font-bold px-3 py-1.5 rounded-full border transition-all cursor-pointer self-start sm:self-auto ${
-                        isAnonymous
-                          ? "bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-950/40"
-                          : "bg-primary/10 text-primary border-primary/20"
-                      }`}
-                    >
-                      {isAnonymous ? "Anonymous Scout Mode" : "Public Practitioner Attribution"}
-                    </button>
-                  </div>
-
-                  {!isAnonymous && (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-                      <div className="flex flex-col gap-1">
-                        <label className="text-[11px] font-bold text-on-surface">Display Name</label>
-                        <input
-                          type="text"
-                          value={customSubmitterName}
-                          onChange={(e) => setCustomSubmitterName(e.target.value)}
-                          placeholder={userDoc?.name || user?.displayName || "Your Name"}
-                          className="w-full bg-surface-container/40 rounded-xl px-3.5 py-2 text-xs text-on-surface outline-none border border-outline-variant/30"
-                        />
-                      </div>
-                      <div className="flex flex-col gap-1">
-                        <label className="text-[11px] font-bold text-on-surface">Professional Role / Title</label>
-                        <input
-                          type="text"
-                          value={submitterRole}
-                          onChange={(e) => setSubmitterRole(e.target.value)}
-                          placeholder="e.g. Clinical Director, Systems Engineer"
-                          className="w-full bg-surface-container/40 rounded-xl px-3.5 py-2 text-xs text-on-surface outline-none border border-outline-variant/30"
-                        />
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                <div className="flex justify-end pt-2">
-                  <button
-                    type="button"
-                    onClick={() => setActiveTab(2)}
-                    className="bg-primary text-white text-xs font-bold px-5 py-2.5 rounded-xl flex items-center gap-2 hover:bg-primary-container transition-all cursor-pointer shadow-xs"
-                  >
-                    <span>Proceed to Evidence & Data</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </button>
                 </div>
               </div>
             )}
 
-            {/* â”€â”€ TAB 2: EVIDENCE & STATISTICAL DATA POINTS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+            {/* ── MODULE 2: EVIDENCE & DATA POINTS ─────────────────────── */}
             {activeTab === 2 && (
-              <div className="bg-surface-container-lowest p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl border border-outline-variant/30 shadow-2xs flex flex-col gap-4 sm:gap-6 animate-fade-in">
-                <div className="flex flex-col gap-1 border-b border-gray-200/60 pb-3 sm:pb-4">
-                  <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-widest text-primary">
-                    Module 2
-                  </span>
-                  <h2 className="text-base sm:text-lg md:text-xl font-bold text-on-surface">
-                    Key Statistical Data Points & Evidence
+              <div className="bg-surface-container-lowest p-5 sm:p-7 rounded-3xl border border-outline-variant/30 shadow-2xs space-y-6 animate-fade-in">
+                <div className="border-b border-outline-variant/20 pb-3">
+                  <h2 className="text-base sm:text-lg font-bold text-on-surface">
+                    2. Empirical Evidence & Statistical Data Points
                   </h2>
-                  <p className="text-[11px] sm:text-xs text-on-surface-variant">
-                    Back your problem statement with empirical numbers, whitepapers, benchmarks, and external links.
+                  <p className="text-xs text-on-surface-variant">
+                    Dossiers with quantified telemetry and verified citations receive significantly higher ranking and visibility.
                   </p>
                 </div>
 
-                {/* Key Statistical Data Points Builder */}
-                <div className="flex flex-col gap-3">
-                  <label className="text-xs font-bold text-on-surface flex items-center justify-between">
-                    <span>Key Statistical Data Points</span>
-                    <span className="text-[10px] text-outline font-normal">Highlighted metrics displayed on problem dossier</span>
+                {/* Key Numeric Metrics */}
+                <div className="space-y-3">
+                  <label className="text-xs font-bold text-on-surface flex items-center gap-1.5">
+                    <Activity className="w-3.5 h-3.5 text-primary" />
+                    <span>Key Metrics & Statistical Proof</span>
                   </label>
-
-                  {dataPoints.length === 0 ? (
-                    <div className="p-3.5 rounded-xl border border-dashed border-gray-200 text-center text-xs text-on-surface-variant/70 italic bg-surface-container/10">
-                      No statistical data points added yet. Use the inputs below to add empirical metrics.
-                    </div>
-                  ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      {dataPoints.map((dp, idx) => (
-                        <div
-                          key={idx}
-                          className="p-3.5 rounded-2xl border border-outline-variant/30 bg-surface flex items-center justify-between gap-3 shadow-2xs"
-                        >
-                          <div className="flex items-center gap-3">
-                            <span className="text-lg font-black text-primary font-mono shrink-0">
-                              {dp.metric}
-                            </span>
-                            <span className="text-xs text-on-surface font-medium leading-snug">
-                              {dp.label}
-                            </span>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => setDataPoints(dataPoints.filter((_, i) => i !== idx))}
-                            className="text-gray-400 hover:text-error transition-colors p-1 cursor-pointer"
-                          >
-                            <X className="w-4 h-4" />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  {/* Add Stat Input */}
-                  <div className="flex flex-col sm:flex-row gap-2 mt-1">
+                  <div className="flex flex-col sm:flex-row gap-2">
                     <input
                       type="text"
                       value={newMetric}
                       onChange={(e) => setNewMetric(e.target.value)}
-                      placeholder="Metric (e.g. 64% or 4.2 hrs)"
-                      className="w-full sm:w-1/3 bg-surface-container/40 rounded-xl px-3 py-2 text-xs font-bold text-on-surface outline-none border border-outline-variant/30"
+                      placeholder="Metric value (e.g. 64% or $2.1M)"
+                      className="w-full sm:w-1/3 bg-surface-container-low rounded-xl px-3.5 py-2 text-xs font-bold text-primary outline-none border border-outline-variant/30"
                     />
                     <input
                       type="text"
                       value={newMetricLabel}
                       onChange={(e) => setNewMetricLabel(e.target.value)}
-                      placeholder="Label (e.g. Clinics using fax daily)"
-                      className="w-full sm:flex-1 bg-surface-container/40 rounded-xl px-3 py-2 text-xs text-on-surface outline-none border border-outline-variant/30"
+                      placeholder="Context label (e.g. of clinic referrals require duplicate lab tests)"
+                      className="w-full sm:w-2/3 bg-surface-container-low rounded-xl px-3.5 py-2 text-xs text-on-surface outline-none border border-outline-variant/30"
                     />
                     <button
                       type="button"
@@ -897,132 +726,50 @@ export const SubmitProblem: React.FC = () => {
                           setNewMetricLabel("");
                         }
                       }}
-                      className="bg-surface-container text-on-surface hover:bg-surface-container-high px-4 py-2 rounded-xl text-xs font-bold border border-outline-variant/30 shrink-0 cursor-pointer flex items-center justify-center gap-1.5"
+                      className="px-4 py-2 rounded-xl bg-primary text-white text-xs font-bold shrink-0 hover:bg-primary-container cursor-pointer transition-all flex items-center justify-center gap-1"
                     >
                       <Plus className="w-3.5 h-3.5" />
                       <span>Add Metric</span>
                     </button>
                   </div>
-                </div>
 
-                {/* Supporting Documents Builder */}
-                <div className="flex flex-col gap-3 pt-4 border-t border-gray-200/60">
-                  <label className="text-xs font-bold text-on-surface">Supporting Documents & Policy PDFs</label>
-                  {evidenceDocuments.length === 0 ? (
-                    <div className="p-3.5 rounded-xl border border-dashed border-gray-200 text-center text-xs text-on-surface-variant/70 italic bg-surface-container/10">
-                      No documents attached yet. Add whitepapers, reports or datasets below.
-                    </div>
-                  ) : (
-                    <div className="flex flex-col gap-2.5">
-                      {evidenceDocuments.map((doc, idx) => (
+                  {dataPoints.length > 0 && (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                      {dataPoints.map((dp, idx) => (
                         <div
                           key={idx}
-                          className="p-3 rounded-xl border border-outline-variant/30 bg-surface flex items-start justify-between gap-3 shadow-2xs"
+                          className="p-2.5 rounded-xl bg-surface-container-low border border-outline-variant/30 flex items-center justify-between gap-2 text-xs"
                         >
-                          <div className="flex items-start gap-2.5 min-w-0">
-                            <FileText className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                            <div className="flex flex-col min-w-0">
-                              <span className="text-xs font-bold text-on-surface truncate">{doc.title}</span>
-                              <span className="text-[11px] text-on-surface-variant line-clamp-1">{doc.description}</span>
-                              <div className="flex items-center gap-2 text-[10px] text-outline mt-1 font-mono">
-                                <span className="text-primary truncate">{doc.url}</span>
-                              </div>
-                            </div>
+                          <div className="min-w-0">
+                            <span className="font-mono font-extrabold text-primary text-sm block">{dp.metric}</span>
+                            <span className="text-[11px] text-on-surface-variant truncate block">{dp.label}</span>
                           </div>
                           <button
                             type="button"
-                            onClick={() => setEvidenceDocuments(evidenceDocuments.filter((_, i) => i !== idx))}
-                            className="text-gray-400 hover:text-error transition-colors p-1 cursor-pointer"
+                            onClick={() => setDataPoints(dataPoints.filter((_, i) => i !== idx))}
+                            className="p-1 hover:bg-surface-container rounded-lg text-on-surface-variant hover:text-error transition-colors"
                           >
-                            <X className="w-4 h-4" />
+                            <X className="w-3.5 h-3.5" />
                           </button>
                         </div>
                       ))}
                     </div>
                   )}
-
-                  {/* Add Document inputs */}
-                  <div className="p-3.5 rounded-2xl bg-surface-container/20 border border-dashed border-gray-300 flex flex-col gap-2.5">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                      <input
-                        type="text"
-                        value={newDocTitle}
-                        onChange={(e) => setNewDocTitle(e.target.value)}
-                        placeholder="Document Title (e.g. CMS Rule 91-A Report)"
-                        className="w-full bg-surface-container/40 rounded-xl px-3 py-2 text-xs font-semibold text-on-surface outline-none border border-outline-variant/30"
-                      />
-                      <input
-                        type="text"
-                        value={newDocUrl}
-                        onChange={(e) => setNewDocUrl(e.target.value)}
-                        placeholder="Download / Reference URL"
-                        className="w-full bg-surface-container/40 rounded-xl px-3 py-2 text-xs text-on-surface outline-none border border-outline-variant/30"
-                      />
-                    </div>
-                    <input
-                      type="text"
-                      value={newDocDesc}
-                      onChange={(e) => setNewDocDesc(e.target.value)}
-                      placeholder="Short summary of dataset or research content"
-                      className="w-full bg-surface-container/40 rounded-xl px-3 py-2 text-xs text-on-surface outline-none border border-outline-variant/30"
-                    />
-                    <div className="flex items-center justify-end">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (newDocTitle.trim()) {
-                            setEvidenceDocuments([
-                              ...evidenceDocuments,
-                              {
-                                title: newDocTitle.trim(),
-                                description: newDocDesc.trim() || "Official benchmark dataset and research report.",
-                                url: newDocUrl.trim() || "https://example.com",
-                                type: "pdf",
-                              },
-                            ]);
-                            setNewDocTitle("");
-                            setNewDocDesc("");
-                            setNewDocUrl("");
-                          }
-                        }}
-                        className="bg-primary text-white px-4 py-1.5 rounded-xl text-xs font-bold hover:bg-primary-container cursor-pointer flex items-center gap-1 shadow-2xs"
-                      >
-                        <Plus className="w-3.5 h-3.5" />
-                        <span>Add Document</span>
-                      </button>
-                    </div>
-                  </div>
                 </div>
 
-                {/* External Links */}
-                <div className="flex flex-col gap-2.5 pt-4 border-t border-gray-200/60">
-                  <label className="text-xs font-bold text-on-surface">External Evidence Links</label>
-                  <div className="flex flex-wrap gap-2">
-                    {evidenceUrls.map((url, idx) => (
-                      <div
-                        key={idx}
-                        className="px-3 py-1.5 rounded-xl bg-surface-container/40 border border-outline-variant/30 text-xs font-medium text-primary flex items-center gap-2"
-                      >
-                        <ExternalLink className="w-3 h-3 shrink-0" />
-                        <span className="max-w-[200px] truncate">{url}</span>
-                        <button
-                          type="button"
-                          onClick={() => setEvidenceUrls(evidenceUrls.filter((_, i) => i !== idx))}
-                          className="text-gray-400 hover:text-error cursor-pointer"
-                        >
-                          <X className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-
+                {/* Evidence URLs */}
+                <div className="space-y-3 pt-3 border-t border-outline-variant/20">
+                  <label className="text-xs font-bold text-on-surface flex items-center gap-1.5">
+                    <ExternalLink className="w-3.5 h-3.5 text-secondary" />
+                    <span>Evidence Links, Audits & Regulatory Filings</span>
+                  </label>
                   <div className="flex gap-2">
                     <input
                       type="url"
                       value={newEvidenceUrl}
                       onChange={(e) => setNewEvidenceUrl(e.target.value)}
-                      placeholder="https://..."
-                      className="flex-1 bg-surface-container/40 rounded-xl px-3 py-2 text-xs text-on-surface outline-none border border-outline-variant/30"
+                      placeholder="https://... (Report, industry whitepaper, audit PDF, or news investigation)"
+                      className="flex-1 bg-surface-container-low rounded-xl px-3.5 py-2 text-xs text-on-surface outline-none border border-outline-variant/30"
                     />
                     <button
                       type="button"
@@ -1032,384 +779,214 @@ export const SubmitProblem: React.FC = () => {
                           setNewEvidenceUrl("");
                         }
                       }}
-                      className="bg-surface-container text-on-surface hover:bg-surface-container-high px-4 py-2 rounded-xl text-xs font-bold border border-outline-variant/30 cursor-pointer"
+                      className="px-4 py-2 rounded-xl bg-surface-container hover:bg-surface-container-high border border-outline-variant/30 text-xs font-bold text-on-surface shrink-0 cursor-pointer"
                     >
                       Add URL
                     </button>
                   </div>
-                </div>
 
-                <div className="flex justify-between pt-2">
-                  <button
-                    type="button"
-                    onClick={() => setActiveTab(1)}
-                    className="text-on-surface-variant text-xs font-bold px-4 py-2.5 rounded-xl hover:bg-surface-container cursor-pointer"
-                  >
-                    Back
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setActiveTab(3)}
-                    className="bg-primary text-white text-xs font-bold px-5 py-2.5 rounded-xl flex items-center gap-2 hover:bg-primary-container transition-all cursor-pointer shadow-xs"
-                  >
-                    <span>Proceed to Market & Impact</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </button>
+                  {evidenceUrls.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 pt-1">
+                      {evidenceUrls.map((url, i) => (
+                        <span
+                          key={i}
+                          className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-surface-container-low border border-outline-variant/30 text-xs font-mono text-primary max-w-xs truncate"
+                        >
+                          <span className="truncate">{url}</span>
+                          <button
+                            type="button"
+                            onClick={() => setEvidenceUrls(evidenceUrls.filter((_, idx) => idx !== i))}
+                            className="text-on-surface-variant hover:text-error ml-1 cursor-pointer"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             )}
 
-            {/* â”€â”€ TAB 3: MARKET TELEMETRY & FINANCIAL IMPACT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+            {/* ── MODULE 3: MARKET & IMPACT ────────────────────────────── */}
             {activeTab === 3 && (
-              <div className="bg-surface-container-lowest p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl border border-outline-variant/30 shadow-2xs flex flex-col gap-4 sm:gap-6 animate-fade-in">
-                <div className="flex flex-col gap-1 border-b border-gray-200/60 pb-3 sm:pb-4">
-                  <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-widest text-primary">
-                    Module 3
-                  </span>
-                  <h2 className="text-base sm:text-lg md:text-xl font-bold text-on-surface">
-                    Market Telemetry & Financial Impact
+              <div className="bg-surface-container-lowest p-5 sm:p-7 rounded-3xl border border-outline-variant/30 shadow-2xs space-y-5 animate-fade-in">
+                <div className="border-b border-outline-variant/20 pb-3">
+                  <h2 className="text-base sm:text-lg font-bold text-on-surface">
+                    3. Market Telemetry & Economic Waste
                   </h2>
-                  <p className="text-[11px] sm:text-xs text-on-surface-variant">
-                    Estimate market TAM, penetration hurdles, economic waste, and willingness to pay.
+                  <p className="text-xs text-on-surface-variant">
+                    Estimate the aggregate addressable scale, friction costs, and economic incentives to solve this problem.
                   </p>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-bold text-on-surface">Total Addressable Market (TAM)</label>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-on-surface flex items-center gap-1">
+                      <DollarSign className="w-3.5 h-3.5 text-emerald-600" />
+                      <span>Total Addressable Market (TAM)</span>
+                    </label>
                     <input
                       type="text"
                       value={tam}
                       onChange={(e) => setTam(e.target.value)}
-                      placeholder="e.g. $4.2B"
-                      className="w-full bg-surface-container/40 rounded-xl px-4 py-2.5 text-xs font-bold text-primary outline-none border border-outline-variant/30"
+                      placeholder="e.g. $4.8B"
+                      className="w-full bg-surface-container-low rounded-xl px-3.5 py-2.5 text-xs font-bold text-emerald-700 dark:text-emerald-400 outline-none border border-outline-variant/30 font-mono"
                     />
                   </div>
 
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-bold text-on-surface">Annual Economic Waste</label>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-on-surface flex items-center gap-1">
+                      <AlertCircle className="w-3.5 h-3.5 text-rose-600" />
+                      <span>Annual Economic Waste / Inefficiency</span>
+                    </label>
                     <input
                       type="text"
                       value={wastedCost}
                       onChange={(e) => setWastedCost(e.target.value)}
-                      placeholder="e.g. $1.5B"
-                      className="w-full bg-surface-container/40 rounded-xl px-4 py-2.5 text-xs font-bold text-orange-600 outline-none border border-outline-variant/30"
+                      placeholder="e.g. $1.2B per year"
+                      className="w-full bg-surface-container-low rounded-xl px-3.5 py-2.5 text-xs font-bold text-rose-600 dark:text-rose-400 outline-none border border-outline-variant/30 font-mono"
                     />
                   </div>
 
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-bold text-on-surface">Citizens / Users Affected</label>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-on-surface flex items-center gap-1">
+                      <Users className="w-3.5 h-3.5 text-primary" />
+                      <span>Affected Scale (Users / Companies)</span>
+                    </label>
                     <input
                       type="text"
                       value={citizensAffected}
                       onChange={(e) => setCitizensAffected(e.target.value)}
-                      placeholder="e.g. 46 million patients"
-                      className="w-full bg-surface-container/40 rounded-xl px-4 py-2.5 text-xs font-semibold text-on-surface outline-none border border-outline-variant/30"
+                      placeholder="e.g. 18,000 independent clinics"
+                      className="w-full bg-surface-container-low rounded-xl px-3.5 py-2.5 text-xs text-on-surface outline-none border border-outline-variant/30"
                     />
                   </div>
 
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-bold text-on-surface">Audience / Organization Count</label>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-on-surface flex items-center gap-1">
+                      <Briefcase className="w-3.5 h-3.5 text-secondary" />
+                      <span>Target Buyer Willingness to Pay</span>
+                    </label>
                     <input
                       type="text"
-                      value={audienceSize}
-                      onChange={(e) => setAudienceSize(e.target.value)}
-                      placeholder="e.g. 4,500+ community practices"
-                      className="w-full bg-surface-container/40 rounded-xl px-4 py-2.5 text-xs font-semibold text-on-surface outline-none border border-outline-variant/30"
+                      value={willingnessToPay}
+                      onChange={(e) => setWillingnessToPay(e.target.value)}
+                      placeholder="e.g. $450 - $1,200/mo per provider"
+                      className="w-full bg-surface-container-low rounded-xl px-3.5 py-2.5 text-xs text-on-surface outline-none border border-outline-variant/30"
                     />
                   </div>
-                </div>
-
-                {/* Penetration Slider */}
-                <div className="flex flex-col gap-2 p-4 rounded-2xl bg-surface-container/30 border border-outline-variant/20">
-                  <div className="flex justify-between items-center text-xs font-bold">
-                    <span className="text-on-surface">Estimated Market Penetration</span>
-                    <span className="text-primary font-mono">{currentPenetration}%</span>
-                  </div>
-                  <input
-                    type="range"
-                    min="1"
-                    max="100"
-                    value={currentPenetration}
-                    onChange={(e) => setCurrentPenetration(Number(e.target.value))}
-                    className="w-full accent-primary cursor-pointer h-2 bg-surface-container rounded-lg"
-                  />
-                  <span className="text-[10px] text-on-surface-variant font-normal">
-                    Indicates how much of the target market currently uses existing solutions vs unserved gap.
-                  </span>
-                </div>
-
-                {/* Willingness to Pay */}
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-bold text-on-surface">Estimated Willingness to Pay</label>
-                  <input
-                    type="text"
-                    value={willingnessToPay}
-                    onChange={(e) => setWillingnessToPay(e.target.value)}
-                    placeholder="e.g. $150/mo per practitioner or $5,000/yr per clinic"
-                    className="w-full bg-surface-container/40 rounded-xl px-4 py-2.5 text-xs font-semibold text-on-surface outline-none border border-outline-variant/30"
-                  />
-                </div>
-
-                <div className="flex justify-between pt-2">
-                  <button
-                    type="button"
-                    onClick={() => setActiveTab(2)}
-                    className="text-on-surface-variant text-xs font-bold px-4 py-2.5 rounded-xl hover:bg-surface-container cursor-pointer"
-                  >
-                    Back
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setActiveTab(4)}
-                    className="bg-primary text-white text-xs font-bold px-5 py-2.5 rounded-xl flex items-center gap-2 hover:bg-primary-container transition-all cursor-pointer shadow-xs"
-                  >
-                    <span>Proceed to Research & Competitors</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </button>
                 </div>
               </div>
             )}
 
-            {/* â”€â”€ TAB 4: RESEARCH & COMPETITOR MATRIX â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+            {/* ── MODULE 4: RIVALS & PRIOR WORKAROUNDS ─────────────────── */}
             {activeTab === 4 && (
-              <div className="bg-surface-container-lowest p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl border border-outline-variant/30 shadow-2xs flex flex-col gap-4 sm:gap-6 animate-fade-in">
-                <div className="flex flex-col gap-1 border-b border-gray-200/60 pb-3 sm:pb-4">
-                  <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-widest text-primary">
-                    Module 4
-                  </span>
-                  <h2 className="text-base sm:text-lg md:text-xl font-bold text-on-surface">
-                    Research Methodology & Competitor Matrix
+              <div className="bg-surface-container-lowest p-5 sm:p-7 rounded-3xl border border-outline-variant/30 shadow-2xs space-y-5 animate-fade-in">
+                <div className="border-b border-outline-variant/20 pb-3">
+                  <h2 className="text-base sm:text-lg font-bold text-on-surface">
+                    4. Prior Workarounds & Competitor Flaws
                   </h2>
-                  <p className="text-[11px] sm:text-xs text-on-surface-variant">
-                    Detail academic findings and evaluate why current commercial competitors fail.
+                  <p className="text-xs text-on-surface-variant">
+                    Why do incumbent solutions and DIY hacks fail? Documenting past failures is critical to avoid repeating them.
                   </p>
                 </div>
 
-                {/* Key Findings Builder */}
-                <div className="flex flex-col gap-2.5">
-                  <label className="text-xs font-bold text-on-surface">Key Research Findings (Bullet Points)</label>
-                  {keyFindings.length === 0 ? (
-                    <div className="p-3.5 rounded-xl border border-dashed border-gray-200 text-center text-xs text-on-surface-variant/70 italic bg-surface-container/10">
-                      No key research findings added yet. Add empirical insights below.
-                    </div>
-                  ) : (
-                    <div className="flex flex-col gap-2">
-                      {keyFindings.map((finding, idx) => (
-                        <div
-                          key={idx}
-                          className="p-3 rounded-xl bg-surface border border-outline-variant/30 flex items-start justify-between gap-2 shadow-2xs"
-                        >
-                          <div className="flex items-start gap-2">
-                            <span className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
-                            <span className="text-xs text-on-surface">{finding}</span>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => setKeyFindings(keyFindings.filter((_, i) => i !== idx))}
-                            className="text-gray-400 hover:text-error p-0.5 cursor-pointer"
-                          >
-                            <X className="w-4 h-4" />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      value={newFinding}
-                      onChange={(e) => setNewFinding(e.target.value)}
-                      placeholder="Add key empirical insight..."
-                      className="flex-1 bg-surface-container/40 rounded-xl px-3 py-2 text-xs text-on-surface outline-none border border-outline-variant/30"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (newFinding.trim()) {
-                          setKeyFindings([...keyFindings, newFinding.trim()]);
-                          setNewFinding("");
-                        }
-                      }}
-                      className="bg-surface-container text-on-surface hover:bg-surface-container-high px-4 py-2 rounded-xl text-xs font-bold border border-outline-variant/30 cursor-pointer"
-                    >
-                      Add Finding
-                    </button>
-                  </div>
-                </div>
-
-                {/* Research Methodology */}
-                <div className="flex flex-col gap-1.5 pt-2">
-                  <label className="text-xs font-bold text-on-surface">Research Methodology & Sampling</label>
-                  <textarea
-                    rows={2}
-                    value={researchMethodology}
-                    onChange={(e) => setResearchMethodology(e.target.value)}
-                    placeholder="How was this data collected and cross-verified?..."
-                    className="w-full bg-surface-container/40 rounded-xl p-3 text-xs text-on-surface outline-none border border-outline-variant/30"
-                  />
-                </div>
-
-                {/* Competitors Matrix Builder */}
-                <div className="flex flex-col gap-3 pt-4 border-t border-gray-200/60">
-                  <label className="text-xs font-bold text-on-surface">Existing Solutions & Competitor Gaps</label>
-                  {competitors.length === 0 ? (
-                    <div className="p-3.5 rounded-xl border border-dashed border-gray-200 text-center text-xs text-on-surface-variant/70 italic bg-surface-container/10">
-                      No competitors added yet. Add incumbent or alternative solutions below.
-                    </div>
-                  ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      {competitors.map((comp, idx) => (
-                        <div
-                          key={idx}
-                          className="p-4 rounded-2xl bg-surface border border-outline-variant/30 shadow-2xs flex flex-col gap-2"
-                        >
-                          <div className="flex items-center justify-between">
-                            <span className="text-xs font-bold text-on-surface">{comp.solution}</span>
-                            <button
-                              type="button"
-                              onClick={() => setCompetitors(competitors.filter((_, i) => i !== idx))}
-                              className="text-gray-400 hover:text-error cursor-pointer"
-                            >
-                              <X className="w-3.5 h-3.5" />
-                            </button>
-                          </div>
-                          <div className="flex flex-col gap-1 text-[11px]">
-                            <p className="text-emerald-600 font-medium leading-relaxed">
-                              <span className="font-bold">Pros:</span> {comp.pros}
-                            </p>
-                            <p className="text-rose-600 font-medium leading-relaxed">
-                              <span className="font-bold">Cons:</span> {comp.cons}
-                            </p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  {/* Add Competitor */}
-                  <div className="p-3.5 rounded-2xl bg-surface-container/20 border border-dashed border-gray-300 flex flex-col gap-2.5">
+                {/* Add Competitor */}
+                <div className="bg-surface-container-low p-4 rounded-2xl border border-outline-variant/20 space-y-3">
+                  <span className="text-xs font-bold text-on-surface block">Add Existing Incumbent or Workaround</span>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                     <input
                       type="text"
                       value={newCompName}
                       onChange={(e) => setNewCompName(e.target.value)}
-                      placeholder="Incumbent / Competitor Name (e.g. Epic Care Everywhere)"
-                      className="w-full bg-surface-container/40 rounded-xl px-3 py-2 text-xs font-bold text-on-surface outline-none border border-outline-variant/30"
+                      placeholder="Incumbent name (e.g. Fax machines)"
+                      className="bg-surface-container-lowest rounded-xl px-3 py-2 text-xs font-bold text-on-surface outline-none border border-outline-variant/30"
                     />
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                      <input
-                        type="text"
-                        value={newCompPros}
-                        onChange={(e) => setNewCompPros(e.target.value)}
-                        placeholder="Key Advantage / Pros"
-                        className="w-full bg-surface-container/40 rounded-xl px-3 py-2 text-xs text-on-surface outline-none border border-outline-variant/30"
-                      />
-                      <input
-                        type="text"
-                        value={newCompCons}
-                        onChange={(e) => setNewCompCons(e.target.value)}
-                        placeholder="Critical Flaw / Cons"
-                        className="w-full bg-surface-container/40 rounded-xl px-3 py-2 text-xs text-on-surface outline-none border border-outline-variant/30"
-                      />
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (newCompName.trim()) {
-                          setCompetitors([
-                            ...competitors,
-                            {
-                              solution: newCompName.trim(),
-                              pros: newCompPros.trim() || "Standard incumbent market presence.",
-                              cons: newCompCons.trim() || "High friction and cost.",
-                            },
-                          ]);
-                          setNewCompName("");
-                          setNewCompPros("");
-                          setNewCompCons("");
-                        }
-                      }}
-                      className="self-end bg-primary text-white px-4 py-1.5 rounded-xl text-xs font-bold hover:bg-primary-container cursor-pointer flex items-center gap-1 shadow-2xs"
-                    >
-                      <Plus className="w-3.5 h-3.5" />
-                      <span>Add Competitor</span>
-                    </button>
+                    <input
+                      type="text"
+                      value={newCompPros}
+                      onChange={(e) => setNewCompPros(e.target.value)}
+                      placeholder="Why people still use it (Pros)"
+                      className="bg-surface-container-lowest rounded-xl px-3 py-2 text-xs text-on-surface outline-none border border-outline-variant/30"
+                    />
+                    <input
+                      type="text"
+                      value={newCompCons}
+                      onChange={(e) => setNewCompCons(e.target.value)}
+                      placeholder="Why it breaks (Core Cons)"
+                      className="bg-surface-container-lowest rounded-xl px-3 py-2 text-xs text-on-surface outline-none border border-outline-variant/30"
+                    />
                   </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (newCompName.trim()) {
+                        setCompetitors([
+                          ...competitors,
+                          { solution: newCompName.trim(), pros: newCompPros.trim(), cons: newCompCons.trim() },
+                        ]);
+                        setNewCompName("");
+                        setNewCompPros("");
+                        setNewCompCons("");
+                      }
+                    }}
+                    className="px-4 py-2 rounded-xl bg-primary text-white text-xs font-bold hover:bg-primary-container transition-all cursor-pointer"
+                  >
+                    + Add Workaround
+                  </button>
                 </div>
 
-                <div className="flex justify-between pt-2">
-                  <button
-                    type="button"
-                    onClick={() => setActiveTab(3)}
-                    className="text-on-surface-variant text-xs font-bold px-4 py-2.5 rounded-xl hover:bg-surface-container cursor-pointer"
-                  >
-                    Back
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setActiveTab(5)}
-                    className="bg-primary text-white text-xs font-bold px-5 py-2.5 rounded-xl flex items-center gap-2 hover:bg-primary-container transition-all cursor-pointer shadow-xs"
-                  >
-                    <span>Proceed to MVP Specs</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </button>
-                </div>
+                {competitors.length > 0 && (
+                  <div className="space-y-2">
+                    {competitors.map((c, i) => (
+                      <div
+                        key={i}
+                        className="p-3 rounded-xl bg-surface-container-low border border-outline-variant/30 flex items-start justify-between gap-3 text-xs"
+                      >
+                        <div className="space-y-0.5">
+                          <span className="font-bold text-on-surface block">{c.solution}</span>
+                          <span className="text-[11px] text-emerald-600 block">Pros: {c.pros || "None listed"}</span>
+                          <span className="text-[11px] text-rose-600 block">Flaws: {c.cons || "Unspecified"}</span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setCompetitors(competitors.filter((_, idx) => idx !== i))}
+                          className="text-on-surface-variant hover:text-error p-1"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
 
-            {/* â”€â”€ TAB 5: SUGGESTED MVP & TECHNICAL SPECS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+            {/* ── MODULE 5: MVP SPECS & REQUIREMENTS ──────────────────── */}
             {activeTab === 5 && (
-              <div className="bg-surface-container-lowest p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl border border-outline-variant/30 shadow-2xs flex flex-col gap-4 sm:gap-6 animate-fade-in">
-                <div className="flex flex-col gap-1 border-b border-gray-200/60 pb-3 sm:pb-4">
-                  <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-widest text-primary">
-                    Module 5
-                  </span>
-                  <h2 className="text-base sm:text-lg md:text-xl font-bold text-on-surface">
-                    Suggested MVP Scope & Technical Architecture
+              <div className="bg-surface-container-lowest p-5 sm:p-7 rounded-3xl border border-outline-variant/30 shadow-2xs space-y-5 animate-fade-in">
+                <div className="border-b border-outline-variant/20 pb-3">
+                  <h2 className="text-base sm:text-lg font-bold text-on-surface">
+                    5. Minimum Viable Product (MVP) Blueprint
                   </h2>
-                  <p className="text-[11px] sm:text-xs text-on-surface-variant">
-                    Outline the minimal viable solution features and necessary security/compliance constraints.
+                  <p className="text-xs text-on-surface-variant">
+                    What are the essential, non-negotiable features required to deliver 80% of the relief with minimum engineering?
                   </p>
                 </div>
 
-                {/* MVP Features Builder */}
-                <div className="flex flex-col gap-2.5">
-                  <label className="text-xs font-bold text-on-surface">Core MVP Feature Requirements</label>
-                  {mvpFeatures.length === 0 ? (
-                    <div className="p-3.5 rounded-xl border border-dashed border-gray-200 text-center text-xs text-on-surface-variant/70 italic bg-surface-container/10">
-                      No core MVP features added yet. Add key technical capabilities below.
-                    </div>
-                  ) : (
-                    <div className="flex flex-col gap-2">
-                      {mvpFeatures.map((feat, idx) => (
-                        <div
-                          key={idx}
-                          className="p-3 rounded-xl bg-surface border border-outline-variant/30 flex items-start justify-between gap-2 shadow-2xs"
-                        >
-                          <div className="flex items-start gap-2">
-                            <CheckCircle className="w-4 h-4 text-primary shrink-0 mt-0.5" />
-                            <span className="text-xs text-on-surface">{feat}</span>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => setMvpFeatures(mvpFeatures.filter((_, i) => i !== idx))}
-                            className="text-gray-400 hover:text-error p-0.5 cursor-pointer"
-                          >
-                            <X className="w-4 h-4" />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
+                <div className="space-y-3">
+                  <label className="text-xs font-bold text-on-surface flex items-center gap-1.5">
+                    <Code className="w-3.5 h-3.5 text-primary" />
+                    <span>Core Feature Checklist</span>
+                  </label>
                   <div className="flex gap-2">
                     <input
                       type="text"
                       value={newMvpFeature}
                       onChange={(e) => setNewMvpFeature(e.target.value)}
-                      placeholder="Add MVP core feature (e.g. Automated FHIR endpoint mapper)..."
-                      className="flex-1 bg-surface-container/40 rounded-xl px-3 py-2 text-xs text-on-surface outline-none border border-outline-variant/30"
+                      placeholder="e.g. Automated HL7 / FHIR data parsing bridge"
+                      className="flex-1 bg-surface-container-low rounded-xl px-3.5 py-2 text-xs text-on-surface outline-none border border-outline-variant/30"
                     />
                     <button
                       type="button"
@@ -1419,679 +996,146 @@ export const SubmitProblem: React.FC = () => {
                           setNewMvpFeature("");
                         }
                       }}
-                      className="bg-surface-container text-on-surface hover:bg-surface-container-high px-4 py-2 rounded-xl text-xs font-bold border border-outline-variant/30 cursor-pointer"
+                      className="px-4 py-2 rounded-xl bg-primary text-white text-xs font-bold hover:bg-primary-container transition-all cursor-pointer"
                     >
                       Add Feature
                     </button>
                   </div>
+
+                  {mvpFeatures.length > 0 && (
+                    <div className="flex flex-wrap gap-2 pt-1">
+                      {mvpFeatures.map((feat, i) => (
+                        <span
+                          key={i}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-surface-container-low border border-outline-variant/30 text-xs font-medium text-on-surface"
+                        >
+                          <Check className="w-3.5 h-3.5 text-primary" />
+                          <span>{feat}</span>
+                          <button
+                            type="button"
+                            onClick={() => setMvpFeatures(mvpFeatures.filter((_, idx) => idx !== i))}
+                            className="text-on-surface-variant hover:text-error ml-1"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
-                {/* Technical Requirements */}
-                <div className="flex flex-col gap-1.5 pt-2">
-                  <label className="text-xs font-bold text-on-surface">Technical, Security & Compliance Requirements</label>
+                <div className="space-y-1.5 pt-3 border-t border-outline-variant/20">
+                  <label className="text-xs font-bold text-on-surface">Technical & Architecture Constraints</label>
                   <textarea
                     rows={3}
                     value={technicalRequirements}
                     onChange={(e) => setTechnicalRequirements(e.target.value)}
-                    placeholder="e.g. SOC2 Type II compliance, HIPAA BAA readiness, low-latency sync over 3G..."
-                    className="w-full bg-surface-container/40 rounded-xl p-3.5 text-xs text-on-surface outline-none border border-outline-variant/30 leading-relaxed font-normal"
+                    placeholder="e.g. Must run on-premise without cloud sync due to patient health data compliance. Latency < 200ms."
+                    className="w-full bg-surface-container-low rounded-xl p-3 text-xs text-on-surface outline-none border border-outline-variant/30"
                   />
-                </div>
-
-                <div className="flex justify-between pt-2">
-                  <button
-                    type="button"
-                    onClick={() => setActiveTab(4)}
-                    className="text-on-surface-variant text-xs font-bold px-4 py-2.5 rounded-xl hover:bg-surface-container cursor-pointer"
-                  >
-                    Back
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setActiveTab(6)}
-                    className="bg-primary text-white text-xs font-bold px-5 py-2.5 rounded-xl flex items-center gap-2 hover:bg-primary-container transition-all cursor-pointer shadow-xs"
-                  >
-                    <span>Proceed to Startup Mode Builder</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </button>
                 </div>
               </div>
             )}
 
-            {/* â”€â”€ TAB 6: STARTUP MODE & VENTURE WORKSPACE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+            {/* ── MODULE 6: STARTUP MODE BLUEPRINT ────────────────────── */}
             {activeTab === 6 && (
-              <div className="bg-surface-container-lowest p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl border border-outline-variant/30 shadow-2xs flex flex-col gap-4 sm:gap-6 animate-fade-in">
-                <div className="flex flex-col gap-1 border-b border-gray-200/60 pb-3 sm:pb-4">
-                  <div className="flex items-center justify-between flex-wrap gap-2">
-                    <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-widest text-primary">
-                      Module 6 Â· Venture Studio
-                    </span>
-                    {/* Startup Mode Master Switch */}
-                    <button
-                      type="button"
-                      onClick={() => setHasStartupMode(!hasStartupMode)}
-                      className={`px-2.5 sm:px-3 py-1 rounded-full text-[11px] sm:text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
-                        hasStartupMode
-                          ? "bg-primary text-white shadow-xs"
-                          : "bg-surface-container text-on-surface-variant border border-outline-variant/30"
-                      }`}
-                    >
-                      <span>{hasStartupMode ? "Startup Mode Enabled" : "Startup Mode Disabled"}</span>
-                    </button>
+              <div className="bg-surface-container-lowest p-5 sm:p-7 rounded-3xl border border-outline-variant/30 shadow-2xs space-y-6 animate-fade-in">
+                <div className="flex items-center justify-between border-b border-outline-variant/20 pb-3">
+                  <div>
+                    <h2 className="text-base sm:text-lg font-bold text-on-surface flex items-center gap-2">
+                      <Rocket className="w-4 h-4 text-purple-600" />
+                      <span>6. Startup Mode Venture Blueprint</span>
+                    </h2>
+                    <p className="text-xs text-on-surface-variant">
+                      Attach commercial hypotheses, target customer personas, and venture spinout logic.
+                    </p>
                   </div>
-                  <h2 className="text-base sm:text-lg md:text-xl font-bold text-on-surface">
-                    Startup Mode & Venture Economics Builder
-                  </h2>
-                  <p className="text-[11px] sm:text-xs text-on-surface-variant">
-                    Equip founders and builders with initial hypotheses, target buyer segments, and value proposition drafts.
-                  </p>
+
+                  <label className="flex items-center gap-2 cursor-pointer font-bold text-xs text-on-surface bg-surface-container px-3 py-1.5 rounded-xl border border-outline-variant/30 select-none">
+                    <input
+                      type="checkbox"
+                      checked={hasStartupMode}
+                      onChange={(e) => setHasStartupMode(e.target.checked)}
+                      className="w-4 h-4 rounded text-purple-600 accent-purple-600 cursor-pointer"
+                    />
+                    <span>Enable Startup Mode</span>
+                  </label>
                 </div>
 
                 {hasStartupMode ? (
-                  <div className="flex flex-col gap-6">
-                    {/* Core Venture Thesis */}
-                    <div className="flex flex-col gap-1.5">
-                      <label className="text-xs font-bold text-on-surface flex items-center justify-between">
-                        <span>Core Venture Thesis</span>
-                        <span className="text-[10px] text-outline font-normal">Use **bold** to emphasize key metrics & insights</span>
-                      </label>
+                  <div className="space-y-4">
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-on-surface">Venture Investment Thesis</label>
                       <textarea
                         rows={3}
                         value={startupThesis}
                         onChange={(e) => setStartupThesis(e.target.value)}
-                        placeholder="This problem represents an acute systemic inefficiency across **46 million** citizens with an annual wasted cost of **$1.5B**..."
-                        className="w-full bg-surface-container/40 rounded-xl p-3.5 text-xs text-on-surface outline-none border border-outline-variant/30 leading-relaxed font-normal"
+                        placeholder="Why does this problem represent a venture-scale opportunity? What structural market shift makes now the right time?"
+                        className="w-full bg-surface-container-low rounded-xl p-3 text-xs text-on-surface outline-none border border-outline-variant/30"
                       />
                     </div>
 
-                    {/* Target Customer Segments */}
-                    <div className="flex flex-col gap-2.5">
-                      <label className="text-xs font-bold text-on-surface">
-                        Which of these segments would a founder focus on first?
-                      </label>
-                      {startupTargetSegments.length === 0 ? (
-                        <div className="p-3.5 rounded-xl border border-dashed border-gray-200 text-center text-xs text-on-surface-variant/70 italic bg-surface-container/10">
-                          No customer segments added yet. Add target personas below.
-                        </div>
-                      ) : (
-                        <div className="flex flex-wrap gap-2">
-                          {startupTargetSegments.map((seg, idx) => (
-                            <div
-                              key={idx}
-                              className="px-3.5 py-1.5 rounded-full bg-surface-container/60 border border-outline-variant/30 text-xs font-bold text-on-surface flex items-center gap-2 shadow-2xs"
-                            >
-                              <span>{seg}</span>
-                              <button
-                                type="button"
-                                onClick={() => setStartupTargetSegments(startupTargetSegments.filter((_, i) => i !== idx))}
-                                className="text-gray-400 hover:text-error cursor-pointer"
-                              >
-                                <X className="w-3 h-3" />
-                              </button>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-
-                      <div className="flex gap-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-bold text-on-surface">Primary Buyer ICP Segment</label>
                         <input
                           type="text"
                           value={newSegment}
                           onChange={(e) => setNewSegment(e.target.value)}
-                          placeholder="Add customer segment (e.g. Rural Clinic Admins)..."
-                          className="flex-1 bg-surface-container/40 rounded-xl px-3 py-2 text-xs text-on-surface outline-none border border-outline-variant/30"
+                          placeholder="e.g. Regional Clinic Networks with 5-20 sites"
+                          className="w-full bg-surface-container-low rounded-xl px-3.5 py-2 text-xs text-on-surface outline-none border border-outline-variant/30"
                         />
-                        <button
-                          type="button"
-                          onClick={() => {
-                            if (newSegment.trim()) {
-                              setStartupTargetSegments([...startupTargetSegments, newSegment.trim()]);
-                              setNewSegment("");
-                            }
-                          }}
-                          className="bg-surface-container text-on-surface hover:bg-surface-container-high px-4 py-2 rounded-xl text-xs font-bold border border-outline-variant/30 cursor-pointer"
-                        >
-                          + Add Segment
-                        </button>
                       </div>
-                    </div>
 
-                    {/* Value Proposition Draft */}
-                    <div className="flex flex-col gap-1.5">
-                      <label className="text-xs font-bold text-on-surface flex items-center justify-between">
-                        <span>Smallest Version of Value (Initial Value Proposition)</span>
-                        <span className="text-[10px] text-outline font-normal">Willingness-to-pay hypothesis</span>
-                      </label>
-                      <textarea
-                        rows={3}
-                        value={startupValueProp}
-                        onChange={(e) => setStartupValueProp(e.target.value)}
-                        placeholder="A lightweight PDF parser that categorizes incoming faxes and maps them directly to EHR endpoints without custom integration fees..."
-                        className="w-full bg-surface-container/40 rounded-xl p-3.5 text-xs text-on-surface outline-none border border-outline-variant/30 leading-relaxed font-normal"
-                      />
-                    </div>
-
-                    {/* Willingness to pay benchmark */}
-                    <div className="flex flex-col gap-1.5">
-                      <label className="text-xs font-bold text-on-surface">Average Willingness-to-Pay Benchmark</label>
-                      <input
-                        type="text"
-                        value={startupWillingnessToPay}
-                        onChange={(e) => setStartupWillingnessToPay(e.target.value)}
-                        placeholder="e.g. $150/mo per practitioner"
-                        className="w-full bg-surface-container/40 rounded-xl px-4 py-2.5 text-xs font-semibold text-on-surface outline-none border border-outline-variant/30"
-                      />
-                    </div>
-
-                    {/* Existing Solution Gaps Builder */}
-                    <div className="flex flex-col gap-3 pt-2">
-                      <label className="text-xs font-bold text-on-surface">Weaknesses & Gaps in Incumbents</label>
-                      {startupSolutionsGaps.length === 0 ? (
-                        <div className="p-3.5 rounded-xl border border-dashed border-gray-200 text-center text-xs text-on-surface-variant/70 italic bg-surface-container/10">
-                          No incumbent weaknesses or gaps added yet. Add vulnerabilities below.
-                        </div>
-                      ) : (
-                        <div className="flex flex-col gap-2.5">
-                          {startupSolutionsGaps.map((gap, idx) => (
-                            <div
-                              key={idx}
-                              className="p-3.5 rounded-2xl bg-surface border border-outline-variant/30 shadow-2xs flex items-start justify-between gap-3"
-                            >
-                              <div className="flex flex-col gap-1 min-w-0">
-                                <div className="flex items-center gap-2">
-                                  <span className="text-xs font-bold text-on-surface">{gap.name}</span>
-                                  <span
-                                    className={`text-[10px] font-bold px-2 py-0.5 rounded-md ${
-                                      gap.weaknessType === "Weakness"
-                                        ? "bg-orange-100 text-orange-700 dark:bg-orange-950/50"
-                                        : "bg-purple-100 text-purple-700 dark:bg-purple-950/50"
-                                    }`}
-                                  >
-                                    {gap.weaknessType}
-                                  </span>
-                                </div>
-                                <span className="text-[11px] text-on-surface-variant line-clamp-1">{gap.description}</span>
-                                <p className="text-xs text-rose-600 font-medium mt-0.5">
-                                  <span className="font-bold">Vulnerability:</span> {gap.weakness}
-                                </p>
-                              </div>
-                              <button
-                                type="button"
-                                onClick={() => setStartupSolutionsGaps(startupSolutionsGaps.filter((_, i) => i !== idx))}
-                                className="text-gray-400 hover:text-error p-1 cursor-pointer"
-                              >
-                                <X className="w-4 h-4" />
-                              </button>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-
-                      {/* Add Gap */}
-                      <div className="p-3.5 rounded-2xl bg-surface-container/20 border border-dashed border-gray-300 flex flex-col gap-2.5">
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                          <input
-                            type="text"
-                            value={newGapName}
-                            onChange={(e) => setNewGapName(e.target.value)}
-                            placeholder="Solution Name (e.g. Epic)"
-                            className="w-full bg-surface-container/40 rounded-xl px-3 py-2 text-xs font-bold text-on-surface outline-none border border-outline-variant/30"
-                          />
-                          <input
-                            type="text"
-                            value={newGapDesc}
-                            onChange={(e) => setNewGapDesc(e.target.value)}
-                            placeholder="Description"
-                            className="w-full bg-surface-container/40 rounded-xl px-3 py-2 text-xs text-on-surface outline-none border border-outline-variant/30"
-                          />
-                          <select
-                            value={newGapType}
-                            onChange={(e) => setNewGapType(e.target.value as any)}
-                            className="w-full bg-surface-container/40 rounded-xl px-3 py-2 text-xs font-bold text-on-surface outline-none border border-outline-variant/30"
-                          >
-                            <option value="Weakness">Weakness</option>
-                            <option value="Gap">Gap</option>
-                          </select>
-                        </div>
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-bold text-on-surface">Value Proposition One-Liner</label>
                         <input
                           type="text"
-                          value={newGapWeakness}
-                          onChange={(e) => setNewGapWeakness(e.target.value)}
-                          placeholder="Specific Vulnerability / Reason why it fails..."
-                          className="w-full bg-surface-container/40 rounded-xl px-3 py-2 text-xs text-on-surface outline-none border border-outline-variant/30"
+                          value={startupValueProp}
+                          onChange={(e) => setStartupValueProp(e.target.value)}
+                          placeholder="e.g. Cut referral transfer delays from 48h to 2 minutes"
+                          className="w-full bg-surface-container-low rounded-xl px-3.5 py-2 text-xs text-on-surface outline-none border border-outline-variant/30"
                         />
-                        <button
-                          type="button"
-                          onClick={() => {
-                            if (newGapName.trim()) {
-                              setStartupSolutionsGaps([
-                                ...startupSolutionsGaps,
-                                {
-                                  name: newGapName.trim(),
-                                  description: newGapDesc.trim() || "Incumbent solution in market.",
-                                  weaknessType: newGapType,
-                                  weakness: newGapWeakness.trim() || "High costs and proprietary friction.",
-                                },
-                              ]);
-                              setNewGapName("");
-                              setNewGapDesc("");
-                              setNewGapWeakness("");
-                            }
-                          }}
-                          className="self-end bg-primary text-white px-4 py-1.5 rounded-xl text-xs font-bold hover:bg-primary-container cursor-pointer flex items-center gap-1 shadow-2xs"
-                        >
-                          <Plus className="w-3.5 h-3.5" />
-                          <span>Add Incumbent Gap</span>
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Directions to Explore (Max 3) */}
-                    <div className="flex flex-col gap-3 pt-2 border-t border-gray-200/60">
-                      <div className="flex items-center justify-between">
-                        <label className="text-xs font-bold text-on-surface">
-                          Architectural Directions to Explore
-                        </label>
-                        <span className="text-[11px] font-bold text-primary bg-primary/10 px-2.5 py-0.5 rounded-full">
-                          {startupDirections.length}/3 Approaches
-                        </span>
-                      </div>
-                      {startupDirections.length === 0 ? (
-                        <div className="p-3.5 rounded-xl border border-dashed border-gray-200 text-center text-xs text-on-surface-variant/70 italic bg-surface-container/10">
-                          No architectural directions added yet. Add up to 3 exploration angles below.
-                        </div>
-                      ) : (
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                          {startupDirections.map((dir, idx) => (
-                            <div
-                              key={idx}
-                              className="p-3.5 rounded-2xl bg-surface border border-outline-variant/30 shadow-2xs flex flex-col gap-2"
-                            >
-                              <div className="flex items-center justify-between">
-                                <span className="text-[10px] font-bold uppercase tracking-wider text-primary bg-primary/10 px-2.5 py-0.5 rounded-md">
-                                  {dir.type}
-                                </span>
-                                <button
-                                  type="button"
-                                  onClick={() => setStartupDirections(startupDirections.filter((_, i) => i !== idx))}
-                                  className="text-gray-400 hover:text-error cursor-pointer"
-                                >
-                                  <X className="w-3.5 h-3.5" />
-                                </button>
-                              </div>
-                              <span className="text-xs font-bold text-on-surface">{dir.title}</span>
-                              <span className="text-[11px] text-on-surface-variant leading-relaxed">
-                                {dir.description}
-                              </span>
-                              {dir.pros && (
-                                <div className="text-[10px] text-emerald-700 font-medium">
-                                  <strong>Pros:</strong> {dir.pros}
-                                </div>
-                              )}
-                              {dir.cons && (
-                                <div className="text-[10px] text-error font-medium">
-                                  <strong>Cons:</strong> {dir.cons}
-                                </div>
-                              )}
-                              {dir.techStack && dir.techStack.length > 0 && (
-                                <div className="flex flex-wrap gap-1 mt-1">
-                                  {dir.techStack.map((tech, tIdx) => (
-                                    <span key={tIdx} className="text-[9px] font-mono bg-surface-container px-2 py-0.5 rounded text-on-surface">
-                                      {tech}
-                                    </span>
-                                  ))}
-                                </div>
-                              )}
-                            </div>
-                          ))}
-                        </div>
-                      )}
-
-                      {startupDirections.length < 3 ? (
-                        <div className="p-3.5 rounded-2xl bg-surface-container/20 border border-dashed border-gray-300 flex flex-col gap-2.5">
-                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                            <select
-                              value={newDirType}
-                              onChange={(e) => setNewDirType(e.target.value)}
-                              className="w-full bg-surface-container/40 rounded-xl px-3 py-2 text-xs font-bold text-on-surface outline-none border border-outline-variant/30"
-                            >
-                              <option value="software">Software / SaaS</option>
-                              <option value="service">Managed Service / Hybrid</option>
-                              <option value="hardware">Hardware / Edge Appliance</option>
-                              <option value="hybrid">Hybrid Solution</option>
-                            </select>
-                            <input
-                              type="text"
-                              value={newDirTitle}
-                              onChange={(e) => setNewDirTitle(e.target.value)}
-                              placeholder="Direction Title (e.g. Universal API Bridge)"
-                              className="w-full bg-surface-container/40 rounded-xl px-3 py-2 text-xs font-semibold text-on-surface outline-none border border-outline-variant/30 sm:col-span-2"
-                            />
-                          </div>
-                          <input
-                            type="text"
-                            value={newDirDesc}
-                            onChange={(e) => setNewDirDesc(e.target.value)}
-                            placeholder="Brief technical angle or venture rationale..."
-                            className="w-full bg-surface-container/40 rounded-xl px-3 py-2 text-xs text-on-surface outline-none border border-outline-variant/30"
-                          />
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                            <input
-                              type="text"
-                              value={newDirPros}
-                              onChange={(e) => setNewDirPros(e.target.value)}
-                              placeholder="Pros (e.g. High margins, rapid scaling)"
-                              className="w-full bg-surface-container/40 rounded-xl px-3 py-2 text-xs text-on-surface outline-none border border-outline-variant/30"
-                            />
-                            <input
-                              type="text"
-                              value={newDirCons}
-                              onChange={(e) => setNewDirCons(e.target.value)}
-                              placeholder="Cons (e.g. Requires BAA compliance)"
-                              className="w-full bg-surface-container/40 rounded-xl px-3 py-2 text-xs text-on-surface outline-none border border-outline-variant/30"
-                            />
-                          </div>
-                          <input
-                            type="text"
-                            value={newDirTechStack}
-                            onChange={(e) => setNewDirTechStack(e.target.value)}
-                            placeholder="Tech Stack (comma-separated, e.g. Next.js, Python, FHIR, PostgreSQL)"
-                            className="w-full bg-surface-container/40 rounded-xl px-3 py-2 text-xs text-on-surface outline-none border border-outline-variant/30"
-                          />
-                          <button
-                            type="button"
-                            onClick={() => {
-                              if (newDirTitle.trim()) {
-                                const stackArr = newDirTechStack
-                                  ? newDirTechStack.split(",").map((s) => s.trim()).filter(Boolean)
-                                  : [];
-                                setStartupDirections([
-                                  ...startupDirections,
-                                  {
-                                    type: newDirType,
-                                    title: newDirTitle.trim(),
-                                    description: newDirDesc.trim() || "Venture exploration angle.",
-                                    pros: newDirPros.trim(),
-                                    cons: newDirCons.trim(),
-                                    techStack: stackArr,
-                                  },
-                                ]);
-                                setNewDirTitle("");
-                                setNewDirDesc("");
-                                setNewDirPros("");
-                                setNewDirCons("");
-                                setNewDirTechStack("");
-                              }
-                            }}
-                            className="self-end bg-primary text-white px-4 py-1.5 rounded-xl text-xs font-bold hover:bg-primary-container cursor-pointer flex items-center gap-1 shadow-2xs"
-                          >
-                            <Plus className="w-3.5 h-3.5" />
-                            <span>Add Architectural Direction</span>
-                          </button>
-                        </div>
-                      ) : (
-                        <p className="text-xs text-on-surface-variant italic">
-                          Maximum of 3 architectural approaches reached.
-                        </p>
-                      )}
-                    </div>
-
-                    {/* Compliance & Security Standards */}
-                    <div className="flex flex-col gap-2.5 pt-2 border-t border-gray-200/60">
-                      <label className="text-xs font-bold text-on-surface">
-                        Compliance & Security Standards
-                      </label>
-                      <p className="text-[11px] text-on-surface-variant">
-                        Click chips to quickly toggle enterprise security requirements.
-                      </p>
-                      <div className="flex flex-wrap gap-2">
-                        {[
-                          "HIPAA BAA Compliant",
-                          "SOC2 Type II Ready",
-                          "FHIR / HL7 Validated",
-                          "Carequality HIE Ready",
-                          "GDPR & Privacy Shield",
-                          "ISO 27001 Certified",
-                          "PCI-DSS Level 1",
-                          "FedRAMP Moderate",
-                          "Zero Trust Encryption (AES-256)",
-                        ].map((preset) => {
-                          const isSelected = startupComplianceStandards.includes(preset);
-                          return (
-                            <button
-                              key={preset}
-                              type="button"
-                              onClick={() => {
-                                if (isSelected) {
-                                  setStartupComplianceStandards(startupComplianceStandards.filter((s) => s !== preset));
-                                } else {
-                                  setStartupComplianceStandards([...startupComplianceStandards, preset]);
-                                }
-                              }}
-                              className={`px-3.5 py-1.5 rounded-full text-xs font-semibold border transition-all cursor-pointer flex items-center gap-1.5 ${
-                                isSelected
-                                  ? "bg-primary text-white border-primary shadow-xs font-bold"
-                                  : "bg-surface-container/40 text-on-surface-variant border-outline-variant/30 hover:bg-surface-container"
-                              }`}
-                            >
-                              <span>{preset}</span>
-                              {isSelected && <Check className="w-3.5 h-3.5 stroke-[3]" />}
-                            </button>
-                          );
-                        })}
-                      </div>
-
-                      <div className="flex gap-2 mt-1">
-                        <input
-                          type="text"
-                          value={customStandard}
-                          onChange={(e) => setCustomStandard(e.target.value)}
-                          placeholder="Add custom compliance standard..."
-                          className="flex-1 bg-surface-container/40 rounded-xl px-3 py-2 text-xs text-on-surface outline-none border border-outline-variant/30"
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter" && customStandard.trim()) {
-                              e.preventDefault();
-                              if (!startupComplianceStandards.includes(customStandard.trim())) {
-                                setStartupComplianceStandards([...startupComplianceStandards, customStandard.trim()]);
-                              }
-                              setCustomStandard("");
-                            }
-                          }}
-                        />
-                        <button
-                          type="button"
-                          onClick={() => {
-                            if (customStandard.trim()) {
-                              if (!startupComplianceStandards.includes(customStandard.trim())) {
-                                setStartupComplianceStandards([...startupComplianceStandards, customStandard.trim()]);
-                              }
-                              setCustomStandard("");
-                            }
-                          }}
-                          className="bg-surface-container text-on-surface hover:bg-surface-container-high px-4 py-2 rounded-xl text-xs font-bold border border-outline-variant/30 cursor-pointer"
-                        >
-                          + Add Standard
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Validation Checklist & Discovery Prompt */}
-                    <div className="flex flex-col gap-3 pt-2 border-t border-gray-200/60">
-                      <label className="text-xs font-bold text-on-surface">Founder Validation Stage-Gate Questions</label>
-                      {startupValidationQuestions.length === 0 ? (
-                        <div className="p-3.5 rounded-xl border border-dashed border-gray-200 text-center text-xs text-on-surface-variant/70 italic bg-surface-container/10">
-                          No validation milestones added. Add discovery questions below.
-                        </div>
-                      ) : (
-                        <div className="flex flex-col gap-2">
-                          {startupValidationQuestions.map((q, idx) => (
-                            <div key={idx} className="flex items-center justify-between p-3 rounded-xl bg-surface border border-outline-variant/30 text-xs font-medium text-on-surface">
-                              <span>{idx + 1}. {q}</span>
-                              <button
-                                type="button"
-                                onClick={() => setStartupValidationQuestions(startupValidationQuestions.filter((_, i) => i !== idx))}
-                                className="text-gray-400 hover:text-error"
-                              >
-                                <X className="w-3.5 h-3.5" />
-                              </button>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-
-                      <div className="flex gap-2">
-                        <input
-                          type="text"
-                          value={newValidationQuestion}
-                          onChange={(e) => setNewValidationQuestion(e.target.value)}
-                          placeholder="e.g. Talked to 10+ target practitioners or clinic administrators?"
-                          className="flex-1 bg-surface-container/40 rounded-xl px-3 py-2 text-xs text-on-surface outline-none border border-outline-variant/30"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => {
-                            if (newValidationQuestion.trim()) {
-                              setStartupValidationQuestions([...startupValidationQuestions, newValidationQuestion.trim()]);
-                              setNewValidationQuestion("");
-                            }
-                          }}
-                          className="bg-surface-container text-on-surface hover:bg-surface-container-high px-4 py-2 rounded-xl text-xs font-bold border border-outline-variant/30 cursor-pointer"
-                        >
-                          + Add Question
-                        </button>
-                      </div>
-
-                      <div className="flex flex-col gap-1.5 mt-2">
-                        <label className="text-xs font-bold text-on-surface">Customer Discovery Interview Script Prompt</label>
-                        <textarea
-                          rows={2}
-                          value={discoveryInterviewPrompt}
-                          onChange={(e) => setDiscoveryInterviewPrompt(e.target.value)}
-                          placeholder="e.g. When was the last time an incoming patient record failed to transfer, and how much clinical staff time was spent chasing that single file?"
-                          className="w-full bg-surface-container/40 rounded-xl p-3.5 text-xs text-on-surface outline-none border border-outline-variant/30 leading-relaxed font-normal"
-                        />
-                      </div>
-                    </div>
-
-                    {/* AI Co-Founder & GTM Strategy */}
-                    <div className="flex flex-col gap-3 pt-2 border-t border-gray-200/60">
-                      <label className="text-xs font-bold text-on-surface">Recommended Strategic Angles & GTM</label>
-                      <div className="flex flex-col gap-2">
-                        {suggestedAngles.map((angle, idx) => (
-                          <div key={idx} className="flex items-center justify-between p-2.5 rounded-xl bg-surface border border-outline-variant/30 text-xs text-on-surface">
-                            <span>{idx + 1}. {angle}</span>
-                            <button
-                              type="button"
-                              onClick={() => setSuggestedAngles(suggestedAngles.filter((_, i) => i !== idx))}
-                              className="text-gray-400 hover:text-error"
-                            >
-                              <X className="w-3.5 h-3.5" />
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                      <div className="flex gap-2">
-                        <input
-                          type="text"
-                          value={newSuggestedAngle}
-                          onChange={(e) => setNewSuggestedAngle(e.target.value)}
-                          placeholder="e.g. Universal EHR translation bridge with offline caching..."
-                          className="flex-1 bg-surface-container/40 rounded-xl px-3 py-2 text-xs text-on-surface outline-none border border-outline-variant/30"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => {
-                            if (newSuggestedAngle.trim()) {
-                              setSuggestedAngles([...suggestedAngles, newSuggestedAngle.trim()]);
-                              setNewSuggestedAngle("");
-                            }
-                          }}
-                          className="bg-surface-container text-on-surface hover:bg-surface-container-high px-4 py-2 rounded-xl text-xs font-bold border border-outline-variant/30 cursor-pointer"
-                        >
-                          + Add Angle
-                        </button>
-                      </div>
-
-                      <label className="text-xs font-bold text-on-surface mt-2">Key Regulatory & Technical Risks</label>
-                      <div className="flex flex-col gap-2">
-                        {keyRisks.map((risk, idx) => (
-                          <div key={idx} className="flex items-center justify-between p-2.5 rounded-xl bg-error-container/20 border border-error/20 text-xs text-on-surface">
-                            <span className="font-semibold text-error">{idx + 1}. {risk}</span>
-                            <button
-                              type="button"
-                              onClick={() => setKeyRisks(keyRisks.filter((_, i) => i !== idx))}
-                              className="text-gray-400 hover:text-error"
-                            >
-                              <X className="w-3.5 h-3.5" />
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                      <div className="flex gap-2">
-                        <input
-                          type="text"
-                          value={newKeyRisk}
-                          onChange={(e) => setNewKeyRisk(e.target.value)}
-                          placeholder="e.g. HIPAA BAA compliance hurdles..."
-                          className="flex-1 bg-surface-container/40 rounded-xl px-3 py-2 text-xs text-on-surface outline-none border border-outline-variant/30"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => {
-                            if (newKeyRisk.trim()) {
-                              setKeyRisks([...keyRisks, newKeyRisk.trim()]);
-                              setNewKeyRisk("");
-                            }
-                          }}
-                          className="bg-surface-container text-on-surface hover:bg-surface-container-high px-4 py-2 rounded-xl text-xs font-bold border border-outline-variant/30 cursor-pointer"
-                        >
-                          + Add Risk
-                        </button>
                       </div>
                     </div>
                   </div>
                 ) : (
-                  <div className="p-8 rounded-2xl bg-surface-container/20 border border-dashed border-gray-300 text-center flex flex-col items-center gap-2">
-                    <Rocket className="w-8 h-8 text-gray-400 opacity-50" />
-                    <h3 className="text-sm font-bold text-on-surface">Startup Mode Is Disabled</h3>
-                    <p className="text-xs text-on-surface-variant max-w-md">
-                      Enable Startup Mode above to attach venture unit economics, buyer segments, and draft hypotheses to this problem dossier.
+                  <div className="p-8 rounded-2xl bg-surface-container-low border border-dashed border-outline-variant/40 text-center flex flex-col items-center gap-2">
+                    <Rocket className="w-8 h-8 text-on-surface-variant/40" />
+                    <h3 className="text-xs font-bold text-on-surface">Startup Mode Is Optional</h3>
+                    <p className="text-[11px] text-on-surface-variant max-w-sm">
+                      Enable Startup Mode above if you are investigating this problem as a commercial venture.
                     </p>
                     <button
                       type="button"
                       onClick={() => setHasStartupMode(true)}
-                      className="mt-2 text-xs font-bold text-primary hover:underline"
+                      className="mt-1 px-4 py-1.5 rounded-lg bg-purple-600/10 text-purple-600 text-xs font-bold hover:bg-purple-600/20 cursor-pointer"
                     >
-                      Enable Startup Mode
+                      Turn On Startup Blueprint
                     </button>
                   </div>
                 )}
 
-                {/* â”€â”€ Admin Direct Publishing Option â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+                {/* Admin Publishing Control */}
                 {isAdmin && (
-                  <div className="p-3.5 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
-                    <div className="flex flex-col gap-0.5">
-                      <span className="font-bold text-on-surface flex items-center gap-1.5">
-                        <ShieldCheck className="w-4 h-4 text-primary" />
-                        Admin Publishing Control
-                      </span>
-                      <span className="text-[11px] text-on-surface-variant">
-                        Leave unchecked to submit as Pending to test the administrative review queue.
-                      </span>
+                  <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/25 flex items-center justify-between gap-3 text-xs">
+                    <div className="flex items-center gap-2">
+                      <ShieldCheck className="w-4 h-4 text-amber-600 shrink-0" />
+                      <span className="font-bold text-on-surface">Admin Publishing Bypass</span>
                     </div>
-                    <label className="flex items-center gap-2 cursor-pointer font-bold text-on-surface bg-surface-container px-3 py-1.5 rounded-xl border border-outline-variant/30 select-none">
+                    <label className="flex items-center gap-2 cursor-pointer font-bold text-xs select-none">
                       <input
                         type="checkbox"
                         checked={adminDirectPublish}
                         onChange={(e) => setAdminDirectPublish(e.target.checked)}
                         className="w-4 h-4 rounded text-primary accent-primary cursor-pointer"
                       />
-                      <span>Directly Publish Live</span>
+                      <span>Publish Directly (Bypass Review)</span>
                     </label>
                   </div>
                 )}
 
-                {/* â”€â”€ Human Anti-Bot Verification Check â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+                {/* Human Verification */}
                 <div className="pt-2">
                   <HumanVerification
                     action="submit_problem"
@@ -2100,47 +1144,146 @@ export const SubmitProblem: React.FC = () => {
                       setError(null);
                     }}
                     onExpire={() => setIsHumanVerified(false)}
-                    label="I'm a human contributor (verify to submit)"
+                    label="I verify this dossier represents empirical real-world evidence"
                   />
-                </div>
-
-                <div className="flex justify-between items-center pt-4 border-t border-gray-200/60 flex-wrap gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setActiveTab(5)}
-                    className="text-on-surface-variant text-xs font-bold px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl hover:bg-surface-container cursor-pointer"
-                  >
-                    Back
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={submitting}
-                    className="bg-primary text-white text-xs sm:text-sm font-bold px-4 sm:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl flex items-center gap-2 hover:bg-primary-container transition-all cursor-pointer shadow-md disabled:opacity-50"
-                  >
-                    {submitting ? (
-                      <>
-                        <span className="animate-spin">â³</span>
-                        <span>Submitting to Admin...</span>
-                      </>
-                    ) : (
-                      <>
-                        <span>Submit Problem Statement</span>
-                        <Rocket className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                      </>
-                    )}
-                  </button>
                 </div>
               </div>
             )}
+
+            {/* Bottom Stepper Controls */}
+            <div className="flex items-center justify-between pt-2">
+              <button
+                type="button"
+                disabled={activeTab === 1}
+                onClick={() => setActiveTab(Math.max(1, activeTab - 1))}
+                className="px-4 py-2 rounded-xl text-xs font-bold text-on-surface-variant hover:text-on-surface hover:bg-surface-container disabled:opacity-30 cursor-pointer flex items-center gap-1.5"
+              >
+                <ArrowLeft className="w-3.5 h-3.5" />
+                <span>Previous Module</span>
+              </button>
+
+              {activeTab < 6 ? (
+                <button
+                  type="button"
+                  onClick={() => setActiveTab(Math.min(6, activeTab + 1))}
+                  className="px-5 py-2.5 rounded-xl bg-surface-container hover:bg-surface-container-high border border-outline-variant/30 text-xs font-bold text-on-surface flex items-center gap-1.5 shadow-2xs cursor-pointer"
+                >
+                  <span>Next: {MODULES[activeTab]?.label}</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  disabled={submitting}
+                  onClick={() => handleSubmit()}
+                  className="px-6 py-2.5 rounded-xl bg-primary hover:bg-primary-container text-white text-xs font-bold flex items-center gap-2 shadow-md cursor-pointer disabled:opacity-50"
+                >
+                  <Zap className="w-4 h-4" />
+                  <span>{submitting ? "Publishing..." : "Submit Problem Statement"}</span>
+                </button>
+              )}
+            </div>
           </form>
         </div>
 
-        {/* ── BULK PROBLEM IMPORT MODAL (CSV & PASTE) ───────────────── */}
-        <BulkProblemImportModal
-          isOpen={isBulkModalOpen}
-          onClose={() => setIsBulkModalOpen(false)}
-          isAdmin={isAdmin}
-        />
+        {/* ── RIGHT: LIVE DOSSIER INSPECTOR & RIGOR METER (5 cols, sticky) ── */}
+        <div
+          className={`lg:col-span-5 xl:col-span-4 lg:sticky lg:top-24 space-y-4 ${
+            mobileInspectorOpen ? "block" : "hidden lg:block"
+          }`}
+        >
+          {/* Rigor Meter Widget */}
+          <div className="bg-surface-container-lowest p-5 rounded-3xl border border-outline-variant/30 shadow-2xs space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-primary" />
+                <span className="text-xs font-extrabold uppercase tracking-wider text-on-surface">
+                  Dossier Rigor Meter
+                </span>
+              </div>
+              <span className="text-sm font-black font-mono text-primary">{rigorScore}/100</span>
+            </div>
+
+            {/* Progress bar */}
+            <div className="w-full bg-surface-container rounded-full h-2.5 overflow-hidden">
+              <div
+                className={`h-full transition-all duration-300 rounded-full ${
+                  rigorScore >= 75
+                    ? "bg-emerald-600"
+                    : rigorScore >= 45
+                    ? "bg-primary"
+                    : "bg-amber-500"
+                }`}
+                style={{ width: `${rigorScore}%` }}
+              />
+            </div>
+
+            <p className="text-[11px] text-on-surface-variant leading-relaxed">
+              {rigorScore >= 80 ? (
+                <span className="text-emerald-600 font-semibold">
+                  ✓ High-conviction dossier with quantified evidence and market validation.
+                </span>
+              ) : rigorScore >= 50 ? (
+                <span>
+                  Good foundation. Add <strong className="text-on-surface">telemetry metrics</strong> or <strong className="text-on-surface">incumbent flaws</strong> to unlock top ranking.
+                </span>
+              ) : (
+                <span>
+                  Draft stage. Complete the <strong className="text-on-surface">title</strong>, <strong className="text-on-surface">description</strong>, and <strong className="text-on-surface">who faces it</strong>.
+                </span>
+              )}
+            </p>
+          </div>
+
+          {/* Live Preview Card */}
+          <div className="bg-surface-container-lowest p-5 sm:p-6 rounded-3xl border border-outline-variant/30 shadow-2xs space-y-4">
+            <div className="flex items-center justify-between border-b border-outline-variant/20 pb-3">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant flex items-center gap-1.5">
+                <Eye className="w-3.5 h-3.5 text-secondary" />
+                <span>Live Public Preview</span>
+              </span>
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary/10 text-primary uppercase">
+                {isCustomIndustry && customIndustry ? customIndustry : industry}
+              </span>
+            </div>
+
+            {/* Title */}
+            <div className="space-y-1">
+              <h3 className="text-sm font-black text-on-surface leading-snug line-clamp-2">
+                {title.trim() || "Untitled Problem Dossier"}
+              </h3>
+              <p className="text-[11px] text-on-surface-variant line-clamp-3 leading-relaxed">
+                {description.trim() || "Enter an objective problem summary on the left to see the live dossier formatted here..."}
+              </p>
+            </div>
+
+            {/* Metrics pills if present */}
+            <div className="grid grid-cols-2 gap-2 pt-1 border-t border-outline-variant/15 text-[11px]">
+              <div className="p-2 rounded-xl bg-surface-container-low">
+                <span className="text-[10px] text-on-surface-variant block">Target TAM</span>
+                <span className="font-mono font-bold text-emerald-600">{tam || "Not estimated"}</span>
+              </div>
+              <div className="p-2 rounded-xl bg-surface-container-low">
+                <span className="text-[10px] text-on-surface-variant block">Severity</span>
+                <span className="font-bold capitalize text-on-surface">{severity}</span>
+              </div>
+            </div>
+
+            {/* Attribution footer */}
+            <div className="flex items-center justify-between pt-2 text-[10px] text-on-surface-variant border-t border-outline-variant/20">
+              <span>Author: {isAnonymous ? "Anonymous Scout" : customSubmitterName || "Community"}</span>
+              <span>{location || "Global"}</span>
+            </div>
+          </div>
+        </div>
       </div>
-    );
-  };
+
+      {/* ── BULK PROBLEM IMPORT MODAL (CSV & PASTE) ─────────────────── */}
+      <BulkProblemImportModal
+        isOpen={isBulkModalOpen}
+        onClose={() => setIsBulkModalOpen(false)}
+        isAdmin={isAdmin}
+      />
+    </div>
+  );
+};
