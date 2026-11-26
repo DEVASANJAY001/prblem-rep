@@ -675,8 +675,88 @@ export const CourseCardBanner: React.FC<CourseCardBannerProps> = ({ courseNum })
   }
 
   // Course 6: Startup Fundamentals (Rich Crimson Burgundy & Warm Amber Gold, Venture Rocket & Cap Table Scale motif)
+  if (courseNum === 6) {
+    return (
+      <div className="relative w-full h-full min-h-[210px] overflow-hidden select-none bg-[#19030a]">
+        <svg
+          viewBox="0 0 360 225"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className="w-full h-full object-cover"
+          preserveAspectRatio="xMidYMid slice"
+          aria-hidden="true"
+        >
+          <defs>
+            <linearGradient id="c6-bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#140207" />
+              <stop offset="50%" stopColor="#2e0513" />
+              <stop offset="100%" stopColor="#100105" />
+            </linearGradient>
+
+            <radialGradient id="c6-glow" cx="50%" cy="46%" r="62%">
+              <stop offset="0%" stopColor="#fb7185" stopOpacity="0.3" />
+              <stop offset="60%" stopColor="#be123c" stopOpacity="0.18" />
+              <stop offset="100%" stopColor="#140207" stopOpacity="0" />
+            </radialGradient>
+
+            <linearGradient id="c6-gold-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#fef08a" />
+              <stop offset="50%" stopColor="#f59e0b" />
+              <stop offset="100%" stopColor="#b45309" />
+            </linearGradient>
+
+            <linearGradient id="c6-rocket-body" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#ffffff" />
+              <stop offset="45%" stopColor="#fecdd3" />
+              <stop offset="100%" stopColor="#f43f5e" />
+            </linearGradient>
+
+            <filter id="c6-shadow" x="-20%" y="-20%" width="140%" height="140%">
+              <feDropShadow dx="0" dy="8" stdDeviation="12" floodColor="#000000" floodOpacity="0.6" />
+            </filter>
+          </defs>
+
+          {/* Background & Ambient Glow */}
+          <rect width="360" height="225" fill="url(#c6-bg-grad)" />
+          <circle cx="180" cy="112" r="120" fill="url(#c6-glow)" />
+
+          {/* Perspective Coordinate Grid Lines */}
+          <g stroke="#e11d48" strokeWidth="0.8" strokeOpacity="0.2">
+            <line x1="20" y1="190" x2="340" y2="190" />
+            <line x1="30" y1="155" x2="330" y2="155" />
+            <line x1="45" y1="120" x2="315" y2="120" />
+            <line x1="80" y1="20" x2="135" y2="215" />
+            <line x1="145" y1="20" x2="175" y2="215" />
+            <line x1="215" y1="20" x2="185" y2="215" />
+            <line x1="280" y1="20" x2="225" y2="215" />
+          </g>
+
+          {/* Rocket Motif */}
+          <g transform="translate(180, 112)" filter="url(#c6-shadow)">
+            <ellipse cx="0" cy="46" rx="20" ry="6" fill="#f43f5e" opacity="0.3" />
+            <path d="M -8 28 L 0 54 L 8 28 Z" fill="url(#c6-gold-grad)" />
+            <circle cx="0" cy="38" r="4" fill="#fbbf24" opacity="0.9" />
+            <path d="M -16 12 L -30 28 L -14 26 Z" fill="#be123c" stroke="#fb7185" strokeWidth="1" />
+            <path d="M 16 12 L 30 28 L 14 26 Z" fill="#be123c" stroke="#fb7185" strokeWidth="1" />
+            <path d="M 0 -36 C -18 -10 -16 18 -14 30 L 14 30 C 16 18 18 -10 0 -36 Z" fill="url(#c6-rocket-body)" stroke="#ffffff" strokeWidth="1.5" />
+            <circle cx="0" cy="-6" r="10" fill="#881337" stroke="#fbbf24" strokeWidth="2" />
+            <circle cx="0" cy="-6" r="6" fill="#140207" />
+            <circle cx="2" cy="-8" r="2" fill="#ffffff" opacity="0.8" />
+            <line x1="0" y1="8" x2="0" y2="28" stroke="#e11d48" strokeWidth="2.5" strokeLinecap="round" />
+            <path d="M 0 -36 C -5 -28 0 -22 0 -22 C 0 -22 5 -28 0 -36 Z" fill="#e11d48" />
+            <rect x="-24" y="32" width="48" height="11" rx="3" fill="#be123c" stroke="#f43f5e" strokeWidth="0.8" />
+            <text x="0" y="40" fill="#ffffff" fontSize="6" fontWeight="800" textAnchor="middle" fontFamily="system-ui, -apple-system, sans-serif" letterSpacing="0.6">
+              VENTURE 1.0
+            </text>
+          </g>
+        </svg>
+      </div>
+    );
+  }
+
+  // Course 7: Hackathon & Open Innovation Mastery (Electric Violet & Cyan Neon, Sprint Trophy & Code Lightning motif)
   return (
-    <div className="relative w-full h-full min-h-[210px] overflow-hidden select-none bg-[#19030a]">
+    <div className="relative w-full h-full min-h-[210px] overflow-hidden select-none bg-[#09021a]">
       <svg
         viewBox="0 0 360 225"
         fill="none"
@@ -686,156 +766,102 @@ export const CourseCardBanner: React.FC<CourseCardBannerProps> = ({ courseNum })
         aria-hidden="true"
       >
         <defs>
-          <linearGradient id="c6-bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#140207" />
-            <stop offset="45%" stopColor="#4c0519" />
-            <stop offset="100%" stopColor="#25040d" />
+          <linearGradient id="c7-bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#080218" />
+            <stop offset="50%" stopColor="#1a063b" />
+            <stop offset="100%" stopColor="#060114" />
           </linearGradient>
 
-          <radialGradient id="c6-glow" cx="50%" cy="46%" r="62%">
-            <stop offset="0%" stopColor="#f43f5e" stopOpacity="0.45" />
-            <stop offset="55%" stopColor="#be123c" stopOpacity="0.25" />
-            <stop offset="100%" stopColor="#140207" stopOpacity="0" />
+          <radialGradient id="c7-glow" cx="50%" cy="46%" r="62%">
+            <stop offset="0%" stopColor="#a855f7" stopOpacity="0.35" />
+            <stop offset="60%" stopColor="#6366f1" stopOpacity="0.2" />
+            <stop offset="100%" stopColor="#080218" stopOpacity="0" />
           </radialGradient>
 
-          <linearGradient id="c6-rocket-body" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#ffffff" />
-            <stop offset="40%" stopColor="#ffe4e6" />
-            <stop offset="100%" stopColor="#fecdd3" />
+          <linearGradient id="c7-gold-trophy" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#fde047" />
+            <stop offset="50%" stopColor="#eab308" />
+            <stop offset="100%" stopColor="#ca8a04" />
           </linearGradient>
 
-          <linearGradient id="c6-gold-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#fde68a" />
-            <stop offset="100%" stopColor="#d97706" />
+          <linearGradient id="c7-cyan-lightning" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#67e8f9" />
+            <stop offset="100%" stopColor="#06b6d4" />
           </linearGradient>
 
-          <filter id="c6-rocket-shadow" x="-20%" y="-20%" width="140%" height="140%">
-            <feDropShadow dx="0" dy="10" stdDeviation="12" floodColor="#000000" floodOpacity="0.75" />
+          <filter id="c7-shadow" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="8" stdDeviation="12" floodColor="#000000" floodOpacity="0.65" />
           </filter>
         </defs>
 
-        {/* Background & Ambient Rose Glow */}
-        <rect width="360" height="225" fill="url(#c6-bg-grad)" />
-        <circle cx="180" cy="112" r="115" fill="url(#c6-glow)" />
+        <rect width="360" height="225" fill="url(#c7-bg-grad)" />
+        <circle cx="180" cy="112" r="120" fill="url(#c7-glow)" />
 
-        {/* Top Left: Cap Table Equity Pie Allocation Icon */}
-        <g transform="translate(48, 36)" opacity="0.8">
-          <circle cx="16" cy="16" r="14" fill="#881337" stroke="#fb7185" strokeWidth="1.2" />
-          {/* Pie Slice 1 (Founders 60%) */}
-          <path d="M 16 16 L 16 2 A 14 14 0 0 1 29 22 Z" fill="#f43f5e" />
-          {/* Pie Slice 2 (Investors 25%) */}
-          <path d="M 16 16 L 29 22 A 14 14 0 0 1 10 29 Z" fill="#fbbf24" />
-          {/* Pie Slice 3 (ESOP 15%) */}
-          <path d="M 16 16 L 10 29 A 14 14 0 0 1 16 2 Z" fill="#fda4af" />
+        <g stroke="#9333ea" strokeWidth="0.8" strokeOpacity="0.22">
+          <line x1="20" y1="190" x2="340" y2="190" />
+          <line x1="30" y1="155" x2="330" y2="155" />
+          <line x1="45" y1="120" x2="315" y2="120" />
+          <line x1="80" y1="20" x2="135" y2="215" />
+          <line x1="145" y1="20" x2="175" y2="215" />
+          <line x1="215" y1="20" x2="185" y2="215" />
+          <line x1="280" y1="20" x2="225" y2="215" />
         </g>
 
-        {/* Top Right: Valuation & Growth Metric Tag */}
-        <g transform="translate(268, 36)" fill="none" opacity="0.85">
-          <rect x="0" y="0" width="46" height="24" rx="4" fill="#881337" stroke="#fb7185" strokeWidth="1.2" />
-          <text
-            x="23"
-            y="11"
-            fill="#fecdd3"
-            fontSize="6"
-            fontFamily="system-ui, sans-serif"
-            fontWeight="bold"
-            textAnchor="middle"
-          >
-            VALUATION
-          </text>
-          <text
-            x="23"
-            y="20"
-            fill="#fbbf24"
-            fontSize="7"
-            fontFamily="system-ui, sans-serif"
-            fontWeight="800"
-            textAnchor="middle"
-          >
-            $5M SEED
-          </text>
+        <g stroke="#06b6d4" strokeWidth="2.5" strokeOpacity="0.3" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M 65 95 L 45 112 L 65 129" />
+          <path d="M 295 95 L 315 112 L 295 129" />
         </g>
 
-        {/* Bottom Left: Ascending Venture Traction Bar Chart */}
-        <g transform="translate(48, 160)" opacity="0.8">
-          <rect x="0" y="16" width="6" height="12" rx="1.5" fill="#fda4af" />
-          <rect x="9" y="10" width="6" height="18" rx="1.5" fill="#f43f5e" />
-          <rect x="18" y="4" width="6" height="24" rx="1.5" fill="#e11d48" />
-          <rect x="27" y="0" width="6" height="28" rx="1.5" fill="#fbbf24" />
-        </g>
+        <g transform="translate(180, 110)" filter="url(#c7-shadow)">
+          <ellipse cx="0" cy="46" rx="26" ry="7" fill="#7c3aed" opacity="0.35" />
+          <rect x="-24" y="32" width="48" height="14" rx="3" fill="#1e1b4b" stroke="#7c3aed" strokeWidth="1.2" />
+          <rect x="-20" y="24" width="40" height="8" rx="2" fill="#312e81" stroke="#9333ea" strokeWidth="1" />
 
-        {/* Dynamic Upward Growth Orbit Line */}
-        <path
-          d="M 25 188 Q 120 170 180 120 T 335 60"
-          stroke="#fb7185"
-          strokeWidth="2.2"
-          strokeLinecap="round"
-          strokeOpacity="0.5"
-          fill="none"
-        />
-
-        {/* Centerpiece: 3D Venture Rocket Core & Launch Thrust */}
-        <g transform="translate(180, 108)" filter="url(#c6-rocket-shadow)">
-          {/* Rocket Exhaust Plume */}
           <path
-            d="M -10 32 Q 0 54 10 32 Q 0 46 -10 32 Z"
-            fill="url(#c6-gold-grad)"
-          />
-          <circle cx="0" cy="38" r="4" fill="#fbbf24" opacity="0.9" />
-
-          {/* Left Fin */}
-          <path
-            d="M -16 12 L -30 28 L -14 26 Z"
-            fill="#be123c"
-            stroke="#fb7185"
-            strokeWidth="1"
-          />
-          {/* Right Fin */}
-          <path
-            d="M 16 12 L 30 28 L 14 26 Z"
-            fill="#be123c"
-            stroke="#fb7185"
-            strokeWidth="1"
-          />
-
-          {/* Fuselage / Rocket Body */}
-          <path
-            d="M 0 -36 C -18 -10 -16 18 -14 30 L 14 30 C 16 18 18 -10 0 -36 Z"
-            fill="url(#c6-rocket-body)"
+            d="M -26 -16 C -26 14 -12 24 0 24 C 12 24 26 14 26 -16 Z"
+            fill="url(#c7-gold-trophy)"
             stroke="#ffffff"
-            strokeWidth="1.5"
+            strokeWidth="1.2"
           />
 
-          {/* Cabin Porthole Glass */}
-          <circle cx="0" cy="-6" r="10" fill="#881337" stroke="#fbbf24" strokeWidth="2" />
-          <circle cx="0" cy="-6" r="6" fill="#140207" />
-          <circle cx="2" cy="-8" r="2" fill="#ffffff" opacity="0.8" />
-
-          {/* Ventral Fin Stripe */}
-          <line x1="0" y1="8" x2="0" y2="28" stroke="#e11d48" strokeWidth="2.5" strokeLinecap="round" />
-
-          {/* Rocket Nose Cone Accent */}
           <path
-            d="M 0 -36 C -5 -28 0 -22 0 -22 C 0 -22 5 -28 0 -36 Z"
-            fill="#e11d48"
+            d="M -26 -10 C -40 -10 -40 10 -22 14"
+            fill="none"
+            stroke="url(#c7-gold-trophy)"
+            strokeWidth="3.2"
+            strokeLinecap="round"
+          />
+          <path
+            d="M 26 -10 C 40 -10 40 10 22 14"
+            fill="none"
+            stroke="url(#c7-gold-trophy)"
+            strokeWidth="3.2"
+            strokeLinecap="round"
           />
 
-          {/* Venture Stage Label Tag */}
-          <rect x="-24" y="32" width="48" height="11" rx="3" fill="#be123c" stroke="#f43f5e" strokeWidth="0.8" />
+          <path
+            d="M 2 -12 L -6 2 L 1 2 L -2 14 L 8 -2 L 1 -2 Z"
+            fill="url(#c7-cyan-lightning)"
+            stroke="#ffffff"
+            strokeWidth="0.8"
+          />
+
+          <rect x="-26" y="34" width="52" height="10" rx="2.5" fill="#581c87" stroke="#c084fc" strokeWidth="0.8" />
           <text
             x="0"
-            y="40"
+            y="41.5"
             fill="#ffffff"
             fontSize="6"
             fontWeight="800"
             textAnchor="middle"
             fontFamily="system-ui, -apple-system, sans-serif"
-            letterSpacing="0.6"
+            letterSpacing="0.8"
           >
-            VENTURE 1.0
+            SPRINT 48H
           </text>
         </g>
       </svg>
     </div>
   );
+
 };

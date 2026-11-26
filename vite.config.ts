@@ -34,6 +34,7 @@ export default defineConfig({
           if (id.includes("src/data/course4Data")) return "course-4-data";
           if (id.includes("src/data/course5Data")) return "course-5-data";
           if (id.includes("src/data/course6Data")) return "course-6-data";
+          if (id.includes("src/data/course7Data")) return "course-7-data";
           if (id.includes("src/data/realProductionData")) return "production-data";
           if (id.includes("node_modules/three/")) return "vendor-three";
           if (id.includes("node_modules/firebase/auth/")) return "vendor-firebase-auth";

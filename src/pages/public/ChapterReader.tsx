@@ -9,6 +9,7 @@ import {
   COURSE_4_CHAPTERS,
   COURSE_5_CHAPTERS,
   COURSE_6_CHAPTERS,
+  COURSE_7_CHAPTERS,
   AcademyChapter,
 } from "@/data/academyData";
 import { Menu, X, ChevronRight, CheckCircle2 } from "lucide-react";
@@ -24,14 +25,23 @@ export const ChapterReader: React.FC = () => {
   const navigate = useNavigate();
 
   // Determine active course
+  const isCourse7 =
+    location.pathname.includes("hackathon") ||
+    location.pathname.includes("open-innovation") ||
+    courseSlug?.includes("hackathon") ||
+    courseSlug?.includes("open-innovation") ||
+    courseSlug === "course-7";
+
   const isCourse6 =
-    location.pathname.includes("startup-fundamentals") ||
-    location.pathname.includes("/startup") ||
-    courseSlug?.includes("startup-fundamentals") ||
-    courseSlug?.includes("startup") ||
-    courseSlug === "course-6";
+    !isCourse7 &&
+    (location.pathname.includes("startup-fundamentals") ||
+      location.pathname.includes("/startup") ||
+      courseSlug?.includes("startup-fundamentals") ||
+      courseSlug?.includes("startup") ||
+      courseSlug === "course-6");
 
   const isCourse5 =
+    !isCourse7 &&
     !isCourse6 &&
     (location.pathname.includes("ai-for-builders") ||
       location.pathname.includes("/ai") ||
@@ -40,6 +50,7 @@ export const ChapterReader: React.FC = () => {
       courseSlug === "course-5");
 
   const isCourse4 =
+    !isCourse7 &&
     !isCourse6 &&
     !isCourse5 &&
     (location.pathname.includes("solution-design") ||
@@ -49,6 +60,7 @@ export const ChapterReader: React.FC = () => {
       courseSlug === "course-4");
 
   const isCourse3 =
+    !isCourse7 &&
     !isCourse6 &&
     !isCourse5 &&
     !isCourse4 &&
@@ -59,6 +71,7 @@ export const ChapterReader: React.FC = () => {
       courseSlug === "course-3");
 
   const isCourse2 =
+    !isCourse7 &&
     !isCourse6 &&
     !isCourse5 &&
     !isCourse4 &&
@@ -67,7 +80,9 @@ export const ChapterReader: React.FC = () => {
       courseSlug?.includes("market-sizing") ||
       courseSlug === "course-2");
 
-  const activeCourse = isCourse6
+  const activeCourse = isCourse7
+    ? ACADEMY_COURSES[6]
+    : isCourse6
     ? ACADEMY_COURSES[5]
     : isCourse5
     ? ACADEMY_COURSES[4]
@@ -78,7 +93,9 @@ export const ChapterReader: React.FC = () => {
     : isCourse2
     ? ACADEMY_COURSES[1]
     : ACADEMY_COURSES[0];
-  const chapters: AcademyChapter[] = isCourse6
+  const chapters: AcademyChapter[] = isCourse7
+    ? COURSE_7_CHAPTERS
+    : isCourse6
     ? COURSE_6_CHAPTERS
     : isCourse5
     ? COURSE_5_CHAPTERS

@@ -1,0 +1,25 @@
+<svg viewBox="0 0 760 170" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="760" height="170" rx="12" fill="#F8FAFC"/>
+  <text x="380" y="26" fill="#0F172A" font-size="14" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">The 36-Hour Hackathon Hour-by-Hour Master Timeline</text>
+
+  <rect x="24" y="46" width="220" height="106" rx="8" fill="#FFFFFF" stroke="#6366F1" stroke-width="1.8"/>
+  <text x="134" y="68" fill="#4F46E5" font-size="12" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">HOURS 00 - 04 (FIRST 10%)</text>
+  <text x="134" y="88" fill="#334155" font-size="10" font-weight="semibold" text-anchor="middle" font-family="system-ui, sans-serif">Problem Lock &amp; Repo Skeleton</text>
+  <text x="134" y="106" fill="#64748B" font-size="9.5" text-anchor="middle" font-family="system-ui, sans-serif">- Scope agreed &amp; signed off</text>
+  <text x="134" y="122" fill="#64748B" font-size="9.5" text-anchor="middle" font-family="system-ui, sans-serif">- GitHub repo, Vite, Tailwind ready</text>
+  <text x="134" y="138" fill="#4F46E5" font-size="9" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">Deploy Blank Page to Vercel/Cloud</text>
+
+  <rect x="258" y="46" width="244" height="106" rx="8" fill="#FFFFFF" stroke="#0284C7" stroke-width="1.8"/>
+  <text x="380" y="68" fill="#0284C7" font-size="12" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">HOURS 04 - 26 (MIDDLE 60%)</text>
+  <text x="380" y="88" fill="#334155" font-size="10" font-weight="semibold" text-anchor="middle" font-family="system-ui, sans-serif">The Build Engine &amp; Integration</text>
+  <text x="380" y="106" fill="#64748B" font-size="9.5" text-anchor="middle" font-family="system-ui, sans-serif">- Hour 12: End-to-end data test</text>
+  <text x="380" y="122" fill="#64748B" font-size="9.5" text-anchor="middle" font-family="system-ui, sans-serif">- Hour 18: Mandatory 4-hour sleep rotation</text>
+  <text x="380" y="138" fill="#0369A1" font-size="9" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">Hour 24: FEATURE FREEZE</text>
+
+  <rect x="516" y="46" width="220" height="106" rx="8" fill="#FFFFFF" stroke="#16A34A" stroke-width="2"/>
+  <text x="626" y="68" fill="#16A34A" font-size="12" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">HOURS 26 - 36 (FINAL 30%)</text>
+  <text x="626" y="88" fill="#334155" font-size="10" font-weight="semibold" text-anchor="middle" font-family="system-ui, sans-serif">Polish, Video &amp; Pitch Rehearsal</text>
+  <text x="626" y="106" fill="#64748B" font-size="9.5" text-anchor="middle" font-family="system-ui, sans-serif">- Hour 28: Record 2-min backup video</text>
+  <text x="626" y="122" fill="#64748B" font-size="9.5" text-anchor="middle" font-family="system-ui, sans-serif">- Hour 32: Submit 2 hours early</text>
+  <text x="626" y="138" fill="#15803D" font-size="9" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">Pitch Deck Dry Run (x3 Times)</text>
+</svg>

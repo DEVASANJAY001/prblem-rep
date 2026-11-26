@@ -10,12 +10,14 @@ import {
   COURSE_4_CHAPTERS,
   COURSE_5_CHAPTERS,
   COURSE_6_CHAPTERS,
+  COURSE_7_CHAPTERS,
   COURSE_1_PARTS,
   COURSE_2_PARTS,
   COURSE_3_PARTS,
   COURSE_4_PARTS,
   COURSE_5_PARTS,
   COURSE_6_PARTS,
+  COURSE_7_PARTS,
   ACADEMY_COLORS,
   AcademyChapter,
   AcademyPart,
@@ -63,31 +65,41 @@ export const AcademyHome: React.FC = () => {
     container.scrollBy({ left: scrollAmount, behavior: "smooth" });
   };
 
+  const isCourse7 =
+    selectedCourseSlug === "hackathon-and-open-innovation-mastery" ||
+    selectedCourseSlug === "hackathon" ||
+    selectedCourseSlug === "course-7";
   const isCourse6 =
-    selectedCourseSlug === "startup-fundamentals" ||
-    selectedCourseSlug === "startup" ||
-    selectedCourseSlug === "course-6";
+    !isCourse7 &&
+    (selectedCourseSlug === "startup-fundamentals" ||
+      selectedCourseSlug === "startup" ||
+      selectedCourseSlug === "course-6");
   const isCourse5 =
+    !isCourse7 &&
     !isCourse6 &&
     (selectedCourseSlug === "ai-for-builders" ||
       selectedCourseSlug === "ai" ||
       selectedCourseSlug === "course-5");
   const isCourse4 =
+    !isCourse7 &&
     !isCourse6 &&
     !isCourse5 &&
     (selectedCourseSlug === "solution-design-and-mvp-building" ||
       selectedCourseSlug === "solution-design" ||
       selectedCourseSlug === "course-4");
   const isCourse3 =
+    !isCourse7 &&
     !isCourse6 &&
     !isCourse5 &&
     !isCourse4 &&
     (selectedCourseSlug === "full-stack-cloud-development" ||
       selectedCourseSlug === "full-stack-cloud-for-founders" ||
       selectedCourseSlug === "course-3");
-  const isCourse2 = !isCourse6 && !isCourse5 && !isCourse4 && !isCourse3 && selectedCourseSlug === "market-sizing-and-opportunity";
+  const isCourse2 = !isCourse7 && !isCourse6 && !isCourse5 && !isCourse4 && !isCourse3 && selectedCourseSlug === "market-sizing-and-opportunity";
 
-  const activeCourse = isCourse6
+  const activeCourse = isCourse7
+    ? ACADEMY_COURSES[6]
+    : isCourse6
     ? ACADEMY_COURSES[5]
     : isCourse5
     ? ACADEMY_COURSES[4]
@@ -98,7 +110,9 @@ export const AcademyHome: React.FC = () => {
     : isCourse2
     ? ACADEMY_COURSES[1]
     : ACADEMY_COURSES[0];
-  const chapters: AcademyChapter[] = isCourse6
+  const chapters: AcademyChapter[] = isCourse7
+    ? COURSE_7_CHAPTERS
+    : isCourse6
     ? COURSE_6_CHAPTERS
     : isCourse5
     ? COURSE_5_CHAPTERS
@@ -109,7 +123,9 @@ export const AcademyHome: React.FC = () => {
     : isCourse2
     ? COURSE_2_CHAPTERS
     : COURSE_1_CHAPTERS;
-  const parts: AcademyPart[] = isCourse6
+  const parts: AcademyPart[] = isCourse7
+    ? COURSE_7_PARTS
+    : isCourse6
     ? COURSE_6_PARTS
     : isCourse5
     ? COURSE_5_PARTS

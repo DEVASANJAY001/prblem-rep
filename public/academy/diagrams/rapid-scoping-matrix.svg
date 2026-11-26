@@ -1,0 +1,32 @@
+<svg viewBox="0 0 760 170" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="760" height="170" rx="12" fill="#F8FAFC"/>
+  <text x="380" y="26" fill="#0F172A" font-size="14" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">The 36-Hour Hackathon Scoping Matrix: Must vs. Fake vs. Skip</text>
+
+  <rect x="24" y="46" width="168" height="106" rx="8" fill="#FFFFFF" stroke="#16A34A" stroke-width="1.8"/>
+  <text x="108" y="70" fill="#16A34A" font-size="12" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">MUST-HAVE (100%)</text>
+  <text x="108" y="90" fill="#334155" font-size="10" font-weight="semibold" text-anchor="middle" font-family="system-ui, sans-serif">The Single Core Flow</text>
+  <text x="108" y="108" fill="#64748B" font-size="9.5" text-anchor="middle" font-family="system-ui, sans-serif">One verified friction point</text>
+  <text x="108" y="124" fill="#64748B" font-size="9.5" text-anchor="middle" font-family="system-ui, sans-serif">Real working input &amp; output</text>
+  <text x="108" y="140" fill="#15803D" font-size="9" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">No Mocking Here</text>
+
+  <rect x="206" y="46" width="168" height="106" rx="8" fill="#FFFFFF" stroke="#0284C7" stroke-width="1.6"/>
+  <text x="290" y="70" fill="#0284C7" font-size="12" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">SHOULD-HAVE (Optional)</text>
+  <text x="290" y="90" fill="#334155" font-size="10" font-weight="semibold" text-anchor="middle" font-family="system-ui, sans-serif">Delight &amp; Analytics</text>
+  <text x="290" y="108" fill="#64748B" font-size="9.5" text-anchor="middle" font-family="system-ui, sans-serif">Secondary dashboard chart</text>
+  <text x="290" y="124" fill="#64748B" font-size="9.5" text-anchor="middle" font-family="system-ui, sans-serif">Export to PDF or CSV</text>
+  <text x="290" y="140" fill="#0369A1" font-size="9" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">Build If Ahead of Clock</text>
+
+  <rect x="388" y="46" width="168" height="106" rx="8" fill="#FFFFFF" stroke="#D97706" stroke-width="1.6"/>
+  <text x="472" y="70" fill="#D97706" font-size="12" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">FAKE-IT (Smart Stubs)</text>
+  <text x="472" y="90" fill="#334155" font-size="10" font-weight="semibold" text-anchor="middle" font-family="system-ui, sans-serif">High-Latency / Heavy APIs</text>
+  <text x="472" y="108" fill="#64748B" font-size="9.5" text-anchor="middle" font-family="system-ui, sans-serif">Pre-computed ML embedding</text>
+  <text x="472" y="124" fill="#64748B" font-size="9.5" text-anchor="middle" font-family="system-ui, sans-serif">Payment gateway dummy token</text>
+  <text x="472" y="140" fill="#B45309" font-size="9" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">Honest Demo Presentation</text>
+
+  <rect x="570" y="46" width="166" height="106" rx="8" fill="#FFFFFF" stroke="#EF4444" stroke-width="1.6"/>
+  <text x="653" y="70" fill="#EF4444" font-size="12" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">SKIP-IT (Zero Points)</text>
+  <text x="653" y="90" fill="#334155" font-size="10" font-weight="semibold" text-anchor="middle" font-family="system-ui, sans-serif">Time-Wasters</text>
+  <text x="653" y="108" fill="#64748B" font-size="9.5" text-anchor="middle" font-family="system-ui, sans-serif">User auth / password reset</text>
+  <text x="653" y="124" fill="#64748B" font-size="9.5" text-anchor="middle" font-family="system-ui, sans-serif">Profile settings / dark mode</text>
+  <text x="653" y="140" fill="#B91C1C" font-size="9" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">Judges Do Not Care</text>
+</svg>
