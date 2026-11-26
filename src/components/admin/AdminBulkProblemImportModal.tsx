@@ -11,6 +11,7 @@ import {
 import { ProblemStatus, ProblemSeverity, EvidenceDocument } from "@/types";
 import { REAL_INDUSTRIES } from "@/data/realProductionData";
 import { getProblemDetailUrl } from "@/lib/seoUrls";
+import { recordUserSubmission } from "@/lib/storage";
 import confetti from "canvas-confetti";
 import {
   Upload,
@@ -49,11 +50,12 @@ import {
   Copy,
 } from "lucide-react";
 
-interface AdminBulkProblemImportModalProps {
+export interface AdminBulkProblemImportModalProps {
   isOpen: boolean;
   onClose: () => void;
   onImportComplete?: (importedCount: number) => void;
   onOpenProblemEditor?: (problemId: string) => void;
+  isAdmin?: boolean;
 }
 
 export const AdminBulkProblemImportModal: React.FC<AdminBulkProblemImportModalProps> = ({
@@ -61,8 +63,10 @@ export const AdminBulkProblemImportModal: React.FC<AdminBulkProblemImportModalPr
   onClose,
   onImportComplete,
   onOpenProblemEditor,
+  isAdmin,
 }) => {
   const { user, userDoc } = useAuth();
+  const isUserAdmin = typeof isAdmin === "boolean" ? isAdmin : (userDoc?.role === "admin" || false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Layout mode: full screen by default for big screen studio preview
@@ -77,10 +81,16 @@ export const AdminBulkProblemImportModal: React.FC<AdminBulkProblemImportModalPr
   const [fileName, setFileName] = useState<string | null>(null);
 
   // Settings
-  const [defaultStatus, setDefaultStatus] = useState<ProblemStatus>("approved");
+  const [defaultStatus, setDefaultStatus] = useState<ProblemStatus>(isUserAdmin ? "approved" : "pending");
   const [customSubmitterName, setCustomSubmitterName] = useState<string>(
-    userDoc?.name || user?.displayName || "Admin Dossier Scout"
+    userDoc?.name || user?.displayName || (isUserAdmin ? "Admin Dossier Scout" : "Community Contributor")
   );
+
+  useEffect(() => {
+    if (!isUserAdmin) {
+      setDefaultStatus("pending");
+    }
+  }, [isUserAdmin]);
 
   // Parsed & validation state
   const [parsedRows, setParsedRows] = useState<ParsedProblemRow[]>([]);
@@ -472,7 +482,7 @@ export const AdminBulkProblemImportModal: React.FC<AdminBulkProblemImportModalPr
       try {
         const authorName = p.isAnonymous
           ? "Anonymous Scout"
-          : p.submitterName || customSubmitterName || userDoc?.name || "Admin Scout";
+          : p.submitterName || customSubmitterName || userDoc?.name || user?.displayName || (isUserAdmin ? "Admin Scout" : "Community Contributor");
 
         const res = await createProblem({
           title: p.title.trim(),
@@ -480,7 +490,7 @@ export const AdminBulkProblemImportModal: React.FC<AdminBulkProblemImportModalPr
           industry: p.industry,
           severity: p.severity,
           location: p.location.trim() || "Global",
-          submittedByUid: userDoc?.uid || user?.uid || "admin",
+          submittedByUid: userDoc?.uid || user?.uid || (isUserAdmin ? "admin" : "community"),
           submittedByName: authorName,
           submitterUsername: p.isAnonymous ? undefined : userDoc?.username || undefined,
           whenItHappens: p.whenItHappens.trim(),
@@ -533,10 +543,11 @@ export const AdminBulkProblemImportModal: React.FC<AdminBulkProblemImportModalPr
             keyRisks: p.keyRisks,
             aiConfidence: 96,
           } as any,
-          status: p.status || defaultStatus,
+          status: isUserAdmin ? (p.status || defaultStatus) : "pending",
         });
 
         if (res.success && res.problemId) {
+          recordUserSubmission(res.problemId, user?.uid || "guest");
           results.push({ id: res.problemId, title: p.title, success: true });
         } else {
           results.push({
@@ -714,18 +725,27 @@ export const AdminBulkProblemImportModal: React.FC<AdminBulkProblemImportModalPr
                   <ShieldCheck className="w-3.5 h-3.5 text-primary" />
                   <span>Default Publication Status</span>
                 </label>
-                <select
-                  value={defaultStatus}
-                  onChange={(e) => setDefaultStatus(e.target.value as ProblemStatus)}
-                  className="w-full px-3 py-2 bg-surface-container-lowest border border-outline-variant/30 rounded-xl text-xs text-on-surface outline-none focus:ring-2 focus:ring-primary font-medium cursor-pointer"
-                >
-                  <option value="approved">Approved & Verified (Publish Directly to Platform)</option>
-                  <option value="pending">Pending (Send to Admin Review Queue)</option>
-                  <option value="under_review">Under Review</option>
-                </select>
-                <span className="text-[10px] text-on-surface-variant">
-                  Can be edited inline for each row before publishing.
-                </span>
+                {isUserAdmin ? (
+                  <>
+                    <select
+                      value={defaultStatus}
+                      onChange={(e) => setDefaultStatus(e.target.value as ProblemStatus)}
+                      className="w-full px-3 py-2 bg-surface-container-lowest border border-outline-variant/30 rounded-xl text-xs text-on-surface outline-none focus:ring-2 focus:ring-primary font-medium cursor-pointer"
+                    >
+                      <option value="approved">Approved & Verified (Publish Directly to Platform)</option>
+                      <option value="pending">Pending (Send to Admin Review Queue)</option>
+                      <option value="under_review">Under Review</option>
+                    </select>
+                    <span className="text-[10px] text-on-surface-variant">
+                      Can be edited inline for each row before publishing.
+                    </span>
+                  </>
+                ) : (
+                  <div className="px-3 py-2 bg-amber-500/10 border border-amber-500/30 rounded-xl text-xs text-amber-900 dark:text-amber-200 font-medium flex items-center gap-2">
+                    <Clock className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                    <span>Pending Curator Review (Queued for community verification)</span>
+                  </div>
+                )}
               </div>
 
               <div className="flex flex-col gap-1.5">
@@ -1853,11 +1873,16 @@ export const AdminBulkProblemImportModal: React.FC<AdminBulkProblemImportModalPr
                 <CheckCircle2 className="w-8 h-8" />
               </div>
               <h3 className="text-lg font-extrabold text-on-surface">
-                Bulk Import Finished!
+                {isUserAdmin ? "Bulk Import Finished!" : "Bulk Submissions Recorded!"}
               </h3>
               <p className="text-xs text-on-surface-variant max-w-md">
-                Successfully posted <strong>{createdResults.filter((r) => r.success).length}</strong> of{" "}
-                <strong>{createdResults.length}</strong> dossiers to Cloud Firestore and local registry.
+                {isUserAdmin ? (
+                  <>Successfully posted <strong>{createdResults.filter((r) => r.success).length}</strong> of{" "}
+                  <strong>{createdResults.length}</strong> dossiers to Cloud Firestore and local registry.</>
+                ) : (
+                  <>Successfully submitted <strong>{createdResults.filter((r) => r.success).length}</strong> of{" "}
+                  <strong>{createdResults.length}</strong> problem dossiers. They are safely recorded and queued for curator review before public release.</>
+                )}
               </p>
             </div>
 
@@ -1943,17 +1968,19 @@ export const AdminBulkProblemImportModal: React.FC<AdminBulkProblemImportModalPr
                 >
                   Discard & Re-upload
                 </button>
-                <div className="hidden sm:flex items-center gap-2">
-                  <span className="text-[11px] text-on-surface-variant font-medium">Status for selected:</span>
-                  <select
-                    value={defaultStatus}
-                    onChange={(e) => setDefaultStatus(e.target.value as ProblemStatus)}
-                    className="px-2.5 py-1 bg-surface-container border border-outline-variant/30 rounded-lg text-xs font-semibold text-on-surface outline-none cursor-pointer"
-                  >
-                    <option value="approved">Approved & Verified</option>
-                    <option value="pending">Pending Review</option>
-                  </select>
-                </div>
+                {isUserAdmin && (
+                  <div className="hidden sm:flex items-center gap-2">
+                    <span className="text-[11px] text-on-surface-variant font-medium">Status for selected:</span>
+                    <select
+                      value={defaultStatus}
+                      onChange={(e) => setDefaultStatus(e.target.value as ProblemStatus)}
+                      className="px-2.5 py-1 bg-surface-container border border-outline-variant/30 rounded-lg text-xs font-semibold text-on-surface outline-none cursor-pointer"
+                    >
+                      <option value="approved">Approved & Verified</option>
+                      <option value="pending">Pending Review</option>
+                    </select>
+                  </div>
+                )}
               </div>
 
               <div className="flex items-center gap-2">
@@ -1963,7 +1990,7 @@ export const AdminBulkProblemImportModal: React.FC<AdminBulkProblemImportModalPr
                   className="px-6 py-2.5 rounded-xl bg-primary hover:bg-primary-container text-white text-xs font-bold flex items-center gap-2 shadow-sm transition-all cursor-pointer disabled:opacity-50"
                 >
                   <Zap className="w-3.5 h-3.5" />
-                  <span>Publish {selectedIndices.size} Problems to Platform →</span>
+                  <span>{isUserAdmin ? `Publish ${selectedIndices.size} Problems to Platform →` : `Submit ${selectedIndices.size} Problems for Review →`}</span>
                 </button>
               </div>
             </>
@@ -1996,3 +2023,6 @@ export const AdminBulkProblemImportModal: React.FC<AdminBulkProblemImportModalPr
     </div>
   );
 };
+
+export { AdminBulkProblemImportModal as BulkProblemImportModal };
+

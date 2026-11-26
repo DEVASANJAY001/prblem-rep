@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { createProblem } from "@/lib/firebase/services/problemsService";
+import { BulkProblemImportModal } from "@/components/admin/AdminBulkProblemImportModal";
 import { subscribeCredits } from "@/lib/firebase/services/creditsService";
 import { recordUserSubmission } from "@/lib/storage";
 import { getProblemDetailUrl, getStartupModeUrl } from "@/lib/seoUrls";
@@ -15,6 +16,8 @@ import { executeRecaptcha } from "@/lib/recaptcha";
 import { CreditSourceBadge } from "@/components/ui/CreditSourceBadge";
 import {
   CheckCircle,
+  Upload,
+  FileSpreadsheet,
   ArrowRight,
   ArrowLeft,
   FileText,
@@ -58,6 +61,7 @@ export const SubmitProblem: React.FC = () => {
   const [firestoreNotice, setFirestoreNotice] = useState<string | null>(null);
   const [isHumanVerified, setIsHumanVerified] = useState(false);
   const [adminDirectPublish, setAdminDirectPublish] = useState(false);
+  const [isBulkModalOpen, setIsBulkModalOpen] = useState(false);
 
   // â”€â”€ Tab 1: Core Overview & Operational Narrative â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const [title, setTitle] = useState("");
@@ -406,7 +410,17 @@ export const SubmitProblem: React.FC = () => {
         </div>
 
         {/* Action Header Buttons */}
-        <div className="flex items-center gap-2 sm:gap-2.5 shrink-0 self-start md:self-auto flex-wrap sm:flex-nowrap">
+        <div className="flex items-center gap-2 sm:gap-2.5 shrink-0 self-start md:self-auto flex-wrap sm:flex-nowrap">
+          <button
+            type="button"
+            onClick={() => setIsBulkModalOpen(true)}
+            className="group flex items-center gap-1.5 px-3 sm:px-4 py-1.5 sm:py-2.5 rounded-lg sm:rounded-xl bg-surface-container hover:bg-surface-container-high border border-outline-variant/30 text-on-surface text-[11px] sm:text-xs font-bold shadow-2xs transition-all cursor-pointer"
+            title="Bulk upload problem statements via CSV / Excel spreadsheet or direct copy-paste"
+          >
+            <Upload className="w-3.5 h-3.5 text-primary group-hover:scale-110 transition-transform" />
+            <span>Bulk Upload (CSV / Paste)</span>
+          </button>
+
           <button
             type="button"
             disabled={submitting}
@@ -417,6 +431,31 @@ export const SubmitProblem: React.FC = () => {
             <span>{submitting ? "Submitting..." : "Submit Problem"}</span>
           </button>
         </div>
+      </div>
+
+      {/* ── BULK UPLOAD CALLOUT FOR BUILDERS & SCOUTS ─────────────────── */}
+      <div className="w-full -mt-2 sm:-mt-4 mb-4 sm:mb-6 p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-surface-container-low/70 border border-primary/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs shadow-2xs">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+            <FileSpreadsheet className="w-4 h-4" />
+          </div>
+          <div>
+            <p className="font-bold text-[12px] sm:text-[13px] text-on-surface">
+              Have multiple problem statements or a research spreadsheet?
+            </p>
+            <p className="text-[11px] text-on-surface-variant">
+              Import entire CSV files or paste tabular rows with instant 6-module preview, automatic delimiter detection, and inline validation.
+            </p>
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={() => setIsBulkModalOpen(true)}
+          className="shrink-0 w-full sm:w-auto px-3.5 py-1.5 rounded-lg bg-primary hover:bg-primary-container text-white text-[11px] font-bold shadow-2xs transition-all cursor-pointer flex items-center justify-center gap-1.5"
+        >
+          <Upload className="w-3 h-3" />
+          <span>Upload CSV / Paste Data</span>
+        </button>
       </div>
 
       {/* â”€â”€ MAIN FULL-PAGE STUDIO â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
@@ -2095,6 +2134,13 @@ export const SubmitProblem: React.FC = () => {
             )}
           </form>
         </div>
+
+        {/* ── BULK PROBLEM IMPORT MODAL (CSV & PASTE) ───────────────── */}
+        <BulkProblemImportModal
+          isOpen={isBulkModalOpen}
+          onClose={() => setIsBulkModalOpen(false)}
+          isAdmin={isAdmin}
+        />
       </div>
     );
   };
