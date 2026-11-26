@@ -1,0 +1,22 @@
+<svg viewBox="0 0 760 170" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="760" height="170" rx="12" fill="#F8FAFC"/>
+  <text x="380" y="26" fill="#0F172A" font-size="14" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">Practical Builder Statistics: Central Tendency, Spread &amp; Outlier Triage</text>
+
+  <rect x="24" y="46" width="340" height="106" rx="8" fill="#FFFFFF" stroke="#0284C7" stroke-width="1.8"/>
+  <text x="194" y="68" fill="#0284C7" font-size="12" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">THE CENTRAL TENDENCY TRAP</text>
+  <text x="40" y="92" fill="#0F172A" font-size="10.5" font-weight="bold" font-family="system-ui, sans-serif">Mean (Average):</text>
+  <text x="145" y="92" fill="#475569" font-size="10" font-family="system-ui, sans-serif">Distorted by extreme outliers ($1M whale user)</text>
+  <text x="40" y="112" fill="#0F172A" font-size="10.5" font-weight="bold" font-family="system-ui, sans-serif">Median (50th %):</text>
+  <text x="145" y="112" fill="#059669" font-size="10" font-weight="semibold" font-family="system-ui, sans-serif">Resistant to skew — true typical user metric</text>
+  <text x="40" y="132" fill="#0F172A" font-size="10.5" font-weight="bold" font-family="system-ui, sans-serif">Mode (Most freq):</text>
+  <text x="145" y="132" fill="#475569" font-size="10" font-family="system-ui, sans-serif">Highest frequency cluster in discrete categories</text>
+
+  <rect x="396" y="46" width="340" height="106" rx="8" fill="#FFFFFF" stroke="#7C3AED" stroke-width="1.8"/>
+  <text x="566" y="68" fill="#7C3AED" font-size="12" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">THE EMPIRICAL RULE (&sigma; VARIANCE)</text>
+  <text x="412" y="92" fill="#7C3AED" font-size="10.5" font-weight="bold" font-family="system-ui, sans-serif">&plusmn; 1 Standard Dev (&sigma;):</text>
+  <text x="565" y="92" fill="#334155" font-size="10" font-family="system-ui, sans-serif">Captures 68.2% of all normal events</text>
+  <text x="412" y="112" fill="#7C3AED" font-size="10.5" font-weight="bold" font-family="system-ui, sans-serif">&plusmn; 2 Standard Dev (2&sigma;):</text>
+  <text x="565" y="112" fill="#334155" font-size="10" font-family="system-ui, sans-serif">Captures 95.4% of your dataset</text>
+  <text x="412" y="132" fill="#B91C1C" font-size="10.5" font-weight="bold" font-family="system-ui, sans-serif">Outside &plusmn; 3&sigma; (Outliers):</text>
+  <text x="565" y="132" fill="#B91C1C" font-size="10" font-weight="semibold" font-family="system-ui, sans-serif">&lt; 0.3% — Flag for bots, bugs, or anomalies</text>
+</svg>

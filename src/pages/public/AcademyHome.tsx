@@ -11,6 +11,7 @@ import {
   COURSE_5_CHAPTERS,
   COURSE_6_CHAPTERS,
   COURSE_7_CHAPTERS,
+  COURSE_8_CHAPTERS,
   COURSE_1_PARTS,
   COURSE_2_PARTS,
   COURSE_3_PARTS,
@@ -18,6 +19,7 @@ import {
   COURSE_5_PARTS,
   COURSE_6_PARTS,
   COURSE_7_PARTS,
+  COURSE_8_PARTS,
   ACADEMY_COLORS,
   AcademyChapter,
   AcademyPart,
@@ -65,10 +67,15 @@ export const AcademyHome: React.FC = () => {
     container.scrollBy({ left: scrollAmount, behavior: "smooth" });
   };
 
+  const isCourse8 =
+    selectedCourseSlug === "data-analysis-and-decision-making-for-builders" ||
+    selectedCourseSlug === "data-analysis" ||
+    selectedCourseSlug === "course-8";
   const isCourse7 =
+    !isCourse8 && (
     selectedCourseSlug === "hackathon-and-open-innovation-mastery" ||
     selectedCourseSlug === "hackathon" ||
-    selectedCourseSlug === "course-7";
+    selectedCourseSlug === "course-7");
   const isCourse6 =
     !isCourse7 &&
     (selectedCourseSlug === "startup-fundamentals" ||
@@ -97,7 +104,9 @@ export const AcademyHome: React.FC = () => {
       selectedCourseSlug === "course-3");
   const isCourse2 = !isCourse7 && !isCourse6 && !isCourse5 && !isCourse4 && !isCourse3 && selectedCourseSlug === "market-sizing-and-opportunity";
 
-  const activeCourse = isCourse7
+  const activeCourse = isCourse8
+    ? ACADEMY_COURSES[7]
+    : isCourse7
     ? ACADEMY_COURSES[6]
     : isCourse6
     ? ACADEMY_COURSES[5]
@@ -110,7 +119,9 @@ export const AcademyHome: React.FC = () => {
     : isCourse2
     ? ACADEMY_COURSES[1]
     : ACADEMY_COURSES[0];
-  const chapters: AcademyChapter[] = isCourse7
+  const chapters: AcademyChapter[] = isCourse8
+    ? COURSE_8_CHAPTERS
+    : isCourse7
     ? COURSE_7_CHAPTERS
     : isCourse6
     ? COURSE_6_CHAPTERS
@@ -123,7 +134,9 @@ export const AcademyHome: React.FC = () => {
     : isCourse2
     ? COURSE_2_CHAPTERS
     : COURSE_1_CHAPTERS;
-  const parts: AcademyPart[] = isCourse7
+  const parts: AcademyPart[] = isCourse8
+    ? COURSE_8_PARTS
+    : isCourse7
     ? COURSE_7_PARTS
     : isCourse6
     ? COURSE_6_PARTS

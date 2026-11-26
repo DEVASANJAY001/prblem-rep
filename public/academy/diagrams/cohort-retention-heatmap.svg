@@ -1,0 +1,18 @@
+<svg viewBox="0 0 760 170" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="760" height="170" rx="12" fill="#F8FAFC"/>
+  <text x="380" y="26" fill="#0F172A" font-size="14" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">Monthly Cohort Retention Curve: Identifying Product-Market Fit Stability</text>
+
+  <rect x="24" y="46" width="340" height="106" rx="8" fill="#FFFFFF" stroke="#DC2626" stroke-width="1.8"/>
+  <text x="194" y="68" fill="#DC2626" font-size="12" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">THE LEAKY BUCKET (NO PMF)</text>
+  <text x="40" y="92" fill="#334155" font-size="10" font-family="system-ui, sans-serif">Month 0: 100% active users</text>
+  <text x="40" y="108" fill="#334155" font-size="10" font-family="system-ui, sans-serif">Month 1: 22% &rarr; Month 3: 8% &rarr; Month 6: 2%</text>
+  <text x="40" y="128" fill="#B91C1C" font-size="10" font-weight="bold" font-family="system-ui, sans-serif">Curve trends to zero: Users do not experience lasting value</text>
+  <text x="40" y="142" fill="#B91C1C" font-size="9" font-weight="semibold" font-family="system-ui, sans-serif">Do NOT spend money on marketing yet</text>
+
+  <rect x="396" y="46" width="340" height="106" rx="8" fill="#FFFFFF" stroke="#16A34A" stroke-width="2"/>
+  <text x="566" y="68" fill="#15803D" font-size="12" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">THE FLATTENING CURVE (TRUE PMF)</text>
+  <text x="412" y="92" fill="#334155" font-size="10" font-family="system-ui, sans-serif">Month 0: 100% active users</text>
+  <text x="412" y="108" fill="#334155" font-size="10" font-family="system-ui, sans-serif">Month 1: 45% &rarr; Month 3: 38% &rarr; Month 6: 38%</text>
+  <text x="412" y="128" fill="#15803D" font-size="10" font-weight="bold" font-family="system-ui, sans-serif">Curve flattens parallel to x-axis: Defensible core base</text>
+  <text x="412" y="142" fill="#15803D" font-size="9" font-weight="semibold" font-family="system-ui, sans-serif">Safe to invest in distribution &amp; growth</text>
+</svg>

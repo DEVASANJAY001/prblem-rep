@@ -1,0 +1,46 @@
+<svg viewBox="0 0 760 170" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="760" height="170" rx="12" fill="#F8FAFC"/>
+  <text x="380" y="26" fill="#0F172A" font-size="14" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">The 6-Stage Builder Data Analysis Lifecycle</text>
+
+  <rect x="18" y="46" width="112" height="106" rx="8" fill="#FFFFFF" stroke="#6366F1" stroke-width="1.6"/>
+  <text x="74" y="68" fill="#4F46E5" font-size="11" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">1. QUESTION</text>
+  <text x="74" y="90" fill="#0F172A" font-size="10" font-weight="semibold" text-anchor="middle" font-family="system-ui, sans-serif">Decision-First</text>
+  <text x="74" y="108" fill="#475569" font-size="9" text-anchor="middle" font-family="system-ui, sans-serif">What choice will</text>
+  <text x="74" y="122" fill="#475569" font-size="9" text-anchor="middle" font-family="system-ui, sans-serif">this number alter?</text>
+  <text x="74" y="138" fill="#4F46E5" font-size="8.5" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">Hypothesis Lock</text>
+
+  <rect x="138" y="46" width="112" height="106" rx="8" fill="#FFFFFF" stroke="#0284C7" stroke-width="1.6"/>
+  <text x="194" y="68" fill="#0284C7" font-size="11" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">2. COLLECT</text>
+  <text x="194" y="90" fill="#0F172A" font-size="10" font-weight="semibold" text-anchor="middle" font-family="system-ui, sans-serif">Raw Evidence</text>
+  <text x="194" y="108" fill="#475569" font-size="9" text-anchor="middle" font-family="system-ui, sans-serif">Surveys, logs, SQL,</text>
+  <text x="194" y="122" fill="#475569" font-size="9" text-anchor="middle" font-family="system-ui, sans-serif">Stuckhere dossiers</text>
+  <text x="194" y="138" fill="#0369A1" font-size="8.5" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">Primary Signals</text>
+
+  <rect x="258" y="46" width="112" height="106" rx="8" fill="#FFFFFF" stroke="#D97706" stroke-width="1.6"/>
+  <text x="314" y="68" fill="#D97706" font-size="11" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">3. CLEAN</text>
+  <text x="314" y="90" fill="#0F172A" font-size="10" font-weight="semibold" text-anchor="middle" font-family="system-ui, sans-serif">Quality Control</text>
+  <text x="314" y="108" fill="#475569" font-size="9" text-anchor="middle" font-family="system-ui, sans-serif">Fix nulls, types,</text>
+  <text x="314" y="122" fill="#475569" font-size="9" text-anchor="middle" font-family="system-ui, sans-serif">dedup &amp; outliers</text>
+  <text x="314" y="138" fill="#B45309" font-size="8.5" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">No Bad Data</text>
+
+  <rect x="378" y="46" width="112" height="106" rx="8" fill="#FFFFFF" stroke="#7C3AED" stroke-width="1.6"/>
+  <text x="434" y="68" fill="#7C3AED" font-size="11" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">4. EXPLORE</text>
+  <text x="434" y="90" fill="#0F172A" font-size="10" font-weight="semibold" text-anchor="middle" font-family="system-ui, sans-serif">Patterns &amp; Stats</text>
+  <text x="434" y="108" fill="#475569" font-size="9" text-anchor="middle" font-family="system-ui, sans-serif">Distributions, mean,</text>
+  <text x="434" y="122" fill="#475569" font-size="9" text-anchor="middle" font-family="system-ui, sans-serif">median &amp; scatter</text>
+  <text x="434" y="138" fill="#6D28D9" font-size="8.5" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">Notice Shape</text>
+
+  <rect x="498" y="46" width="116" height="106" rx="8" fill="#FFFFFF" stroke="#059669" stroke-width="1.6"/>
+  <text x="556" y="68" fill="#059669" font-size="11" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">5. MODEL</text>
+  <text x="556" y="90" fill="#0F172A" font-size="10" font-weight="semibold" text-anchor="middle" font-family="system-ui, sans-serif">Scoring &amp; Tests</text>
+  <text x="556" y="108" fill="#475569" font-size="9" text-anchor="middle" font-family="system-ui, sans-serif">Weights, cohorts,</text>
+  <text x="556" y="122" fill="#475569" font-size="9" text-anchor="middle" font-family="system-ui, sans-serif">A/B significance</text>
+  <text x="556" y="138" fill="#047857" font-size="8.5" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">Rigorous Math</text>
+
+  <rect x="622" y="46" width="120" height="106" rx="8" fill="#FFFFFF" stroke="#16A34A" stroke-width="2"/>
+  <text x="682" y="68" fill="#16A34A" font-size="11" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">6. DECIDE</text>
+  <text x="682" y="90" fill="#0F172A" font-size="10" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">Clear Action</text>
+  <text x="682" y="108" fill="#334155" font-size="9" text-anchor="middle" font-family="system-ui, sans-serif">1-page memo,</text>
+  <text x="682" y="122" fill="#334155" font-size="9" text-anchor="middle" font-family="system-ui, sans-serif">ship or pivot call</text>
+  <text x="682" y="138" fill="#15803D" font-size="8.5" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">Defensible Call</text>
+</svg>

@@ -1,0 +1,32 @@
+<svg viewBox="0 0 760 170" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="760" height="170" rx="12" fill="#F8FAFC"/>
+  <text x="380" y="26" fill="#0F172A" font-size="14" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">The A/B Testing Statistical Decision Gate for Product Builders</text>
+
+  <rect x="24" y="46" width="168" height="106" rx="8" fill="#FFFFFF" stroke="#64748B" stroke-width="1.6"/>
+  <text x="108" y="70" fill="#475569" font-size="12" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">CONTROL (A)</text>
+  <text x="108" y="92" fill="#0F172A" font-size="10" font-weight="semibold" text-anchor="middle" font-family="system-ui, sans-serif">50% Random Traffic</text>
+  <text x="108" y="108" fill="#475569" font-size="9.5" text-anchor="middle" font-family="system-ui, sans-serif">Baseline Signup Rate: 3.2%</text>
+  <text x="108" y="124" fill="#475569" font-size="9.5" text-anchor="middle" font-family="system-ui, sans-serif">Sample: 5,000 visitors</text>
+  <text x="108" y="140" fill="#64748B" font-size="8.5" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">Existing Experience</text>
+
+  <rect x="206" y="46" width="168" height="106" rx="8" fill="#FFFFFF" stroke="#2563EB" stroke-width="1.8"/>
+  <text x="290" y="70" fill="#2563EB" font-size="12" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">VARIANT (B)</text>
+  <text x="290" y="92" fill="#0F172A" font-size="10" font-weight="semibold" text-anchor="middle" font-family="system-ui, sans-serif">50% Random Traffic</text>
+  <text x="290" y="108" fill="#1D4ED8" font-size="9.5" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">New Signup Rate: 4.6%</text>
+  <text x="290" y="124" fill="#475569" font-size="9.5" text-anchor="middle" font-family="system-ui, sans-serif">Sample: 5,000 visitors</text>
+  <text x="290" y="140" fill="#2563EB" font-size="8.5" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">+43.7% Relative Lift</text>
+
+  <rect x="388" y="46" width="168" height="106" rx="8" fill="#FFFFFF" stroke="#7C3AED" stroke-width="1.6"/>
+  <text x="472" y="70" fill="#7C3AED" font-size="12" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">SIGNIFICANCE AUDIT</text>
+  <text x="472" y="92" fill="#7C3AED" font-size="10.5" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">P-Value = 0.002</text>
+  <text x="472" y="110" fill="#334155" font-size="9.5" text-anchor="middle" font-family="system-ui, sans-serif">Threshold: &alpha; = 0.05</text>
+  <text x="472" y="126" fill="#334155" font-size="9.5" text-anchor="middle" font-family="system-ui, sans-serif">Statistical Power &gt; 80%</text>
+  <text x="472" y="140" fill="#6D28D9" font-size="8.5" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">Reject Null Hypothesis</text>
+
+  <rect x="570" y="46" width="166" height="106" rx="8" fill="#FFFFFF" stroke="#16A34A" stroke-width="2"/>
+  <text x="653" y="70" fill="#16A34A" font-size="12" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">DECISION GATE</text>
+  <text x="653" y="92" fill="#15803D" font-size="11" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">SHIP TO 100%</text>
+  <text x="653" y="110" fill="#334155" font-size="9.5" text-anchor="middle" font-family="system-ui, sans-serif">Lift is real, not noise</text>
+  <text x="653" y="126" fill="#334155" font-size="9.5" text-anchor="middle" font-family="system-ui, sans-serif">Document in logs</text>
+  <text x="653" y="140" fill="#16A34A" font-size="8.5" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">Production Rollout</text>
+</svg>

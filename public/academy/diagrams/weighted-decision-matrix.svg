@@ -1,0 +1,31 @@
+<svg viewBox="0 0 760 170" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="760" height="170" rx="12" fill="#F8FAFC"/>
+  <text x="380" y="26" fill="#0F172A" font-size="14" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">The Weighted Decision Scoring Model: Calculating Pain Score (0 - 100)</text>
+
+  <rect x="24" y="46" width="168" height="106" rx="8" fill="#FFFFFF" stroke="#EF4444" stroke-width="1.6"/>
+  <text x="108" y="70" fill="#EF4444" font-size="12" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">CRITERION 1: SEVERITY</text>
+  <text x="108" y="92" fill="#0F172A" font-size="11" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">Weight: 40% (0.40)</text>
+  <text x="108" y="110" fill="#475569" font-size="9.5" text-anchor="middle" font-family="system-ui, sans-serif">Work stoppage, fine,</text>
+  <text x="108" y="126" fill="#475569" font-size="9.5" text-anchor="middle" font-family="system-ui, sans-serif">patient health hazard</text>
+  <text x="108" y="140" fill="#B91C1C" font-size="8.5" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">Score: 9.4 / 10</text>
+
+  <rect x="206" y="46" width="168" height="106" rx="8" fill="#FFFFFF" stroke="#EA580C" stroke-width="1.6"/>
+  <text x="290" y="70" fill="#EA580C" font-size="12" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">CRITERION 2: FREQUENCY</text>
+  <text x="290" y="92" fill="#0F172A" font-size="11" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">Weight: 30% (0.30)</text>
+  <text x="290" y="110" fill="#475569" font-size="9.5" text-anchor="middle" font-family="system-ui, sans-serif">Hourly, daily, or</text>
+  <text x="290" y="126" fill="#475569" font-size="9.5" text-anchor="middle" font-family="system-ui, sans-serif">monthly occurrence</text>
+  <text x="290" y="140" fill="#C2410C" font-size="8.5" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">Score: 8.8 / 10</text>
+
+  <rect x="388" y="46" width="168" height="106" rx="8" fill="#FFFFFF" stroke="#0284C7" stroke-width="1.6"/>
+  <text x="472" y="70" fill="#0284C7" font-size="12" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">CRITERION 3: PAY INTENT</text>
+  <text x="472" y="92" fill="#0F172A" font-size="11" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">Weight: 30% (0.30)</text>
+  <text x="472" y="110" fill="#475569" font-size="9.5" text-anchor="middle" font-family="system-ui, sans-serif">Active spending on</text>
+  <text x="472" y="126" fill="#475569" font-size="9.5" text-anchor="middle" font-family="system-ui, sans-serif">clunky workarounds</text>
+  <text x="472" y="140" fill="#0369A1" font-size="8.5" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">Score: 9.0 / 10</text>
+
+  <rect x="570" y="46" width="166" height="106" rx="8" fill="#FFFFFF" stroke="#16A34A" stroke-width="2"/>
+  <text x="653" y="70" fill="#16A34A" font-size="12" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">WEIGHTED PAIN SCORE</text>
+  <text x="653" y="92" fill="#15803D" font-size="14" font-weight="extrabold" text-anchor="middle" font-family="system-ui, sans-serif">91.0 / 100</text>
+  <text x="653" y="112" fill="#334155" font-size="9.5" text-anchor="middle" font-family="system-ui, sans-serif">&Sigma; (w_i &times; x_i) &times; 10</text>
+  <text x="653" y="130" fill="#15803D" font-size="9.5" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">TIER 1 VENTURE GRADE</text>
+</svg>

@@ -754,6 +754,142 @@ export const CourseCardBanner: React.FC<CourseCardBannerProps> = ({ courseNum })
     );
   }
 
+  // Course 8: Data Analysis & Decision-Making for Builders (Deep Cyan / Emerald Matrix, Gaussian Curve & Analytics Terminal)
+  if (courseNum === 8) {
+    return (
+      <div className="relative w-full h-full min-h-[210px] overflow-hidden select-none bg-[#050e1d]">
+        <svg
+          viewBox="0 0 360 225"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className="w-full h-full object-cover"
+          preserveAspectRatio="xMidYMid slice"
+          aria-hidden="true"
+        >
+          <defs>
+            <linearGradient id="c8-bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#040d1a" />
+              <stop offset="50%" stopColor="#081e36" />
+              <stop offset="100%" stopColor="#02141a" />
+            </linearGradient>
+
+            <radialGradient id="c8-glow" cx="50%" cy="46%" r="62%">
+              <stop offset="0%" stopColor="#06b6d4" stopOpacity="0.3" />
+              <stop offset="60%" stopColor="#10b981" stopOpacity="0.15" />
+              <stop offset="100%" stopColor="#040d1a" stopOpacity="0" />
+            </radialGradient>
+
+            <linearGradient id="c8-curve-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#0284c7" />
+              <stop offset="50%" stopColor="#06b6d4" />
+              <stop offset="100%" stopColor="#10b981" />
+            </linearGradient>
+
+            <linearGradient id="c8-bar-grad" x1="0%" y1="100%" x2="0%" y2="0%">
+              <stop offset="0%" stopColor="#0284c7" />
+              <stop offset="100%" stopColor="#38bdf8" />
+            </linearGradient>
+
+            <filter id="c8-shadow" x="-20%" y="-20%" width="140%" height="140%">
+              <feDropShadow dx="0" dy="6" stdDeviation="8" floodColor="#06b6d4" floodOpacity="0.3" />
+            </filter>
+          </defs>
+
+          {/* Background */}
+          <rect width="360" height="225" fill="url(#c8-bg-grad)" />
+          <rect width="360" height="225" fill="url(#c8-glow)" />
+
+          {/* Perspective Matrix Grid */}
+          <g stroke="#0ea5e9" strokeWidth="0.8" strokeOpacity="0.18">
+            <line x1="20" y1="190" x2="340" y2="190" />
+            <line x1="30" y1="155" x2="330" y2="155" />
+            <line x1="45" y1="120" x2="315" y2="120" />
+            <line x1="80" y1="20" x2="135" y2="215" />
+            <line x1="145" y1="20" x2="175" y2="215" />
+            <line x1="215" y1="20" x2="185" y2="215" />
+            <line x1="280" y1="20" x2="225" y2="215" />
+          </g>
+
+          {/* Distribution Curve */}
+          <path
+            d="M 30 160 C 100 160 130 155 150 100 C 165 50 175 25 180 25 C 185 25 195 50 210 100 C 230 155 260 160 330 160"
+            fill="none"
+            stroke="url(#c8-curve-grad)"
+            strokeWidth="3.2"
+            strokeLinecap="round"
+          />
+
+          {/* Terminal Central Card */}
+          <g transform="translate(180, 115)" filter="url(#c8-shadow)">
+            <rect
+              x="-90"
+              y="-42"
+              width="180"
+              height="84"
+              rx="8"
+              fill="#061324"
+              stroke="#0ea5e9"
+              strokeWidth="1.2"
+              fillOpacity="0.95"
+            />
+            {/* Header bar */}
+            <rect x="-90" y="-42" width="180" height="18" rx="8" fill="#0c2038" />
+            <circle cx="-78" cy="-33" r="3" fill="#ef4444" opacity="0.8" />
+            <circle cx="-70" cy="-33" r="3" fill="#f59e0b" opacity="0.8" />
+            <circle cx="-62" cy="-33" r="3" fill="#10b981" opacity="0.8" />
+            <text
+              x="-48"
+              y="-30"
+              fill="#94a3b8"
+              fontSize="7"
+              fontWeight="600"
+              fontFamily="monospace"
+            >
+              analysis_matrix.sql
+            </text>
+
+            {/* Bars */}
+            <rect x="-75" y="6" width="10" height="22" rx="1.5" fill="url(#c8-bar-grad)" opacity="0.6" />
+            <rect x="-61" y="-8" width="10" height="36" rx="1.5" fill="url(#c8-bar-grad)" opacity="0.75" />
+            <rect x="-47" y="-20" width="10" height="48" rx="1.5" fill="url(#c8-bar-grad)" opacity="0.95" />
+            <rect x="-33" y="-6" width="10" height="34" rx="1.5" fill="url(#c8-bar-grad)" opacity="0.8" />
+            <rect x="-19" y="10" width="10" height="18" rx="1.5" fill="url(#c8-bar-grad)" opacity="0.5" />
+
+            {/* Metrics */}
+            <g transform="translate(3, -15)">
+              <rect x="0" y="0" width="78" height="17" rx="3.5" fill="#042f2e" stroke="#10b981" strokeWidth="0.8" />
+              <text x="6" y="11.5" fill="#6ee7b7" fontSize="6.5" fontWeight="700" fontFamily="system-ui, sans-serif">
+                P-VALUE &lt; 0.01 · SIG
+              </text>
+            </g>
+
+            <g transform="translate(3, 8)">
+              <rect x="0" y="0" width="78" height="17" rx="3.5" fill="#1e1b4b" stroke="#818cf8" strokeWidth="0.8" />
+              <text x="6" y="11.5" fill="#c7d2fe" fontSize="6.5" fontWeight="700" fontFamily="system-ui, sans-serif">
+                RETENTION SMILE 42%
+              </text>
+            </g>
+          </g>
+
+          {/* Floating Pill Badges */}
+          <g transform="translate(35, 45)">
+            <rect x="0" y="0" width="62" height="16" rx="8" fill="#042f2e" stroke="#059669" strokeWidth="1" opacity="0.9" />
+            <text x="31" y="11" fill="#34d399" fontSize="6.5" fontWeight="700" textAnchor="middle" fontFamily="monospace">
+              SQL + PYTHON
+            </text>
+          </g>
+
+          <g transform="translate(255, 170)">
+            <rect x="0" y="0" width="70" height="16" rx="8" fill="#0f172a" stroke="#38bdf8" strokeWidth="1" opacity="0.9" />
+            <text x="35" y="11" fill="#7dd3fc" fontSize="6.5" fontWeight="700" textAnchor="middle" fontFamily="monospace">
+              DECISION MEMO
+            </text>
+          </g>
+        </svg>
+      </div>
+    );
+  }
+
   // Course 7: Hackathon & Open Innovation Mastery (Electric Violet & Cyan Neon, Sprint Trophy & Code Lightning motif)
   return (
     <div className="relative w-full h-full min-h-[210px] overflow-hidden select-none bg-[#09021a]">

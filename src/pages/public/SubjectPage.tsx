@@ -10,6 +10,7 @@ import {
   COURSE_5_CHAPTERS,
   COURSE_6_CHAPTERS,
   COURSE_7_CHAPTERS,
+  COURSE_8_CHAPTERS,
   COURSE_1_PARTS,
   COURSE_2_PARTS,
   COURSE_3_PARTS,
@@ -17,6 +18,7 @@ import {
   COURSE_5_PARTS,
   COURSE_6_PARTS,
   COURSE_7_PARTS,
+  COURSE_8_PARTS,
   AcademyChapter,
   AcademyPart,
 } from "@/data/academyData";
@@ -26,12 +28,19 @@ export const SubjectPage: React.FC = () => {
   const location = useLocation();
 
   // Determine active course
+  const isCourse8 =
+    location.pathname.includes("data-analysis") ||
+    location.pathname.includes("decision-making") ||
+    courseSlug?.includes("data-analysis") ||
+    courseSlug?.includes("decision-making") ||
+    courseSlug === "course-8";
   const isCourse7 =
-    location.pathname.includes("hackathon") ||
-    location.pathname.includes("open-innovation") ||
-    courseSlug?.includes("hackathon") ||
-    courseSlug?.includes("open-innovation") ||
-    courseSlug === "course-7";
+    !isCourse8 &&
+    (location.pathname.includes("hackathon") ||
+      location.pathname.includes("open-innovation") ||
+      courseSlug?.includes("hackathon") ||
+      courseSlug?.includes("open-innovation") ||
+      courseSlug === "course-7");
 
   const isCourse6 =
     !isCourse7 &&
@@ -81,7 +90,9 @@ export const SubjectPage: React.FC = () => {
       courseSlug?.includes("market-sizing") ||
       courseSlug === "course-2");
 
-  const course = isCourse7
+  const course = isCourse8
+    ? ACADEMY_COURSES[7]
+    : isCourse7
     ? ACADEMY_COURSES[6]
     : isCourse6
     ? ACADEMY_COURSES[5]
@@ -94,7 +105,9 @@ export const SubjectPage: React.FC = () => {
     : isCourse2
     ? ACADEMY_COURSES[1]
     : ACADEMY_COURSES[0];
-  const chapters: AcademyChapter[] = isCourse7
+  const chapters: AcademyChapter[] = isCourse8
+    ? COURSE_8_CHAPTERS
+    : isCourse7
     ? COURSE_7_CHAPTERS
     : isCourse6
     ? COURSE_6_CHAPTERS

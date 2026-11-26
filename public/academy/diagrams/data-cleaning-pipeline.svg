@@ -1,0 +1,39 @@
+<svg viewBox="0 0 760 170" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="760" height="170" rx="12" fill="#F8FAFC"/>
+  <text x="380" y="26" fill="#0F172A" font-size="14" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">The 5-Step Data Hygiene Pipeline: From Messy CSV to Gold Model</text>
+
+  <rect x="20" y="46" width="134" height="106" rx="8" fill="#FFFFFF" stroke="#DC2626" stroke-width="1.6"/>
+  <text x="87" y="68" fill="#DC2626" font-size="11" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">1. NULL AUDIT</text>
+  <text x="87" y="88" fill="#0F172A" font-size="10" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">Missing Values</text>
+  <text x="87" y="106" fill="#475569" font-size="9" text-anchor="middle" font-family="system-ui, sans-serif">Drop if &gt;40% missing</text>
+  <text x="87" y="122" fill="#475569" font-size="9" text-anchor="middle" font-family="system-ui, sans-serif">or impute with median</text>
+  <text x="87" y="138" fill="#B91C1C" font-size="8.5" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">Never fill with zero</text>
+
+  <rect x="164" y="46" width="134" height="106" rx="8" fill="#FFFFFF" stroke="#EA580C" stroke-width="1.6"/>
+  <text x="231" y="68" fill="#EA580C" font-size="11" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">2. DEDUPLICATION</text>
+  <text x="231" y="88" fill="#0F172A" font-size="10" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">Duplicate Rows</text>
+  <text x="231" y="106" fill="#475569" font-size="9" text-anchor="middle" font-family="system-ui, sans-serif">Exact email matches</text>
+  <text x="231" y="122" fill="#475569" font-size="9" text-anchor="middle" font-family="system-ui, sans-serif">Double-submit clicks</text>
+  <text x="231" y="138" fill="#C2410C" font-size="8.5" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">Keep latest timestamp</text>
+
+  <rect x="308" y="46" width="134" height="106" rx="8" fill="#FFFFFF" stroke="#0284C7" stroke-width="1.6"/>
+  <text x="375" y="68" fill="#0284C7" font-size="11" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">3. TYPE CASTING</text>
+  <text x="375" y="88" fill="#0F172A" font-size="10" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">Schema Fixes</text>
+  <text x="375" y="106" fill="#475569" font-size="9" text-anchor="middle" font-family="system-ui, sans-serif">String '$45.00' &rarr; float</text>
+  <text x="375" y="122" fill="#475569" font-size="9" text-anchor="middle" font-family="system-ui, sans-serif">Dates into ISO-8601</text>
+  <text x="375" y="138" fill="#0369A1" font-size="8.5" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">Mathematical Readiness</text>
+
+  <rect x="452" y="46" width="134" height="106" rx="8" fill="#FFFFFF" stroke="#7C3AED" stroke-width="1.6"/>
+  <text x="519" y="68" fill="#7C3AED" font-size="11" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">4. OUTLIER TRIAGE</text>
+  <text x="519" y="88" fill="#0F172A" font-size="10" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">Noise vs Signal</text>
+  <text x="519" y="106" fill="#475569" font-size="9" text-anchor="middle" font-family="system-ui, sans-serif">IQR clipping</text>
+  <text x="519" y="122" fill="#475569" font-size="9" text-anchor="middle" font-family="system-ui, sans-serif">Isolate test accounts</text>
+  <text x="519" y="138" fill="#6D28D9" font-size="8.5" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">Robust Calculations</text>
+
+  <rect x="596" y="46" width="144" height="106" rx="8" fill="#FFFFFF" stroke="#16A34A" stroke-width="2"/>
+  <text x="668" y="68" fill="#16A34A" font-size="11" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">5. GOLDEN TABLE</text>
+  <text x="668" y="88" fill="#0F172A" font-size="10" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">Single Truth Source</text>
+  <text x="668" y="106" fill="#334155" font-size="9" text-anchor="middle" font-family="system-ui, sans-serif">Versioned table</text>
+  <text x="668" y="122" fill="#334155" font-size="9" text-anchor="middle" font-family="system-ui, sans-serif">Ready for dashboard</text>
+  <text x="668" y="138" fill="#15803D" font-size="8.5" font-weight="bold" text-anchor="middle" font-family="system-ui, sans-serif">Audit-Proof Base</text>
+</svg>

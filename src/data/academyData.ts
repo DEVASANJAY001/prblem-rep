@@ -159,7 +159,8 @@ import { COURSE_4_PARTS, COURSE_4_CHAPTERS } from "./course4Data";
 import { COURSE_5_PARTS, COURSE_5_CHAPTERS } from "./course5Data";
 import { COURSE_6_PARTS, COURSE_6_CHAPTERS } from "./course6Data";
 import { COURSE_7_PARTS, COURSE_7_CHAPTERS } from "./course7Data";
-export { COURSE_3_PARTS, COURSE_3_CHAPTERS, COURSE_4_PARTS, COURSE_4_CHAPTERS, COURSE_5_PARTS, COURSE_5_CHAPTERS, COURSE_6_PARTS, COURSE_6_CHAPTERS, COURSE_7_PARTS, COURSE_7_CHAPTERS };
+import { COURSE_8_PARTS, COURSE_8_CHAPTERS } from "./course8Data";
+export { COURSE_3_PARTS, COURSE_3_CHAPTERS, COURSE_4_PARTS, COURSE_4_CHAPTERS, COURSE_5_PARTS, COURSE_5_CHAPTERS, COURSE_6_PARTS, COURSE_6_CHAPTERS, COURSE_7_PARTS, COURSE_7_CHAPTERS, COURSE_8_PARTS, COURSE_8_CHAPTERS };
 
 export const ACADEMY_PARTS = COURSE_1_PARTS;
 
@@ -255,6 +256,32 @@ export const ACADEMY_COURSES: AcademyCourse[] = [
     description: "Turn a validated prototype into a sustainable, scalable venture. Master business models, founder equity, legal setups, runway modeling, sales pipelines, and investor fundraising.",
     parts: COURSE_6_PARTS,
   },
+  {
+    id: "course-7",
+    n: 7,
+    slug: "hackathon-and-open-innovation-mastery",
+    title: "Hackathon & Open Innovation Mastery",
+    level: "Competitor & Builder",
+    live: true,
+    meta: "18 chapters · 101 sections",
+    chaptersCount: 18,
+    sectionsCount: 101,
+    description: "Go from problem decoding to winning prototypes, sponsor pilots, and venture spinouts in 24 to 48 hours. Master team dynamics, speed scoping, judge rubrics, and demo day pitches.",
+    parts: COURSE_7_PARTS,
+  },
+  {
+    id: "course-8",
+    n: 8,
+    slug: "data-analysis-and-decision-making-for-builders",
+    title: "Data Analysis & Decision-Making for Builders",
+    level: "Data & Decision",
+    live: true,
+    meta: "18 chapters · 105 sections",
+    chaptersCount: 18,
+    sectionsCount: 105,
+    description: "Turn raw evidence into numbers, charts, and decisions you can defend. Master spreadsheet modeling, statistics, SQL, Python, surveys, scoring models, and A/B experiments.",
+    parts: COURSE_8_PARTS,
+  },
 ];
 
 import { COURSE_1_CHAPTERS } from "./course1Data";
@@ -273,6 +300,7 @@ export function getCourse(slugOrId?: string): AcademyCourse {
     (c) =>
       c.slug.toLowerCase() === cleaned ||
       c.id.toLowerCase() === cleaned ||
+      ((cleaned.includes("data-analysis") || cleaned.includes("decision-making") || cleaned.includes("data")) && c.id === "course-8") ||
       ((cleaned.includes("hackathon") || cleaned.includes("open-innovation")) && c.id === "course-7") ||
       ((cleaned.includes("startup") || cleaned.includes("fundamental")) && c.id === "course-6") ||
       ((cleaned.includes("ai") || cleaned.includes("builder")) && c.id === "course-5") ||
@@ -287,6 +315,12 @@ export function getCourse(slugOrId?: string): AcademyCourse {
 export function getCourseChapters(courseSlug?: string): AcademyChapter[] {
   if (!courseSlug) return COURSE_1_CHAPTERS;
   const cleaned = courseSlug.toLowerCase().trim();
+  if (cleaned.includes("data-analysis") || cleaned.includes("decision-making") || cleaned === "course-8") {
+    return COURSE_8_CHAPTERS;
+  }
+  if (cleaned.includes("hackathon") || cleaned.includes("open-innovation") || cleaned === "course-7") {
+    return COURSE_7_CHAPTERS;
+  }
   if (cleaned.includes("startup") || cleaned.includes("fundamental") || cleaned === "course-6") {
     return COURSE_6_CHAPTERS;
   }
@@ -308,6 +342,12 @@ export function getCourseChapters(courseSlug?: string): AcademyChapter[] {
 export function getCourseParts(courseSlug?: string): AcademyPart[] {
   if (!courseSlug) return COURSE_1_PARTS;
   const cleaned = courseSlug.toLowerCase().trim();
+  if (cleaned.includes("data-analysis") || cleaned.includes("decision-making") || cleaned === "course-8") {
+    return COURSE_8_PARTS;
+  }
+  if (cleaned.includes("hackathon") || cleaned.includes("open-innovation") || cleaned === "course-7") {
+    return COURSE_7_PARTS;
+  }
   if (cleaned.includes("startup") || cleaned.includes("fundamental") || cleaned === "course-6") {
     return COURSE_6_PARTS;
   }
