@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Navbar } from "@/components/common/Navbar";
+import { Footer } from "@/components/common/Footer";
 import { usePageContent } from "@/hooks/usePageContent";
 import { fetchTrendingProblemsPage, TrendingCursor } from "@/lib/firebase/services/problemsService";
 import { ProblemDoc } from "@/types";
@@ -1443,83 +1444,8 @@ export const Home: React.FC = () => {
         </div>
       </main>
 
-      {/* Footer */}
-      <footer className="w-full bg-surface-container-lowest py-16 border-t border-outline-variant/20 overflow-hidden">
-        <div className="max-w-[1280px] mx-auto px-4 md:px-8 grid grid-cols-2 md:grid-cols-4 gap-12">
-          <div className="flex flex-col gap-4">
-            <h4 className="text-label-sm font-semibold text-on-surface uppercase tracking-widest mb-2">
-              Product
-            </h4>
-            <nav className="flex flex-col gap-3">
-              <Link to="/features" className="text-body-md text-on-surface-variant hover:text-primary transition-colors">
-                Features
-              </Link>
-              <Link to="/solutions" className="text-body-md text-on-surface-variant hover:text-primary transition-colors">
-                Solutions
-              </Link>
-              <Link to="/industries" className="text-body-md text-on-surface-variant hover:text-primary transition-colors">
-                Industries
-              </Link>
-              <Link to="/explore" className="text-body-md text-on-surface-variant hover:text-primary transition-colors">
-                Problem Catalog
-              </Link>
-            </nav>
-          </div>
-          <div className="flex flex-col gap-4">
-            <h4 className="text-label-sm font-semibold text-on-surface uppercase tracking-widest mb-2">
-              Community
-            </h4>
-            <nav className="flex flex-col gap-3">
-              <Link to="/community" className="text-body-md text-on-surface-variant hover:text-primary transition-colors">
-                Forums & Feed
-              </Link>
-              <Link to="/companies" className="text-body-md text-on-surface-variant hover:text-primary transition-colors">
-                Industry Partners
-              </Link>
-              <Link to="/submit" className="text-body-md text-on-surface-variant hover:text-primary transition-colors">
-                Submit a Problem
-              </Link>
-            </nav>
-          </div>
-          <div className="flex flex-col gap-4">
-            <h4 className="text-label-sm font-semibold text-on-surface uppercase tracking-widest mb-2">
-              Company
-            </h4>
-            <nav className="flex flex-col gap-3">
-              <Link to="/about" className="text-body-md text-on-surface-variant hover:text-primary transition-colors">
-                About Us
-              </Link>
-              <Link to="/contact" className="text-body-md text-on-surface-variant hover:text-primary transition-colors">
-                Contact Us
-              </Link>
-            </nav>
-          </div>
-          <div className="flex flex-col gap-4">
-            <h4 className="text-label-sm font-semibold text-on-surface uppercase tracking-widest mb-2">
-              Legal
-            </h4>
-            <nav className="flex flex-col gap-3">
-              <Link to="/privacy" className="text-body-md text-on-surface-variant hover:text-primary transition-colors">
-                Privacy Policy
-              </Link>
-              <Link to="/terms" className="text-body-md text-on-surface-variant hover:text-primary transition-colors">
-                Terms of Service
-              </Link>
-              <Link to="/cookies" className="text-body-md text-on-surface-variant hover:text-primary transition-colors">
-                Cookie Policy
-              </Link>
-            </nav>
-          </div>
-        </div>
-        <div className="max-w-[1280px] mx-auto px-4 md:px-8 mt-16 pt-8 border-t border-outline-variant/20 flex flex-col md:flex-row items-center justify-between gap-4">
-          <Link to="/" className="flex items-center group">
-            <span className="font-headline-sm text-xl md:text-2xl tracking-tight text-on-surface font-extrabold flex items-center transition-transform group-hover:scale-[1.02]">
-              Stuck<span className="text-primary ml-0.5">here</span>
-            </span>
-          </Link>
-          <p className="text-label-sm text-outline">© 2026 Stuckhere. All rights reserved.</p>
-        </div>
-      </footer>
+      {/* Main Unified Footer */}
+      <Footer />
     </div>
   );
 };
