@@ -5,7 +5,7 @@ import { REAL_COMPANIES } from "@/data/realProductionData";
 import { CompanyLogo } from "@/components/ui/CompanyLogo";
 import { useAuth } from "@/contexts/AuthContext";
 import { isProblemBookmarked, toggleBookmark, getProblemById as getLocalProblemById } from "@/lib/storage";
-import { voteProblem } from "@/lib/firebase/services/problemsService";
+import { voteProblem, cacheProblemInSwr } from "@/lib/firebase/services/problemsService";
 import { getProblemDetailUrl } from "@/lib/seoUrls";
 import { ThumbsUp, Bookmark, ShieldCheck, Eye, Hand, Hammer, MessageSquare } from "lucide-react";
 import { cleanIndustryName } from "@/lib/algorithms/domainIntelligence";
@@ -39,6 +39,7 @@ export const TrendingProblemCard: React.FC<TrendingProblemCardProps> = React.mem
     if (target.closest("button") || target.closest("a")) {
       return;
     }
+    cacheProblemInSwr(problem);
     navigate(getProblemDetailUrl(problem));
   };
 
@@ -288,7 +289,11 @@ export const TrendingProblemCard: React.FC<TrendingProblemCardProps> = React.mem
           </div>
 
           {/* Poppins Minimalist Title */}
-          <Link to={getProblemDetailUrl(problem)} className="hover:text-[#5c37eb] transition-colors block">
+          <Link
+            to={getProblemDetailUrl(problem)}
+            onClick={() => cacheProblemInSwr(problem)}
+            className="hover:text-[#5c37eb] transition-colors block"
+          >
             <h2 className="text-sm sm:text-base md:text-xl font-semibold text-gray-900 leading-snug line-clamp-2 tracking-tight">
               {problem.title}
             </h2>

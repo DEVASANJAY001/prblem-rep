@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { ProblemDoc } from "@/types";
 import { BadgePill } from "@/components/ui/BadgePill";
 import { toggleBookmark, isProblemBookmarked } from "@/lib/storage";
-import { voteProblem } from "@/lib/firebase/services/problemsService";
+import { voteProblem, cacheProblemInSwr } from "@/lib/firebase/services/problemsService";
 import { useAuth } from "@/contexts/AuthContext";
 import { getProblemDetailUrl, getStartupModeUrl } from "@/lib/seoUrls";
 import {
@@ -70,7 +70,10 @@ export const ProblemCard: React.FC<ProblemCardProps> = React.memo(({
 
   return (
     <div
-      onClick={() => navigate(getProblemDetailUrl(problem))}
+      onClick={() => {
+        cacheProblemInSwr(problem);
+        navigate(getProblemDetailUrl(problem));
+      }}
       className="card-hover group relative flex cursor-pointer flex-col justify-between rounded-xl border border-zinc-200 bg-white p-5 transition-all dark:border-zinc-800 dark:bg-zinc-900/90"
     >
       {/* Top Meta Bar */}

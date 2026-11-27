@@ -206,11 +206,20 @@ class SWRCacheManager {
   /**
    * Seed multiple problem items in one batch (e.g., when catalog loads)
    */
-  public setMany<T extends { id?: string }>(items: T[], keyPrefix = "problem_", ttlMs: number = this.defaultTTL): void {
+  public setMany<T extends { id?: string; slug?: string; title?: string }>(items: T[], keyPrefix = "problem_", ttlMs: number = this.defaultTTL): void {
     if (!Array.isArray(items)) return;
     items.forEach((item) => {
       if (item && item.id) {
         this.set(`${keyPrefix}${item.id}`, item, ttlMs);
+        if (item.slug) {
+          const clean = item.slug.includes("--") ? item.slug.split("--")[0] : item.slug;
+          this.set(`${keyPrefix}${clean}`, item, ttlMs);
+          this.set(`${keyPrefix}${item.slug}`, item, ttlMs);
+        }
+        if (item.title) {
+          const s = item.title.toString().toLowerCase().trim().replace(/[^\w\s-]/g, "").replace(/[\s_-]+/g, "-").replace(/^-+|-+$/g, "");
+          if (s) this.set(`${keyPrefix}${s}`, item, ttlMs);
+        }
       }
     });
   }

@@ -582,11 +582,12 @@ export const AdminProblemDetailEditor: React.FC<AdminProblemDetailEditorProps> =
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center p-16 w-full">
-        <div className="flex flex-col items-center gap-3">
-          <div className="w-8 h-8 border-3 border-primary border-t-transparent rounded-full animate-spin" />
-          <span className="text-xs font-semibold text-gray-500">Loading problem control studio...</span>
-        </div>
+      <div className="w-full min-h-[70vh] flex flex-col items-center justify-center py-20 px-4">
+        <div
+          role="status"
+          aria-label="Loading problem control studio..."
+          className="w-10 h-10 rounded-full border-3 border-outline-variant/30 border-t-primary animate-spin"
+        />
       </div>
     );
   }

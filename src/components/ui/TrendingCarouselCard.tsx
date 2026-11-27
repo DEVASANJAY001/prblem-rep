@@ -5,7 +5,7 @@ import { REAL_COMPANIES } from "@/data/realProductionData";
 import { CompanyLogo } from "@/components/ui/CompanyLogo";
 import { useAuth } from "@/contexts/AuthContext";
 import { isProblemBookmarked, toggleBookmark, getProblemById as getLocalProblemById } from "@/lib/storage";
-import { voteProblem } from "@/lib/firebase/services/problemsService";
+import { voteProblem, cacheProblemInSwr } from "@/lib/firebase/services/problemsService";
 import { getProblemDetailUrl } from "@/lib/seoUrls";
 import { Eye, ShieldCheck, ThumbsUp, Bookmark } from "lucide-react";
 import { cleanIndustryName } from "@/lib/algorithms/domainIntelligence";
@@ -37,6 +37,7 @@ export const TrendingCarouselCard: React.FC<TrendingCarouselCardProps> = React.m
     if (target.closest("button") || target.closest("a")) {
       return;
     }
+    cacheProblemInSwr(problem);
     navigate(getProblemDetailUrl(problem));
   };
 
@@ -249,7 +250,11 @@ export const TrendingCarouselCard: React.FC<TrendingCarouselCardProps> = React.m
           </div>
 
           {/* Title */}
-          <Link to={getProblemDetailUrl(problem)} className="hover:text-[#5c37eb] transition-colors">
+          <Link
+            to={getProblemDetailUrl(problem)}
+            onClick={() => cacheProblemInSwr(problem)}
+            className="hover:text-[#5c37eb] transition-colors"
+          >
             <h3 className="text-xs sm:text-base md:text-lg font-semibold text-gray-900 leading-snug line-clamp-2 tracking-tight group-hover:text-primary transition-colors">
               {problem.title}
             </h3>

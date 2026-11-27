@@ -529,7 +529,7 @@ export async function createProblem(
 function syncProblemCache(problem: ProblemDoc): void {
   if (!problem || !problem.id) return;
   _saveLocalSilent(problem);
-  swrCache.set(`problem_${problem.id}`, problem, 300_000);
+  cacheProblemInSwr(problem);
   const stream = docStreams.get(problem.id);
   if (stream) {
     stream.latestData = problem;
@@ -652,6 +652,31 @@ export async function updateProblemModule<K extends keyof ProblemDoc>(
 // ─────────────────────────────────────────────────────────────────────────────
 // 3. Multiplexed Shared Problem Detail Listener (0 Duplicate Reads)
 // ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * High-performance multi-key indexer for SWR Cache.
+ * Caches a problem by its canonical ID, explicit slug, and sanitized title slug.
+ * This guarantees 0ms lookup latency when users navigate from cards or search results.
+ */
+export function cacheProblemInSwr(problem: ProblemDoc): void {
+  if (!problem || !problem.id) return;
+  const ttl = 300_000; // 5 minutes
+  swrCache.set(`problem_${problem.id}`, problem, ttl);
+  if (problem.slug) {
+    const clean = problem.slug.includes("--") ? problem.slug.split("--")[0] : problem.slug;
+    swrCache.set(`problem_${clean}`, problem, ttl);
+    swrCache.set(`problem_${problem.slug}`, problem, ttl);
+  }
+  if (problem.title) {
+    const s = slugify(problem.title);
+    if (s) swrCache.set(`problem_${s}`, problem, ttl);
+    try {
+      const full = getProblemSlug(problem);
+      if (full && full !== s) swrCache.set(`problem_${full}`, problem, ttl);
+    } catch {}
+  }
+}
+
 export function subscribeProblemById(
   idOrSlug: string,
   callback: (problem: ProblemDoc | null) => void
@@ -661,24 +686,30 @@ export function subscribeProblemById(
   const id = localData ? localData.id : idOrSlug;
 
   // 1. Instantly emit cached data (0ms latency, zero layout shift)
-  const streamData = docStreams.get(id)?.latestData;
-  const swrData = swrCache.get<ProblemDoc>(`problem_${id}`);
+  const streamData = docStreams.get(id)?.latestData || docStreams.get(idOrSlug)?.latestData;
+  const swrData =
+    swrCache.get<ProblemDoc>(`problem_${id}`) ||
+    swrCache.get<ProblemDoc>(`problem_${idOrSlug}`);
   const initial = streamData || swrData || localData || null;
 
   if (initial) {
-    if (!swrData) {
-      swrCache.set(`problem_${id}`, initial, 300_000);
-    }
+    cacheProblemInSwr(initial);
     callback(initial);
-  } else {
-    callback(null);
   }
+  // IMPORTANT: Do NOT call callback(null) here!
+  // If data is not yet in cache, the subscriber must remain in the loading state
+  // while Firestore is queried. Calling callback(null) prematurely causes the
+  // "Problem Statement Not Found" flash screen before the data arrives.
 
   if (!db || typeof doc !== "function") {
+    if (!initial) {
+      const fallback = getLocalProblemById(idOrSlug) || getLocalProblemById(id);
+      callback(fallback || null);
+    }
     return () => {};
   }
 
-  let stream = docStreams.get(id);
+  let stream = docStreams.get(id) || docStreams.get(idOrSlug);
 
   if (stream) {
     // If stream is pending teardown, cancel it immediately
@@ -691,68 +722,124 @@ export function subscribeProblemById(
       callback(stream.latestData);
     }
   } else {
-    const isCachedFresh = swrCache.has(`problem_${id}`);
+    const isCachedFresh = swrCache.has(`problem_${id}`) || swrCache.has(`problem_${idOrSlug}`);
     const listeners = new Set<(problem: ProblemDoc | null) => void>();
     listeners.add(callback);
 
     let unsubscribeFirestore = () => {};
 
-    // Only open a per-doc listener if there is NO fresh data already available from the
-    // collection query snapshot. When a user navigates from /explore → /problem/:id, the
-    // collection listener has already seeded SWR with this document — opening a second
-    // listener is wasteful. We only need the per-doc listener for direct deep links where
-    // the collection snapshot hasn't loaded yet.
+    // Only open a per-doc listener if there is NO fresh data already available
     if (!isCachedFresh) {
-      try {
-        const ref = doc(db, PROBLEMS_COLLECTION, id);
-        unsubscribeFirestore = onSnapshot(
-          ref,
-          (snap) => {
-            if (snap.exists()) {
-              const data = snap.data() as ProblemDoc;
-              _saveLocalSilent(data);
-              swrCache.set(`problem_${id}`, data, 300_000);
-              const currentStream = docStreams.get(id);
-              if (currentStream) {
-                currentStream.latestData = data;
-                currentStream.listeners.forEach((cb) => cb(data));
-              }
-            } else {
-              const localFallback = getLocalProblemById(id);
-              if (localFallback) {
-                swrCache.set(`problem_${id}`, localFallback, 300_000);
-                const currentStream = docStreams.get(id);
-                if (currentStream && !currentStream.latestData) {
-                  currentStream.latestData = localFallback;
-                  currentStream.listeners.forEach((cb) => cb(localFallback));
+      const isDirectDocId = id.startsWith("prob-") || (id.length >= 20 && !id.includes("-"));
+
+      if (isDirectDocId) {
+        try {
+          const ref = doc(db, PROBLEMS_COLLECTION, id);
+          unsubscribeFirestore = onSnapshot(
+            ref,
+            (snap) => {
+              if (snap.exists()) {
+                const data = snap.data() as ProblemDoc;
+                _saveLocalSilent(data);
+                cacheProblemInSwr(data);
+                const currentStream = docStreams.get(id) || docStreams.get(idOrSlug);
+                if (currentStream) {
+                  currentStream.latestData = data;
+                  currentStream.listeners.forEach((cb) => cb(data));
+                } else {
+                  callback(data);
                 }
-              } else if (db && typeof collection === "function" && !id.startsWith("prob-")) {
-                // Cold-start slug lookup: resolve clean slug to approved document in Firestore
-                const colRef = collection(db, PROBLEMS_COLLECTION);
-                const q = query(colRef, where("status", "==", "approved"), limit(1000));
-                getDocs(q).then((querySnap) => {
-                  const match = querySnap.docs.find((d) => {
-                    const dData = d.data() as ProblemDoc;
-                    const s = dData.slug || (dData.title ? slugify(dData.title) : "");
-                    return s === idOrSlug || d.id === idOrSlug || (dData.title && getProblemSlug({ ...dData, id: d.id }) === idOrSlug);
-                  });
-                  if (match) {
-                    const live = { id: match.id, ...match.data() } as ProblemDoc;
-                    _saveLocalSilent(live);
-                    swrCache.set(`problem_${match.id}`, live, 300_000);
-                    swrCache.set(`problem_${idOrSlug}`, live, 300_000);
-                    callback(live);
+              } else {
+                const localFallback = getLocalProblemById(id) || getLocalProblemById(idOrSlug);
+                if (localFallback) {
+                  cacheProblemInSwr(localFallback);
+                  const currentStream = docStreams.get(id) || docStreams.get(idOrSlug);
+                  if (currentStream) {
+                    currentStream.latestData = localFallback;
+                    currentStream.listeners.forEach((cb) => cb(localFallback));
+                  } else {
+                    callback(localFallback);
                   }
-                }).catch((err) => console.warn("Firestore slug resolution error:", err));
+                } else {
+                  // Direct ID definitively does not exist in Firestore
+                  const currentStream = docStreams.get(id) || docStreams.get(idOrSlug);
+                  if (currentStream) {
+                    currentStream.listeners.forEach((cb) => cb(null));
+                  } else {
+                    callback(null);
+                  }
+                }
               }
+            },
+            (err) => {
+              console.warn("Problem detail snapshot warning:", err.message);
+              const localFallback = getLocalProblemById(id) || getLocalProblemById(idOrSlug);
+              callback(localFallback || null);
             }
-          },
-          (err) => {
-            console.warn("Problem detail snapshot warning:", err.message);
-          }
-        );
-      } catch (err) {
-        console.warn("Problem detail onSnapshot init error:", err);
+          );
+        } catch (err) {
+          console.warn("Problem detail onSnapshot init error:", err);
+          const localFallback = getLocalProblemById(id) || getLocalProblemById(idOrSlug);
+          callback(localFallback || null);
+        }
+      } else {
+        // id is a semantic slug! Resolve approved problem by slug or title in Firestore
+        if (db && typeof collection === "function") {
+          const colRef = collection(db, PROBLEMS_COLLECTION);
+          const q = query(colRef, where("status", "==", "approved"), limit(1000));
+          getDocs(q)
+            .then((querySnap) => {
+              const match = querySnap.docs.find((d) => {
+                const dData = d.data() as ProblemDoc;
+                const s = dData.slug || (dData.title ? slugify(dData.title) : "");
+                return (
+                  s === idOrSlug ||
+                  d.id === idOrSlug ||
+                  (dData.title && getProblemSlug({ ...dData, id: d.id }) === idOrSlug)
+                );
+              });
+              if (match) {
+                const live = { id: match.id, ...match.data() } as ProblemDoc;
+                _saveLocalSilent(live);
+                cacheProblemInSwr(live);
+                const currentStream = docStreams.get(id) || docStreams.get(idOrSlug);
+                if (currentStream) {
+                  currentStream.latestData = live;
+                  currentStream.listeners.forEach((cb) => cb(live));
+                } else {
+                  callback(live);
+                }
+              } else {
+                const localFallback = getLocalProblemById(idOrSlug) || getLocalProblemById(id);
+                if (localFallback) {
+                  cacheProblemInSwr(localFallback);
+                  const currentStream = docStreams.get(id) || docStreams.get(idOrSlug);
+                  if (currentStream) {
+                    currentStream.latestData = localFallback;
+                    currentStream.listeners.forEach((cb) => cb(localFallback));
+                  } else {
+                    callback(localFallback);
+                  }
+                } else {
+                  // Slug definitively not found in Firestore
+                  const currentStream = docStreams.get(id) || docStreams.get(idOrSlug);
+                  if (currentStream) {
+                    currentStream.listeners.forEach((cb) => cb(null));
+                  } else {
+                    callback(null);
+                  }
+                }
+              }
+            })
+            .catch((err) => {
+              console.warn("Firestore slug resolution error:", err);
+              const localFallback = getLocalProblemById(idOrSlug) || getLocalProblemById(id);
+              callback(localFallback || null);
+            });
+        } else {
+          const localFallback = getLocalProblemById(idOrSlug) || getLocalProblemById(id);
+          callback(localFallback || null);
+        }
       }
     }
 
@@ -762,11 +849,14 @@ export function subscribeProblemById(
       latestData: initial,
     };
     docStreams.set(id, stream);
+    if (idOrSlug !== id) {
+      docStreams.set(idOrSlug, stream);
+    }
   }
 
   // Teardown with 120-second keepalive debounce across route transitions
   return () => {
-    const currentStream = docStreams.get(id);
+    const currentStream = docStreams.get(id) || docStreams.get(idOrSlug);
     if (currentStream) {
       currentStream.listeners.delete(callback);
       if (currentStream.listeners.size === 0) {
@@ -781,6 +871,7 @@ export function subscribeProblemById(
               console.warn("Doc snapshot unsubscribe notice:", e);
             }
             docStreams.delete(id);
+            docStreams.delete(idOrSlug);
           }
         }, 120_000);
       }
@@ -912,6 +1003,7 @@ export async function getApprovedProblemsPool(): Promise<ProblemDoc[]> {
       if (!snap.empty) {
         const pool = snap.docs.map((d) => extractCardFields(d.data(), d.id));
         swrCache.set("approved_problems_pool", pool, 120_000); // 2 minute memory cache
+        swrCache.setMany(pool, "problem_", 300_000);
         return pool;
       }
     } catch (err: any) {
@@ -926,6 +1018,7 @@ export async function getApprovedProblemsPool(): Promise<ProblemDoc[]> {
   localApproved.forEach((p) => map.set(p.id, extractCardFields(p, p.id)));
   const pool = Array.from(map.values());
   swrCache.set("approved_problems_pool", pool, 60_000);
+  swrCache.setMany(pool, "problem_", 300_000);
   return pool;
 }
 

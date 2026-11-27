@@ -629,11 +629,11 @@ export const ProblemDetail: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="mx-auto max-w-4xl px-4 py-24">
-        <LoadingContainer
-          message="Loading..."
-          minHeight="min-h-[400px]"
-          transparent
+      <div className="w-full min-h-[70vh] flex flex-col items-center justify-center py-20 px-4">
+        <div
+          role="status"
+          aria-label="Loading problem dossier..."
+          className="w-10 h-10 rounded-full border-3 border-outline-variant/30 border-t-primary animate-spin"
         />
       </div>
     );

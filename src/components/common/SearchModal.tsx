@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { subscribeProblems } from "@/lib/firebase/services/problemsService";
+import { subscribeProblems, cacheProblemInSwr } from "@/lib/firebase/services/problemsService";
 import { getProblemDetailUrl } from "@/lib/seoUrls";
 import { ProblemDoc } from "@/types";
 import {
@@ -90,6 +90,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => 
     : allProblems.slice(0, 5);
 
   const handleSelectProblem = (prob: ProblemDoc) => {
+    cacheProblemInSwr(prob);
     onClose();
     navigate(getProblemDetailUrl(prob));
   };
